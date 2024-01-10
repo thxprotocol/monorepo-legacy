@@ -276,15 +276,33 @@ class PoolModule extends VuexModule {
 
     @Action
     async createQuest(payload: TQuest) {
-        const data = prepareFormDataForUpload(payload);
-        const response = await axios({
+        await axios({
             method: 'POST',
             url: `/pools/${payload.poolId}/quests`,
             headers: { 'X-PoolId': payload.poolId },
-            data,
+            data: prepareFormDataForUpload(payload),
         });
-        console.log(response.data);
-        debugger;
+    }
+
+    @Action
+    async patchQuest(payload: TQuest) {
+        await axios({
+            method: 'PATCH',
+            url: `/pools/${payload.poolId}/quests/${payload._id}`,
+            headers: { 'X-PoolId': payload.poolId },
+            data: prepareFormDataForUpload(payload),
+        });
+    }
+
+    @Action
+    async removeQuest(payload: TQuest) {
+        await axios({
+            method: 'DELETE',
+            url: `/pools/${payload.poolId}/quests/${payload._id}`,
+            headers: { 'X-PoolId': payload.poolId },
+            data: payload,
+        });
+        this.context.commit('unsetQuest', payload);
     }
 
     @Action({ rawError: true })
@@ -305,20 +323,7 @@ class PoolModule extends VuexModule {
 
     @Action
     async deleteQuest(quest: TQuest) {
-        switch (quest.variant) {
-            case QuestVariant.Daily:
-                return this.context.dispatch('dailyRewards/delete', quest, { root: true });
-            case QuestVariant.Invite:
-                return this.context.dispatch('referralRewards/delete', quest, { root: true });
-            case QuestVariant.Discord:
-            case QuestVariant.YouTube:
-            case QuestVariant.Twitter:
-                return this.context.dispatch('pointRewards/delete', quest, { root: true });
-            case QuestVariant.Custom:
-                return this.context.dispatch('milestoneRewards/delete', quest, { root: true });
-            case QuestVariant.Web3:
-                return this.context.dispatch('web3Quests/delete', quest, { root: true });
-        }
+        this.context.dispatch('pools/removeQuest', quest, { root: true });
     }
 
     @Action
@@ -336,6 +341,8 @@ class PoolModule extends VuexModule {
                 return this.context.dispatch('milestoneRewards/update', quest, { root: true });
             case QuestVariant.Web3:
                 return this.context.dispatch('web3Quests/update', quest, { root: true });
+            case QuestVariant.Gitcoin:
+                return this.context.dispatch('pools/patchQuest', quest, { root: true });
         }
     }
 

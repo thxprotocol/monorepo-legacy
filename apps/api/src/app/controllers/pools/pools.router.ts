@@ -13,8 +13,12 @@ import CreatePoolTransfer from './transfers/post.controller';
 import DeletePoolTransfer from './transfers/delete.controller';
 import CreatePoolSubscription from './subscriptions/post.controller';
 import ReadPoolSubscription from './subscriptions/get.controller';
+
 import ListPoolQuests from './quests/list.controller';
 import CreatePoolQuests from './quests/post.controller';
+import UpdatePoolQuests from './quests/patch.controller';
+import RemovePoolQuests from './quests/delete.controller';
+
 import ListPoolQuestEntries from './quests/entries/list.controller';
 import ListPoolParticipants from './participants/list.controller';
 import CreatePoolCollaborator from './collaborators/post.controller';
@@ -138,7 +142,26 @@ router.post(
     assertRequestInput(CreatePoolQuests.validation),
     CreatePoolQuests.controller,
 );
-
+router.patch(
+    '/:id/quests/:questId',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read', 'pools:write']),
+    upload.single('file'),
+    assertPoolAccess,
+    assertRequestInput(UpdatePoolQuests.validation),
+    UpdatePoolQuests.controller,
+);
+router.delete(
+    '/:id/quests/:questId',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read', 'pools:write']),
+    upload.single('file'),
+    assertPoolAccess,
+    assertRequestInput(RemovePoolQuests.validation),
+    RemovePoolQuests.controller,
+);
 router.get(
     '/:id/quests/:questId/entries',
     checkJwt,

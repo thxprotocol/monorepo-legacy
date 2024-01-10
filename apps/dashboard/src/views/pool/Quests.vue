@@ -310,7 +310,7 @@ export default class QuestsView extends Vue {
         [QuestVariant.YouTube]: 'fab fa-youtube',
         [QuestVariant.Custom]: 'fas fa-flag',
         [QuestVariant.Web3]: 'fab fa-ethereum',
-        [QuestVariant.Gitcoin]: 'fas fa-heartbeat',
+        [QuestVariant.Gitcoin]: 'fas fa-fingerprint',
     };
     isPublished = true;
 
