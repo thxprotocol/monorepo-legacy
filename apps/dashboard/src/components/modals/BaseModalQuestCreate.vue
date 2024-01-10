@@ -59,6 +59,12 @@
                     </b-col>
                     <b-col md="6">
                         <slot name="col-right" />
+                        <BaseCardQuestLocks
+                            class="mb-3"
+                            :pool="pool"
+                            :locks="quest ? quest.locks : []"
+                            @change-locks="onChangeLocks"
+                        />
                         <BaseCardInfoLinks
                             class="mb-3"
                             :info-links="infoLinks"
@@ -95,11 +101,12 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TBaseReward, TInfoLink } from '@thxnetwork/types/interfaces';
+import type { TInfoLink, TPool, TQuest, TQuestLock } from '@thxnetwork/types/interfaces';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
 import BaseCardRewardExpiry from '@thxnetwork/dashboard/components/cards/BaseCardRewardExpiry.vue';
 import BaseCardInfoLinks from '@thxnetwork/dashboard/components/cards/BaseCardInfoLinks.vue';
+import BaseCardQuestLocks from '@thxnetwork/dashboard/components/cards/BaseCardQuestLocks.vue';
 
 @Component({
     components: {
@@ -107,6 +114,7 @@ import BaseCardInfoLinks from '@thxnetwork/dashboard/components/cards/BaseCardIn
         BaseCardRewardExpiry,
         BaseCardURLWebhook,
         BaseCardInfoLinks,
+        BaseCardQuestLocks,
     },
 })
 export default class ModalQuestCreate extends Vue {
@@ -117,11 +125,12 @@ export default class ModalQuestCreate extends Vue {
     expirationTime = '00:00:00';
 
     @Prop() id!: string;
+    @Prop() pool!: TPool;
+    @Prop({ required: false }) quest!: TQuest;
     @Prop() variant!: string;
     @Prop() loading!: boolean;
     @Prop() disabled!: boolean;
     @Prop() published!: boolean;
-    @Prop({ required: false }) quest!: TBaseReward;
     @Prop() infoLinks!: TInfoLink[];
 
     mounted() {
@@ -162,6 +171,10 @@ export default class ModalQuestCreate extends Vue {
         expiryDate.setMinutes(Number(parts[1]));
         expiryDate.setSeconds(Number(parts[2]));
         this.$emit('change-date', expiryDate);
+    }
+
+    onChangeLocks(locks: TQuestLock[]) {
+        this.$emit('change-locks', locks);
     }
 }
 </script>

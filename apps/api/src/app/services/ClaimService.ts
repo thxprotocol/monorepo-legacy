@@ -1,6 +1,6 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import { TBasePerk } from '@thxnetwork/types/interfaces';
+import { TBaseReward } from '@thxnetwork/types/interfaces';
 import db from '@thxnetwork/api/util/database';
 import AccountProxy from '../proxies/AccountProxy';
 
@@ -17,7 +17,7 @@ function findByUuid(uuid: string) {
 function findByPool(pool: AssetPoolDocument) {
     return Claim.find({ poolId: String(pool._id) });
 }
-async function findByPerk(perk: TBasePerk) {
+async function findByPerk(perk: TBaseReward) {
     const claims = await Claim.find({ rewardUuid: perk.uuid, poolId: perk.poolId });
     const subs = claims.filter((c) => c.sub).map(({ sub }) => sub);
     const accounts = await AccountProxy.getMany(subs);

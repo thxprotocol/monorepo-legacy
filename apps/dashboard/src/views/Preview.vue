@@ -1,24 +1,43 @@
 <template>
-    <div>
+    <b-container>
         <p class="text-center">
             <img v-if="logoImgUrl" :src="logoImgUrl" width="100" alt="Example logo image" class="mb-3" />
         </p>
-
-        <b-card style="max-width: 620px" class="bg-dark text-white shadow-lg mb-10 mb-md-0">
-            <b-alert show variant="info" class="mb-4">
-                <i class="fas fa-exclamation-circle mr-2"> </i>
-                <strong>This page is used only for demo purposes.</strong>
-                <p class="m-0">Click the launcher below to view your personalised campaign widget.</p>
-            </b-alert>
-            <b-card-title>Hi👋</b-card-title>
-            <p class="font-weight-bold">We have prepared a Quest &amp; Reward campaign for {{ title }}!❤️</p>
-            <p>
-                Read more about its features below, play with the suggested Quests &amp; Rewards, and please reach out
-                if you have any questions!
-            </p>
-            <b-row>
+        <b-row>
+            <b-col md="6" class="order-0">
+                <b-alert show variant="info" class="mb-4">
+                    <i class="fas fa-exclamation-circle mr-2"> </i>
+                    This is a campaign preview!
+                </b-alert>
+                <b-card class="bg-dark text-white shadow-lg mb-10 mb-md-0 d-none d-md-flex">
+                    <b-card-title>Hi👋</b-card-title>
+                    <p>
+                        This is your campaign widget. Read about it's features below and reach out if you have any
+                        questions!
+                    </p>
+                    <b-link :to="`/pool/${$route.params.poolId}/developer/general`">
+                        <i class="fas fa-caret-right mr-1" />
+                        Add to your HTML page
+                    </b-link>
+                    <br />
+                    <b-link :to="`/pool/${$route.params.poolId}/settings/appearance`">
+                        <i class="fas fa-caret-right mr-1" />
+                        Change color theme
+                    </b-link>
+                    <br />
+                    <b-link :to="`/pool/${$route.params.poolId}/settings/widget`">
+                        <i class="fas fa-caret-right mr-1" />
+                        Change widget settings
+                    </b-link>
+                    <br />
+                    <b-link :href="campaignUrl">
+                        <i class="fas fa-caret-right mr-1" />
+                        Visit your Campaign URL
+                    </b-link>
+                </b-card>
                 <b-button variant="link" block v-b-toggle.collapse2 class="py-3 d-block text-gray text-left">
-                    Learn about <strong>Quests</strong> <i class="fas fa-question-circle ml-2"></i>
+                    <i class="fas fa-question-circle mr-1"></i>
+                    Learn about <strong>Quests</strong>
                 </b-button>
                 <b-collapse id="collapse2" class="w-100">
                     <b-list-group-item :key="key" v-for="(item, key) of contentQuests" class="bg-darker text-white">
@@ -26,18 +45,19 @@
                             <div style="width: 30px">
                                 <i :class="item.icon" :style="{ color: item.color }" class="mr-1"></i>
                             </div>
-                            {{ item.title }}
+                            {{ item.tag }}
                         </div>
                         <p class="text-muted">
                             {{ item.description }}
                         </p>
                         <!-- <b-link v-b-tooltip :title="item.description" class="ml-auto">
-                                    <i class="fas fa-question-circle text-dark mr-1"></i>
-                                </b-link> -->
+                                <i class="fas fa-question-circle text-dark mr-1"></i>
+                            </b-link> -->
                     </b-list-group-item>
                 </b-collapse>
                 <b-button variant="link" block v-b-toggle.collapse3 class="py-3 d-block text-gray text-left">
-                    Learn about <strong>Rewards</strong> <i class="fas fa-question-circle ml-2"></i>
+                    <i class="fas fa-question-circle mr-1"></i>
+                    Learn about <strong>Rewards</strong>
                 </b-button>
                 <b-collapse id="collapse3" class="w-100">
                     <b-list-group-item :key="key" v-for="(item, key) of contentRewards" class="bg-darker">
@@ -56,8 +76,8 @@
                     </b-list-group-item>
                 </b-collapse>
                 <b-button variant="link" block v-b-toggle.collapse1 class="py-3 d-block text-gray text-left">
+                    <i class="fas fa-question-circle mr-1"></i>
                     Learn about <strong>Wallets</strong>
-                    <i class="fas fa-question-circle ml-2"></i>
                 </b-button>
                 <b-collapse id="collapse1" class="w-100">
                     <b-list-group class="mb-3">
@@ -74,8 +94,9 @@
                                 {
                                     icon: 'fas fa-save',
                                     color: '#666',
-                                    label: 'Virtual Wallets',
-                                    description: 'Onboard players in your campaign and qualify them for quests.',
+                                    label: 'Identity &amp; Events',
+                                    description:
+                                        'Onboard your own users in your campaign and use in-game events to build quests.',
                                 },
                                 {
                                     icon: 'fas fa-tags',
@@ -108,7 +129,8 @@
                     </b-list-group>
                 </b-collapse>
                 <b-button variant="link" block v-b-toggle.collapse4 class="py-3 d-block text-gray text-left">
-                    Learn about <strong>Integrations</strong> <i class="fas fa-question-circle ml-2"></i>
+                    <i class="fas fa-question-circle mr-1"></i>
+                    Learn about <strong>Integrations</strong>
                 </b-button>
                 <b-collapse id="collapse4" class="w-100">
                     <b-list-group-item
@@ -118,7 +140,7 @@
                                 icon: 'fab fa-discord',
                                 color: '#7289da',
                                 label: 'Discord',
-                                description: 'Create quests for Discord server activity	',
+                                description: 'Show campaign activity in discord and onboard Discord members.',
                             },
                             {
                                 icon: 'fab fa-twitter',
@@ -144,14 +166,14 @@
                         <p class="text-muted">
                             {{ item.description }}
                         </p>
-                        <!-- <b-link v-b-tooltip :title="item.description" class="ml-auto">
-                                    <i class="fas fa-question-circle text-dark mr-1"></i>
-                                </b-link> -->
                     </b-list-group-item>
                 </b-collapse>
-            </b-row>
-        </b-card>
-    </div>
+            </b-col>
+            <b-col md="6">
+                <div id="thx-widget-preview" class="h-100" style="min-height: 750px; max-height: 750px"></div>
+            </b-col>
+        </b-row>
+    </b-container>
 </template>
 
 <script lang="ts">
@@ -159,7 +181,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { initWidget } from '../utils/widget';
 import { TBrand } from '../store/modules/brands';
-import { API_URL, PUBLIC_URL } from '@thxnetwork/dashboard/config/secrets';
+import { API_URL, PUBLIC_URL, WIDGET_URL } from '@thxnetwork/dashboard/config/secrets';
 import { format, formatDistance } from 'date-fns';
 import axios, { AxiosError } from 'axios';
 import { TPoolTransferResponse } from '@thxnetwork/types/interfaces';
@@ -222,6 +244,12 @@ export default class WidgetPreviewView extends Vue {
     userManager = new UserManager(config);
     contentQuests = contentQuests;
     contentRewards = contentRewards;
+    title = '';
+    slug = '';
+
+    get campaignUrl() {
+        return `${WIDGET_URL}/c/${this.slug}`;
+    }
 
     get isExpired() {
         if (!this.poolTransfer) return;
@@ -236,9 +264,6 @@ export default class WidgetPreviewView extends Vue {
               })
             : 'expired';
     }
-
-    title = '';
-
     async mounted() {
         // Ping mixpanel that the page is visited
         this.userManager.getUser().then((user) => {
@@ -246,10 +271,12 @@ export default class WidgetPreviewView extends Vue {
         });
 
         // Inject the widget
-        initWidget(this.$route.params.poolId);
+        initWidget(this.$route.params.poolId, '#thx-widget-preview');
 
         const { data } = await axios.get(API_URL + '/v1/widget/' + this.$route.params.poolId);
+        debugger;
         this.title = data.title;
+        this.slug = data.slug;
         this.logoImgUrl = data.logoUrl || this.defaultLogoImgUrl;
 
         this.setBackground();

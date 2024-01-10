@@ -14,6 +14,7 @@ import DeletePoolTransfer from './transfers/delete.controller';
 import CreatePoolSubscription from './subscriptions/post.controller';
 import ReadPoolSubscription from './subscriptions/get.controller';
 import ListPoolQuests from './quests/list.controller';
+import CreatePoolQuests from './quests/post.controller';
 import ListPoolQuestEntries from './quests/entries/list.controller';
 import ListPoolParticipants from './participants/list.controller';
 import CreatePoolCollaborator from './collaborators/post.controller';
@@ -25,6 +26,7 @@ import ListPoolTransfer from './transfers/list.controller';
 import ListPoolEvents from './events/list.controller';
 import UpdatePool from './patch.controller';
 import ListPoolWallets from './wallets/list.controller';
+import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
 
@@ -125,6 +127,16 @@ router.get(
     assertPoolAccess,
     assertRequestInput(ListPoolQuests.validation),
     ListPoolQuests.controller,
+);
+router.post(
+    '/:id/quests',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read', 'pools:write']),
+    upload.single('file'),
+    assertPoolAccess,
+    assertRequestInput(CreatePoolQuests.validation),
+    CreatePoolQuests.controller,
 );
 
 router.get(

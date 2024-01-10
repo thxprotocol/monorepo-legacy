@@ -9,59 +9,82 @@ import { Event } from '../models/Event';
 import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
 import { WalletDocument } from '../models/Wallet';
 
-export default {
-    async create(pool: AssetPoolDocument, payload: Partial<TMilestoneReward>) {
-        return await MilestoneReward.create({
-            poolId: String(pool._id),
-            uuid: db.createUUID(),
-            ...payload,
-        });
-    },
+async function create(pool: AssetPoolDocument, payload: Partial<TMilestoneReward>) {
+    return await MilestoneReward.create({
+        poolId: String(pool._id),
+        uuid: db.createUUID(),
+        ...payload,
+    });
+}
 
-    async edit(uuid: string, payload: Partial<TMilestoneReward>) {
-        const reward = await MilestoneReward.findById(uuid);
-        if (!reward) throw new NotFoundError('Cannot find Milestone Perk with this UUID');
+async function edit(uuid: string, payload: Partial<TMilestoneReward>) {
+    const reward = await MilestoneReward.findById(uuid);
+    if (!reward) throw new NotFoundError('Cannot find Milestone Perk with this UUID');
 
-        Object.keys(payload).forEach((key) => {
-            if (payload[key]) reward[key] = payload[key];
-        });
+    Object.keys(payload).forEach((key) => {
+        if (payload[key]) reward[key] = payload[key];
+    });
 
-        await reward.save();
-        return reward;
-    },
+    await reward.save();
+    return reward;
+}
 
-    async findByPool(assetPool: AssetPoolDocument, page: number, limit: number) {
-        const result = await paginatedResults(MilestoneReward, page, limit, {
-            poolId: assetPool._id,
-        });
-        result.results = result.results.map((r) => r.toJSON());
-        return result;
-    },
+async function findByPool(assetPool: AssetPoolDocument, page: number, limit: number) {
+    const result = await paginatedResults(MilestoneReward, page, limit, {
+        poolId: assetPool._id,
+    });
+    result.results = result.results.map((r) => r.toJSON());
+    return result;
+}
 
-    async validate(quest: MilestoneRewardDocument, wallet: WalletDocument) {
-        try {
-            const identity = await Identity.findOne({ poolId: quest.poolId, sub: wallet.sub });
-            if (!identity) {
-                throw new Error('No identity connected to this account');
-            }
-
-            const entries = await MilestoneRewardClaim.find({
-                milestoneRewardId: quest._id,
-                walletId: wallet._id,
-                isClaimed: true,
-            });
-            if (entries.length >= quest.limit) {
-                throw new Error('Quest entry limit has been reached');
-            }
-
-            const events = await Event.find({ identityId: identity._id, poolId: quest.poolId });
-            if (entries.length >= events.length) {
-                throw new Error('Insufficient custom events found for this quest');
-            }
-
-            return { result: true, reason: '' };
-        } catch (error) {
-            return { result: false, reason: error.message };
+async function validate(quest: MilestoneRewardDocument, wallet: WalletDocument) {
+    try {
+        const identity = await Identity.findOne({ poolId: quest.poolId, sub: wallet.sub });
+        if (!identity) {
+            throw new Error('No identity connected to this account');
         }
-    },
-};
+
+        const entries = await MilestoneRewardClaim.find({
+            milestoneRewardId: quest._id,
+            walletId: wallet._id,
+            isClaimed: true,
+        });
+        if (entries.length >= quest.limit) {
+            throw new Error('Quest entry limit has been reached');
+        }
+
+        const events = await Event.find({ identityId: identity._id, poolId: quest.poolId });
+        if (entries.length >= events.length) {
+            throw new Error('Insufficient custom events found for this quest');
+        }
+
+        return { result: true, reason: '' };
+    } catch (error) {
+        return { result: false, reason: error.message };
+    }
+}
+
+async function findOne(quest: MilestoneRewardDocument, wallet?: WalletDocument) {
+    const entries = wallet
+        ? await MilestoneRewardClaim.find({
+              walletId: String(wallet._id),
+              milestoneRewardId: String(quest._id),
+              isClaimed: true,
+          })
+        : [];
+    const identities = wallet ? await Identity.find({ poolId: quest.poolId, sub: wallet.sub }) : [];
+    const identityIds = identities.map(({ _id }) => String(_id));
+    const events = identityIds.length ? await Event.find({ name: quest.eventName, identityId: identityIds }) : [];
+    const pointsAvailable = (quest.limit - entries.length) * quest.amount;
+
+    return {
+        ...quest.toJSON(),
+        limit: quest.limit,
+        amount: quest.amount,
+        pointsAvailable,
+        claims: entries,
+        events,
+    };
+}
+
+export default { findOne, validate, create, edit, findByPool };

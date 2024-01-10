@@ -57,14 +57,6 @@
                                     :expiryDate="expiryDate"
                                     @change-date="expiryDate = $event"
                                 />
-                                <BaseCardTokenGating
-                                    class="mb-3"
-                                    :pool="pool"
-                                    :perk="reward"
-                                    @change-contract-address="tokenGatingContractAddress = $event"
-                                    @change-amount="tokenGatingAmount = $event"
-                                    @change-variant="tokenGatingVariant = $event"
-                                />
                                 <b-form-group>
                                     <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
                                 </b-form-group>
@@ -118,8 +110,7 @@ import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
-import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
-import { TokenGatingVariant, RewardVariant } from '@thxnetwork/types/enums';
+import { RewardVariant } from '@thxnetwork/types/enums';
 import type { TAccount, TPool, TCouponReward } from '@thxnetwork/types/interfaces';
 import { CSVParser } from '../../utils/csv';
 import { format } from 'date-fns';
@@ -129,7 +120,6 @@ import { format } from 'date-fns';
         BaseModal,
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
-        BaseCardTokenGating,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -154,9 +144,6 @@ export default class ModalRewardCustomCreate extends Vue {
     image = '';
     webshopURL = '';
     isPromoted = false;
-    tokenGatingVariant = TokenGatingVariant.ERC721;
-    tokenGatingContractAddress = '';
-    tokenGatingAmount = 0;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
@@ -186,11 +173,6 @@ export default class ModalRewardCustomCreate extends Vue {
         this.expiryDate = this.reward ? this.reward.expiryDate : this.expiryDate;
         this.image = this.reward ? this.reward.image : this.image;
         this.isPromoted = this.reward ? this.reward.isPromoted : this.isPromoted;
-        this.tokenGatingContractAddress = this.reward
-            ? this.reward.tokenGatingContractAddress
-            : this.tokenGatingContractAddress;
-        this.tokenGatingVariant = this.reward ? this.reward.tokenGatingVariant : this.tokenGatingVariant;
-        this.tokenGatingAmount = this.reward ? this.reward.tokenGatingAmount : this.tokenGatingAmount;
     }
 
     onChangePointPrice(price: number) {
@@ -212,9 +194,6 @@ export default class ModalRewardCustomCreate extends Vue {
             webshopURL: this.webshopURL,
             pointPrice: this.pointPrice,
             isPromoted: this.isPromoted,
-            tokenGatingContractAddress: this.tokenGatingContractAddress,
-            tokenGatingVariant: this.tokenGatingVariant,
-            tokenGatingAmount: this.tokenGatingAmount,
         };
 
         this.$store.dispatch(`couponRewards/${this.reward ? 'update' : 'create'}`, payload).then(() => {

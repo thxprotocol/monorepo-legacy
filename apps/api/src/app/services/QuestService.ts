@@ -1,6 +1,6 @@
 import { JobType, QuestVariant } from '@thxnetwork/types/enums';
 import { TAccount, TBrand, TQuest, TQuestEntry, TWallet, TWidget } from '@thxnetwork/types/interfaces';
-import { DailyReward } from './DailyRewardService';
+import DailyRewardService, { DailyReward } from './DailyRewardService';
 import { ReferralReward, ReferralRewardDocument } from '../models/ReferralReward';
 import QuestSocialService, { PointReward } from './PointRewardService';
 import { Web3Quest } from '../models/Web3Quest';
@@ -28,6 +28,13 @@ import { WalletDocument } from '../models/Wallet';
 import { PointRewardDocument } from '../models/PointReward';
 import MilestoneRewardService from './MilestoneRewardService';
 import PointRewardService from './PointRewardService';
+import ReferralRewardService from './ReferralRewardService';
+import QuestWeb3Service from './QuestWeb3Service';
+import LockService from './LockService';
+import { logger } from '../util/logger';
+import { GitcoinQuest } from '../models/GitcoinQuest';
+import { GitcoinQuestEntry } from '../models/GitcoinQuestEntry';
+import QuestGitcoinService from './QuestGitcoinService';
 
 type TValidationResult = {
     result: boolean;
@@ -82,6 +89,7 @@ const getAvailabilityQuestDaily = (quest, account, wallet) =>
 const questMap: {
     [variant: number]: {
         models: { quest: any; entry: any };
+        service: any;
         methods: {
             getData: (quest: TQuest, ...any) => Partial<TQuestEntry>;
             getAmount: (quest, account, wallet) => Promise<number>;
@@ -92,6 +100,7 @@ const questMap: {
 } = {
     [QuestVariant.Daily]: {
         models: { quest: DailyReward, entry: DailyRewardClaim },
+        service: DailyRewardService,
         methods: {
             getData: getDataQuestDaily,
             getAmount: getPointsDailyQuest,
@@ -101,6 +110,7 @@ const questMap: {
     },
     [QuestVariant.Invite]: {
         models: { quest: ReferralReward, entry: ReferralRewardClaim },
+        service: ReferralRewardService,
         methods: {
             getAmount: getPointsQuest,
             getValidationResult: isNotImplemented,
@@ -110,6 +120,7 @@ const questMap: {
     },
     [QuestVariant.Twitter]: {
         models: { quest: PointReward, entry: PointRewardClaim },
+        service: PointRewardService,
         methods: {
             getAmount: getPointsSocialQuest,
             getValidationResult: isValidSocialQuest,
@@ -119,6 +130,7 @@ const questMap: {
     },
     [QuestVariant.Discord]: {
         models: { quest: PointReward, entry: PointRewardClaim },
+        service: PointRewardService,
         methods: {
             getAmount: getPointsSocialQuest,
             getValidationResult: isValidSocialQuest,
@@ -128,6 +140,7 @@ const questMap: {
     },
     [QuestVariant.YouTube]: {
         models: { quest: PointReward, entry: PointRewardClaim },
+        service: PointRewardService,
         methods: {
             getAmount: getPointsSocialQuest,
             getValidationResult: isValidSocialQuest,
@@ -137,6 +150,7 @@ const questMap: {
     },
     [QuestVariant.Custom]: {
         models: { quest: MilestoneReward, entry: MilestoneRewardClaim },
+        service: MilestoneRewardService,
         methods: {
             getAmount: getPointsQuest,
             getValidationResult: isValidCustomQuest,
@@ -146,6 +160,17 @@ const questMap: {
     },
     [QuestVariant.Web3]: {
         models: { quest: Web3Quest, entry: Web3QuestClaim },
+        service: QuestWeb3Service,
+        methods: {
+            getAmount: getPointsQuest,
+            getValidationResult: isValidCustomQuest,
+            getData: getDataQuestWeb3,
+            isAvailable: getAvailability,
+        },
+    },
+    [QuestVariant.Gitcoin]: {
+        models: { quest: GitcoinQuest, entry: GitcoinQuestEntry },
+        service: QuestGitcoinService,
         methods: {
             getAmount: getPointsQuest,
             getValidationResult: isValidCustomQuest,
@@ -306,5 +331,35 @@ function findById(variant: QuestVariant, questId: string) {
     return model.findById(questId);
 }
 
+async function list(pool: AssetPoolDocument, wallet?: WalletDocument) {
+    const questVariants = Object.keys(QuestVariant).filter((v) => !isNaN(Number(v)));
+    const callback: any = async (variant: QuestVariant) => {
+        const { service, models } = questMap[variant];
+        const quests = await models.quest.find({
+            poolId: pool._id,
+            isPublished: true,
+            variant,
+            $or: [
+                // Include quests with expiryDate less than or equal to now
+                { expiryDate: { $exists: true, $gte: new Date() } },
+                // Include quests with no expiryDate
+                { expiryDate: { $exists: false } },
+            ],
+        });
+        return await Promise.all(
+            quests.map(async (quest: TQuest) => {
+                try {
+                    const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : true;
+                    const q = await service.findOne(quest, wallet);
+                    return { ...q, isLocked };
+                } catch (error) {
+                    logger.error(error);
+                }
+            }),
+        );
+    };
+    return await Promise.all(questVariants.map(callback));
+}
+
 export { questMap };
-export default { getAmount, isAvailable, create, update, complete, validate, findById };
+export default { list, getAmount, isAvailable, create, update, complete, validate, findById };

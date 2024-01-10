@@ -5,6 +5,7 @@ import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { PointReward } from '@thxnetwork/api/models/PointReward';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
+import { GitcoinQuest } from '@thxnetwork/api/models/GitcoinQuest';
 
 const validation = [
     query('page').isInt(),
@@ -28,6 +29,7 @@ const controller = async (req: Request, res: Response) => {
         { $unionWith: { coll: PointReward.collection.name } },
         { $unionWith: { coll: MilestoneReward.collection.name } },
         { $unionWith: { coll: Web3Quest.collection.name } },
+        { $unionWith: { coll: GitcoinQuest.collection.name } },
         { $match },
     ];
     const arr = await Promise.all(

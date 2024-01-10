@@ -1,6 +1,7 @@
 import type {
     TAccount,
     TEvent,
+    TPaginationResult,
     TPool,
     TPoolSettings,
     TPoolTransferResponse,
@@ -14,6 +15,7 @@ import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { QuestVariant } from '@thxnetwork/common/lib/types';
+import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 
 export interface IPoolAnalytic {
     _id: string;
@@ -230,12 +232,12 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
-    setQuests({ poolId, result }: { poolId: string; result: { results: TQuest[]; limit: number; page: number } }) {
+    setQuests({ poolId, result }: { poolId: string; result: { results: TQuest[] } & TPaginationResult }) {
         Vue.set(this._quests, poolId, result);
     }
 
     @Mutation
-    setEvents({ poolId, result }: { poolId: string; result: { results: TEvent[]; limit: number; page: number } }) {
+    setEvents({ poolId, result }: { poolId: string; result: { results: TEvent[] } & TPaginationResult }) {
         Vue.set(this._events, poolId, result);
     }
 
@@ -270,6 +272,19 @@ class PoolModule extends VuexModule {
             params: { page, limit },
         });
         this.context.commit('setEvents', { poolId: pool._id, result: data });
+    }
+
+    @Action
+    async createQuest(payload: TQuest) {
+        const data = prepareFormDataForUpload(payload);
+        const response = await axios({
+            method: 'POST',
+            url: `/pools/${payload.poolId}/quests`,
+            headers: { 'X-PoolId': payload.poolId },
+            data,
+        });
+        console.log(response.data);
+        debugger;
     }
 
     @Action({ rawError: true })
@@ -436,6 +451,7 @@ class PoolModule extends VuexModule {
         });
         return data;
     }
+
     @Action({ rawError: true })
     async create(payload: {
         network: number;

@@ -1,6 +1,6 @@
-import { TBasePerk } from './BaseReward';
+import { TBaseReward } from './BaseReward';
 
-export type TDiscordRoleReward = TBasePerk & {
+export type TDiscordRoleReward = TBaseReward & {
     discordRoleId: string;
 };
 

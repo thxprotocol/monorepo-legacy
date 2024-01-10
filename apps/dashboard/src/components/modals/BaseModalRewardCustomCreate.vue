@@ -56,14 +56,6 @@
                             @change-date="expiryDate = $event"
                         />
                         <BaseCardRewardLimits class="mb-3" :limit="limit" @change-reward-limit="limit = $event" />
-                        <BaseCardTokenGating
-                            class="mb-3"
-                            :pool="pool"
-                            :perk="reward"
-                            @change-contract-address="tokenGatingContractAddress = $event"
-                            @change-amount="tokenGatingAmount = $event"
-                            @change-variant="tokenGatingVariant = $event"
-                        />
                         <b-form-group>
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
                         </b-form-group>
@@ -93,9 +85,8 @@ import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
-import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
 import type { TCustomReward, TAccount, TPool, TWebhook } from '@thxnetwork/types/interfaces';
-import { TokenGatingVariant, RewardVariant } from '@thxnetwork/types/enums';
+import { RewardVariant } from '@thxnetwork/types/enums';
 import { TWebhookState } from '@thxnetwork/dashboard/store/modules/webhooks';
 
 @Component({
@@ -103,7 +94,6 @@ import { TWebhookState } from '@thxnetwork/dashboard/store/modules/webhooks';
         BaseModal,
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
-        BaseCardTokenGating,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -133,9 +123,6 @@ export default class ModalRewardCustomCreate extends Vue {
     imageFile: File | null = null;
     image = '';
     isPromoted = false;
-    tokenGatingVariant = TokenGatingVariant.ERC721;
-    tokenGatingContractAddress = '';
-    tokenGatingAmount = 0;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
@@ -158,12 +145,6 @@ export default class ModalRewardCustomCreate extends Vue {
         this.claimLimit = this.reward ? this.reward.claimLimit : this.claimLimit;
         this.image = this.reward ? this.reward.image : '';
         this.isPromoted = this.reward ? this.reward.isPromoted : false;
-        this.tokenGatingContractAddress = this.reward
-            ? this.reward.tokenGatingContractAddress
-            : this.tokenGatingContractAddress;
-        this.tokenGatingVariant = this.reward ? this.reward.tokenGatingVariant : this.tokenGatingVariant;
-        this.tokenGatingAmount = this.reward ? this.reward.tokenGatingAmount : this.tokenGatingAmount;
-
         this.$store.dispatch('webhooks/list', this.pool).then(() => {
             this.webhook = this.webhooks[this.pool._id][this.webhookId];
         });
@@ -204,9 +185,6 @@ export default class ModalRewardCustomCreate extends Vue {
             limit: this.limit,
             pointPrice: this.pointPrice,
             isPromoted: this.isPromoted,
-            tokenGatingContractAddress: this.tokenGatingContractAddress,
-            tokenGatingVariant: this.tokenGatingVariant,
-            tokenGatingAmount: this.tokenGatingAmount,
         };
 
         this.$store.dispatch(`rewards/${this.reward ? 'update' : 'create'}`, payload).then(() => {

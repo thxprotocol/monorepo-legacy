@@ -29,6 +29,7 @@ export * from './Client';
 export * from './Interaction';
 export * from './Webhook';
 export * from './Web3Quest';
+export * from './GitcoinQuest';
 export * from './Collaborator';
 export * from './CustomReward';
 export * from './CouponReward';

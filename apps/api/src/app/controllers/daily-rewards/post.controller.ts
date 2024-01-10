@@ -7,9 +7,9 @@ import QuestService from '@thxnetwork/api/services/QuestService';
 import { QuestVariant } from '@thxnetwork/common/lib/types';
 
 const validation = [
-    body('index').isInt(),
-    body('title').isString(),
-    body('description').isString(),
+    body('index').optional().isInt(),
+    body('title').optional().isString(),
+    body('description').optional().isString(),
     body('isPublished')
         .optional()
         .isBoolean()
@@ -20,6 +20,7 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('amounts')
+        .optional()
         .custom((amounts) => {
             for (const amount of JSON.parse(amounts)) {
                 if (isNaN(amount)) {
@@ -36,11 +37,18 @@ const validation = [
         .customSanitizer((infoLinks) => {
             return JSON.parse(infoLinks).filter((link: TInfoLink) => link.label.length && isValidUrl(link.url));
         }),
+    body('locks')
+        .optional()
+        .custom((value) => {
+            const locks = JSON.parse(value);
+            return Array.isArray(locks);
+        })
+        .customSanitizer((locks) => JSON.parse(locks)),
 ];
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');
-    const { title, description, amounts, infoLinks, eventName, isPublished, expiryDate } = req.body;
+    const { title, description, amounts, infoLinks, eventName, isPublished, locks, expiryDate } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const quest = await QuestService.create(QuestVariant.Daily, poolId, {
         title,
@@ -51,6 +59,7 @@ const controller = async (req: Request, res: Response) => {
         eventName,
         isPublished,
         expiryDate,
+        locks,
     });
 
     res.status(201).json(quest);

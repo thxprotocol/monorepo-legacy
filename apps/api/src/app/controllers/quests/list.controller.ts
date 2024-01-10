@@ -1,159 +1,36 @@
-import jwt_decode from 'jwt-decode';
 import { Request, Response } from 'express';
-import { PointReward, PointRewardDocument } from '@thxnetwork/api/models/PointReward';
-import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
-import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
-import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
-import { DailyReward } from '@thxnetwork/api/models/DailyReward';
-import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
-import { Web3QuestClaim } from '@thxnetwork/api/models/Web3QuestClaim';
-import { TBaseReward } from '@thxnetwork/types/interfaces';
-import { Event } from '@thxnetwork/api/models/Event';
-import { Identity, IdentityDocument } from '@thxnetwork/api/models/Identity';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
+import jwt_decode from 'jwt-decode';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import DailyRewardClaimService, { ONE_DAY_MS } from '@thxnetwork/api/services/DailyRewardClaimService';
-import WalletService from '@thxnetwork/api/services/WalletService';
-import DailyRewardService from '@thxnetwork/api/services/DailyRewardService';
-import PointRewardService from '@thxnetwork/api/services/PointRewardService';
+import QuestService from '@thxnetwork/api/services/QuestService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
-const getDefaults = ({ _id, index, title, description, infoLinks, uuid, image, expiryDate }: TBaseReward) => ({
-    _id,
-    index,
-    title,
-    description,
-    infoLinks,
-    image,
-    uuid,
-    expiryDate,
-});
+const getToken = (header: string): { sub: string } => {
+    if (!header || !header.startsWith('Bearer ')) return;
+    return jwt_decode(header.split(' ')[1]);
+};
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Quests']
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const query = {
-        poolId: pool._id,
-        isPublished: true,
-        $or: [
-            // Include quests with expiryDate less than or equal to now
-            { expiryDate: { $exists: true, $gte: new Date() } },
-            // Include quests with no expiryDate
-            { expiryDate: { $exists: false } },
-        ],
-    };
-    const models = [ReferralReward, PointReward, MilestoneReward, DailyReward, Web3Quest];
-    const [inviteQuests, socialQuests, customQuests, dailyQuests, web3Quests] = await Promise.all(
-        models.map(async (model: any) => await model.find(query)),
-    );
+    if (!pool) throw new NotFoundError('Campaign not found.');
 
-    let wallet: WalletDocument,
-        sub: string,
-        identities: IdentityDocument[] = [];
-
-    // This endpoint is public so we do not get req.auth populated and decode the token ourselves
-    // when the request is made with an authorization header to obtain the sub.
-    const authHeader = req.header('authorization');
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-        const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
-        sub = token.sub;
-        wallet = await WalletService.findPrimary(sub, pool.chainId);
-        identities = await Identity.find({ poolId: pool._id, sub });
-    }
-
-    const dailyQuestPromises = dailyQuests.map(async (r) => {
-        const validationResult = wallet ? await DailyRewardClaimService.validate(r, wallet) : { result: true };
-        const validClaims = wallet ? await DailyRewardClaimService.findByWallet(r, wallet) : [];
-        const claimAgainTime = validClaims.length ? new Date(validClaims[0].createdAt).getTime() + ONE_DAY_MS : null;
-        const now = Date.now();
-        const defaults = getDefaults(r);
-        const pointsAvailable = await DailyRewardService.getPointsAvailable(r, validClaims);
-
-        return {
-            ...defaults,
-            amounts: r.amounts,
-            pointsAvailable,
-            isDisabled: !validationResult.result,
-            claims: validClaims,
-            claimAgainDuration:
-                claimAgainTime && claimAgainTime - now > 0 ? Math.floor((claimAgainTime - now) / 1000) : null, // Convert and floor to S,
-        };
-    });
-
-    const customQuestPromises = customQuests.map(async (r) => {
-        const defaults = getDefaults(r);
-        const claims = wallet
-            ? await MilestoneRewardClaim.find({
-                  walletId: String(wallet._id),
-                  milestoneRewardId: String(r._id),
-                  isClaimed: true,
-              })
-            : [];
-        const identityIds = identities.map(({ _id }) => String(_id));
-        const events = identityIds.length ? await Event.find({ name: r.eventName, identityId: identityIds }) : [];
-        const pointsAvailable = (r.limit - claims.length) * r.amount;
-
-        return {
-            ...defaults,
-            limit: r.limit,
-            amount: r.amount,
-            pointsAvailable,
-            claims,
-            events,
-        };
-    });
-
-    const inviteQuestPromises = inviteQuests.map((r) => {
-        const defaults = getDefaults(r);
-        return {
-            ...defaults,
-            amount: r.amount,
-            pointsAvailable: r.amount,
-            pathname: r.pathname,
-            successUrl: r.successUrl,
-        };
-    });
-
-    const web3QuestPromises = web3Quests.map(async (r) => {
-        const isClaimed = wallet
-            ? await Web3QuestClaim.exists({
-                  web3QuestId: r._id,
-                  $or: [{ sub }, { walletId: wallet._id }],
-              })
-            : false;
-        const defaults = getDefaults(r);
-        return {
-            ...defaults,
-            amount: r.amount,
-            pointsAvailable: r.amount,
-            contracts: r.contracts,
-            methodName: r.methodName,
-            threshold: r.threshold,
-            isClaimed,
-        };
-    });
-
-    const [daily, custom, invite, web3] = await Promise.all([
-        await Promise.all(dailyQuestPromises),
-        await Promise.all(customQuestPromises),
-        await Promise.all(inviteQuestPromises),
-        await Promise.all(web3QuestPromises),
-    ]);
+    // This endpoint is public so we do not get req.auth populated
+    // so we need to decode the auth header manually when it is present
+    const token = getToken(req.header('authorization'));
+    const sub = token && token.sub;
+    const wallet = sub && (await SafeService.findPrimary(sub, pool.chainId));
+    const [daily, invite, twitter, discord, youtube, custom, web3, gitcoin] = await QuestService.list(pool, wallet);
 
     res.json({
         daily,
         custom,
         invite,
-        social: socialQuests.map((q: PointRewardDocument) => ({
-            ...getDefaults(q),
-            amount: q.amount,
-            platform: q.platform,
-            interaction: q.interaction,
-            content: q.content,
-            contentMetadata: q.contentMetadata,
-            pointsAvailable: q.amount,
-            restartDates: PointRewardService.getRestartDates(q),
-        })),
+        twitter,
+        discord,
+        youtube,
         web3,
+        gitcoin,
     });
 };
 

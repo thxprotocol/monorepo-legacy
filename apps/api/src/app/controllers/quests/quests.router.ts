@@ -9,6 +9,7 @@ import routerQuestSocial from './social/social.router';
 
 import CreateQuestCustomClaim from './custom/claim/post.controller';
 import CreateQuestWeb3Claim from './web3/complete/post.controller';
+import CreateQuestGitcoinEntry from './gitcoin/entry/post.controller';
 import rateLimit from 'express-rate-limit';
 import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 
@@ -30,5 +31,6 @@ router.use(checkJwt).use(corsHandler).use('/social', routerQuestSocial);
 router.use(checkJwt).use(corsHandler).post('/daily/:id/claim', CreateQuestDailyClaim.controller);
 router.use(checkJwt).use(corsHandler).post('/custom/claims/:uuid/collect', CreateQuestCustomClaim.controller);
 router.use(checkJwt).use(corsHandler).post('/web3/:uuid/claim', CreateQuestWeb3Claim.controller);
+router.use(checkJwt).use(corsHandler).post('/gitcoin/:uuid/entry', CreateQuestGitcoinEntry.controller);
 
 export default router;

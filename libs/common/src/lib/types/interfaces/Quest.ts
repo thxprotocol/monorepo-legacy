@@ -9,11 +9,14 @@ import {
     TPointRewardClaim,
     TMilestoneRewardClaim,
     TWeb3QuestClaim,
+    TGitcoinQuest,
+    TGitcoinQuestEntry,
 } from '..';
-export type TQuest = TDailyReward | TReferralReward | TPointReward | TMilestoneReward | TWeb3Quest;
+export type TQuest = TDailyReward | TReferralReward | TPointReward | TMilestoneReward | TWeb3Quest | TGitcoinQuest;
 export type TQuestEntry =
     | TDailyRewardClaim
     | TReferralRewardClaim
     | TPointRewardClaim
     | TMilestoneRewardClaim
-    | TWeb3QuestClaim;
+    | TWeb3QuestClaim
+    | TGitcoinQuestEntry;

@@ -1,7 +1,7 @@
-import { TBaseReward } from './BaseReward';
+import { TBaseQuest } from './BaseReward';
 import { RewardConditionInteraction, RewardConditionPlatform, TPointRewardClaim } from '@thxnetwork/types/';
 
-export type TPointReward = TBaseReward & {
+export type TPointReward = TBaseQuest & {
     amount: number;
     platform: RewardConditionPlatform;
     interaction: RewardConditionInteraction;

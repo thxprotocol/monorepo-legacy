@@ -1,6 +1,6 @@
-import { TBaseReward } from './BaseReward';
+import { TBaseQuest } from './BaseReward';
 
-export type TMilestoneReward = TBaseReward & {
+export type TMilestoneReward = TBaseQuest & {
     amount: number;
     limit: number;
     eventName: string;
