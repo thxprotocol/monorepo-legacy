@@ -37,6 +37,7 @@ const validation = [
             return JSON.parse(infoLinks).filter((link: TInfoLink) => link.label.length && isValidUrl(link.url));
         }),
     body('locks')
+        .optional()
         .custom((value) => {
             const locks = JSON.parse(value);
             return Array.isArray(locks);

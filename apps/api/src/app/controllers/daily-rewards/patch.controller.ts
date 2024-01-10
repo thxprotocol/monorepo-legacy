@@ -16,7 +16,6 @@ const controller = async (req: Request, res: Response) => {
 
     const image = req.file && (await ImageService.upload(req.file));
     const { title, description, amounts, infoLinks, eventName, index, isPublished, locks, expiryDate } = req.body;
-    console.log(locks);
 
     quest = await QuestService.update(QuestVariant.Daily, req.params.id, {
         title,

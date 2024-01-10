@@ -1,19 +1,15 @@
 import { Request, Response } from 'express';
-import { BigNumber, ethers } from 'ethers';
 import { body, param } from 'express-validator';
 import { validate } from 'uuid';
-import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
-import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { recoverSigner } from '@thxnetwork/api/util/network';
 import { Web3QuestClaim } from '@thxnetwork/api/models/Web3QuestClaim';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
-import { chainList } from '@thxnetwork/common';
-import { logger } from '@thxnetwork/api/util/logger';
 import { QuestVariant } from '@thxnetwork/common/lib/types';
+import { GitcoinQuest } from '@thxnetwork/api/models/GitcoinQuest';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import { GitcoinQuest } from '@thxnetwork/api/models/GitcoinQuest';
 import GitcoinService from '@thxnetwork/api/services/GitcoinService';
 
 const validation = [
@@ -48,7 +44,7 @@ const controller = async (req: Request, res: Response) => {
     if (error) return res.json({ error });
     if (score < quest.score)
         return res.json({ error: `Your score ${score || 0}/100 does not meet the minimum of ${quest.score}/100.` });
-    END;
+    // END;
 
     const account = await AccountProxy.getById(req.auth.sub);
     const entry = await QuestService.complete(QuestVariant.Gitcoin, quest.amount, pool, quest, account, wallet, {

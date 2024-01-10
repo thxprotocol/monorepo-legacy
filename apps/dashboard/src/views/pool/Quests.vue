@@ -251,9 +251,9 @@ export const contentQuests = {
         color: '#3C3C3D',
     },
     'gitcoin-quest': {
-        tag: 'Unique Humanity Quest',
+        tag: 'Gitcoin Quest',
         icon: 'fas fa-heartbeat',
-        title: "Use Gitcoin's Unique Humanity scorer",
+        title: 'Use Gitcoin Passport for sybil resistance',
         description: 'Use this quest to verify if wallets are owned by real humans.',
         list: ['Increase Sybil Resistance', 'Gitcoin Unique Humanity Scorer', 'Tap into new ecosystems'],
         docsUrl: 'https://docs.thx.network/user-guides/quests',
