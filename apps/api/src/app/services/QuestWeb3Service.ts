@@ -5,7 +5,7 @@ import { Web3QuestClaim } from '../models/Web3QuestClaim';
 async function findOne(quest: Web3QuestDocument, wallet?: WalletDocument) {
     const isClaimed = wallet
         ? await Web3QuestClaim.exists({
-              web3QuestId: quest._id,
+              questId: quest._id,
               $or: [{ sub: wallet.sub }, { walletId: wallet._id }],
           })
         : false;

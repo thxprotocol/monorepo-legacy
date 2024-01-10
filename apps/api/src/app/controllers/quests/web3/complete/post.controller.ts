@@ -38,7 +38,7 @@ const controller = async (req: Request, res: Response) => {
     const provider = new ethers.providers.JsonRpcProvider(rpc);
     const address = recoverSigner(req.body.message, req.body.signature);
     const isClaimed = await Web3QuestClaim.exists({
-        web3QuestId: quest._id,
+        questId: quest._id,
         $or: [{ sub: req.auth.sub }, { walletId: wallet._id }, { address }],
     });
     if (isClaimed) {
@@ -69,7 +69,7 @@ const controller = async (req: Request, res: Response) => {
 
     const account = await AccountProxy.getById(req.auth.sub);
     const entry = await QuestService.complete(QuestVariant.Web3, quest.amount, pool, quest, account, wallet, {
-        web3QuestId: quest._id,
+        questId: quest._id,
         chainId: req.body.chainId,
         address,
     });

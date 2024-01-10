@@ -6,7 +6,7 @@ export type Web3QuestClaimDocument = mongoose.Document & TWeb3QuestClaim;
 const schema = new mongoose.Schema(
     {
         poolId: String,
-        web3QuestId: String,
+        questId: String,
         sub: { type: String, index: 'hashed' },
         walletId: { type: String, index: 'hashed' },
         amount: Number,

@@ -45,7 +45,7 @@ async function validate(quest: MilestoneRewardDocument, wallet: WalletDocument) 
         }
 
         const entries = await MilestoneRewardClaim.find({
-            milestoneRewardId: quest._id,
+            questId: quest._id,
             walletId: wallet._id,
             isClaimed: true,
         });
@@ -68,7 +68,7 @@ async function findOne(quest: MilestoneRewardDocument, wallet?: WalletDocument) 
     const entries = wallet
         ? await MilestoneRewardClaim.find({
               walletId: String(wallet._id),
-              milestoneRewardId: String(quest._id),
+              questId: String(quest._id),
               isClaimed: true,
           })
         : [];

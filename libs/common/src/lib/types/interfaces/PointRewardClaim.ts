@@ -3,7 +3,7 @@ import { TWallet } from './Wallet';
 
 export type TPointRewardClaim = {
     _id: string;
-    pointRewardId: string;
+    questId: string;
     sub: string;
     walletId: string;
     amount: string;

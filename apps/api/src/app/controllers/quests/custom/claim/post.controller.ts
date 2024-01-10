@@ -26,7 +26,7 @@ const controller = async (req: Request, res: Response) => {
     if (!validationResult.result) return res.json({ error: validationResult.reason });
 
     const entry = await QuestService.complete(QuestVariant.Custom, quest.amount, pool, quest, account, wallet, {
-        milestoneRewardId: quest._id,
+        questId: quest._id,
         isClaimed: true,
     });
 

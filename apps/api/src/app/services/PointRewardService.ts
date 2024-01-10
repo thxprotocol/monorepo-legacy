@@ -93,7 +93,7 @@ function findByPool(pool: AssetPoolDocument, page = 1, limit = 5) {
 }
 
 async function findEntries(quest: PointRewardDocument) {
-    const entries = await PointRewardClaim.find({ pointRewardId: quest._id });
+    const entries = await PointRewardClaim.find({ questId: quest._id });
     const subs = entries.map((entry) => entry.sub);
     const accounts = await AccountProxy.getMany(subs);
 
@@ -125,7 +125,7 @@ async function isAvailable(quest: PointRewardDocument, account: TAccount, wallet
 
     // If none exsist the quest is available
     return !(await PointRewardClaim.exists({
-        pointRewardId: quest._id,
+        questId: quest._id,
         $or: ids,
     }));
 }
@@ -158,7 +158,7 @@ async function getPointsAvailable(quest: TPointReward, account: TAccount) {
     const { days, limit } = JSON.parse(quest.contentMetadata);
     const { start, end } = getRestartDates(quest);
     const claims = await PointRewardClaim.find({
-        pointRewardId: String(quest._id),
+        questId: String(quest._id),
         platformUserId: connectedAccount.userId,
         createdAt: {
             $gte: start,

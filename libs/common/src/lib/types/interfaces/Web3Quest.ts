@@ -9,7 +9,7 @@ export type TWeb3Quest = TBaseQuest & {
 };
 
 export type TWeb3QuestClaim = {
-    web3QuestId: string;
+    questId: string;
     sub: string;
     walletId: string;
     amount: number;

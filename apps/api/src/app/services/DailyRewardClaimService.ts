@@ -11,14 +11,14 @@ export const ONE_DAY_MS = 86400 * 1000; // 24 hours in milliseconds
 
 async function getLastEntry(wallet: WalletDocument, quest: DailyRewardDocument, start: number, end: number) {
     let lastEntry = await DailyRewardClaim.findOne({
-        dailyRewardId: quest._id,
+        questId: quest._id,
         walletId: wallet._id,
         createdAt: { $gt: new Date(start), $lt: new Date(end) },
     });
 
     if (!lastEntry) {
         lastEntry = await DailyRewardClaim.findOne({
-            dailyRewardId: quest._id,
+            questId: quest._id,
             walletId: wallet._id,
             createdAt: { $gt: new Date(start - ONE_DAY_MS), $lt: new Date(end - ONE_DAY_MS) },
         });
@@ -28,7 +28,7 @@ async function getLastEntry(wallet: WalletDocument, quest: DailyRewardDocument, 
 
 export default {
     create: (data: {
-        dailyRewardId: string;
+        questId: string;
         sub: string;
         walletId: string;
         amount?: number;
@@ -41,7 +41,7 @@ export default {
         return DailyRewardClaim.findOne({ uuid });
     },
     findByDailyReward: async (quest: DailyRewardDocument) => {
-        return await DailyRewardClaim.find({ dailyRewardId: quest._id });
+        return await DailyRewardClaim.find({ questId: quest._id });
     },
     findByWallet: async (quest: DailyRewardDocument, wallet: WalletDocument) => {
         const claims = [];
@@ -56,7 +56,7 @@ export default {
         while (lastEntry) {
             const timestamp = new Date(lastEntry.createdAt).getTime();
             lastEntry = await DailyRewardClaim.findOne({
-                dailyRewardId: quest._id,
+                questId: quest._id,
                 walletId: wallet._id,
                 createdAt: {
                     $gt: new Date(timestamp - ONE_DAY_MS * 2),
@@ -75,7 +75,7 @@ export default {
             end = now;
 
         const entry = await DailyRewardClaim.findOne({
-            dailyRewardId: quest._id,
+            questId: quest._id,
             walletId: wallet._id,
             createdAt: { $gt: new Date(start), $lt: new Date(end) },
         });
@@ -89,7 +89,7 @@ export default {
             end = now;
 
         const entry = await DailyRewardClaim.findOne({
-            dailyRewardId: quest._id,
+            questId: quest._id,
             walletId: wallet._id,
             createdAt: { $gt: new Date(start), $lt: new Date(end) },
         });

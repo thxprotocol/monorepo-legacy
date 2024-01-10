@@ -5,7 +5,7 @@ export type DailyRewardClaimDocument = mongoose.Document & TDailyRewardClaim;
 
 const schema = new mongoose.Schema(
     {
-        dailyRewardId: String,
+        questId: String,
         sub: String,
         walletId: { type: String, index: 'hashed' },
         uuid: String,

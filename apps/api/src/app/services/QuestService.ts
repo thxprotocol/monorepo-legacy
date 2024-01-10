@@ -55,6 +55,8 @@ const getPointsDailyQuest = async (quest, account, wallet) => {
     const amountIndex = claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;
     return quest.amounts[amountIndex];
 };
+const isValidGitcoinQuest = async (quest, account, wallet) =>
+    await QuestGitcoinService.validate(quest, account, wallet);
 const isValidSocialQuest = async (quest, account, wallet) => await QuestSocialService.validate(quest, account, wallet);
 const isValidCustomQuest = async (quest, account, wallet) => await MilestoneRewardService.validate(quest, wallet);
 const isValidDailyQuest = async (quest, account, wallet) => await DailyRewardClaimService.validate(quest, wallet);
@@ -63,20 +65,20 @@ const isNotImplemented = async (quest, account, wallet) => ({
     reason: 'Sorry, support not yet implemented...',
 });
 
-const getDataQuestDaily = (quest) => ({
-    dailyRewardId: String(quest._id),
-});
+const getData = (quest) => ({});
 const getDataQuestSocial = (quest: PointRewardDocument, platformUserId: string) => ({
-    pointRewardId: String(quest._id),
     platformUserId,
 });
 const getDataQuestCustom = (quest: PointRewardDocument) => ({
-    milestoneRewardId: String(quest._id),
     isClaimed: true,
 });
 
 const getDataQuestWeb3 = (quest, chainId, address) => ({
-    web3QuestId: quest._id,
+    chainId,
+    address,
+});
+
+const getDataQuestGitcoin = (quest, chainId, address) => ({
     chainId,
     address,
 });
@@ -102,7 +104,7 @@ const questMap: {
         models: { quest: DailyReward, entry: DailyRewardClaim },
         service: DailyRewardService,
         methods: {
-            getData: getDataQuestDaily,
+            getData,
             getAmount: getPointsDailyQuest,
             getValidationResult: isValidDailyQuest,
             isAvailable: getAvailabilityQuestDaily,
@@ -114,7 +116,7 @@ const questMap: {
         methods: {
             getAmount: getPointsQuest,
             getValidationResult: isNotImplemented,
-            getData: getDataQuestSocial,
+            getData,
             isAvailable: getAvailability,
         },
     },
@@ -173,8 +175,8 @@ const questMap: {
         service: QuestGitcoinService,
         methods: {
             getAmount: getPointsQuest,
-            getValidationResult: isValidCustomQuest,
-            getData: getDataQuestWeb3,
+            getValidationResult: isValidGitcoinQuest,
+            getData: getDataQuestGitcoin,
             isAvailable: getAvailability,
         },
     },
@@ -297,7 +299,6 @@ async function complete(
     wallet: TWallet,
     data: Partial<TQuestEntry>,
 ) {
-    const model = questMap[variant].models.entry;
     const index = Math.floor(Math.random() * celebratoryWords.length);
     const discord = account.connectedAccounts && account.connectedAccounts.find((a) => a.kind === 'discord');
     const user =
@@ -310,11 +311,13 @@ async function complete(
         style: ButtonStyle.Primary,
     };
     const content = `${celebratoryWords[index]} ${user} completed the **${quest.title}** quest and earned **${amount} points.**`;
-    const entry = await model.create({
+    const ModelQuestEntry = questMap[variant].models.entry;
+    const entry = await ModelQuestEntry.create({
         sub: account.sub,
         walletId: wallet._id,
         amount,
         ...data,
+        questId: String(quest._id),
         poolId: pool._id,
         uuid: v4(),
     });

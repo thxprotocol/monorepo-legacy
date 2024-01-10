@@ -31,7 +31,7 @@ const controller = async (req: Request, res: Response) => {
     if (!validationResult.result) return res.json({ error: validationResult.reason });
 
     const entry = await QuestService.complete(QuestVariant.Daily, amount, pool, quest, account, wallet, {
-        dailyRewardId: quest._id,
+        questId: quest._id,
     });
 
     return res.status(201).json(entry);

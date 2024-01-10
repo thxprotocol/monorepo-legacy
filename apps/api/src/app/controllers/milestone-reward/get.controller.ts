@@ -11,7 +11,7 @@ const controller = async (req: Request, res: Response) => {
     const reward = await MilestoneReward.findById(req.params.id);
     if (!reward) throw new NotFoundError();
 
-    const claims = await MilestoneRewardClaim.find({ milestoneRewardId: String(reward._id) });
+    const claims = await MilestoneRewardClaim.find({ questId: String(reward._id) });
 
     res.json({ ...reward.toJSON(), claims });
 };

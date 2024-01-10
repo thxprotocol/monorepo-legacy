@@ -30,7 +30,7 @@ const controller = async (req: Request, res: Response) => {
 
     res.json({
         ...q,
-        amount,
+        amount: amount || quest.amount,
         pointsAvailable,
         pointsClaimed,
         isLocked,

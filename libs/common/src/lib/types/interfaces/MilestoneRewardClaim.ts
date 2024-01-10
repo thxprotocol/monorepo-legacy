@@ -1,5 +1,5 @@
 export type TMilestoneRewardClaim = {
-    milestoneRewardId: string;
+    questId: string;
     sub: string;
     walletId: string;
     uuid: string;

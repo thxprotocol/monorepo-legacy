@@ -34,6 +34,13 @@ const validation = [
         .customSanitizer((infoLinks) => {
             return JSON.parse(infoLinks).filter((link: TInfoLink) => link.label.length && isValidUrl(link.url));
         }),
+    body('locks')
+        .optional()
+        .custom((value) => {
+            const locks = JSON.parse(value);
+            return Array.isArray(locks);
+        })
+        .customSanitizer((locks) => JSON.parse(locks)),
 ];
 
 const controller = async (req: Request, res: Response) => {
