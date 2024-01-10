@@ -8,8 +8,8 @@ import { QuestVariant } from '@thxnetwork/common/lib/types';
 
 const validation = [
     body('index').optional().isInt(),
-    body('title').isString(),
-    body('description').isString(),
+    body('title').optional().isString(),
+    body('description').optional().isString(),
     body('isPublished')
         .optional()
         .isBoolean()
@@ -20,6 +20,7 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('amounts')
+        .optional()
         .custom((amounts) => {
             for (const amount of JSON.parse(amounts)) {
                 if (isNaN(amount)) {
