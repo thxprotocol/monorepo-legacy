@@ -13,7 +13,7 @@ export const questBaseSchema = {
     expiryDate: Date,
     infoLinks: [{ label: String, url: String }],
     isPublished: { type: Boolean, default: false },
-    gateIds: { type: [String], default: [] },
+    locks: { type: [{ questId: String, variant: Number }], default: [] },
 };
 
 export const perkBaseSchema = {
@@ -27,7 +27,7 @@ export const perkBaseSchema = {
     limit: Number,
     isPromoted: { type: Boolean, default: false },
     isPublished: { type: Boolean, default: false },
-    gateIds: { type: [String], default: [] },
+    locks: { type: [{ questId: String, variant: Number }], default: [] },
     // // Token Gating
     // tokenGatingVariant: Number,
     // tokenGatingContractAddress: String,

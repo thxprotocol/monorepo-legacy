@@ -36,17 +36,17 @@ const validation = [
         .customSanitizer((infoLinks) => {
             return JSON.parse(infoLinks).filter((link: TInfoLink) => link.label.length && isValidUrl(link.url));
         }),
-    body('gateIds')
+    body('locks')
         .custom((value) => {
-            const gateIds = JSON.parse(value);
-            return Array.isArray(gateIds) && gateIds.every((item) => typeof item === 'string');
+            const locks = JSON.parse(value);
+            return Array.isArray(locks);
         })
-        .customSanitizer((gateIds) => JSON.parse(gateIds)),
+        .customSanitizer((locks) => JSON.parse(locks)),
 ];
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');
-    const { title, description, amounts, infoLinks, eventName, isPublished, gateIds, expiryDate } = req.body;
+    const { title, description, amounts, infoLinks, eventName, isPublished, locks, expiryDate } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const quest = await QuestService.create(QuestVariant.Daily, poolId, {
         title,
@@ -57,7 +57,7 @@ const controller = async (req: Request, res: Response) => {
         eventName,
         isPublished,
         expiryDate,
-        gateIds,
+        locks,
     });
 
     res.status(201).json(quest);

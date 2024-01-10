@@ -20,7 +20,7 @@ const controller = async (req: Request, res: Response) => {
     const token = getToken(req.header('authorization'));
     const sub = token && token.sub;
     const wallet = sub && (await SafeService.findPrimary(sub, pool.chainId));
-    const [daily, invite, twitter, discord, youtube, custom, web3] = await QuestService.list(pool, wallet);
+    const [daily, invite, twitter, discord, youtube, custom, web3, gitcoin] = await QuestService.list(pool, wallet);
 
     res.json({
         daily,
@@ -30,6 +30,7 @@ const controller = async (req: Request, res: Response) => {
         discord,
         youtube,
         web3,
+        gitcoin,
     });
 };
 

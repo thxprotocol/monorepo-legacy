@@ -59,11 +59,11 @@
                     </b-col>
                     <b-col md="6">
                         <slot name="col-right" />
-                        <BaseCardGates
+                        <BaseCardQuestLocks
                             class="mb-3"
                             :pool="pool"
-                            :gate-ids="quest ? quest.gateIds : []"
-                            @change-gates="onChangeGates"
+                            :locks="quest ? quest.locks : []"
+                            @change-locks="onChangeLocks"
                         />
                         <BaseCardInfoLinks
                             class="mb-3"
@@ -101,12 +101,12 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TInfoLink, TPool, TQuest } from '@thxnetwork/types/interfaces';
+import type { TInfoLink, TPool, TQuest, TQuestLock } from '@thxnetwork/types/interfaces';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
 import BaseCardRewardExpiry from '@thxnetwork/dashboard/components/cards/BaseCardRewardExpiry.vue';
 import BaseCardInfoLinks from '@thxnetwork/dashboard/components/cards/BaseCardInfoLinks.vue';
-import BaseCardGates from '@thxnetwork/dashboard/components/cards/BaseCardGates.vue';
+import BaseCardQuestLocks from '@thxnetwork/dashboard/components/cards/BaseCardQuestLocks.vue';
 
 @Component({
     components: {
@@ -114,7 +114,7 @@ import BaseCardGates from '@thxnetwork/dashboard/components/cards/BaseCardGates.
         BaseCardRewardExpiry,
         BaseCardURLWebhook,
         BaseCardInfoLinks,
-        BaseCardGates,
+        BaseCardQuestLocks,
     },
 })
 export default class ModalQuestCreate extends Vue {
@@ -173,8 +173,8 @@ export default class ModalQuestCreate extends Vue {
         this.$emit('change-date', expiryDate);
     }
 
-    onChangeGates(gateIds: string[]) {
-        this.$emit('change-gates', gateIds);
+    onChangeLocks(locks: TQuestLock[]) {
+        this.$emit('change-locks', locks);
     }
 }
 </script>

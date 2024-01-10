@@ -1,6 +1,6 @@
-import { TBaseReward } from './BaseReward';
+import { TBaseQuest } from './BaseReward';
 
-export type TReferralReward = TBaseReward & {
+export type TReferralReward = TBaseQuest & {
     successUrl: string;
     pathname: string;
     token: string;

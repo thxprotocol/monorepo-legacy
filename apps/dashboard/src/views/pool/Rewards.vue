@@ -139,7 +139,7 @@ import {
     RewardVariant,
     TERC721Perk,
     TCustomReward,
-    TBasePerk,
+    TBaseReward,
 } from '@thxnetwork/types/index';
 import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC20Create.vue';
@@ -330,7 +330,7 @@ export default class RewardsView extends Vue {
         this.listRewards();
     }
 
-    onClickDelete(reward: TBasePerk) {
+    onClickDelete(reward: TBaseReward) {
         switch (reward.variant) {
             case RewardVariant.Coin:
                 return this.$store.dispatch('erc20Perks/delete', this.coinRewards[this.pool._id][reward._id]);

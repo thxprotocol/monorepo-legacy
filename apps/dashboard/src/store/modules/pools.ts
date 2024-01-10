@@ -14,8 +14,8 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
-import { GateVariant, QuestVariant } from '@thxnetwork/common/lib/types';
-import { TGate, TGateState } from '@thxnetwork/common/lib/types/interfaces/Gate';
+import { QuestVariant } from '@thxnetwork/common/lib/types';
+import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 
 export interface IPoolAnalytic {
     _id: string;
@@ -151,7 +151,6 @@ export type TEventState = {
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
     _all: IPools = {};
-    _gates: TGateState = {};
     _quests: TQuestState = {};
     _entries: TQuestEntryState = {};
     _events: TEventState = {};
@@ -161,10 +160,6 @@ class PoolModule extends VuexModule {
 
     get all() {
         return this._all;
-    }
-
-    get gates() {
-        return this._gates;
     }
 
     get quests() {
@@ -247,11 +242,6 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
-    setGate({ poolId, result }: { poolId: string; result: { results: TGate[] } & TPaginationResult }) {
-        Vue.set(this._gates, poolId, result);
-    }
-
-    @Mutation
     setQuest(quest: TQuest) {
         if (!this._quests[quest.poolId]) return;
 
@@ -282,6 +272,19 @@ class PoolModule extends VuexModule {
             params: { page, limit },
         });
         this.context.commit('setEvents', { poolId: pool._id, result: data });
+    }
+
+    @Action
+    async createQuest(payload: TQuest) {
+        const data = prepareFormDataForUpload(payload);
+        const response = await axios({
+            method: 'POST',
+            url: `/pools/${payload.poolId}/quests`,
+            headers: { 'X-PoolId': payload.poolId },
+            data,
+        });
+        console.log(response.data);
+        debugger;
     }
 
     @Action({ rawError: true })
@@ -447,31 +450,6 @@ class PoolModule extends VuexModule {
             },
         });
         return data;
-    }
-
-    @Action({ rawError: true })
-    async listGates({ pool, page, limit }: { pool: TPool; page: string; limit: string }) {
-        const { data } = await axios({
-            method: 'GET',
-            url: `/pools/${pool._id}/gates`,
-            headers: { 'X-PoolId': pool._id },
-            params: {
-                page,
-                limit,
-            },
-        });
-        this.context.commit('setGate', { poolId: pool._id, result: data });
-    }
-
-    @Action({ rawError: true })
-    async createGate(payload: Partial<TGate>) {
-        const { data } = await axios({
-            method: 'POST',
-            url: `/pools/${payload.poolId}/gates`,
-            headers: { 'X-PoolId': payload.poolId },
-            data: payload,
-        });
-        this.context.commit('setGate', data);
     }
 
     @Action({ rawError: true })

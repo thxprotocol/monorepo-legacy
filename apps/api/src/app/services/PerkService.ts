@@ -20,7 +20,7 @@ import { DiscordRoleRewardDocument } from '../models/DiscordRoleReward';
 import { DiscordRoleRewardPayment } from '../models/DiscordRoleRewardPayment';
 import { ERC721Metadata } from '../models/ERC721Metadata';
 import { ERC1155Metadata } from '../models/ERC1155Metadata';
-import GateService from './GateService';
+import LockService from './LockService';
 
 export type PerkDocument =
     | ERC20PerkDocument
@@ -58,15 +58,15 @@ export async function getNFT(perk: ERC721PerkDocument) {
 }
 
 export async function getIsLockedForWallet(perk: PerkDocument, wallet: WalletDocument) {
-    if (!perk.gateIds.length || !wallet) return;
-    return await GateService.getIsLocked(perk.gateIds, wallet);
+    if (!perk.locks.length || !wallet) return;
+    return await LockService.getIsLocked(perk.locks, wallet);
 }
 
 export async function getIsLockedForSub(perk: PerkDocument, sub: string, pool: AssetPoolDocument) {
-    if (!perk.gateIds.length) return;
+    if (!perk.locks.length) return;
     const wallet = await WalletService.findPrimary(sub, pool.chainId);
     if (!wallet) return true;
-    return await GateService.getIsLocked(perk.gateIds, wallet);
+    return await LockService.getIsLocked(perk.locks, wallet);
 }
 
 async function getProgress(r: PerkDocument, model: any) {
@@ -115,7 +115,7 @@ export async function validate({
     if (!model) return { isError: true, errorMessage: 'Could not determine payment model.' };
 
     // Is gated and reqeust is made authenticated
-    if (sub && pool && perk.gateIds.length) {
+    if (sub && pool && perk.locks.length) {
         const isPerkLocked = await getIsLockedForSub(perk, sub, pool);
         if (isPerkLocked) {
             return { isError: true, errorMessage: 'This perk has been gated with a token.' };

@@ -6,7 +6,7 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { param } from 'express-validator';
-import GateService from '@thxnetwork/api/services/GateService';
+import LockService from '@thxnetwork/api/services/LockService';
 
 const validation = [param('id').isMongoId()];
 
@@ -26,7 +26,7 @@ const controller = async (req: Request, res: Response) => {
         account,
     );
     const q = PointRewardService.findOne(quest, wallet);
-    const isLocked = wallet ? await GateService.getIsLocked(quest.gateIds, wallet) : true;
+    const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : true;
 
     res.json({
         ...q,

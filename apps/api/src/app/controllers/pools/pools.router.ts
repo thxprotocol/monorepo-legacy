@@ -14,10 +14,9 @@ import DeletePoolTransfer from './transfers/delete.controller';
 import CreatePoolSubscription from './subscriptions/post.controller';
 import ReadPoolSubscription from './subscriptions/get.controller';
 import ListPoolQuests from './quests/list.controller';
+import CreatePoolQuests from './quests/post.controller';
 import ListPoolQuestEntries from './quests/entries/list.controller';
 import ListPoolParticipants from './participants/list.controller';
-import ListPoolGates from './gates/list.controller';
-import CreatePoolGate from './gates/post.controller';
 import CreatePoolCollaborator from './collaborators/post.controller';
 import DeletePoolCollaborator from './collaborators/delete.controller';
 import UpdatePoolCollaborator from './collaborators/patch.controller';
@@ -27,6 +26,7 @@ import ListPoolTransfer from './transfers/list.controller';
 import ListPoolEvents from './events/list.controller';
 import UpdatePool from './patch.controller';
 import ListPoolWallets from './wallets/list.controller';
+import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
 
@@ -128,6 +128,16 @@ router.get(
     assertRequestInput(ListPoolQuests.validation),
     ListPoolQuests.controller,
 );
+router.post(
+    '/:id/quests',
+    checkJwt,
+    corsHandler,
+    guard.check(['pools:read', 'pools:write']),
+    upload.single('file'),
+    assertPoolAccess,
+    assertRequestInput(CreatePoolQuests.validation),
+    CreatePoolQuests.controller,
+);
 
 router.get(
     '/:id/quests/:questId/entries',
@@ -171,24 +181,6 @@ router.get(
     assertPoolAccess,
     assertRequestInput(ListPoolParticipants.validation),
     ListPoolParticipants.controller,
-);
-router.get(
-    '/:id/gates',
-    checkJwt,
-    corsHandler,
-    guard.check(['pools:read']), // TODO Should become pool_participants:read
-    assertPoolAccess,
-    assertRequestInput(ListPoolGates.validation),
-    ListPoolGates.controller,
-);
-router.post(
-    '/:id/gates',
-    checkJwt,
-    corsHandler,
-    guard.check(['pools:read', 'pools:write']),
-    assertPoolAccess,
-    assertRequestInput(CreatePoolGate.validation),
-    CreatePoolGate.controller,
 );
 router.patch(
     '/:id/collaborators/:uuid',

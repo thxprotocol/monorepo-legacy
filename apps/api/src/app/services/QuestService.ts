@@ -30,8 +30,11 @@ import MilestoneRewardService from './MilestoneRewardService';
 import PointRewardService from './PointRewardService';
 import ReferralRewardService from './ReferralRewardService';
 import QuestWeb3Service from './QuestWeb3Service';
-import GateService from './GateService';
+import LockService from './LockService';
 import { logger } from '../util/logger';
+import { GitcoinQuest } from '../models/GitcoinQuest';
+import { GitcoinQuestEntry } from '../models/GitcoinQuestEntry';
+import QuestGitcoinService from './QuestGitcoinService';
 
 type TValidationResult = {
     result: boolean;
@@ -158,6 +161,16 @@ const questMap: {
     [QuestVariant.Web3]: {
         models: { quest: Web3Quest, entry: Web3QuestClaim },
         service: QuestWeb3Service,
+        methods: {
+            getAmount: getPointsQuest,
+            getValidationResult: isValidCustomQuest,
+            getData: getDataQuestWeb3,
+            isAvailable: getAvailability,
+        },
+    },
+    [QuestVariant.Gitcoin]: {
+        models: { quest: GitcoinQuest, entry: GitcoinQuestEntry },
+        service: QuestGitcoinService,
         methods: {
             getAmount: getPointsQuest,
             getValidationResult: isValidCustomQuest,
@@ -336,7 +349,7 @@ async function list(pool: AssetPoolDocument, wallet?: WalletDocument) {
         return await Promise.all(
             quests.map(async (quest: TQuest) => {
                 try {
-                    const isLocked = wallet ? await GateService.getIsLocked(quest.gateIds, wallet) : true;
+                    const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : true;
                     const q = await service.findOne(quest, wallet);
                     return { ...q, isLocked };
                 } catch (error) {

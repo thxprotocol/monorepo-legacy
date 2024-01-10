@@ -5,8 +5,9 @@ export type TInfoLink = {
     label: string;
     url: string;
 };
+export type TQuestLock = { variant: QuestVariant; questId: string };
 
-export type TBasePerk = {
+export type TBaseReward = {
     _id: string;
     uuid: string;
     poolId: string;
@@ -25,10 +26,10 @@ export type TBasePerk = {
     updatedAt?: string;
     claims: [];
     isPublished: boolean;
-    gateIds: string[];
+    locks: TQuestLock[];
 };
 
-export type TBaseReward = {
+export type TBaseQuest = {
     _id: string;
     uuid: string;
     poolId: string;
@@ -43,7 +44,7 @@ export type TBaseReward = {
     index: number;
     isPublished: boolean;
     expiryDate: Date;
-    gateIds: string[];
+    locks: TQuestLock[];
     update: (payload: Partial<TQuest>) => Promise<void>;
     delete: (payload: Partial<TQuest>) => Promise<void>;
 };

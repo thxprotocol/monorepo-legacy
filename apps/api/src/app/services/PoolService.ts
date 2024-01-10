@@ -26,7 +26,6 @@ import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from './MailService';
 import SafeService from './SafeService';
-import { Gate } from '../models/Gate';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -141,26 +140,6 @@ async function getRewardCount(pool: AssetPoolDocument) {
         [ERC20Perk, ERC721Perk, CustomReward].map(async (model) => await find(model, pool)),
     );
     return Array.from(new Set(result.flat(1)));
-}
-
-async function findGates(pool: AssetPoolDocument, page: number, limit: number) {
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-    const total = await Gate.find({ poolId: pool._id }).countDocuments().exec();
-    return {
-        previous: startIndex > 0 && {
-            page: page - 1,
-        },
-        next: endIndex < total && {
-            page: page + 1,
-        },
-        total,
-        results: await Gate.aggregate([
-            { $match: { poolId: String(pool._id) } },
-            { $skip: startIndex },
-            { $limit: limit },
-        ]).exec(),
-    };
 }
 
 async function findParticipants(pool: AssetPoolDocument, page: number, limit: number) {
@@ -294,6 +273,5 @@ export default {
     getQuestCount,
     getRewardCount,
     findParticipants,
-    findGates,
     inviteCollaborator,
 };

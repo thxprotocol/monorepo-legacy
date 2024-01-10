@@ -1,6 +1,6 @@
-import { TBasePerk } from './BaseReward';
+import { TBaseReward } from './BaseReward';
 
-export type TCouponReward = TBasePerk & {
+export type TCouponReward = TBaseReward & {
     codes: string[];
     couponCodes: TCouponCode[];
     webshopURL: string;

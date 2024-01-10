@@ -15,7 +15,8 @@ const controller = async (req: Request, res: Response) => {
     if (!quest) throw new NotFoundError('Could not find the dailyReward');
 
     const image = req.file && (await ImageService.upload(req.file));
-    const { title, description, amounts, infoLinks, eventName, index, isPublished, gateIds, expiryDate } = req.body;
+    const { title, description, amounts, infoLinks, eventName, index, isPublished, locks, expiryDate } = req.body;
+    console.log(locks);
 
     quest = await QuestService.update(QuestVariant.Daily, req.params.id, {
         title,
@@ -27,7 +28,7 @@ const controller = async (req: Request, res: Response) => {
         index,
         isPublished,
         expiryDate,
-        gateIds,
+        locks,
     });
 
     return res.json(quest);

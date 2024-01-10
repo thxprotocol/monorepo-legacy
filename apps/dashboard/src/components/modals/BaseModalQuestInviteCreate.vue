@@ -9,7 +9,7 @@
         @change-info-links="infoLinks = Object.values($event)"
         @change-published="isPublished = $event"
         @change-date="expiryDate = $event"
-        @change-gates="gateIds = $event"
+        @change-locks="gateIds = $event"
         :info-links="infoLinks"
         :id="id"
         :error="error"

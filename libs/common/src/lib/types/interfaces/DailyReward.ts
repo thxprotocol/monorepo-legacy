@@ -1,6 +1,6 @@
-import { TBaseReward } from './BaseReward';
+import { TBaseQuest } from './BaseReward';
 
-export type TDailyReward = TBaseReward & {
+export type TDailyReward = TBaseQuest & {
     amounts: number[];
     progress?: number;
     claims?: any[];
