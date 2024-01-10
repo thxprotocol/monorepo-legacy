@@ -35,5 +35,6 @@ export * from './CustomReward';
 export * from './CouponReward';
 export * from './Notification';
 export * from './Quest';
+export * from './GitcoinQuest';
 export * from './DiscordBot';
 export * from './DiscordRoleReward';
