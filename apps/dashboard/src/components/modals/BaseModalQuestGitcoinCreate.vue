@@ -43,6 +43,7 @@ import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseMo
 
 enum GitcoinScorerVariant {
     UniqueHumanity = 6298,
+    UniqueHumanityBinary = 6317,
 }
 
 @Component({
@@ -73,7 +74,10 @@ export default class ModalQuestWeb3Create extends Vue {
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TGitcoinQuest;
 
-    scorerOptions = [{ text: 'Unique Humanity', value: GitcoinScorerVariant.UniqueHumanity }];
+    scorerOptions = [
+        { text: 'Unique Humanity', value: GitcoinScorerVariant.UniqueHumanity },
+        { text: 'Unique Humanity (Binary)', value: GitcoinScorerVariant.UniqueHumanityBinary, disabled: true },
+    ];
 
     onShow() {
         this.title = this.reward ? this.reward.title : this.title;

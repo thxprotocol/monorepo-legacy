@@ -252,7 +252,7 @@ export const contentQuests = {
     },
     'gitcoin-quest': {
         tag: 'Gitcoin Quest',
-        icon: 'fas fa-heartbeat',
+        icon: 'fas fa-fingerprint',
         title: 'Use Gitcoin Passport for sybil resistance',
         description: 'Use this quest to verify if wallets are owned by real humans.',
         list: ['Increase Sybil Resistance', 'Gitcoin Unique Humanity Scorer', 'Tap into new ecosystems'],
