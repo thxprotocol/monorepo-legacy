@@ -6,7 +6,7 @@ import { Event } from '@thxnetwork/api/models/Event';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import { Client } from '@thxnetwork/api/models/Client';
 
-const validation = [body('event').isString().isLength({ min: 0, max: 50 }), body('identityUuid').isUUID(1)];
+const validation = [body('event').isString().isLength({ min: 0, max: 50 }), body('identityUuid').isUUID()];
 
 const controller = async (req: Request, res: Response) => {
     const { identityUuid, event } = req.body;

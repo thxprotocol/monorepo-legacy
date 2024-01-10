@@ -10,7 +10,7 @@ import { minify } from 'terser';
 
 const validation = [
     param('id').isMongoId(),
-    query('identity').optional().isUUID(1),
+    query('identity').optional().isUUID(),
     query('containerSelector').optional().isString(),
 ];
 

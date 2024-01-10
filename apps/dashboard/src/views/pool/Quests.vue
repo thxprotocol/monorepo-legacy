@@ -337,7 +337,7 @@ export default class QuestsView extends Vue {
             index: quest,
             checkbox: quest._id,
             title: quest.title,
-            points: quest.amount || `${quest.amounts.length} days`,
+            points: quest.amounts ? `${quest.amounts.length} days` : quest.amount,
             entries: quest.entryCount,
             expiry: quest.expiryDate ? format(new Date(quest.expiryDate), 'dd-MM-yyyy HH:mm') : 'Never',
             quest: quest,

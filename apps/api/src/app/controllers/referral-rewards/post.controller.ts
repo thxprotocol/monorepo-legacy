@@ -8,8 +8,8 @@ import QuestService from '@thxnetwork/api/services/QuestService';
 import { v4 } from 'uuid';
 
 const validation = [
-    body('index').isInt(),
-    body('title').exists().isString(),
+    body('index').optional().isInt(),
+    body('title').optional().isString(),
     body('pathname').optional().isString(),
     body('isPublished')
         .optional()
@@ -27,7 +27,7 @@ const validation = [
             return false;
         }),
     body('isMandatoryReview').optional().isBoolean(),
-    body('amount').exists().isInt({ gt: 0 }),
+    body('amount').optional().isInt(),
     body('expiryDate').optional().isISO8601(),
     body('infoLinks')
         .optional()
@@ -51,6 +51,7 @@ const controller = async (req: Request, res: Response) => {
         index,
         isPublished,
         expiryDate,
+        locks,
     } = req.body;
     const quest = await QuestService.create(QuestVariant.Invite, poolId, {
         index,
@@ -65,6 +66,7 @@ const controller = async (req: Request, res: Response) => {
         infoLinks,
         image,
         expiryDate,
+        locks,
     });
 
     res.status(201).json(quest);

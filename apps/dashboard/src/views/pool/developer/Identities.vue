@@ -9,17 +9,11 @@
             <b-form-group label="Identities">
                 <BTable :items="identities" hover show-empty responsive="lg">
                     <!-- Head formatting -->
-                    <template #head(url)>Connect URL</template>
                     <template #head(uuid)>Code</template>
                     <template #head(sub)> Account ID </template>
                     <template #head(createdAt)> Created </template>
 
                     <!-- Cell formatting -->
-                    <template #cell(url)="{ item }">
-                        <b-button variant="light" v-clipboard:copy="item.url" size="sm" class="mr-3">
-                            <i class="fas ml-0 fa-clipboard"></i>
-                        </b-button>
-                    </template>
                     <template #cell(uuid)="{ item }">
                         <code>{{ item.uuid }}</code>
                     </template>
@@ -69,7 +63,6 @@ export default class IdentitiesView extends Vue {
     get identities() {
         if (!this.pool || !this.pool.identities) return [];
         return this.pool.identities.map((identity) => ({
-            url: this.pool.widget.domain + '?thx_widget_path=/w/' + identity.uuid,
             uuid: identity.uuid,
             sub: identity.sub,
             createdAt: identity.createdAt,
