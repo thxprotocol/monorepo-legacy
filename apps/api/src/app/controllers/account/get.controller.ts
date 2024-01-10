@@ -1,4 +1,4 @@
-import e, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 import { ChainId } from '@thxnetwork/types/enums';

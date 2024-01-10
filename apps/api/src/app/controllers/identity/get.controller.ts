@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { uuidV1 } from '@thxnetwork/api/util/uuid';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import { Client } from '@thxnetwork/api/models/Client';
-import { uuidV1 } from '@thxnetwork/api/util/uuid';
+import { param } from 'express-validator';
 
-const validation = [];
+const validation = [param('salt').isString().isLength({ min: 0 })];
 
 const controller = async (req: Request, res: Response) => {
     const client = await Client.findOne({ clientId: req.auth.client_id });
@@ -14,10 +15,12 @@ const controller = async (req: Request, res: Response) => {
     const pool = await AssetPool.findById(client.poolId);
     if (!pool) throw new NotFoundError('Could not find pool for client');
 
-    const uuid = uuidV1();
-    const id = await Identity.create({ poolId: pool._id, uuid });
+    // Derive uuid v1 from poolId + salt. Using uuid v1 format so we can validate the input using express-validator
+    const poolId = String(pool._id);
+    const uuid = uuidV1(`${poolId}${req.params.salt}`);
+    const identity = await Identity.findOneAndUpdate({ poolId, uuid }, { poolId, uuid }, { new: true, upsert: true });
 
-    res.json(id.uuid);
+    res.json(identity.uuid);
 };
 
 export default { validation, controller };

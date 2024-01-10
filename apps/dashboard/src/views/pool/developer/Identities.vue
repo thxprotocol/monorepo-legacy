@@ -43,9 +43,11 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { format } from 'date-fns';
 import BaseCode from '@thxnetwork/dashboard/components/BaseCode.vue';
 
-const exampleCode = `const thxId = await thx.identity.create();
-console.log(thxId); 
+const exampleCode = `const identity = await thx.identity.create();
 // 36d33a59-5398-463a-ac98-0f7d9b201648
+
+const identity = await thx.identity.get("a unique string");
+// Will always return 36d33a59-5398-463a-ac98-0f7d9b201648
 `;
 
 @Component({

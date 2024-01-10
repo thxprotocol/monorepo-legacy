@@ -7,11 +7,10 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { query, param } from 'express-validator';
 import { minify } from 'terser';
-import { runMilestoneRewardWebhook, runReferralRewardWebhook } from '@thxnetwork/api/services/THXService';
 
 const validation = [
     param('id').isMongoId(),
-    query('identity').optional().isUUID(4),
+    query('identity').optional().isUUID(1),
     query('containerSelector').optional().isString(),
 ];
 
@@ -44,9 +43,6 @@ const controller = async (req: Request, res: Response) => {
     // Set active to true if there is a request made from the configured domain
     if (widgetOrigin === origin && !widget.active) {
         await widget.updateOne({ active: true });
-
-        runReferralRewardWebhook(pool, { origin });
-        runMilestoneRewardWebhook(pool);
     }
 
     const data = `
