@@ -10,7 +10,7 @@
                 {{ tag }}
             </b-badge>
         </div> -->
-        <b-card bg-variant="light">
+        <b-card bg-variant="light" v-if="content.video">
             <b-embed type="iframe" aspect="16by9" :src="`${content.video}&controls=0 `" allowfullscreen />
         </b-card>
         <h3 class="h3 mt-3 font-size-l font-weight-normal">
