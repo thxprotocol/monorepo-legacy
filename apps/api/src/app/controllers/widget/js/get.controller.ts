@@ -74,6 +74,7 @@ if (typeof window.THXWidget !== 'undefined') {
                     left: 0,
                     right: 0,
                     bottom: 0,
+                    border: 0,
                     borderRadius: 0,
                 },
                 md: {
@@ -81,6 +82,7 @@ if (typeof window.THXWidget !== 'undefined') {
                     bottom: isCustomContainer ? 'auto' : '100px',
                     maxHeight: isCustomContainer ? 'none' : '703px',
                     width: isCustomContainer ? '100%' : '400px',
+                    border: 0,
                     borderRadius: isCustomContainer ? '0px' : '10px',
                     height: isCustomContainer ? '100%' : 'calc(100% - 115px)',
                 },

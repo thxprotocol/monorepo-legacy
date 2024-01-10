@@ -1,5 +1,5 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { PointRewardDocument, PointReward as PointRewardSchema } from '@thxnetwork/api/models/PointReward';
+import { PointRewardDocument, PointReward } from '@thxnetwork/api/models/PointReward';
 import { paginatedResults } from '../util/pagination';
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
@@ -210,9 +210,19 @@ function getRestartDates(quest: TPointReward) {
     return { now, start, endDay, end };
 }
 
-export const PointReward = PointRewardSchema;
+function findOne(quest: PointRewardDocument, wallet?: WalletDocument) {
+    const restartDates = getRestartDates(quest);
+    return {
+        ...quest.toJSON(),
+        contentMetadata: quest.contentMetadata && JSON.parse(quest.contentMetadata),
+        pointsAvailable: quest.amount,
+        restartDates,
+    };
+}
 
+export { PointReward };
 export default {
+    findOne,
     validate,
     getPointsAvailable,
     findByPool,

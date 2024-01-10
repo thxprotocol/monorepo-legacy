@@ -6,6 +6,7 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { param } from 'express-validator';
+import GateService from '@thxnetwork/api/services/GateService';
 
 const validation = [param('id').isMongoId()];
 
@@ -20,31 +21,21 @@ const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
 
     const isAvailable = wallet ? await PointRewardService.isAvailable(quest, account, wallet) : false;
-    const restartDates = PointRewardService.getRestartDates(quest);
     const { messages, pointsAvailable, pointsClaimed, amount } = await PointRewardService.getPointsAvailable(
         quest,
         account,
     );
+    const q = PointRewardService.findOne(quest, wallet);
+    const isLocked = wallet ? await GateService.getIsLocked(quest.gateIds, wallet) : true;
 
     res.json({
-        _id: quest._id,
-        index: quest.index,
-        title: quest.title,
-        description: quest.description,
-        infoLinks: quest.infoLinks,
-        image: quest.image,
-        uuid: quest.uuid,
-        expiryDate: quest.expiryDate,
-        amount: amount || quest.amount,
-        platform: quest.platform,
-        interaction: quest.interaction,
-        content: quest.content,
-        contentMetadata: quest.contentMetadata,
+        ...q,
+        amount,
         pointsAvailable,
         pointsClaimed,
+        isLocked,
         isClaimed: !isAvailable, // Should deprecate
         isAvailable,
-        restartDates,
         messages,
     });
 };

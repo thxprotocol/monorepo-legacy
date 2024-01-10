@@ -48,6 +48,31 @@
                     <b-form-row>
                         <b-col md="4">
                             <div class="">
+                                <strong>Commands</strong>
+                                <p class="text-muted">Onboard users to your campaign in your Discord server.</p>
+                            </div>
+                        </b-col>
+                        <b-col md="8">
+                            <b-form-group label="Available Commands">
+                                <b-badge variant="light" class="p-2 mr-2">
+                                    <code>/quests</code>
+                                </b-badge>
+                                <b-badge variant="light" class="p-2 mr-2">
+                                    <code>/info</code>
+                                </b-badge>
+                                <b-badge variant="light" class="p-2 mr-2">
+                                    <code>/give-points</code>
+                                </b-badge>
+                                <b-badge variant="light" class="p-2 mr-2">
+                                    <code>/remove-points</code>
+                                </b-badge>
+                            </b-form-group>
+                        </b-col>
+                    </b-form-row>
+                    <hr />
+                    <b-form-row>
+                        <b-col md="4">
+                            <div class="">
                                 <strong>Management</strong>
                                 <p class="text-muted">
                                     Determine the roles that should be able to access administrative features.
