@@ -102,7 +102,7 @@
                                     <img
                                         class="rounded-circle"
                                         height="65"
-                                        v-lazy="require('../../public/assets/img/thx_team_prasanth.jpeg')"
+                                        v-lazy="require('../../public/assets/img/thx_team_prasanth.jpg')"
                                         :alt="ALT_TEXT.HOME_BASE_TEAM_VALERIA"
                                     />
                                 </div>
