@@ -30,9 +30,11 @@ export const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Could not find the Asset Pool for this id');
 
-    if (req.body.guild) {
-        const { _id, channelId, adminRoleId } = req.body.guild;
-        await DiscordGuild.findByIdAndUpdate(_id, { channelId, adminRoleId });
+    if (req.body.guilds) {
+        const { _id, channelId, adminRoleId } = req.body.guilds;
+        for (const { _id, channelId, adminRoleId } of req.body.guilds) {
+            await DiscordGuild.findByIdAndUpdate(_id, { channelId, adminRoleId });
+        }
     }
 
     if (

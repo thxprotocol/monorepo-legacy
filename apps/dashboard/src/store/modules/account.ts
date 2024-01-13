@@ -40,6 +40,15 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async getGuilds() {
+        const { data } = await axios({
+            method: 'GET',
+            url: '/account/discord',
+        });
+        return data.guilds;
+    }
+
+    @Action({ rawError: true })
     async getUser() {
         try {
             const user = await this.userManager.getUser();
