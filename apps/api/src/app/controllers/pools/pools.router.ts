@@ -23,6 +23,7 @@ import routerParticipants from './participants/participants.router';
 import routerEvents from './events/events.router';
 import routerQuests from './quests/quests.router';
 import routerGuilds from './guilds/guilds.router';
+import { param } from 'express-validator';
 
 const router = express.Router();
 
@@ -136,7 +137,7 @@ router.delete(
 );
 // RESOURCE END
 
-router.use(checkJwt, corsHandler, guard.check(['pools:read', 'pools:write']));
+router.use(checkJwt, corsHandler);
 
 router.use('/:id/subscription', routerSubscriptions);
 router.use('/:id/collaborators', routerCollaborators);
