@@ -19,12 +19,17 @@ export class TwitterService {
         if (isExpired) {
             try {
                 const tokens = await this.refreshTokens(token.refreshToken);
+                const user = await this.getMe(tokens.access_token);
                 const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
                 account.setToken({
                     kind: AccessTokenKind.Twitter,
                     accessToken: tokens.access_token,
                     refreshToken: tokens.refresh_token,
                     expiry,
+                    metadata: {
+                        name: user.name,
+                        username: user.username,
+                    },
                 });
                 await account.save();
             } catch (error) {
