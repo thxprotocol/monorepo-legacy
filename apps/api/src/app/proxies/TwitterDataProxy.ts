@@ -1,12 +1,7 @@
 import type { TAccount, TPointReward } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
-import { THXError } from '@thxnetwork/api/util/errors';
 import { encode } from 'html-entities';
 import { AccessTokenKind } from '@thxnetwork/common/lib/types/enums';
-
-class NoTwitterDataError extends THXError {
-    message = 'Could not find twitter data for this account';
-}
 
 export default class TwitterDataProxy {
     static async getUser(account: TAccount) {
@@ -35,18 +30,14 @@ export default class TwitterDataProxy {
     }
 
     static async getTwitter(sub: string) {
-        const r = await authClient({
+        const { data } = await authClient({
             method: 'GET',
             url: `/account/${sub}/twitter`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
         });
-
-        if (r.status !== 200) throw new NoTwitterDataError();
-        if (!r.data) throw new NoTwitterDataError();
-
-        return { isAuthorized: r.data.isAuthorized, tweets: r.data.tweets, users: r.data.users };
+        return { isAuthorized: data.isAuthorized, tweets: data.tweets, users: data.users };
     }
 
     static async getLatestTweets(sub: string, startDate: Date, endDate: Date) {
@@ -70,8 +61,9 @@ export default class TwitterDataProxy {
         const minFollowersCount = metadata.minFollowersCount ? Number(metadata.minFollowersCount) : 0;
         const user = await this.getUser(account);
         const followersCount = user.public_metrics.followers_count;
-        if (followersCount >= minFollowersCount) return true;
-        return false;
+        if (followersCount >= minFollowersCount) return { result: true };
+
+        return { result: false, reason: 'X: Your account has insufficient followers.' };
     }
 
     static async validateMessage(account: TAccount, message: string) {
@@ -79,26 +71,23 @@ export default class TwitterDataProxy {
         const start = new Date(now - 24 * 60 * 60 * 1000);
         const end = new Date(now);
         const [latestTweet] = await this.getLatestTweets(account.sub, start, end);
-        if (!latestTweet) return false;
+        if (!latestTweet) return { result: false, reason: `X: Could not find a post in the last 24 hours.` };
+
         const textA = String(latestTweet.text).toLowerCase().trim();
         const textB = encode(message).toLowerCase().trim();
-        if (textA.includes(textB)) return true;
-
-        return false;
+        if (textA.includes(textB)) return { result: true, reason: '' };
+        return { result: false, reason: `X: Your last post does not contain exactly "${message}".` };
     }
 
     static async validateLike(account: TAccount, channelItem: string) {
-        const r = await authClient({
+        const { data } = await authClient({
             method: 'GET',
             url: `/account/${account.sub}/twitter/like/${channelItem}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
         });
-
-        if (!r.data) throw new NoTwitterDataError();
-
-        return r.data.result;
+        return data;
     }
 
     static async validateRetweet(account: TAccount, channelItem: string) {
@@ -109,10 +98,7 @@ export default class TwitterDataProxy {
                 Authorization: await getAuthAccessToken(),
             },
         });
-
-        if (!data) throw new NoTwitterDataError();
-
-        return data.result;
+        return data;
     }
 
     static async validateFollow(account: TAccount, channelItem: string) {
@@ -123,9 +109,6 @@ export default class TwitterDataProxy {
                 Authorization: await getAuthAccessToken(),
             },
         });
-
-        if (!data) throw new NoTwitterDataError();
-
-        return data.result;
+        return data;
     }
 }

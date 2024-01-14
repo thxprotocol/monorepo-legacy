@@ -25,34 +25,35 @@ const questConditionMap: {
         if (!result) return { result: false, reason: 'Youtube: Not subscribed to channel.' };
     },
     [RewardConditionInteraction.TwitterLike]: async (account, quest) => {
-        const resultUser = await TwitterDataProxy.validateUser(account, quest);
-        if (!resultUser) return { result: false, reason: 'X: Your account has insufficient followers.' };
-        const result = await TwitterDataProxy.validateLike(account, quest.content);
-        if (!result) return { result: false, reason: 'X: Post has not been liked.' };
+        const validationResultUser = await TwitterDataProxy.validateUser(account, quest);
+        if (!validationResultUser.result) return validationResultUser;
+        const validationResultLike = await TwitterDataProxy.validateLike(account, quest.content);
+        if (!validationResultLike.result) return validationResultLike;
     },
     [RewardConditionInteraction.TwitterRetweet]: async (account, quest) => {
-        const resultUser = await TwitterDataProxy.validateUser(account, quest);
-        if (!resultUser) return { result: false, reason: 'X: Your account has insufficient followers.' };
-        const result = await TwitterDataProxy.validateRetweet(account, quest.content);
-        if (!result) return { result: false, reason: 'X: Post is not reposted.' };
+        const validationResultUser = await TwitterDataProxy.validateUser(account, quest);
+        if (!validationResultUser.result) return validationResultUser;
+        const validationResultRepost = await TwitterDataProxy.validateRetweet(account, quest.content);
+        console.log(validationResultRepost);
+        if (!validationResultRepost.result) return validationResultRepost;
     },
     [RewardConditionInteraction.TwitterLikeRetweet]: async (account, quest) => {
-        const resultUser = await TwitterDataProxy.validateUser(account, quest);
-        if (!resultUser) return { result: false, reason: 'X: Your account has insufficient followers.' };
-        const resultLike = await TwitterDataProxy.validateLike(account, quest.content);
-        if (!resultLike) return { result: false, reason: 'X: Post has not been liked.' };
-        const resultRetweet = await TwitterDataProxy.validateRetweet(account, quest.content);
-        if (!resultRetweet) return { result: false, reason: 'X: Post is not reposted.' };
+        const validationResultUser = await TwitterDataProxy.validateUser(account, quest);
+        if (!validationResultUser.result) return validationResultUser;
+        const validationResultLike = await TwitterDataProxy.validateLike(account, quest.content);
+        if (!validationResultLike.result) return validationResultLike;
+        const validationResultRepost = await TwitterDataProxy.validateRetweet(account, quest.content);
+        if (!validationResultRepost.result) return validationResultRepost;
     },
     [RewardConditionInteraction.TwitterFollow]: async (account, quest) => {
         const resultUser = await TwitterDataProxy.validateUser(account, quest);
-        if (!resultUser) return { result: false, reason: 'X: Account has insufficient followers.' };
-        const result = await TwitterDataProxy.validateFollow(account, quest.content);
-        if (!result) return { result: false, reason: 'X: Account is not followed.' };
+        if (!resultUser.result) return resultUser;
+        const validationResultFollow = await TwitterDataProxy.validateFollow(account, quest.content);
+        if (!validationResultFollow.result) return validationResultFollow;
     },
     [RewardConditionInteraction.TwitterMessage]: async (account, quest) => {
-        const result = await TwitterDataProxy.validateMessage(account, quest.content);
-        if (!result) return { result: false, reason: `X: Your last post does not contain exactly "${quest.content}".` };
+        const validationResultMessage = await TwitterDataProxy.validateMessage(account, quest.content);
+        if (!validationResultMessage.result) return validationResultMessage;
     },
     [RewardConditionInteraction.DiscordGuildJoined]: async (account, quest) => {
         const result = await DiscordDataProxy.validateGuildJoined(account, quest.content);
