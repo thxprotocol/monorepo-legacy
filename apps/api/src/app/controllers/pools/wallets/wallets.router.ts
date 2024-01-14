@@ -2,7 +2,7 @@ import express from 'express';
 import { assertRequestInput, assertPoolAccess, guard } from '@thxnetwork/api/middlewares';
 import ListController from './list.controller';
 
-const router = express.Router({ mergeParams: true });
+const router = express.Router();
 
 router.get(
     '/',

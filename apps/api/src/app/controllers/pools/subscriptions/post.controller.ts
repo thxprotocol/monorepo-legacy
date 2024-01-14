@@ -7,7 +7,6 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 const validation = [param('id').isMongoId(), body('email').optional().isEmail()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Pools']
     if (req.body.email) {
         await AccountProxy.update(req.auth.sub, { email: String(req.body.email) } as TAccount);
     }

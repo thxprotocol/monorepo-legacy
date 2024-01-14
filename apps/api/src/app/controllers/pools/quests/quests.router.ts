@@ -7,7 +7,7 @@ import UpdateController from './patch.controller';
 import RemoveController from './delete.controller';
 import routerQuestEntries from './entries/entries.router';
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.get(
     '/',
@@ -42,6 +42,6 @@ router.delete(
     RemoveController.controller,
 );
 
-router.use('/:guestId/entries', routerQuestEntries);
+router.use('/:questId/entries', routerQuestEntries);
 
 export default router;

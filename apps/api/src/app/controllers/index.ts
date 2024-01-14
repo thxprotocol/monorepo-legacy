@@ -1,6 +1,5 @@
 import express from 'express';
 import healthRouter from './health/health.router';
-import docsRouter from './docs/docs.router';
 import accountRouter from './account/account.router';
 import poolsRouter from './pools/pools.router';
 import erc721PerksRouter from './erc721-perks/erc721-perks.router';
@@ -24,7 +23,7 @@ import walletsRouter from './wallets/wallets.router';
 import widgetRouter from './widget/widget.router';
 import questsRouter from './quests/quests.router';
 import rewardsRouter from './rewards/rewards.router';
-import leaderboardsRouter from './leaderboards/leaderboard.router';
+import leaderboardsRouter from './leaderboards/leaderboards.router';
 import dailyRewardsRouter from './daily-rewards/daily-rewards.router';
 import milestonesRewardRouter from './milestone-reward/milestone-rewards.router';
 import transactionsRouter from './transactions/transactions.router';
@@ -37,27 +36,27 @@ import web3QuestsRouter from './web3-quests/web3-quests.router';
 import dataRouter from './data/data.router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.use('/ping', (_req, res) => res.send('pong'));
 router.use('/health', healthRouter);
-router.use('/token', tokenRouter);
-router.use('/docs', docsRouter);
-router.use('/metadata', metadataRouter);
-router.use('/widget', widgetRouter);
-router.use('/quests', questsRouter);
-router.use('/rewards', rewardsRouter);
-router.use('/webhook', webhookRouter);
 router.use('/data', dataRouter);
+router.use('/token', tokenRouter);
+router.use('/metadata', metadataRouter);
 router.use('/brands', brandsRouter);
-router.use('/pools', poolsRouter);
 router.use('/claims', claimsRouter);
-router.use('/leaderboards', leaderboardsRouter);
+router.use('/widget', widgetRouter);
+router.use('/leaderboards', leaderboardsRouter); // TODO Partial refactor
+
+router.use('/quests', questsRouter); // TODO Refactor
+router.use('/rewards', rewardsRouter); // TODO Refactor
+
+router.use('/webhook', webhookRouter); // TODO Deprecate
+
+router.use(checkJwt, corsHandler);
 router.use('/identity', identityRouter);
 router.use('/events', eventsRouter);
-
-router.use(checkJwt);
-router.use(corsHandler);
+router.use('/pools', poolsRouter);
 router.use('/point-rewards', pointRewardsRouter);
 router.use('/milestone-rewards', milestonesRewardRouter);
 router.use('/daily-rewards', dailyRewardsRouter);

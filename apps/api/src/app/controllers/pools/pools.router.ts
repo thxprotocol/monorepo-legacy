@@ -1,5 +1,5 @@
 import express from 'express';
-import { assertRequestInput, assertPoolAccess, guard, checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
+import { assertRequestInput, assertPoolAccess, guard } from '@thxnetwork/api/middlewares';
 
 import ListController from './list.controller';
 import ReadController from './get.controller';
@@ -7,103 +7,21 @@ import CreateController from './post.controller';
 import UpdateController from './patch.controller';
 import DeleteController from './delete.controller';
 
-import ReadPoolTransfer from './transfers/get.controller';
-import CreatePoolTransfer from './transfers/post.controller';
-import DeletePoolTransfer from './transfers/delete.controller';
-import CreatePoolTransferRefresh from './transfers/refresh/post.controller';
-import ListPoolTransfer from './transfers/list.controller';
+import RouterSubscriptions from './subscriptions/subscriptions.router';
+import RouterCollaborators from './collaborators/collaborators.router';
+import RouterParticipants from './participants/participants.router';
+import RouterEvents from './events/events.router';
+import RouterQuests from './quests/quests.router';
+import RouterGuilds from './guilds/guilds.router';
+import RouterTopups from './topup/topup.router';
+import RouterWallets from './wallets/wallets.router';
+import RouterTransfers from './transfers/transfers.router';
 
-import ListPoolsPublic from './public/list.controller';
-import CreatePoolTopup from './topup/post.controller';
-import ListPoolWallets from './wallets/list.controller';
+const router = express.Router({ mergeParams: true });
 
-import routerSubscriptions from './subscriptions/subscriptions.router';
-import routerCollaborators from './collaborators/collaborators.router';
-import routerParticipants from './participants/participants.router';
-import routerEvents from './events/events.router';
-import routerQuests from './quests/quests.router';
-import routerGuilds from './guilds/guilds.router';
-import { param } from 'express-validator';
-
-const router = express.Router();
-
-router.get(
-    '/:id/wallets',
-    checkJwt,
-    corsHandler,
-    guard.check(['pools:read']),
-    assertPoolAccess,
-    assertRequestInput(ListPoolWallets.validation),
-    ListPoolWallets.controller,
-);
-
-// RESOURCE transfers
-router.post(
-    '/:id/transfers',
-    checkJwt,
-    corsHandler,
-    guard.check(['pools:write']),
-    assertRequestInput(CreatePoolTransfer.validation),
-    CreatePoolTransfer.controller,
-);
-router.delete(
-    '/:id/transfers',
-    checkJwt,
-    corsHandler,
-    guard.check(['pools:write']),
-    assertPoolAccess,
-    assertRequestInput(DeletePoolTransfer.validation),
-    DeletePoolTransfer.controller,
-);
-router.get('/:id/transfers/:token', assertRequestInput(ReadPoolTransfer.validation), ReadPoolTransfer.controller);
-router.get(
-    '/:id/transfers',
-    checkJwt,
-    corsHandler,
-    guard.check(['pools:read']),
-    assertPoolAccess,
-    assertRequestInput(ListPoolTransfer.validation),
-    ListPoolTransfer.controller,
-);
-router.post(
-    '/:id/transfers/refresh',
-    checkJwt,
-    corsHandler,
-    guard.check(['pools:write']),
-    assertPoolAccess,
-    assertRequestInput(CreatePoolTransferRefresh.validation),
-    CreatePoolTransferRefresh.controller,
-);
-// END
-
-// TODO Should move to campaign ranking resource
-router.get('/public', assertRequestInput(ListPoolsPublic.validation), ListPoolsPublic.controller);
-
-// RESOURCE topup
-router.post(
-    '/:id/topup',
-    checkJwt,
-    corsHandler,
-    guard.check(['deposits:read', 'deposits:write']),
-    assertPoolAccess,
-    assertRequestInput(CreatePoolTopup.validation),
-    CreatePoolTopup.controller,
-);
-// END
-
-// RESOURCE Campaigns (Pools)
-router.get(
-    '/',
-    checkJwt,
-    corsHandler,
-    guard.check(['pools:read']),
-    assertRequestInput(ListController.validation),
-    ListController.controller,
-);
+router.get('/', guard.check(['pools:read']), assertRequestInput(ListController.validation), ListController.controller);
 router.get(
     '/:id',
-    checkJwt,
-    corsHandler,
     guard.check(['pools:read']),
     assertPoolAccess,
     assertRequestInput(ReadController.validation),
@@ -111,16 +29,12 @@ router.get(
 );
 router.post(
     '/',
-    checkJwt,
-    corsHandler,
     guard.check(['pools:read', 'pools:write']),
     assertRequestInput(CreateController.validation),
     CreateController.controller,
 );
 router.patch(
     '/:id',
-    checkJwt,
-    corsHandler,
     guard.check(['pools:read', 'pools:write']),
     assertPoolAccess,
     assertRequestInput(UpdateController.validation),
@@ -128,22 +42,19 @@ router.patch(
 );
 router.delete(
     '/:id',
-    checkJwt,
-    corsHandler,
     guard.check(['pools:write']),
     assertPoolAccess,
     assertRequestInput(DeleteController.validation),
     DeleteController.controller,
 );
-// RESOURCE END
-
-router.use(checkJwt, corsHandler);
-
-router.use('/:id/subscription', routerSubscriptions);
-router.use('/:id/collaborators', routerCollaborators);
-router.use('/:id/participants', routerParticipants);
-router.use('/:id/quests', routerQuests);
-router.use('/:id/events', routerEvents);
-router.use('/:id/guilds', routerGuilds);
+router.use('/:id/subscription', RouterSubscriptions); // TODO Should not be in /pools but root resource instead
+router.use('/:id/collaborators', RouterCollaborators);
+router.use('/:id/participants', RouterParticipants);
+router.use('/:id/topup', RouterTopups);
+router.use('/:id/transfers', RouterTransfers);
+router.use('/:id/wallets', RouterWallets);
+router.use('/:id/quests', RouterQuests);
+router.use('/:id/events', RouterEvents);
+router.use('/:id/guilds', RouterGuilds);
 
 export default router;
