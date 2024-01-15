@@ -1,5 +1,10 @@
 import { subMinutes } from 'date-fns';
-import { QuestVariant, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
+import {
+    AccessTokenKind,
+    QuestVariant,
+    RewardConditionInteraction,
+    RewardConditionPlatform,
+} from '@thxnetwork/types/enums';
 import { TAccount } from '@thxnetwork/types/interfaces';
 import { AssetPool } from '../models/AssetPool';
 import { PointReward } from '../models/PointReward';
@@ -41,12 +46,13 @@ export async function createTwitterQuests() {
             if (!filteredTweets.length) continue;
 
             const account: TAccount = await AccountProxy.getById(pool.sub);
+            const twitterAccount = account.connectedAccounts.find((token) => token.kind === AccessTokenKind.Twitter);
             const quests = await Promise.all(
                 filteredTweets.map(async (tweet) => {
                     try {
                         const contentMetadata = JSON.stringify({
-                            url: `https://twitter.com/${account.twitterUsername}/status/${tweet.id}`,
-                            username: account.twitterUsername,
+                            url: `https://twitter.com/${connectedAccount.metadata.username}/status/${tweet.id}`,
+                            username: twitterAccount.metadata.username,
                             text: tweet.text,
                         });
                         return await QuestService.create(QuestVariant.Twitter, pool._id, {
