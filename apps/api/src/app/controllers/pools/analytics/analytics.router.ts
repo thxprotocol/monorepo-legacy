@@ -3,7 +3,7 @@ import { assertRequestInput, assertPoolAccess, guard } from '@thxnetwork/api/mid
 import ListController from './list.controller';
 import routerMetrics from './metrics/metrics.router';
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.get(
     '/',
