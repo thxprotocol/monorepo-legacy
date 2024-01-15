@@ -16,7 +16,7 @@ function containsValue(text: string, hashtag: string) {
 export async function createTwitterQuests() {
     for await (const pool of AssetPool.find({ 'settings.isTwitterSyncEnabled': true })) {
         const endDate = new Date();
-        const startDate = subMinutes(endDate, 15);
+        const startDate = subMinutes(endDate, 60);
         try {
             const { isAuthorized } = await TwitterDataProxy.getTwitter(pool.sub);
             if (!isAuthorized) continue;
