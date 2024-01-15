@@ -1,6 +1,6 @@
 import { body, check, param } from 'express-validator';
 import { Request, Response } from 'express';
-import { questMap } from '@thxnetwork/api/services/QuestService';
+import QuestService, { questMap } from '@thxnetwork/api/services/QuestService';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { TInfoLink } from '@thxnetwork/common/lib/types';
 
@@ -30,17 +30,16 @@ const validationBaseQuest = [
             return Array.isArray(locks);
         })
         .customSanitizer((locks) => JSON.parse(locks)),
+    // Should be SocialQuest only
+    body('contentMetadata')
+        .optional()
+        .customSanitizer((contentMetadata) => contentMetadata && JSON.parse(contentMetadata)),
 ];
 
 const validation = [param('id').isMongoId(), ...validationBaseQuest];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Pools']
-    const poolId = req.params.id;
-    const questId = req.params.questId;
-    const ModelQuest = questMap[req.body.variant].models.quest;
-    const quest = await ModelQuest.findByIdAndUpdate(questId, { ...req.body, poolId }, { new: true });
-
+    const quest = await QuestService.update(req.body.variant, req.params.questId, req.body);
     res.json(quest);
 };
 

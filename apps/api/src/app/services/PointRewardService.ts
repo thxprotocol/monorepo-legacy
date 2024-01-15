@@ -56,14 +56,8 @@ const questConditionMap: {
         if (!validationResultMessage.result) return validationResultMessage;
     },
     [RewardConditionInteraction.DiscordGuildJoined]: async (account, quest) => {
-        const result = await DiscordDataProxy.validateGuildJoined(account, quest.content);
-        if (!result) {
-            const userId = await getPlatformUserId(quest, account);
-            return {
-                result: false,
-                reason: `Discord: User #${userId} has not joined Discord server #${quest.content}.`,
-            };
-        }
+        const validationResultMember = await DiscordDataProxy.validateGuildJoined(account, quest.content);
+        if (!validationResultMember.result) return validationResultMember;
     },
     [RewardConditionInteraction.DiscordMessage]: async (account, quest) => {
         return;

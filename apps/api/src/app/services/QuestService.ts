@@ -183,9 +183,11 @@ const questMap: {
 };
 
 async function notify(variant: QuestVariant, quest: TQuest) {
-    const pool = await PoolService.getById(quest.poolId);
-    const brand = await BrandService.get(quest.poolId);
-    const widget = await Widget.findOne({ poolId: pool._id });
+    const [pool, brand, widget] = await Promise.all([
+        PoolService.getById(quest.poolId),
+        BrandService.get(quest.poolId),
+        Widget.findOne({ poolId: quest.poolId }),
+    ]);
 
     notifyEmail(pool, variant, quest as TQuest, widget);
     notifyDiscord(pool, variant, quest as TQuest, widget, brand);
