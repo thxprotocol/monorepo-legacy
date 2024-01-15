@@ -64,7 +64,7 @@ export async function createTwitterQuests() {
                 filteredTweets.map(async (tweet) => {
                     try {
                         const contentMetadata = JSON.stringify({
-                            url: `https://twitter.com/${connectedAccount.metadata.username}/status/${tweet.id}`,
+                            url: `https://twitter.com/${twitterAccount.metadata.username}/status/${tweet.id}`,
                             username: twitterAccount.metadata.username,
                             text: tweet.text,
                         });
