@@ -106,12 +106,7 @@ import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardU
 import BaseDropdownDiscordChannel from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownDiscordChannel.vue';
 import BaseDropdownDiscordRole from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownDiscordRole.vue';
 import BaseDropdownSelectMultiple from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownSelectMultiple.vue';
-
-type TAvailableGuild = {
-    id: string;
-    name: string;
-    icon: string;
-};
+import { TAvailableGuild } from '@thxnetwork/dashboard/store/modules/account';
 
 @Component({
     components: {
@@ -125,17 +120,18 @@ type TAvailableGuild = {
             pools: 'pools/all',
             guildList: 'pools/guilds',
             account: 'account/profile',
+            availableGuilds: 'account/guilds',
         }),
     },
 })
 export default class IntegrationDiscordView extends Vue {
     BASE_URL = BASE_URL;
     discordBotInviteUrl = DISCORD_BOT_INVITE_URL;
-    availableGuilds: TAvailableGuild[] = [];
     isChecked = true;
 
     account!: TAccount;
     pools!: IPools;
+    availableGuilds!: TAvailableGuild[];
     guildList!: TGuildState;
 
     get pool() {
@@ -148,21 +144,22 @@ export default class IntegrationDiscordView extends Vue {
     }
 
     get options() {
-        return this.availableGuilds.map((guild: TAvailableGuild) => {
-            const g = this.guilds.find((g: TDiscordGuild) => g.guildId === guild.id);
-            return {
-                img: guild.icon && `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`,
-                label: guild.name,
-                value: { _id: g?._id, guildId: guild.id, name: guild.name, poolId: this.pool._id },
-                disabled: !!g,
-                selected: g?.isInstalled,
-            };
-        });
+        return this.availableGuilds
+            .filter((guild: TAvailableGuild) => (guild.permissions & 0x00000008) === 0x00000008)
+            .map((guild: TAvailableGuild) => {
+                const g = this.guilds.find((g: TDiscordGuild) => g.guildId === guild.id);
+                return {
+                    img: guild.icon && `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`,
+                    label: guild.name,
+                    value: { _id: g?._id, guildId: guild.id, name: guild.name, poolId: this.pool._id },
+                    disabled: !!g,
+                    selected: g?.isInstalled,
+                };
+            });
     }
 
-    async mounted() {
-        const guilds = await this.$store.dispatch('account/getGuilds');
-        this.availableGuilds = guilds.filter((guild) => (guild.permissions & 0x00000008) === 0x00000008);
+    mounted() {
+        this.$store.dispatch('account/getGuilds');
     }
 
     onClickDiscordRole(guild: TDiscordGuild, role: TDiscordRole) {
@@ -179,6 +176,7 @@ export default class IntegrationDiscordView extends Vue {
 
     onSelectGuild(guild: TDiscordGuild) {
         this.$store.dispatch('pools/createGuild', guild);
+        this.$store.dispatch('pools/read', guild.poolId);
     }
 
     onRemoveGuild(guild: TDiscordGuild) {
