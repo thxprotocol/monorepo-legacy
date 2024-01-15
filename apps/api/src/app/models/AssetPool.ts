@@ -35,6 +35,7 @@ const assetPoolSchema = new mongoose.Schema(
                     amount: Number,
                     hashtag: String,
                     isPublished: { type: Boolean, default: false },
+                    locks: { type: [{ questId: String, variant: Number }], default: [] },
                 },
             },
             authenticationMethods: [Number],

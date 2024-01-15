@@ -5,8 +5,6 @@ import { Widget } from '@thxnetwork/api/services/WidgetService';
 import { PoolSubscription } from '@thxnetwork/api/models/PoolSubscription';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { Event } from '@thxnetwork/api/models/Event';
-import { Collaborator, CollaboratorDocument } from '@thxnetwork/api/models/Collaborator';
-import { client } from '@thxnetwork/api/../discord';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';

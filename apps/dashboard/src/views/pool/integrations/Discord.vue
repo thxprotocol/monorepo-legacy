@@ -5,7 +5,7 @@
             <b-col md="8">
                 <b-alert show variant="warning" v-if="!account.discordAccess">
                     <i class="fab fa-discord mr-2" />
-                    Please <b-link to="/account">connect your Discord account.</b-link>!
+                    Please <b-link to="/account">connect your Discord account!</b-link>!
                 </b-alert>
             </b-col>
             <b-col md="4">
@@ -17,7 +17,27 @@
                 </div>
             </b-col>
             <b-col md="8">
-                <b-form-group label="Installed in">
+                <b-form-group>
+                    <template #label>
+                        <div class="d-flex align-items-center">
+                            Connections
+                            <b-button
+                                :href="discordBotInviteUrl"
+                                target="_blank"
+                                variant="light"
+                                size="sm"
+                                class="ml-auto"
+                            >
+                                <b-img
+                                    width="20"
+                                    :src="require('../../../../public/assets/logo-discord.png')"
+                                    class="mr-1"
+                                />
+                                Invite THX Bot
+                                <i class="fas fa-external-link-alt" />
+                            </b-button>
+                        </div>
+                    </template>
                     <BaseDropdownSelectMultiple :options="options" @select="onSelectGuild" @remove="onRemoveGuild" />
                 </b-form-group>
                 <b-form-group label="Commands">
@@ -153,7 +173,11 @@ export default class IntegrationDiscordView extends Vue {
                     label: guild.name,
                     value: { _id: g?._id, guildId: guild.id, name: guild.name, poolId: this.pool._id },
                     disabled: !!g,
-                    selected: g?.isInstalled,
+                    selected: !!g,
+                    icon: g && {
+                        variant: g.isInstalled ? 'success' : 'danger',
+                        class: g.isInstalled ? 'fas fa-check' : 'fas fa-exclamation',
+                    },
                 };
             });
     }
@@ -177,6 +201,8 @@ export default class IntegrationDiscordView extends Vue {
     onSelectGuild(guild: TDiscordGuild) {
         this.$store.dispatch('pools/createGuild', guild);
         this.$store.dispatch('pools/read', guild.poolId);
+
+        window.open(this.discordBotInviteUrl, '_blank');
     }
 
     onRemoveGuild(guild: TDiscordGuild) {

@@ -36,8 +36,8 @@
             <b-img v-if="option.img" width="20" height="20" :src="option.img" class="mr-2 rounded" />
             <b-avatar v-else size="20" :text="option.label.substring(0, 1)" class="mr-2" />
             {{ option.label }}
-            <b-badge class="ml-auto p-1" variant="success" v-if="option.selected">
-                <i class="fas fa-check" />
+            <b-badge v-if="option.icon" class="ml-auto" style="width: 20px" :variant="option.icon.variant">
+                <i :class="option.icon.class" />
             </b-badge>
         </b-dropdown-item-btn>
     </b-dropdown>
@@ -48,7 +48,14 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})
 export default class BaseDropdownSelectMultiple extends Vue {
-    @Prop() options!: { img: string; label: string; value: any; disabled: boolean; selected: boolean }[];
+    @Prop() options!: {
+        img: string;
+        label: string;
+        value: any;
+        disabled: boolean;
+        selected: boolean;
+        icon?: { variant: string; class: string };
+    }[];
 
     get selected() {
         return this.options.filter((option) => option.selected);
