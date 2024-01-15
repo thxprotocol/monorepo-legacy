@@ -191,11 +191,12 @@ class DiscordService {
         return r.data;
     }
 
-    static async validateUserJoined({ guildId, accessToken }: { guildId: string; accessToken: string }) {
-        const guilds = await this.getGuilds(accessToken);
+    static async validateUserJoined(account: AccountDocument, guildId: string) {
+        const token = account.getToken(AccessTokenKind.Discord);
+        const guilds = await this.getGuilds(token.accessToken);
         const isUserJoinedGuild = guilds.find((guild) => guild.id === guildId);
-
-        return !!isUserJoinedGuild;
+        if (isUserJoinedGuild) return { result: true };
+        return { result: false, reason: 'Discord: Your Discord account is not a member of this server.' };
     }
 }
 

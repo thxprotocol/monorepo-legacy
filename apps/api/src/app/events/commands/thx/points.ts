@@ -69,6 +69,13 @@ export const onSubcommandPoints = async (interaction: CommandInteraction, varian
         const discordGuild = await DiscordGuild.findOne({ guildId: interaction.guild.id });
         if (!discordGuild) throw new Error('Could not find server in database.');
 
+        // Check optional secret
+        const secret = interaction.options.get('secret');
+        if (discordGuild.secret.length) {
+            if (!secret) throw new Error('Please, provide a secret.');
+            if (discordGuild.secret !== secret.value) throw new Error('Please, provide a valid secret.');
+        }
+
         // Check role
         const member = await interaction.guild.members.fetch(interaction.user.id);
         if (!member.roles.cache.has(discordGuild.adminRoleId)) {

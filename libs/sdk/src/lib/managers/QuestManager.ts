@@ -11,36 +11,56 @@ class QuestManager extends BaseManager {
     }
 
     daily = {
-        complete: async (id: string) => {
-            return await this.client.request.post(`/v1/quests/daily/${id}/claim`);
+        entry: {
+            create: async (id: string) => {
+                return await this.client.request.post(`/v1/quests/daily/${id}/claim`);
+            },
         },
     };
 
     invite = {
-        complete: async (uuid: string, payload: { sub: string }) => {
-            return await this.client.request.post(`/v1/quests/invite/${uuid}/claim`, {
-                data: JSON.stringify(payload),
-            });
+        entry: {
+            create: async (uuid: string, payload: { sub: string }) => {
+                return await this.client.request.post(`/v1/quests/invite/${uuid}/claim`, {
+                    data: JSON.stringify(payload),
+                });
+            },
         },
     };
 
     social = {
-        complete: async (id: string) => {
-            return await this.client.request.post(`/v1/quests/social/${id}/claim`);
+        entry: {
+            create: async (id: string) => {
+                return await this.client.request.post(`/v1/quests/social/${id}/claim`);
+            },
         },
     };
 
     custom = {
-        complete: async (id: string) => {
-            return await this.client.request.post(`/v1/quests/custom/claims/${id}/collect`);
+        entry: {
+            create: async (id: string) => {
+                return await this.client.request.post(`/v1/quests/custom/claims/${id}/collect`);
+            },
         },
     };
 
     web3 = {
-        complete: async (uuid: string, payload: { signature: string; message: string }) => {
-            return await this.client.request.post(`/v1/quests/web3/${uuid}/claim`, {
-                data: JSON.stringify(payload),
-            });
+        entry: {
+            create: async (uuid: string, payload: { signature: string; message: string }) => {
+                return await this.client.request.post(`/v1/quests/web3/${uuid}/claim`, {
+                    data: JSON.stringify(payload),
+                });
+            },
+        },
+    };
+
+    gitcoin = {
+        entry: {
+            create: async (uuid: string, payload: { signature: string; message: string }) => {
+                return await this.client.request.post(`/v1/quests/gitcoin/${uuid}/entry`, {
+                    data: JSON.stringify(payload),
+                });
+            },
         },
     };
 }

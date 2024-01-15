@@ -5,7 +5,7 @@ export type MilestoneRewardClaimDocument = mongoose.Document & TMilestoneRewardC
 
 const schema = new mongoose.Schema(
     {
-        milestoneRewardId: String,
+        questId: String,
         sub: { type: String, index: 'hashed' },
         walletId: { type: String, index: 'hashed' },
         uuid: String,

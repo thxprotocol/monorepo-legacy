@@ -4,7 +4,7 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import { param } from 'express-validator';
 
-const validation = [param('uuid').isUUID(4)];
+const validation = [param('uuid').isUUID()];
 
 const controller = async (req: Request, res: Response) => {
     const pool = await AssetPool.findById(req.header('X-PoolId'));

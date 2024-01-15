@@ -31,16 +31,6 @@
                 <b-list-group v-if="pool.owner">
                     <b-list-group-item class="d-flex justify-content-between align-items-center bg-light">
                         {{ pool.owner.email }} (Owner)
-                        <b-button
-                            disabled
-                            v-b-modal="`modalPoolTransfer${pool._id}`"
-                            variant="link"
-                            size="sm"
-                            class="ml-3"
-                        >
-                            Transfer Ownership
-                        </b-button>
-                        <BaseModalPoolTransfer :pool="pool" />
                     </b-list-group-item>
                     <BaseListItemCollaborator
                         @error="errorCollaborator = $event"
@@ -63,12 +53,10 @@ import { validateEmail } from '@thxnetwork/dashboard/components/modals/BaseModal
 import { hasBasicAccess } from '@thxnetwork/common';
 import type { TAccount } from '@thxnetwork/types/interfaces';
 import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-items/BaseListItemCollaborator.vue';
-import BaseModalPoolTransfer from '@thxnetwork/dashboard/components/modals/BaseModalPoolTransfer.vue';
 
 @Component({
     components: {
         BaseListItemCollaborator,
-        BaseModalPoolTransfer,
     },
     computed: {
         ...mapGetters({

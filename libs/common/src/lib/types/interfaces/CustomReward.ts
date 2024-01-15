@@ -1,6 +1,6 @@
-import { TBasePerk } from './BaseReward';
+import { TBaseReward } from './BaseReward';
 
-export type TCustomReward = TBasePerk & {
+export type TCustomReward = TBaseReward & {
     webhookId: string;
     metadata: string;
 };

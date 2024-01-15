@@ -9,6 +9,7 @@
         @change-file="file = $event"
         @change-published="isPublished = $event"
         @change-date="expiryDate = $event"
+        @change-locks="locks = $event"
         :published="isPublished"
         :id="id"
         :error="error"
@@ -16,6 +17,7 @@
         :loading="isLoading"
         :disabled="isSubmitDisabled"
         :quest="reward"
+        :pool="pool"
     >
         <template #col-left>
             <b-form-group label="Amount">
@@ -106,6 +108,7 @@ export default class ModalQuestWeb3Create extends Vue {
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     contracts: { chainId: ChainId; address: string }[] = [{ chainId: ChainId.Polygon, address: '' }];
     expiryDate: Date | number | null = null;
+    locks: TQuestLock[] = [];
 
     @Prop() id!: string;
     @Prop() total!: number;
@@ -122,6 +125,7 @@ export default class ModalQuestWeb3Create extends Vue {
         this.threshold = this.reward ? this.reward.threshold : this.threshold;
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
         this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
+        this.locks = this.reward ? this.reward.locks : this.locks;
     }
 
     onSubmit() {
@@ -142,6 +146,7 @@ export default class ModalQuestWeb3Create extends Vue {
                 expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
                 contracts: JSON.stringify(this.contracts),
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
+                locks: this.locks,
             })
             .then(() => {
                 this.$emit('submit');

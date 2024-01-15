@@ -1,6 +1,8 @@
 import type {
     TAccount,
+    TDiscordGuild,
     TEvent,
+    TPaginationResult,
     TPool,
     TPoolSettings,
     TPoolTransferResponse,
@@ -14,6 +16,7 @@ import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { QuestVariant } from '@thxnetwork/common/lib/types';
+import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 
 export interface IPoolAnalytic {
     _id: string;
@@ -140,6 +143,12 @@ export type TQuestEntryState = {
     };
 };
 
+export type TGuildState = {
+    [poolId: string]: {
+        [guildId: string]: TDiscordGuild;
+    };
+};
+
 export type TEventState = {
     [poolId: string]: {
         [eventId: string]: TEvent[];
@@ -149,6 +158,7 @@ export type TEventState = {
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
     _all: IPools = {};
+    _guilds: TGuildState = {};
     _quests: TQuestState = {};
     _entries: TQuestEntryState = {};
     _events: TEventState = {};
@@ -158,6 +168,10 @@ class PoolModule extends VuexModule {
 
     get all() {
         return this._all;
+    }
+
+    get guilds() {
+        return this._guilds;
     }
 
     get quests() {
@@ -230,12 +244,12 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
-    setQuests({ poolId, result }: { poolId: string; result: { results: TQuest[]; limit: number; page: number } }) {
+    setQuests({ poolId, result }: { poolId: string; result: { results: TQuest[] } & TPaginationResult }) {
         Vue.set(this._quests, poolId, result);
     }
 
     @Mutation
-    setEvents({ poolId, result }: { poolId: string; result: { results: TEvent[]; limit: number; page: number } }) {
+    setEvents({ poolId, result }: { poolId: string; result: { results: TEvent[] } & TPaginationResult }) {
         Vue.set(this._events, poolId, result);
     }
 
@@ -245,6 +259,7 @@ class PoolModule extends VuexModule {
 
         const quests = this._quests[quest.poolId].results;
         const index = quests.findIndex((q) => q._id === quest._id);
+
         Vue.set(this._quests[quest.poolId].results, index, quest);
     }
 
@@ -261,6 +276,17 @@ class PoolModule extends VuexModule {
         Vue.set(this._entries[quest.poolId], String(quest._id), entries);
     }
 
+    @Mutation
+    setGuild(guild: TDiscordGuild) {
+        if (!this._guilds[guild.poolId]) Vue.set(this._guilds, guild.poolId, {});
+        Vue.set(this._guilds[guild.poolId], guild._id, { ...guild, isShownSecret: false });
+    }
+
+    @Mutation
+    unsetGuild(guild: TDiscordGuild) {
+        Vue.delete(this._guilds[guild.poolId], guild._id);
+    }
+
     @Action({ rawError: true })
     async listEvents({ pool, page, limit }) {
         const { data } = await axios({
@@ -270,6 +296,70 @@ class PoolModule extends VuexModule {
             params: { page, limit },
         });
         this.context.commit('setEvents', { poolId: pool._id, result: data });
+    }
+
+    @Action
+    async removeGuild(payload: TDiscordGuild) {
+        await axios({
+            method: 'DELETE',
+            url: `/pools/${payload.poolId}/guilds/${payload._id}`,
+            headers: { 'X-PoolId': payload.poolId },
+            data: payload,
+        });
+        this.context.commit('unsetGuild', payload);
+    }
+
+    @Action
+    async updateGuild(payload: TDiscordGuild) {
+        await axios({
+            method: 'PATCH',
+            url: `/pools/${payload.poolId}/guilds/${payload._id}`,
+            headers: { 'X-PoolId': payload.poolId },
+            data: payload,
+        });
+        this.context.commit('setGuild', payload);
+    }
+
+    @Action
+    async createGuild(payload: TDiscordGuild) {
+        const { data } = await axios({
+            method: 'POST',
+            url: `/pools/${payload.poolId}/guilds`,
+            headers: { 'X-PoolId': payload.poolId },
+            data: payload,
+        });
+        this.context.commit('setGuild', data);
+    }
+
+    @Action
+    async createQuest(payload: TQuest) {
+        await axios({
+            method: 'POST',
+            url: `/pools/${payload.poolId}/quests`,
+            headers: { 'X-PoolId': payload.poolId },
+            data: prepareFormDataForUpload(payload),
+        });
+    }
+
+    @Action
+    async patchQuest(payload: TQuest) {
+        await axios({
+            method: 'PATCH',
+            url: `/pools/${payload.poolId}/quests/${payload._id}`,
+            headers: { 'X-PoolId': payload.poolId },
+            data: prepareFormDataForUpload(payload),
+        });
+    }
+
+    @Action
+    async removeQuest(payload: TQuest) {
+        await axios({
+            method: 'DELETE',
+            url: `/pools/${payload.poolId}/quests/${payload._id}`,
+            headers: { 'X-PoolId': payload.poolId },
+            data: payload,
+        });
+        this.context.commit('unsetQuest', payload);
     }
 
     @Action({ rawError: true })
@@ -290,20 +380,7 @@ class PoolModule extends VuexModule {
 
     @Action
     async deleteQuest(quest: TQuest) {
-        switch (quest.variant) {
-            case QuestVariant.Daily:
-                return this.context.dispatch('dailyRewards/delete', quest, { root: true });
-            case QuestVariant.Invite:
-                return this.context.dispatch('referralRewards/delete', quest, { root: true });
-            case QuestVariant.Discord:
-            case QuestVariant.YouTube:
-            case QuestVariant.Twitter:
-                return this.context.dispatch('pointRewards/delete', quest, { root: true });
-            case QuestVariant.Custom:
-                return this.context.dispatch('milestoneRewards/delete', quest, { root: true });
-            case QuestVariant.Web3:
-                return this.context.dispatch('web3Quests/delete', quest, { root: true });
-        }
+        this.context.dispatch('pools/removeQuest', quest, { root: true });
     }
 
     @Action
@@ -321,6 +398,8 @@ class PoolModule extends VuexModule {
                 return this.context.dispatch('milestoneRewards/update', quest, { root: true });
             case QuestVariant.Web3:
                 return this.context.dispatch('web3Quests/update', quest, { root: true });
+            case QuestVariant.Gitcoin:
+                return this.context.dispatch('pools/patchQuest', quest, { root: true });
         }
     }
 
@@ -396,6 +475,8 @@ class PoolModule extends VuexModule {
 
         this.context.commit('set', r.data);
 
+        r.data.guilds.forEach((guild: TDiscordGuild) => this.context.commit('setGuild', guild));
+
         return r.data;
     }
 
@@ -436,6 +517,7 @@ class PoolModule extends VuexModule {
         });
         return data;
     }
+
     @Action({ rawError: true })
     async create(payload: {
         network: number;

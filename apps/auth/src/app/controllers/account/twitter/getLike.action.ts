@@ -1,19 +1,9 @@
-import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { IAccessToken } from '@thxnetwork/types/interfaces';
-import { NotFoundError } from '@thxnetwork/auth/util/errors';
 import { Request, Response } from 'express';
 import { AccountService } from '../../../services/AccountService';
 import { TwitterService } from '../../../services/TwitterService';
 
 export const getTwitterLike = async (req: Request, res: Response) => {
     const account = await AccountService.get(req.params.sub);
-    const token: IAccessToken | undefined = account.getToken(AccessTokenKind.Twitter);
-    if (!token) {
-        throw new NotFoundError();
-    }
-    const result = await TwitterService.validateLike(token.accessToken, req.params.item);
-
-    res.json({
-        result,
-    });
+    const result = await TwitterService.validateLike(account, req.params.item);
+    res.json(result);
 };

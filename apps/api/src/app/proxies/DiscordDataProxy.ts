@@ -90,9 +90,6 @@ export default class DiscordDataProxy {
             },
         });
 
-        if (r.status !== 200) throw new NoDataError();
-        if (!r.data) throw new NoDataError();
-
         return { isAuthorized: r.data.isAuthorized, guilds: r.data.guilds };
     }
 
@@ -104,9 +101,6 @@ export default class DiscordDataProxy {
                 Authorization: await getAuthAccessToken(),
             },
         });
-
-        if (!data) throw new NoDataError();
-
-        return data.result;
+        return data;
     }
 }

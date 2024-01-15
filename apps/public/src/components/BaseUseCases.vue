@@ -13,6 +13,12 @@
                 <div class="col-lg-12">
                     <hooper class="hooper-use-cases" :settings="hooperSettings">
                         <slide>
+                            <BaseSlideUseCase :content="content['titanborn']" />
+                        </slide>
+                        <slide>
+                            <BaseSlideUseCase :content="content['royal-dutch-mint']" />
+                        </slide>
+                        <slide>
                             <BaseSlideUseCase :content="content['carbify']" />
                         </slide>
                         <slide>

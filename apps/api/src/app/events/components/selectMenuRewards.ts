@@ -27,7 +27,7 @@ async function createSelectMenuRewards(guild: Guild) {
         const value = JSON.stringify({ questId, variant: reward.variant });
         const options = new StringSelectMenuOptionBuilder()
             .setLabel(reward.title)
-            .setDescription(`${reward.pointPrice} points (${RewardVariant[reward.variant]} Quest)`)
+            .setDescription(`${reward.pointPrice} points (${RewardVariant[reward.variant]} Reward)`)
             .setValue(value);
 
         select.addOptions(options);

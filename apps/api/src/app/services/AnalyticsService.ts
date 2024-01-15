@@ -88,7 +88,7 @@ async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date
     ] = await Promise.all([
         queryQuestEntries<MilestoneRewardDocument>({
             collectionName: 'milestonerewardclaims',
-            key: 'milestoneRewardId',
+            key: 'questId',
             model: MilestoneReward,
             poolId: String(pool._id),
             startDate,
@@ -106,7 +106,7 @@ async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date
         }),
         queryQuestEntries<PointRewardDocument>({
             collectionName: 'pointrewardclaims',
-            key: 'pointRewardId',
+            key: 'questId',
             model: PointReward,
             poolId: String(pool._id),
             startDate,
@@ -114,7 +114,7 @@ async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date
         }),
         queryQuestEntries<DailyRewardDocument>({
             collectionName: 'dailyrewardclaims',
-            key: 'dailyRewardId',
+            key: 'questId',
             model: DailyReward,
             poolId: String(pool._id),
             startDate,
@@ -122,7 +122,7 @@ async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date
         }),
         queryQuestEntries<Web3QuestDocument>({
             collectionName: 'web3questclaims',
-            key: 'web3QuestId',
+            key: 'questId',
             model: Web3Quest,
             poolId: String(pool._id),
             startDate,

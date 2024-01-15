@@ -2,6 +2,7 @@ import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { paginatedResults, PaginationResult } from '@thxnetwork/api/util/pagination';
 import { ReferralReward, ReferralRewardDocument } from '@thxnetwork/api/models/ReferralReward';
 import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
+import { WalletDocument } from '../models/Wallet';
 
 async function findByPool(assetPool: AssetPoolDocument, page: number, limit: number): Promise<PaginationResult> {
     const result = await paginatedResults(ReferralReward, page, limit, {
@@ -21,4 +22,14 @@ async function remove(reward: ReferralRewardDocument) {
     return deleteResult;
 }
 
-export default { findByPool, removeAllForPool, remove };
+async function findOne(quest: ReferralRewardDocument, wallet?: WalletDocument) {
+    return {
+        ...quest.toJSON(),
+        amount: quest.amount,
+        pointsAvailable: quest.amount,
+        pathname: quest.pathname,
+        successUrl: quest.successUrl,
+    };
+}
+
+export default { findOne, findByPool, removeAllForPool, remove };

@@ -24,7 +24,8 @@ export async function createTwitterQuests() {
             const latestTweetsForPoolOwner = await TwitterDataProxy.getLatestTweets(pool.sub, startDate, endDate);
             if (!latestTweetsForPoolOwner.length) continue;
 
-            const { hashtag, title, description, amount, isPublished } = pool.settings.defaults.conditionalRewards;
+            const { hashtag, title, description, amount, locks, isPublished } =
+                pool.settings.defaults.conditionalRewards;
             const latestTweets = await Promise.all(
                 latestTweetsForPoolOwner.map(async (tweet: any) => {
                     const isExistingQuest = await PointReward.exists({
@@ -53,6 +54,7 @@ export async function createTwitterQuests() {
                             title,
                             description,
                             amount,
+                            locks,
                             platform: RewardConditionPlatform.Twitter,
                             interaction: RewardConditionInteraction.TwitterLikeRetweet,
                             content: tweet.id,

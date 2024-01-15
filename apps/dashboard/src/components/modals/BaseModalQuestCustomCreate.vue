@@ -9,6 +9,8 @@
         @change-description="description = $event"
         @change-file="file = $event"
         @change-published="isPublished = $event"
+        @change-locks="locks = $event"
+        :pool="pool"
         :published="isPublished"
         :id="id"
         :error="error"
@@ -58,7 +60,7 @@
 <script lang="ts">
 import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { type TMilestoneReward } from '@thxnetwork/types/index';
+import { TQuestLock, type TMilestoneReward } from '@thxnetwork/types/index';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
@@ -86,6 +88,7 @@ export default class ModalQuestCustomCreate extends Vue {
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     eventName = '';
     file: File | null = null;
+    locks: TQuestLock[] = [];
 
     @Prop() id!: string;
     @Prop() total!: number;
@@ -101,6 +104,7 @@ export default class ModalQuestCustomCreate extends Vue {
         this.limit = this.reward && this.reward.limit ? this.reward.limit : this.limit;
         this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
         this.eventName = this.reward ? this.reward.eventName : this.eventName;
+        this.locks = this.reward ? this.reward.locks : this.locks;
     }
 
     onSubmit() {
@@ -120,6 +124,7 @@ export default class ModalQuestCustomCreate extends Vue {
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
                 index: !this.reward ? this.total : this.reward.index,
                 eventName: this.eventName,
+                locks: this.locks,
             })
             .then(() => {
                 this.$bvModal.hide(this.id);

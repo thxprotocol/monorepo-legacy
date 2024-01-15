@@ -9,6 +9,7 @@
         @change-info-links="infoLinks = Object.values($event)"
         @change-published="isPublished = $event"
         @change-date="expiryDate = $event"
+        @change-locks="locks = $event"
         :info-links="infoLinks"
         :id="id"
         :error="error"
@@ -16,6 +17,7 @@
         :published="isPublished"
         :disabled="isSubmitDisabled || !amount || !title"
         :quest="reward"
+        :pool="pool"
     >
         <template #col-left>
             <b-form-group label="Amount">
@@ -67,7 +69,7 @@
 <script lang="ts">
 import hljs from 'highlight.js/lib/core';
 import Shell from 'highlight.js/lib/languages/shell';
-import { type TReferralReward } from '@thxnetwork/types/index';
+import { TQuestLock, type TReferralReward } from '@thxnetwork/types/index';
 import { mapGetters } from 'vuex';
 import { UserProfile } from 'oidc-client-ts';
 import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
@@ -113,6 +115,7 @@ export default class ModalReferralRewardCreate extends Vue {
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     file: File | null = null;
     expiryDate: Date | number | null = null;
+    locks: TQuestLock[] = [];
 
     @Prop() id!: string;
     @Prop() total!: number;
@@ -141,6 +144,7 @@ export default class ModalReferralRewardCreate extends Vue {
         this.isVisibleCardWebhookQualify = this.reward ? !this.reward.successUrl : false;
         this.isMandatoryReview = this.reward ? this.reward.isMandatoryReview : this.isMandatoryReview;
         this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
+        this.locks = this.reward ? this.reward.locks : this.locks;
     }
 
     onChangeLink({ key, label, url }: TInfoLink & { key: number }) {
@@ -173,6 +177,7 @@ export default class ModalReferralRewardCreate extends Vue {
                 isMandatoryReview: this.isMandatoryReview,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
                 index: !this.reward ? this.total : this.reward.index,
+                locks: this.locks,
             })
             .then(() => {
                 this.$bvModal.hide(this.id);

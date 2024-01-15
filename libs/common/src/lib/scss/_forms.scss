@@ -1,3 +1,13 @@
 a i.fa-question-circle {
     color: $gray-400;
 }
+select[multiple='multiple'] {
+    padding: 0 !important;
+}
+select option {
+    padding: 0.5rem;
+}
+select option:checked {
+    background-color: var(--primary);
+    color: white;
+}

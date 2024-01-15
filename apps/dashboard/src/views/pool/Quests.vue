@@ -104,6 +104,12 @@
                     <b-badge variant="light" class="p-2 mr-2">
                         <i :class="questIconClassMap[item.quest.variant]" class="text-muted" />
                     </b-badge>
+                    <i
+                        v-if="item.quest.locks.length"
+                        class="fas fa-lock mx-1 text-muted"
+                        v-b-tooltip
+                        :title="`Locked with ${item.quest.locks.length} quest${item.quest.locks.length > 1 ? 's' : ''}`"
+                    />
                     {{ item.title }}
                 </template>
                 <template #cell(entries)="{ item }">
@@ -168,6 +174,7 @@ import BaseModalQuestInviteCreate from '@thxnetwork/dashboard/components/modals/
 import BaseModalQuestCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCustomCreate.vue';
 import BaseModalQuestWeb3Create from '@thxnetwork/dashboard/components/modals/BaseModalQuestWeb3Create.vue';
 import BaseModalQuestInviteClaims from '@thxnetwork/dashboard/components/modals/BaseModalQuestInviteClaims.vue';
+import BaseModalQuestGitcoinCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestGitcoinCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseBtnQuestEntries from '@thxnetwork/dashboard/components/buttons/BaseBtnQuestEntries.vue';
 import { hasPremiumAccess } from '@thxnetwork/common';
@@ -249,6 +256,15 @@ export const contentQuests = {
         docsUrl: 'https://docs.thx.network/user-guides/quests',
         color: '#3C3C3D',
     },
+    'gitcoin-quest': {
+        tag: 'Gitcoin Quest',
+        icon: 'fas fa-fingerprint',
+        title: 'Use Gitcoin Passport for sybil resistance',
+        description: 'Use this quest to verify if wallets are owned by real humans.',
+        list: ['Increase Sybil Resistance', 'Gitcoin Unique Humanity Scorer', 'Tap into new ecosystems'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests',
+        color: '#3498db',
+    },
 };
 @Component({
     components: {
@@ -258,6 +274,7 @@ export const contentQuests = {
         BaseModalQuestSocialCreate,
         BaseModalQuestCustomCreate,
         BaseModalQuestWeb3Create,
+        BaseModalQuestGitcoinCreate,
         BaseModalQuestInviteCreate,
         BaseModalQuestInviteClaims,
     },
@@ -289,6 +306,7 @@ export default class QuestsView extends Vue {
         [QuestVariant.Discord]: 'BaseModalQuestSocialCreate',
         [QuestVariant.Custom]: 'BaseModalQuestCustomCreate',
         [QuestVariant.Web3]: 'BaseModalQuestWeb3Create',
+        [QuestVariant.Gitcoin]: 'BaseModalQuestGitcoinCreate',
     };
     questIconClassMap = {
         [QuestVariant.Daily]: 'fas fa-calendar',
@@ -298,6 +316,7 @@ export default class QuestsView extends Vue {
         [QuestVariant.YouTube]: 'fab fa-youtube',
         [QuestVariant.Custom]: 'fas fa-flag',
         [QuestVariant.Web3]: 'fab fa-ethereum',
+        [QuestVariant.Gitcoin]: 'fas fa-fingerprint',
     };
     isPublished = true;
 
@@ -324,7 +343,7 @@ export default class QuestsView extends Vue {
             index: quest,
             checkbox: quest._id,
             title: quest.title,
-            points: quest.amount || `${quest.amounts.length} days`,
+            points: quest.amounts ? `${quest.amounts.length} days` : quest.amount,
             entries: quest.entryCount,
             expiry: quest.expiryDate ? format(new Date(quest.expiryDate), 'dd-MM-yyyy HH:mm') : 'Never',
             quest: quest,

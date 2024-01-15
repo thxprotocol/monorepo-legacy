@@ -8,29 +8,31 @@ import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile
 class DailyRewardModule extends VuexModule {
     @Action({ rawError: true })
     async create(quest: TDailyReward) {
-        const { data } = await axios({
+        const data = prepareFormDataForUpload(quest);
+        const response = await axios({
             method: 'POST',
             url: '/daily-rewards',
             headers: { 'X-PoolId': quest.poolId },
-            data: prepareFormDataForUpload(quest),
+            data,
         });
 
         const profile = this.context.rootGetters['account/profile'];
         track('UserCreates', [profile.sub, 'conditional reward']);
 
-        this.context.commit('pools/setQuest', { ...data }, { root: true });
+        this.context.commit('pools/setQuest', response.data, { root: true });
     }
 
     @Action({ rawError: true })
     async update(quest: TDailyReward) {
-        const { data } = await axios({
+        const data = prepareFormDataForUpload(quest);
+        const response = await axios({
             method: 'PATCH',
             url: `/daily-rewards/${quest._id}`,
             headers: { 'X-PoolId': quest.poolId },
-            data: prepareFormDataForUpload(quest),
+            data,
         });
 
-        this.context.commit('pools/setQuest', { ...data }, { root: true });
+        this.context.commit('pools/setQuest', response.data, { root: true });
     }
 
     @Action({ rawError: true })

@@ -1,17 +1,10 @@
 import { ChatInputCommandInteraction, StringSelectMenuInteraction, ButtonInteraction } from 'discord.js';
 import { handleError } from './commands/error';
-import {
-    onSelectCampaignConnect,
-    onSelectQuestComplete,
-    onClickQuestComplete,
-    onClickRewardList,
-    onClickQuestList,
-} from './handlers/index';
+import { onSelectQuestComplete, onClickQuestComplete, onClickRewardList, onClickQuestList } from './handlers/index';
 import { logger } from '../util/logger';
 import router from './commands/thx';
 
 export enum DiscordStringSelectMenuVariant {
-    CampaignConnect = 'thx.campaign.connect',
     QuestComplete = 'thx.campaign.quest.entry.create',
     RewardBuy = 'thx.campaign.reward.payment.create',
 }
@@ -24,7 +17,6 @@ export enum DiscordButtonVariant {
 }
 
 const stringSelectMenuMap = {
-    [DiscordStringSelectMenuVariant.CampaignConnect]: onSelectCampaignConnect,
     [DiscordStringSelectMenuVariant.QuestComplete]: onSelectQuestComplete,
 };
 

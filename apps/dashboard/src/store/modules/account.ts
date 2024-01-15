@@ -7,6 +7,12 @@ import { config } from '@thxnetwork/dashboard/utils/oidc';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import Mixpanel, { track } from '@thxnetwork/mixpanel';
 
+export type TAvailableGuild = {
+    id: string;
+    name: string;
+    icon: string;
+    permissions: any;
+};
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
     userManager: UserManager = new UserManager(config);
@@ -14,6 +20,7 @@ class AccountModule extends VuexModule {
     version = '';
     _user!: User;
     _profile: TAccount | null = null;
+    _guilds: TAvailableGuild[] = [];
 
     get user() {
         return this._user;
@@ -21,6 +28,15 @@ class AccountModule extends VuexModule {
 
     get profile() {
         return this._profile;
+    }
+
+    get guilds() {
+        return this._guilds;
+    }
+
+    @Mutation
+    setGuilds(guilds: TAvailableGuild[]) {
+        this._guilds = guilds;
     }
 
     @Mutation
@@ -37,6 +53,15 @@ class AccountModule extends VuexModule {
     setHealth(data: { version: string; artifacts: string }) {
         this.version = data.version;
         this.artifacts = data.artifacts;
+    }
+
+    @Action({ rawError: true })
+    async getGuilds() {
+        const { data } = await axios({
+            method: 'GET',
+            url: '/account/discord',
+        });
+        this.context.commit('setGuilds', data.guilds);
     }
 
     @Action({ rawError: true })

@@ -58,14 +58,6 @@
                             :claimLimit="claimLimit"
                             @change-reward-limit="limit = $event"
                         />
-                        <BaseCardTokenGating
-                            class="mb-3"
-                            :pool="pool"
-                            :reward="reward"
-                            @change-contract-address="tokenGatingContractAddress = $event"
-                            @change-amount="tokenGatingAmount = $event"
-                            @change-variant="tokenGatingVariant = $event"
-                        />
                         <b-form-group>
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
                         </b-form-group>
@@ -91,12 +83,10 @@
 <script lang="ts">
 import type { TERC20Perk, TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TokenGatingVariant } from '@thxnetwork/types/enums';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
-import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
 
 @Component({
     components: {
@@ -104,7 +94,6 @@ import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
         BaseDropdownSelectERC20,
-        BaseCardTokenGating,
     },
 })
 export default class ModalRewardERC20Create extends Vue {
@@ -123,9 +112,6 @@ export default class ModalRewardERC20Create extends Vue {
     imageFile: File | null = null;
     image = '';
     isPromoted = false;
-    tokenGatingContractAddress = '';
-    tokenGatingVariant = TokenGatingVariant.ERC20;
-    tokenGatingAmount = 0;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
@@ -143,11 +129,6 @@ export default class ModalRewardERC20Create extends Vue {
         this.claimAmount = this.reward ? this.reward.claimAmount : 0;
         this.image = this.reward && this.reward.image ? this.reward.image : '';
         this.isPromoted = this.reward ? this.reward.isPromoted : this.isPromoted;
-        this.tokenGatingContractAddress = this.reward
-            ? this.reward.tokenGatingContractAddress
-            : this.tokenGatingContractAddress;
-        this.tokenGatingVariant = this.reward ? this.reward.tokenGatingVariant : this.tokenGatingVariant;
-        this.tokenGatingAmount = this.reward ? this.reward.tokenGatingAmount : this.tokenGatingAmount;
     }
 
     onSubmit() {
@@ -170,9 +151,6 @@ export default class ModalRewardERC20Create extends Vue {
                     limit: this.limit,
                     file: this.imageFile,
                     isPromoted: this.isPromoted,
-                    tokenGatingContractAddress: this.tokenGatingContractAddress,
-                    tokenGatingVariant: this.tokenGatingVariant,
-                    tokenGatingAmount: this.tokenGatingAmount,
                 },
             })
             .then(() => {

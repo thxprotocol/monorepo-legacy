@@ -9,6 +9,7 @@
         @change-info-links="infoLinks = Object.values($event)"
         @change-published="isPublished = $event"
         @change-date="expiryDate = $event"
+        @change-locks="locks = $event"
         :published="isPublished"
         :info-links="infoLinks"
         :id="id"
@@ -16,6 +17,7 @@
         :loading="isLoading"
         :disabled="isSubmitDisabled || !amount || !title"
         :quest="reward"
+        :pool="pool"
     >
         <template #col-left>
             <b-form-group label="Amount">
@@ -35,7 +37,7 @@
 <script lang="ts">
 import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TPointReward, TAccount } from '@thxnetwork/types/interfaces';
+import type { TPointReward, TAccount, TQuestLock } from '@thxnetwork/types/interfaces';
 import { QuestVariant, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
 import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
 import { mapGetters } from 'vuex';
@@ -79,6 +81,7 @@ export default class ModalRewardPointsCreate extends Vue {
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     file: File | null = null;
     expiryDate: Date | number | null = null;
+    locks: TQuestLock[] = [];
 
     @Prop() id!: string;
     @Prop() variant!: string;
@@ -113,6 +116,7 @@ export default class ModalRewardPointsCreate extends Vue {
                   contentMetadata: {},
               };
         this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
+        this.locks = this.reward ? this.reward.locks : this.locks;
     }
 
     getConditionDefaults(questVariant: string) {
@@ -169,6 +173,7 @@ export default class ModalRewardPointsCreate extends Vue {
                 expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
                 page: this.reward ? this.reward.page : 1,
                 index: !this.reward ? this.total : this.reward.index,
+                locks: this.locks,
             })
             .then(() => {
                 this.$bvModal.hide(this.id);

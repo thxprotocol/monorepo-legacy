@@ -75,14 +75,6 @@
                             @change-date="expiryDate = $event"
                         />
                         <BaseCardRewardLimits class="mb-3" :limit="limit" @change-reward-limit="limit = $event" />
-                        <BaseCardTokenGating
-                            class="mb-3"
-                            :pool="pool"
-                            :reward="reward"
-                            @change-contract-address="tokenGatingContractAddress = $event"
-                            @change-amount="tokenGatingAmount = $event"
-                            @change-variant="tokenGatingVariant = $event"
-                        />
                         <BaseCardClaimAmount
                             :disabled="!!reward"
                             class="mb-3"
@@ -131,8 +123,6 @@ import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue'
 import BaseDropdownERC721ImportedToken from '../dropdowns/BaseDropdownERC721ImportedToken.vue';
 import BaseCardClaimAmount from '../cards/BaseCardClaimAmount.vue';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
-import { TokenGatingVariant } from '@thxnetwork/types/enums/TokenGatingVariant';
-import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 
 @Component({
@@ -145,7 +135,6 @@ import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
         BaseDropdownSelectERC721,
         BaseDropdownERC721ImportedToken,
         BaseCardClaimAmount,
-        BaseCardTokenGating,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -188,9 +177,6 @@ export default class ModalRewardERC721Create extends Vue {
     isPromoted = false;
     price = 0;
     priceCurrency = 'USD';
-    tokenGatingVariant = TokenGatingVariant.ERC721;
-    tokenGatingContractAddress = '';
-    tokenGatingAmount = 0;
     redirectUrl = '';
 
     @Prop() id!: string;
@@ -237,11 +223,6 @@ export default class ModalRewardERC721Create extends Vue {
         this.tokenId = this.reward && this.reward.tokenId ? this.reward.tokenId : this.tokenId;
         this.erc1155Amount =
             this.reward && this.reward.erc1155Amount ? Number(this.reward.erc1155Amount) : this.erc1155Amount;
-        this.tokenGatingContractAddress = this.reward
-            ? this.reward.tokenGatingContractAddress
-            : this.tokenGatingContractAddress;
-        this.tokenGatingVariant = this.reward ? this.reward.tokenGatingVariant : this.tokenGatingVariant;
-        this.tokenGatingAmount = this.reward ? this.reward.tokenGatingAmount : this.tokenGatingAmount;
         this.redirectUrl = this.reward ? this.reward.redirectUrl : this.redirectUrl;
     }
 
@@ -323,9 +304,6 @@ export default class ModalRewardERC721Create extends Vue {
             isPromoted: this.isPromoted,
             claimAmount: this.claimAmount,
             claimLimit: this.claimLimit,
-            tokenGatingContractAddress: this.tokenGatingContractAddress,
-            tokenGatingVariant: this.tokenGatingVariant,
-            tokenGatingAmount: this.tokenGatingAmount,
             redirectUrl: this.redirectUrl ? this.redirectUrl : undefined,
         };
 

@@ -7,9 +7,9 @@ import { Request, Response } from 'express';
 import { body, check } from 'express-validator';
 
 const validation = [
-    body('index').isInt(),
-    body('title').isString(),
-    body('description').isString(),
+    body('index').optional().isInt(),
+    body('title').optional().isString(),
+    body('description').optional().isString(),
     body('isPublished')
         .optional()
         .isBoolean()
@@ -19,7 +19,7 @@ const validation = [
         .custom((value, { req }) => {
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
-    body('amount').isInt({ gt: 0 }),
+    body('amount').optional().isInt(),
     body('expiryDate').optional().isISO8601(),
     body('infoLinks')
         .optional()
@@ -27,12 +27,19 @@ const validation = [
             return JSON.parse(infoLinks).filter((link: TInfoLink) => link.label.length && isValidUrl(link.url));
         }),
     body('limit').optional().isInt(),
+    body('locks')
+        .optional()
+        .custom((value) => {
+            const locks = JSON.parse(value);
+            return Array.isArray(locks);
+        })
+        .customSanitizer((locks) => JSON.parse(locks)),
 ];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsToken']
     const poolId = req.header('X-PoolId');
-    const { title, description, amount, limit, infoLinks, isPublished, expiryDate, eventName } = req.body;
+    const { title, description, amount, limit, infoLinks, isPublished, expiryDate, eventName, locks } = req.body;
     const image = req.file && (await ImageService.upload(req.file));
     const quest = await QuestService.create(QuestVariant.Custom, poolId, {
         title,
@@ -44,6 +51,7 @@ const controller = async (req: Request, res: Response) => {
         eventName,
         isPublished,
         expiryDate,
+        locks,
     });
 
     res.status(201).json(quest);

@@ -28,7 +28,7 @@ const controller = async (req: Request, res: Response) => {
 
     const amount = await QuestService.getAmount(variant, quest, account, wallet);
     const entry = await QuestService.complete(variant, amount, pool, quest, account, wallet, {
-        pointRewardId: quest._id,
+        questId: quest._id,
         platformUserId,
     });
 

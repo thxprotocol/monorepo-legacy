@@ -8,7 +8,7 @@
                 <b-form-input @change="onChangeServerId" :value="serverId" />
             </b-input-group>
         </b-form-group>
-        <b-form-group label="Invite URL" description="Make sure to set the correct expiry for this link in Discord.">
+        <b-form-group label="Invite URL">
             <b-form-input @change="onChangeInviteURL" :value="inviteURL" />
         </b-form-group>
     </div>
@@ -30,7 +30,10 @@ export default class BaseDropdownDiscordGuilds extends Vue {
 
     mounted() {
         this.serverId = this.content ? this.content : '';
-        this.inviteURL = this.contentMetadata ? this.contentMetadata.inviteURL : '';
+        if (this.contentMetadata) {
+            const { inviteURL } = JSON.parse(this.contentMetadata);
+            this.inviteURL = inviteURL;
+        }
     }
 
     onChangeServerId(serverId: string) {
@@ -48,10 +51,10 @@ export default class BaseDropdownDiscordGuilds extends Vue {
         this.inviteURL = url;
         this.$emit('selected', {
             content: this.serverId,
-            contentMetadata: {
+            contentMetadata: JSON.stringify({
                 serverId: this.serverId,
                 inviteURL: this.inviteURL,
-            },
+            }),
         });
     }
 }

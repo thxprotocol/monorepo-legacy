@@ -11,6 +11,7 @@ const discordGuildSchema = new mongoose.Schema(
         channelId: String,
         adminRoleId: String,
         name: String,
+        secret: String,
     },
     {
         timestamps: true,

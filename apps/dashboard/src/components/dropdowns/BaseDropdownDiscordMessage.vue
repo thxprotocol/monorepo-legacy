@@ -126,15 +126,3 @@ export default class BaseDropdownDiscordMessage extends Vue {
     }
 }
 </script>
-<style style="scss">
-select[multiple='multiple'] {
-    padding: 0 !important;
-}
-select option {
-    padding: 0.5rem;
-}
-select option:checked {
-    background-color: var(--primary);
-    color: white;
-}
-</style>

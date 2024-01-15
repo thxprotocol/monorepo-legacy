@@ -1,6 +1,6 @@
-import { TBasePerk } from './BaseReward';
+import { TBaseReward } from './BaseReward';
 
-export type TERC721Perk = TBasePerk & {
+export type TERC721Perk = TBaseReward & {
     erc1155Id: string;
     erc721Id: string;
     erc1155Amount: number;

@@ -9,29 +9,40 @@ import QuestService from '@thxnetwork/api/services/QuestService';
 
 const validation = [
     body('index').isInt(),
-    body('title').isString(),
-    body('description').isString(),
+    body('title').optional().isString(),
+    body('description').optional().isString(),
     body('isPublished')
         .optional()
         .isBoolean()
         .customSanitizer((value) => JSON.parse(value)),
-    body('amount').isInt({ gt: 0 }),
+    body('amount').optional().isInt(),
     check('file')
         .optional()
         .custom((value, { req }) => {
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
-    body('contracts').customSanitizer((contracts) => {
-        return JSON.parse(contracts).filter((contract: { address: string; chainId: ChainId }) =>
-            isAddress(contract.address),
-        );
-    }),
-    body('methodName').isString(),
+    body('contracts')
+        .optional()
+        .customSanitizer((contracts) => {
+            return JSON.parse(contracts).filter((contract: { address: string; chainId: ChainId }) =>
+                isAddress(contract.address),
+            );
+        }),
+    body('methodName').optional().isString(),
     body('expiryDate').optional().isISO8601(),
-    body('threshold').isInt(),
-    body('infoLinks').customSanitizer((infoLinks) => {
-        return JSON.parse(infoLinks).filter((link: TInfoLink) => link.label.length && isValidUrl(link.url));
-    }),
+    body('threshold').optional().isInt(),
+    body('infoLinks')
+        .optional()
+        .customSanitizer((infoLinks) => {
+            return JSON.parse(infoLinks).filter((link: TInfoLink) => link.label.length && isValidUrl(link.url));
+        }),
+    body('locks')
+        .optional()
+        .custom((value) => {
+            const locks = JSON.parse(value);
+            return Array.isArray(locks);
+        })
+        .customSanitizer((locks) => JSON.parse(locks)),
 ];
 
 const controller = async (req: Request, res: Response) => {

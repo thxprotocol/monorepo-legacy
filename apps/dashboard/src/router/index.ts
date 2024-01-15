@@ -53,7 +53,25 @@ const routes: Array<RouteConfig> = [
             {
                 name: 'integrations',
                 path: 'integrations',
+                redirect: 'integrations/discord',
                 component: () => import('../views/pool/Integrations.vue'),
+                children: [
+                    {
+                        name: 'IntegrationsDiscord',
+                        path: 'discord',
+                        component: () => import('../views/pool/integrations/Discord.vue'),
+                    },
+                    {
+                        name: 'IntegrationsTwitter',
+                        path: 'twitter',
+                        component: () => import('../views/pool/integrations/Twitter.vue'),
+                    },
+                    {
+                        name: 'IntegrationsTelegram',
+                        path: 'telegram',
+                        component: () => import('../views/pool/integrations/Telegram.vue'),
+                    },
+                ],
             },
             {
                 name: 'Developer',

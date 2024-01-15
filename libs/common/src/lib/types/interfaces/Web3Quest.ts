@@ -1,7 +1,7 @@
 import { ChainId } from '../enums';
-import { TBaseReward } from './BaseReward';
+import { TBaseQuest } from './BaseReward';
 
-export type TWeb3Quest = TBaseReward & {
+export type TWeb3Quest = TBaseQuest & {
     amount: number;
     methodName: string;
     threshold: number;
@@ -9,7 +9,7 @@ export type TWeb3Quest = TBaseReward & {
 };
 
 export type TWeb3QuestClaim = {
-    web3QuestId: string;
+    questId: string;
     sub: string;
     walletId: string;
     amount: number;

@@ -96,12 +96,12 @@
                     description="Your assets are stored in Safe's battle-tested multisigs."
                 >
                     <b-input-group>
-                        <b-form-input disabled :value="pool.address" />
+                        <b-form-input disabled :value="pool.safe && pool.safe.address" />
                         <template #append>
                             <b-button
                                 :disabled="!slug.length"
                                 variant="dark"
-                                v-clipboard:copy="pool.address"
+                                v-clipboard:copy="pool.safe && pool.safe.address"
                                 v-clipboard:success="() => (isCopied = true)"
                                 size="sm"
                                 class="ml-0 px-4"
@@ -112,7 +112,10 @@
                     </b-input-group>
                     <template #description>
                         Your assets are stored in
-                        <b-link :href="`https://app.safe.global/apps/open?safe=matic:${pool.address}`" target="_blank">
+                        <b-link
+                            :href="`https://app.safe.global/apps/open?safe=matic:${pool.safe && pool.safe.address}`"
+                            target="_blank"
+                        >
                             Safe's battle-tested multisigs
                         </b-link>
                     </template>
@@ -188,7 +191,6 @@ import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { hasBasicAccess } from '@thxnetwork/common';
 import type { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
 import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-items/BaseListItemCollaborator.vue';
-import BaseModalPoolTransfer from '@thxnetwork/dashboard/components/modals/BaseModalPoolTransfer.vue';
 import BaseDateDuration, { parseDateTime } from '@thxnetwork/dashboard/components/form-group/BaseDateDuration.vue';
 import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
 import slugify from '@thxnetwork/dashboard/utils/slugify';
@@ -197,7 +199,6 @@ import { WIDGET_URL } from '@thxnetwork/dashboard/config/secrets';
 @Component({
     components: {
         BaseListItemCollaborator,
-        BaseModalPoolTransfer,
         BaseDateDuration,
         BaseModalDelete,
     },

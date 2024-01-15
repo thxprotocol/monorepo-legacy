@@ -180,7 +180,7 @@ import xml2js from 'xml2js';
 import { jsPDF } from 'jspdf';
 import { type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TBaseReward } from '@thxnetwork/types/index';
+import { TBaseQuest } from '@thxnetwork/types/index';
 import { API_URL, BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
 import { saveAs } from 'file-saver';
@@ -236,7 +236,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
     isCopied: { [id: string]: boolean } = {};
 
     @Prop() id!: string;
-    @Prop() rewards!: { [id: string]: TBaseReward & { claims: TClaim[]; _id: string } };
+    @Prop() rewards!: { [id: string]: TBaseQuest & { claims: TClaim[]; _id: string } };
     @Prop() selectedItems!: string[];
     @Prop() pool!: TPool;
 

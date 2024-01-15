@@ -10,8 +10,8 @@ class IdentityManager extends BaseManager {
         return this.client.request.post('/v1/identity');
     }
 
-    get(uuid: string) {
-        return this.client.request.get(`/v1/identity/${uuid}`);
+    get(salt: string) {
+        return this.client.request.get(`/v1/identity/${salt}`);
     }
 }
 

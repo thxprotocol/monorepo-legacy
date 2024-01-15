@@ -11,6 +11,7 @@
                 {{ selectedDiscordChannel ? selectedDiscordChannel.name : 'Choose a notification channel...' }}
             </span>
         </template>
+        <b-dropdown-item @click="onClick({ channelId: '' })"> None </b-dropdown-item>
         <b-dropdown-item v-for="(channel, key) of guild.channels" @click="onClick(channel)" :key="key">
             <span style="font-family: sans-serif">
                 <i class="fas fa-hashtag text-dark mr-2" />
@@ -22,7 +23,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TDiscordChannel, TDiscordGuild } from '@thxnetwork/types/interfaces';
+import type { TDiscordGuild } from '@thxnetwork/types/interfaces';
 
 @Component({})
 export default class ModalRewardCustomCreate extends Vue {
@@ -34,8 +35,8 @@ export default class ModalRewardCustomCreate extends Vue {
         return this.guild.channels.find((channel) => channel.channelId === this.channelId);
     }
 
-    onClick(channel: TDiscordChannel) {
-        const guild = Object.assign(this.guild, { channelId: channel.channelId });
+    onClick({ channelId }: { channelId: string }) {
+        const guild = Object.assign(this.guild, { channelId });
         this.$emit('click', guild);
     }
 }

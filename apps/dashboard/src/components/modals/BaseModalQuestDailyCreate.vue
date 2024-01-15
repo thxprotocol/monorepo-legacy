@@ -9,6 +9,7 @@
         @change-file="file = $event"
         @change-published="isPublished = $event"
         @change-date="expiryDate = $event"
+        @change-locks="locks = $event"
         :info-links="infoLinks"
         :id="id"
         :error="error"
@@ -16,6 +17,7 @@
         :published="isPublished"
         :disabled="isSubmitDisabled || !title"
         :quest="reward"
+        :pool="pool"
     >
         <template #col-left>
             <b-form-group label="Amounts">
@@ -63,7 +65,7 @@
 </template>
 
 <script lang="ts">
-import type { TDailyReward, TInfoLink, TPool } from '@thxnetwork/types/interfaces';
+import type { TDailyReward, TInfoLink, TPool, TQuestLock } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { API_URL } from '@thxnetwork/dashboard/config/secrets';
@@ -97,6 +99,7 @@ export default class ModalRewardDailyCreate extends Vue {
     expiryDate: Date | number | null = null;
     eventName = '';
     isVisible = true;
+    locks: TQuestLock[] = [];
 
     @Prop() id!: string;
     @Prop() total!: number;
@@ -117,6 +120,7 @@ export default class ModalRewardDailyCreate extends Vue {
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
         this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
         this.eventName = this.reward ? this.reward.eventName : this.eventName;
+        this.locks = this.reward ? this.reward.locks : this.locks;
     }
 
     onSubmit() {
@@ -136,7 +140,8 @@ export default class ModalRewardDailyCreate extends Vue {
                 expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
                 page: this.reward ? this.reward.page : 1,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
-                index: !this.reward ? this.total : this.reward.index,
+                index: this.reward ? this.reward.index : this.total,
+                locks: JSON.stringify(this.locks),
             })
             .then(() => {
                 this.$bvModal.hide(this.id);

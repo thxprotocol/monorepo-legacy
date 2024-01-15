@@ -188,6 +188,24 @@ export const features = {
         list: ['Tailor rewards to user needs', 'Enhance user satisfaction', 'Drive app adoption'],
         docsUrl: 'https://docs.thx.network/rewards',
     },
+    'coupon-reward': {
+        tag: 'Coupon Reward',
+        image: require('../../public/assets/img/quest-custom.png'),
+        title: 'Coupon Codes',
+        description:
+            'Upload a set of coupon codes as rewards that could be used in webshops or alternative applications.',
+        list: ['Expand reach to offline users', 'Enhance user satisfaction', 'Boost ecommerce activity'],
+        docsUrl: 'https://docs.thx.network/rewards',
+    },
+    'discord-role-reward': {
+        tag: 'Discord Role Reward',
+        image: require('../../public/assets/img/quest-custom.png'),
+        title: 'Exclive Discord Roles',
+        description:
+            'Use our Discord Bot to reward users with an exclusive Discord role that for example gives access to a hidden channel.',
+        list: ['Grow your Discord server', 'Enhance community participation', 'Boost server activity'],
+        docsUrl: 'https://docs.thx.network/rewards',
+    },
     'qr-codes': {
         tag: 'QR Codes',
         image: '',
@@ -199,6 +217,29 @@ export const features = {
 };
 
 export const content = {
+    'titanborn': {
+        logo: require('../../public/assets/img/logo-titanborn.png'),
+        title: 'Titanborn',
+        lead: 'Titanborn converts their web traffic into campaign participants using a variety of social quests.',
+        description: 'Redeem your points for lootbox coupon codes that you can redeem in-game!',
+        features: [
+            features['discord-quest'],
+            features['twitter-quest'],
+            features['youtube-quest'],
+            features['coupon-reward'],
+        ],
+        video: 'https://www.youtube.com/embed/PChhRNrLFcc?rel=0',
+        to: '/use-cases/titanborn',
+    },
+    'royal-dutch-mint': {
+        logo: require('../../public/assets/img/logo-rdm.png'),
+        title: 'Royal Dutch Mint',
+        lead: 'The Royal Dutch Mint provides a digital twin NFT using QR codes on their coincard packaging.',
+        description: 'Claim your $RDM NFT collectible when you purchase your coincard.',
+        features: [features['qr-codes'], features['nft-reward']],
+        video: '',
+        to: '/use-cases/royal-dutch-mint',
+    },
     'forest-knight': {
         logo: require('../../public/assets/img/logo-forest-knight.png'),
         title: 'Forest Knight',

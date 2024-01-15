@@ -45,14 +45,6 @@
                             @change-date="expiryDate = $event"
                         />
                         <BaseCardRewardLimits class="mb-3" :limit="limit" @change-reward-limit="limit = $event" />
-                        <BaseCardTokenGating
-                            class="mb-3"
-                            :pool="pool"
-                            :perk="reward"
-                            @change-contract-address="tokenGatingContractAddress = $event"
-                            @change-amount="tokenGatingAmount = $event"
-                            @change-variant="tokenGatingVariant = $event"
-                        />
                         <b-form-group>
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
                         </b-form-group>
@@ -82,9 +74,8 @@ import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
-import BaseCardTokenGating from '../cards/BaseCardTokenGating.vue';
 import BaseDropdownDiscordRole from '../dropdowns/BaseDropdownDiscordRole.vue';
-import { TokenGatingVariant, RewardVariant } from '@thxnetwork/types/enums';
+import { RewardVariant } from '@thxnetwork/types/enums';
 import type { TAccount, TPool, TDiscordRoleReward } from '@thxnetwork/types/interfaces';
 
 @Component({
@@ -92,7 +83,6 @@ import type { TAccount, TPool, TDiscordRoleReward } from '@thxnetwork/types/inte
         BaseModal,
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
-        BaseCardTokenGating,
         BaseDropdownDiscordRole,
     },
     computed: mapGetters({
@@ -118,9 +108,6 @@ export default class ModalRewardCustomCreate extends Vue {
     image = '';
     webshopURL = '';
     isPromoted = false;
-    tokenGatingVariant = TokenGatingVariant.ERC721;
-    tokenGatingContractAddress = '';
-    tokenGatingAmount = 0;
     discordRoleId = '';
 
     @Prop() id!: string;
@@ -139,11 +126,6 @@ export default class ModalRewardCustomCreate extends Vue {
         this.limit = this.reward ? this.reward.limit : this.limit;
         this.image = this.reward ? this.reward.image : this.image;
         this.isPromoted = this.reward ? this.reward.isPromoted : this.isPromoted;
-        this.tokenGatingContractAddress = this.reward
-            ? this.reward.tokenGatingContractAddress
-            : this.tokenGatingContractAddress;
-        this.tokenGatingVariant = this.reward ? this.reward.tokenGatingVariant : this.tokenGatingVariant;
-        this.tokenGatingAmount = this.reward ? this.reward.tokenGatingAmount : this.tokenGatingAmount;
         this.discordRoleId = this.reward ? this.reward.discordRoleId : this.discordRoleId;
     }
 
@@ -165,9 +147,6 @@ export default class ModalRewardCustomCreate extends Vue {
             limit: this.limit,
             pointPrice: this.pointPrice,
             isPromoted: this.isPromoted,
-            tokenGatingContractAddress: this.tokenGatingContractAddress,
-            tokenGatingVariant: this.tokenGatingVariant,
-            tokenGatingAmount: this.tokenGatingAmount,
             discordRoleId: this.discordRoleId,
         };
 

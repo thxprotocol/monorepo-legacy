@@ -1,12 +1,13 @@
 import { TQuest } from '..';
-import { QuestVariant, RewardVariant, TokenGatingVariant } from '../enums';
+import { QuestVariant, RewardVariant } from '../enums';
 
 export type TInfoLink = {
     label: string;
     url: string;
 };
+export type TQuestLock = { variant: QuestVariant; questId: string };
 
-export type TBasePerk = {
+export type TBaseReward = {
     _id: string;
     uuid: string;
     poolId: string;
@@ -16,9 +17,6 @@ export type TBasePerk = {
     claimAmount: number;
     claimLimit: number;
     limit: number;
-    tokenGatingVariant: TokenGatingVariant;
-    tokenGatingContractAddress: string;
-    tokenGatingAmount: number;
     pointPrice: number;
     image: string;
     isPromoted: boolean;
@@ -28,9 +26,10 @@ export type TBasePerk = {
     updatedAt?: string;
     claims: [];
     isPublished: boolean;
+    locks: TQuestLock[];
 };
 
-export type TBaseReward = {
+export type TBaseQuest = {
     _id: string;
     uuid: string;
     poolId: string;
@@ -45,6 +44,7 @@ export type TBaseReward = {
     index: number;
     isPublished: boolean;
     expiryDate: Date;
+    locks: TQuestLock[];
     update: (payload: Partial<TQuest>) => Promise<void>;
     delete: (payload: Partial<TQuest>) => Promise<void>;
 };
