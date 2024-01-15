@@ -1,13 +1,11 @@
 <template>
     <div>
+        <b-alert show variant="warning" v-if="!account.discordAccess" class="d-flex align-items-center">
+            <i class="fab fa-discord mr-2" />
+            Please connect your Discord account!
+            <b-button size="sm" variant="primary" to="/account" class="ml-auto">Connect Discord</b-button>
+        </b-alert>
         <b-form-row>
-            <b-col md="4"> </b-col>
-            <b-col md="8">
-                <b-alert show variant="warning" v-if="!account.discordAccess">
-                    <i class="fab fa-discord mr-2" />
-                    Please <b-link to="/account">connect your Discord account!</b-link>!
-                </b-alert>
-            </b-col>
             <b-col md="4">
                 <div class="">
                     <strong>Servers</strong>
@@ -164,6 +162,7 @@ export default class IntegrationDiscordView extends Vue {
     }
 
     get options() {
+        if (!this.availableGuilds) return [];
         return this.availableGuilds
             .filter((guild: TAvailableGuild) => (guild.permissions & 0x00000008) === 0x00000008)
             .map((guild: TAvailableGuild) => {
