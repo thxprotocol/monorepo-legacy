@@ -4,9 +4,12 @@ import ListController from './list.controller';
 import CreateController from './post.controller';
 import ReadController from './get.controller';
 import DeleteController from './delete.controller';
-import routerTransferRefresh from './refresh/refresh.router';
+import RouterTransferRefresh from './refresh/refresh.router';
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
+
+// No scopes checks as this should be publically accessible if the :token param is known
+router.get('/:token', assertRequestInput(ReadController.validation), ReadController.controller);
 
 router.get(
     '/',
@@ -15,7 +18,6 @@ router.get(
     assertRequestInput(ListController.validation),
     ListController.controller,
 );
-router.get('/:token', assertRequestInput(ReadController.validation), ReadController.controller);
 router.post(
     '/',
     guard.check(['pools:read', 'pools:write']),
@@ -31,6 +33,6 @@ router.delete(
     DeleteController.controller,
 );
 
-router.use('/refresh', routerTransferRefresh);
+router.use('/refresh', RouterTransferRefresh);
 
 export default router;
