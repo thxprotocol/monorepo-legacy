@@ -247,6 +247,7 @@ class PoolModule extends VuexModule {
 
         const quests = this._quests[quest.poolId].results;
         const index = quests.findIndex((q) => q._id === quest._id);
+
         Vue.set(this._quests[quest.poolId].results, index, quest);
     }
 

@@ -60,7 +60,8 @@ export default class BaseCardQuestLocks extends Vue {
     }
 
     async mounted() {
-        await this.getQuests();
+        // Not calling this as it would override global state and causes issues for unpulished quests
+        // await this.getQuests();
         this.selectedLocks = this.locks.map((lock: TQuestLock) => {
             const quest = this.quests.find((q) => q._id === lock.questId);
             return { variant: quest.variant, questId: quest._id };

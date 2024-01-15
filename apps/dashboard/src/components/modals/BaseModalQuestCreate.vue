@@ -103,7 +103,6 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import type { TInfoLink, TPool, TQuest, TQuestLock } from '@thxnetwork/types/interfaces';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
-import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
 import BaseCardRewardExpiry from '@thxnetwork/dashboard/components/cards/BaseCardRewardExpiry.vue';
 import BaseCardInfoLinks from '@thxnetwork/dashboard/components/cards/BaseCardInfoLinks.vue';
 import BaseCardQuestLocks from '@thxnetwork/dashboard/components/cards/BaseCardQuestLocks.vue';
@@ -112,7 +111,6 @@ import BaseCardQuestLocks from '@thxnetwork/dashboard/components/cards/BaseCardQ
     components: {
         BaseModal,
         BaseCardRewardExpiry,
-        BaseCardURLWebhook,
         BaseCardInfoLinks,
         BaseCardQuestLocks,
     },
