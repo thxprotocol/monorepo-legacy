@@ -191,7 +191,6 @@ import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { hasBasicAccess } from '@thxnetwork/common';
 import type { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
 import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-items/BaseListItemCollaborator.vue';
-import BaseModalPoolTransfer from '@thxnetwork/dashboard/components/modals/BaseModalPoolTransfer.vue';
 import BaseDateDuration, { parseDateTime } from '@thxnetwork/dashboard/components/form-group/BaseDateDuration.vue';
 import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
 import slugify from '@thxnetwork/dashboard/utils/slugify';
@@ -200,7 +199,6 @@ import { WIDGET_URL } from '@thxnetwork/dashboard/config/secrets';
 @Component({
     components: {
         BaseListItemCollaborator,
-        BaseModalPoolTransfer,
         BaseDateDuration,
         BaseModalDelete,
     },
