@@ -2,7 +2,7 @@ import { MessageReaction } from 'discord.js';
 import { logger } from '../util/logger';
 import DiscordReaction from '../models/DiscordReaction';
 
-const onInteractionCreated = async (reaction: MessageReaction) => {
+const onMessageReactionAdd = async (reaction: MessageReaction) => {
     try {
         const users = await reaction.users.fetch();
         const promises = users.map((user) => {
@@ -30,4 +30,4 @@ const onInteractionCreated = async (reaction: MessageReaction) => {
     }
 };
 
-export default onInteractionCreated;
+export default onMessageReactionAdd;

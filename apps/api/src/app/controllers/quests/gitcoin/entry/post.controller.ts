@@ -40,7 +40,7 @@ const controller = async (req: Request, res: Response) => {
         return res.json({ error: 'You have claimed this quest already.' });
     }
 
-    const { score, error } = await GitcoinService.getScoreUniqueHumanity(quest.scorerId, address);
+    const { score, error } = await GitcoinService.getScoreUniqueHumanity(quest.scorerId, address.toLowerCase());
     if (error) return res.json({ error });
     if (score < quest.score)
         return res.json({ error: `Your score ${score || 0}/100 does not meet the minimum of ${quest.score}/100.` });

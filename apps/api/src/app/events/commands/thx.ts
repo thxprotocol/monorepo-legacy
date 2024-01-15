@@ -22,6 +22,9 @@ export const commands: any[] = [
             option.setName('amount').setDescription('The amount of points to transfer').setRequired(true),
         )
         .addStringOption((option) =>
+            option.setName('campaign').setDescription('Campaign to search for').setAutocomplete(true),
+        )
+        .addStringOption((option) =>
             option.setName('secret').setDescription('The optional secret for increased security'),
         ),
     new SlashCommandBuilder()

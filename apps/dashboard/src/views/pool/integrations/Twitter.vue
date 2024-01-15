@@ -17,7 +17,7 @@
                 </div>
                 <p class="text-muted">Automatically create Repost & Like Quests for your posts on X.</p>
             </b-col>
-            <b-col md="8" v-if="pool.owner">
+            <b-col md="8">
                 <b-form-group description="Searches for new posts in your connected account every 15 minutes">
                     <b-form-checkbox
                         v-model="isTwitterSyncEnabled"
@@ -26,8 +26,13 @@
                         class="m-0"
                     >
                         Enable automated <strong>Twitter Quests</strong>
-                        <template v-if="pool.owner.twitterAccess && pool.owner.twitterUsername">
-                            for <code>@{{ pool.owner.twitterUsername }}</code>
+                        <template v-if="pool.owner && pool.owner.twitterAccess && pool.owner.twitterUsername">
+                            for
+                            <code>
+                                @{{
+                                    pool.owner.connectedAccounts.find(({ kind }) => kind == 'twitter').metadata.username
+                                }}
+                            </code>
                         </template>
                     </b-form-checkbox>
                 </b-form-group>
