@@ -19,4 +19,17 @@ async function getIsLocked(locks: TQuestLock[], wallet: WalletDocument) {
         .includes(false);
 }
 
-export default { getIsLocked };
+async function removeAllLocks(questId: string) {
+    for (const variant in questMap) {
+        const { models } = questMap[variant];
+        const lockedQuests = await models.quest.find({ 'locks.questId': questId });
+        for (const lockedQuest of lockedQuests) {
+            const index = lockedQuest.locks.findIndex((lock: TQuestLock) => lock.questId === questId);
+            const locks = lockedQuest.locks.splice(index, 1);
+
+            await lockedQuest.updateOne({ locks });
+        }
+    }
+}
+
+export default { getIsLocked, removeAllLocks };

@@ -4,7 +4,7 @@ import CreateController from './post.controller';
 import ListController from './list.controller';
 import DeleteController from './delete.controller';
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.get(
     '/',

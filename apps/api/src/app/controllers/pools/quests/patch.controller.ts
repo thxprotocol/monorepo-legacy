@@ -30,10 +30,6 @@ const validationBaseQuest = [
             return Array.isArray(locks);
         })
         .customSanitizer((locks) => JSON.parse(locks)),
-    // Should be SocialQuest only
-    body('contentMetadata')
-        .optional()
-        .customSanitizer((contentMetadata) => contentMetadata && JSON.parse(contentMetadata)),
 ];
 
 const validation = [param('id').isMongoId(), ...validationBaseQuest];

@@ -10,15 +10,10 @@ import { client } from '@thxnetwork/api/../discord';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import DiscordGuild, { DiscordGuildDocument } from '@thxnetwork/api/models/DiscordGuild';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import { safeVersion } from '@thxnetwork/api/config/contracts';
 import { logger } from '@thxnetwork/api/util/logger';
-
-function discordColorToHex(discordColorCode) {
-    return `#${discordColorCode.toString(16).padStart(6, '0')}`;
-}
 
 export const validation = [param('id').isMongoId()];
 
@@ -38,35 +33,18 @@ export const controller = async (req: Request, res: Response) => {
         logger.info(`[${req.params.id}] Deployed Campaign Safe ${safe.address}`);
     }
 
-    const widget = await Widget.findOne({ poolId: req.params.id });
-    const brand = await BrandService.get(req.params.id);
-    const subscriberCount = await PoolSubscription.countDocuments({ poolId: req.params.id });
-    const wallets = await Wallet.find({ poolId: req.params.id });
-    const collabs = await Collaborator.find({ poolId: req.params.id });
-    const collaborators = await Promise.all(
-        collabs.map(async (collaborator: CollaboratorDocument) => {
-            if (collaborator.sub) {
-                const account = await AccountProxy.getById(collaborator.sub);
-                return { ...collaborator.toJSON(), account };
-            }
-            return collaborator;
-        }),
-    );
-    const owner = await AccountProxy.getById(pool.sub);
-    const discordGuilds = await DiscordGuild.find({ poolId: pool._id });
-    const promises = discordGuilds.map(async (guild: DiscordGuildDocument) => {
-        const g = await client.guilds.fetch(guild.guildId);
-        const roles = g.roles.cache.map((role) => ({
-            id: role.id,
-            name: role.name,
-            color: discordColorToHex(role.color),
-        }));
-        const channels = (await g.channels.fetch()).map((c) => ({ name: c.name, channelId: c.id }));
-        return { ...guild.toJSON(), channels, roles };
-    });
-    const guilds = await Promise.all(promises);
-    const events = await Event.find({ poolId: pool._id }).distinct('name');
-    const identities = await Identity.find({ poolId: pool._id });
+    const [widget, brand, wallets, collaborators, owner, events, identities, guilds, subscriberCount] =
+        await Promise.all([
+            Widget.findOne({ poolId: req.params.id }),
+            BrandService.get(req.params.id),
+            Wallet.find({ poolId: req.params.id }),
+            PoolService.findCollaborators(pool),
+            AccountProxy.getById(pool.sub),
+            Event.find({ poolId: pool._id }).distinct('name'),
+            Identity.find({ poolId: pool._id }),
+            PoolService.findGuilds(pool),
+            PoolSubscription.countDocuments({ poolId: req.params.id }),
+        ]);
 
     res.json({
         ...pool.toJSON(),
@@ -78,10 +56,10 @@ export const controller = async (req: Request, res: Response) => {
         widget,
         brand,
         guilds,
-        latestVersion: currentVersion,
         subscriberCount,
         owner,
         collaborators,
+        latestVersion: currentVersion,
     });
 };
 

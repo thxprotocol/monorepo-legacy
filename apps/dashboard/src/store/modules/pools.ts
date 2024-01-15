@@ -1,5 +1,6 @@
 import type {
     TAccount,
+    TDiscordGuild,
     TEvent,
     TPaginationResult,
     TPool,
@@ -142,6 +143,12 @@ export type TQuestEntryState = {
     };
 };
 
+export type TGuildState = {
+    [poolId: string]: {
+        [guildId: string]: TDiscordGuild;
+    };
+};
+
 export type TEventState = {
     [poolId: string]: {
         [eventId: string]: TEvent[];
@@ -151,6 +158,7 @@ export type TEventState = {
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
     _all: IPools = {};
+    _guilds: TGuildState = {};
     _quests: TQuestState = {};
     _entries: TQuestEntryState = {};
     _events: TEventState = {};
@@ -160,6 +168,10 @@ class PoolModule extends VuexModule {
 
     get all() {
         return this._all;
+    }
+
+    get guilds() {
+        return this._guilds;
     }
 
     get quests() {
@@ -264,6 +276,17 @@ class PoolModule extends VuexModule {
         Vue.set(this._entries[quest.poolId], String(quest._id), entries);
     }
 
+    @Mutation
+    setGuild(guild: TDiscordGuild) {
+        if (!this._guilds[guild.poolId]) Vue.set(this._guilds, guild.poolId, {});
+        Vue.set(this._guilds[guild.poolId], guild._id, { ...guild, isShownSecret: false });
+    }
+
+    @Mutation
+    unsetGuild(guild: TDiscordGuild) {
+        Vue.delete(this._guilds[guild.poolId], guild._id);
+    }
+
     @Action({ rawError: true })
     async listEvents({ pool, page, limit }) {
         const { data } = await axios({
@@ -273,6 +296,39 @@ class PoolModule extends VuexModule {
             params: { page, limit },
         });
         this.context.commit('setEvents', { poolId: pool._id, result: data });
+    }
+
+    @Action
+    async removeGuild(payload: TDiscordGuild) {
+        await axios({
+            method: 'DELETE',
+            url: `/pools/${payload.poolId}/guilds/${payload._id}`,
+            headers: { 'X-PoolId': payload.poolId },
+            data: payload,
+        });
+        this.context.commit('unsetGuild', payload);
+    }
+
+    @Action
+    async updateGuild(payload: TDiscordGuild) {
+        await axios({
+            method: 'PATCH',
+            url: `/pools/${payload.poolId}/guilds/${payload._id}`,
+            headers: { 'X-PoolId': payload.poolId },
+            data: payload,
+        });
+        this.context.commit('setGuild', payload);
+    }
+
+    @Action
+    async createGuild(payload: TDiscordGuild) {
+        const { data } = await axios({
+            method: 'POST',
+            url: `/pools/${payload.poolId}/guilds`,
+            headers: { 'X-PoolId': payload.poolId },
+            data: payload,
+        });
+        this.context.commit('setGuild', data);
     }
 
     @Action
@@ -418,6 +474,8 @@ class PoolModule extends VuexModule {
         });
 
         this.context.commit('set', r.data);
+
+        r.data.guilds.forEach((guild: TDiscordGuild) => this.context.commit('setGuild', guild));
 
         return r.data;
     }

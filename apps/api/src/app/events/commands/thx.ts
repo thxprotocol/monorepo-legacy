@@ -4,14 +4,13 @@ import {
     onSubcommandBuy,
     onSubcommandComplete,
     onSubcommandInfo,
-    onSubcommandConnect,
     onSubcommandPoints,
 } from './thx/index';
 
 export const commands: any[] = [
     new SlashCommandBuilder().setName('connect').setDescription('Connect your server to a campaign.'),
     new SlashCommandBuilder().setName('quest').setDescription('Complete a quest.'),
-    // new SlashCommandBuilder().setName('buy').setDescription('Buy a reward from the shop.'),
+    new SlashCommandBuilder().setName('buy').setDescription('Buy a reward from the shop.'),
     new SlashCommandBuilder().setName('info').setDescription('Campaign and participant info.'),
     new SlashCommandBuilder()
         .setName('remove-points')
@@ -21,6 +20,9 @@ export const commands: any[] = [
         )
         .addIntegerOption((option) =>
             option.setName('amount').setDescription('The amount of points to transfer').setRequired(true),
+        )
+        .addStringOption((option) =>
+            option.setName('secret').setDescription('The optional secret for increased security'),
         ),
     new SlashCommandBuilder()
         .setName('give-points')
@@ -30,6 +32,9 @@ export const commands: any[] = [
         )
         .addIntegerOption((option) =>
             option.setName('amount').setDescription('The amount of points to transfer').setRequired(true),
+        )
+        .addStringOption((option) =>
+            option.setName('secret').setDescription('The optional secret for increased security'),
         ),
 ];
 
@@ -37,7 +42,6 @@ export default {
     data: commands,
     executor: (interaction: CommandInteraction) => {
         const commandMap = {
-            'connect': () => onSubcommandConnect(interaction),
             'quest': () => onSubcommandComplete(interaction),
             'buy': () => onSubcommandBuy(interaction),
             'info': () => onSubcommandInfo(interaction),

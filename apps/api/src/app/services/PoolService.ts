@@ -17,7 +17,7 @@ import { Web3Quest } from '../models/Web3Quest';
 import { CustomReward } from '../models/CustomReward';
 import { Participant } from '../models/Participant';
 import { PointBalance } from './PointBalanceService';
-import { Collaborator } from '../models/Collaborator';
+import { Collaborator, CollaboratorDocument } from '../models/Collaborator';
 import { DASHBOARD_URL } from '../config/secrets';
 import { WalletDocument } from '../models/Wallet';
 import { PointBalanceDocument } from '../models/PointBalance';
@@ -26,6 +26,8 @@ import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from './MailService';
 import SafeService from './SafeService';
+import DiscordGuild, { DiscordGuildDocument } from '../models/DiscordGuild';
+import { client } from '../../discord';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -260,6 +262,47 @@ async function inviteCollaborator(pool: AssetPoolDocument, email: string) {
     return collaborator;
 }
 
+function discordColorToHex(discordColorCode) {
+    return `#${discordColorCode.toString(16).padStart(6, '0')}`;
+}
+
+async function findGuilds(pool: AssetPoolDocument) {
+    const discordGuilds = await DiscordGuild.find({ poolId: pool._id });
+    const fetchGuild = async (guildId: string) => {
+        try {
+            return await client.guilds.fetch(guildId);
+        } catch (res) {
+            return;
+        }
+    };
+    const promises = discordGuilds.map(async (guild: DiscordGuildDocument) => {
+        const g = await fetchGuild(guild.guildId);
+        if (!g) return { ...guild.toJSON(), isInstalled: false };
+
+        const roles = g.roles.cache.map((role) => ({
+            id: role.id,
+            name: role.name,
+            color: discordColorToHex(role.color),
+        }));
+        const channels = (await g.channels.fetch()).map((c) => ({ name: c.name, channelId: c.id }));
+
+        return { ...guild.toJSON(), channels, roles, isInstalled: true };
+    });
+    return await Promise.all(promises);
+}
+
+async function findCollaborators(pool: AssetPoolDocument) {
+    const collabs = await Collaborator.find({ poolId: pool._id });
+    const promises = collabs.map(async (collaborator: CollaboratorDocument) => {
+        if (collaborator.sub) {
+            const account = await AccountProxy.getById(collaborator.sub);
+            return { ...collaborator.toJSON(), account };
+        }
+        return collaborator;
+    });
+    return await Promise.all(promises);
+}
+
 export default {
     isPoolClient,
     hasAccess,
@@ -273,5 +316,7 @@ export default {
     getQuestCount,
     getRewardCount,
     findParticipants,
+    findGuilds,
+    findCollaborators,
     inviteCollaborator,
 };

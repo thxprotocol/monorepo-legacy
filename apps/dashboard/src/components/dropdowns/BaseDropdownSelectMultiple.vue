@@ -6,23 +6,25 @@
         toggle-class="d-flex justify-content-between align-items-center p-2 px-3 form-control"
     >
         <template #button-content>
-            <b-badge
-                v-for="(option, key) of selected"
-                variant="primary"
-                :key="key"
-                class="p-1 pl-3 font-weight-normal center-center d-inline-flex mr-2 rounded-pill"
-            >
-                {{ option.label }}
-                <b-button
-                    variant="dark"
-                    size="sm"
-                    class="rounded-pill p-0 ml-2"
-                    @click="$emit('remove', option.value)"
-                    style="height: 25px; width: 25px"
+            <div>
+                <b-badge
+                    v-for="(option, key) of selected"
+                    variant="primary"
+                    :key="key"
+                    class="p-1 pl-3 font-weight-normal center-center d-inline-flex mr-2 rounded-pill"
                 >
-                    <i class="fas fa-times ml-0" style="margin: 0" />
-                </b-button>
-            </b-badge>
+                    {{ option.label }}
+                    <b-button
+                        variant="dark"
+                        size="sm"
+                        class="rounded-pill p-0 ml-2"
+                        @click="$emit('remove', option.value)"
+                        style="height: 25px; width: 25px"
+                    >
+                        <i class="fas fa-times ml-0" style="margin: 0" />
+                    </b-button>
+                </b-badge>
+            </div>
         </template>
         <b-dropdown-item-btn
             v-for="(option, key) of options"

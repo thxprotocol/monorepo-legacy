@@ -4,7 +4,7 @@ import CreateController from './post.controller';
 import UpdateController from './patch.controller';
 import RemoveController from './delete.controller';
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.post(
     '/',

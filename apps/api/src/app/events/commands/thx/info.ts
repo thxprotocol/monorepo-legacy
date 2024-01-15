@@ -63,7 +63,6 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
             title: `${pool.settings.title}`,
             description: pool.settings.description ? `${pool.settings.description}` : ` `,
             color,
-            image: { url: brand.backgroundImgUrl },
             fields: [
                 {
                     name: `Name`,
@@ -81,6 +80,10 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
                 },
             ],
         } as Embed;
+
+        if (brand && brand.backgroundImgUrl) {
+            embed['image'] = { url: brand && brand.backgroundImgUrl };
+        }
 
         if (brand && brand.logoImgUrl) {
             embed['thumbnail'] = {

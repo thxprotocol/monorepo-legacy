@@ -44,7 +44,7 @@ export async function onClickRewardList(interaction: ButtonInteraction) {
             {
                 title: `🎁 Rewards`,
                 description: rewards.length
-                    ? 'Use `/thx redeem` to buy rewards with points. \n ```' + code + `\n` + '```'
+                    ? 'Use `/buy` to buy rewards with points. \n ```' + code + `\n` + '```'
                     : 'No rewards available!',
             },
         ];
