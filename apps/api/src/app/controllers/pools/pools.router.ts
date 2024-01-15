@@ -15,7 +15,6 @@ import RouterQuests from './quests/quests.router';
 import RouterGuilds from './guilds/guilds.router';
 import RouterTopups from './topup/topup.router';
 import RouterWallets from './wallets/wallets.router';
-import RouterTransfers from './transfers/transfers.router';
 
 const router = express.Router({ mergeParams: true });
 
@@ -48,10 +47,10 @@ router.delete(
     DeleteController.controller,
 );
 router.use('/:id/subscription', RouterSubscriptions); // TODO Should not be in /pools but root resource instead
+
 router.use('/:id/collaborators', RouterCollaborators);
 router.use('/:id/participants', RouterParticipants);
 router.use('/:id/topup', RouterTopups);
-router.use('/:id/transfers', RouterTransfers);
 router.use('/:id/wallets', RouterWallets);
 router.use('/:id/quests', RouterQuests);
 router.use('/:id/events', RouterEvents);
