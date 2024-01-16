@@ -33,6 +33,7 @@ const cache: { [key in TNetworkName]: { versions: string[]; contracts: { [versio
 };
 
 const getArtifacts = (network: TNetworkName, version: string) => {
+    console.log(network, version, cache[network].contracts);
     if (!cache[network].contracts[version]) {
         const v = network === 'hardhat' ? 'latest' : version;
         // eslint-disable-next-line @typescript-eslint/no-var-requires
