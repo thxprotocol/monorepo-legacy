@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-
+pragma abicoder v2;
 pragma solidity ^0.7.6;
 
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
@@ -17,6 +17,6 @@ contract ExamplePool is ERC20 {
     }
 
     function joinPool(bytes32 poolId, address sender, address recipient, JoinPoolRequest calldata request) public {
-        _mint(recipient, request.maxAmountsIn);
+        _mint(recipient, request.maxAmountsIn[0]);
     }
 }

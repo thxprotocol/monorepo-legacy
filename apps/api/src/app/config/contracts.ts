@@ -43,9 +43,8 @@ export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: 
 export const getContractConfig = (
     chainId: ChainId,
     contractName: TokenContractName,
-    version?: string,
 ): { address: string; abi: AbiItem[] } => {
-    return contractConfig(chainIdToName(chainId), contractName, version);
+    return contractConfig(chainIdToName(chainId), contractName);
 };
 
 export const getContractFromAbi = (chainId: ChainId, abi: AbiItem[], address?: string): Contract => {
@@ -66,8 +65,8 @@ export const getContractFromName = (chainId: ChainId, contractName: TokenContrac
     return getContractFromAbi(chainId, getAbiForContractName(contractName), address);
 };
 
-export const getContract = (chainId: ChainId, contractName: TokenContractName, version?: string) => {
-    return getContractFromName(chainId, contractName, getContractConfig(chainId, contractName, version).address);
+export const getContract = (chainId: ChainId, contractName: TokenContractName) => {
+    return getContractFromName(chainId, contractName, getContractConfig(chainId, contractName).address);
 };
 
 const chainIdToName = (chainId: ChainId): TNetworkName => {
