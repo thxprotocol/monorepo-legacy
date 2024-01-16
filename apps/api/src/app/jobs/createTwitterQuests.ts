@@ -88,7 +88,7 @@ export async function createTwitterQuests() {
                     }
                 }),
             );
-            console.log({ quests });
+
             const subject = `Published ${quests.length} quest${quests.length && 's'}!`;
             const message = `We have detected ${quests.length} new tweet${quests.length && 's'}. A Twitter Quest ${
                 quests.length && 'for each'
