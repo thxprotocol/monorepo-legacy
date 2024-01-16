@@ -1,6 +1,6 @@
 import db from '@thxnetwork/api/util/database';
 import { mockStart } from './mock';
-import { getContractConfig, safeVersion } from '@thxnetwork/api/config/contracts';
+import { safeVersion } from '@thxnetwork/api/config/contracts';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { ChainId } from '@thxnetwork/types/enums';
 import { sub, sub2, sub3, userWalletAddress, userWalletAddress2, userWalletAddress3 } from './constants';
@@ -14,7 +14,8 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
     mockStart();
 
     const { web3, defaultAccount, ethAdapter } = getProvider(ChainId.Hardhat);
-    const fn = () => web3.eth.getCode(getContractConfig(ChainId.Hardhat, 'THX_ERC1155').address);
+    const lastDeployedContractAddress = '0xeDdBA2bDeE7c9006944aCF9379Daa64478E02290';
+    const fn = () => web3.eth.getCode(lastDeployedContractAddress);
     const fnCondition = (result: string) => result === '0x';
 
     await poll(fn, fnCondition, 500);

@@ -18,7 +18,6 @@ import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { poll } from '@thxnetwork/api/util/polling';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 
 const user = request.agent(app);

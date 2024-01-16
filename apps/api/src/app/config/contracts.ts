@@ -19,6 +19,7 @@ export const safeVersion: SafeVersion = '1.3.0';
 
 export const contractNetworks = {
     '31337': {
+        // Safe
         safeMasterCopyAddress: '0xC44951780f195Ed71145e3d0d2F25726A097C348',
         safeProxyFactoryAddress: '0x1122fD9eBB2a8E7c181Cc77705d2B4cA5D72988A',
         multiSendAddress: '0x7E4728eFfC9376CC7C0EfBCc779cC9833D83a984',
@@ -27,6 +28,11 @@ export const contractNetworks = {
         signMessageLibAddress: '0x658FAD2acB6d1E615f295E566ee9a6d32Cc97b10',
         createCallAddress: '0x40Efd8a16485213445E6d8b9a4266Fd2dFf7C69a',
         simulateTxAccessorAddress: '0xFF1eE64b8806C0891e8F73b37f8403F441b552E1',
+        // Tokens
+        LimitedSupplyToken: '0xf228ADAa4c3D07C8285C1025421afe2c4F320C59',
+        UnlimitedSupplyToken: '0x8613B8E442219e4349fa5602C69431131a7ED114',
+        NonFungibleToken: '0x8B219D3d1FC64e03F6cF3491E7C7A732bF253EC8',
+        THX_ERC1155: '0xeDdBA2bDeE7c9006944aCF9379Daa64478E02290',
     },
 } as ContractNetworksConfig;
 
