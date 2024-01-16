@@ -248,6 +248,20 @@ export class TwitterService {
         return data.data;
     }
 
+    static async searchTweets(token: IAccessToken, hashtag: string, startDate: Date, endDate: Date) {
+        const { data } = await twitterClient({
+            url: '/tweets/search/recent',
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token.accessToken}`,
+            },
+            params: {
+                query: `from:${token.userId} ${hashtag}`,
+            },
+        });
+        return data.data;
+    }
+
     static async getLatestTweets(token: IAccessToken, startDate: Date, endDate: Date) {
         const { data } = await twitterClient({
             url: `/users/${token.userId}/tweets`,

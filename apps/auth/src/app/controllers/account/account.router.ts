@@ -13,6 +13,7 @@ import { validate } from '../../util/validate';
 import { guard, validateJwt } from '../../middlewares';
 import { getTwitter } from './twitter/get.action';
 import { getLatestTweets } from './twitter/getLatestTweets.action';
+import { getSearchTweets } from './twitter/getSearchTweets.action';
 import { getTwitterLike } from './twitter/getLike.action';
 import { getTwitterRetweet } from './twitter/getRetweet.action';
 import { getTwitterFollow } from './twitter/getFollow.action';
@@ -41,6 +42,7 @@ router.get('/:sub', guard.check(['accounts:read']), getAccount);
 
 router.get('/:sub/twitter', guard.check(['accounts:read']), getTwitter);
 router.get('/:sub/twitter/tweets/latest', guard.check(['accounts:read']), getLatestTweets);
+router.get('/:sub/twitter/tweets/search', guard.check(['accounts:read']), getSearchTweets);
 router.get('/:sub/twitter/user', guard.check(['accounts:read']), GetTwitterMe.controller);
 router.get('/:sub/twitter/like/:item', guard.check(['accounts:read']), getTwitterLike);
 router.get('/:sub/twitter/retweet/:item', guard.check(['accounts:read']), getTwitterRetweet);
