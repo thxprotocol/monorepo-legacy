@@ -29,11 +29,12 @@ const stringSelectMenuMap = {
 
 export const onAutoComplete = async (interaction: AutocompleteInteraction) => {
     if (!interaction.isAutocomplete()) return;
-    const { guildId } = interaction;
-    const discordGuilds = await DiscordGuild.find({ guildId });
+
+    const discordGuilds = await DiscordGuild.find({ guildId: interaction.guildId });
     const focusedValue = interaction.options.getFocused();
     const campaigns = await Promise.all(discordGuilds.map(({ poolId }) => AssetPool.findById(poolId)));
-    const choices = campaigns.map((c: AssetPoolDocument) => `${c.settings.title} [${c._id}]`);
+    console.log({ campaigns });
+    const choices = campaigns.filter((c) => !!c).map((c: AssetPoolDocument) => `${c.settings.title}`);
     const filtered = choices.filter((choice) => choice.startsWith(focusedValue));
 
     await interaction.respond(filtered.map((choice) => ({ name: choice, value: choice })));

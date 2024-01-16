@@ -1,8 +1,7 @@
-import { ButtonInteraction, ButtonStyle, ComponentAssertions, StringSelectMenuInteraction } from 'discord.js';
+import { ButtonInteraction, ButtonStyle, StringSelectMenuInteraction } from 'discord.js';
 import { QuestVariant } from '@thxnetwork/common/lib/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 import QuestService, { questMap } from '@thxnetwork/api/services/QuestService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { handleError } from '../../commands/error';

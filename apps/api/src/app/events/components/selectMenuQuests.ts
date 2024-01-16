@@ -12,28 +12,33 @@ import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
 import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
 import { questInteractionVariantMap } from '@thxnetwork/common/lib/types/maps';
-import { AssetPool } from '@thxnetwork/api/models/AssetPool';
+import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import WalletService from '@thxnetwork/api/services/WalletService';
 import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
+import { GitcoinQuest } from '@thxnetwork/api/models/GitcoinQuest';
 
-async function createSelectMenuQuests(interaction: CommandInteraction | ButtonInteraction) {
-    const discordGuilds = await DiscordGuild.find({ guildId: interaction.guild.id });
-    if (!discordGuilds) throw new Error('Could not find guild.');
-
-    const poolId = discordGuilds.map((g) => g.poolId);
-    const campaigns = await AssetPool.find({ _id: poolId });
-    if (!campaigns.length) throw new Error('No campaigns found for this server.');
-
-    const results = await Promise.all([
+async function findQuests(campaigns: AssetPoolDocument[]) {
+    const poolId = campaigns.map(({ _id }) => String(_id));
+    return await Promise.all([
         DailyReward.find({ poolId, isPublished: true }),
         ReferralReward.find({ poolId, isPublished: true }),
         PointReward.find({ poolId, isPublished: true }),
         MilestoneReward.find({ poolId, isPublished: true }),
         Web3Quest.find({ poolId, isPublished: true }),
+        GitcoinQuest.find({ poolId, isPublished: true }),
     ]);
-    const quests = results.flat();
+}
+
+async function createSelectMenuQuests(interaction: CommandInteraction | ButtonInteraction) {
+    const discordGuilds = await DiscordGuild.find({ guildId: interaction.guild.id });
+    if (!discordGuilds.length) throw new Error('Could not find server.');
+
+    const poolId = discordGuilds.map((g) => g.poolId);
+    const campaigns = await AssetPool.find({ _id: poolId });
+    if (!campaigns.length) throw new Error('No campaigns found for this server.');
+
     const select = new StringSelectMenuBuilder();
     select.setCustomId(DiscordStringSelectMenuVariant.QuestComplete).setPlaceholder('Complete a quest');
 
@@ -43,9 +48,14 @@ async function createSelectMenuQuests(interaction: CommandInteraction | ButtonIn
     const wallet = await WalletService.findPrimary(account.sub, campaigns[0].chainId);
     if (!wallet) throw new Error('No wallet found for this account.');
 
+    const quests = (await findQuests(campaigns)).flat();
     for (const index in quests) {
         const quest: any = quests[index];
+
+        // Campaign might be removed
         const campaign = campaigns.find((c) => String(c._id) === quest.poolId);
+        if (!campaign) continue;
+
         const questId = String(quest._id);
         const variant = quest.interaction ? questInteractionVariantMap[quest.interaction] : quest.variant;
         const value = JSON.stringify({ questId, variant });

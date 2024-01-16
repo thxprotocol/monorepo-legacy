@@ -9,16 +9,16 @@ import { handleError } from '../error';
 import Brand from '@thxnetwork/api/models/Brand';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import SafeService from '@thxnetwork/api/services/SafeService';
-import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
+import { getDiscordGuild } from './points';
 
 export const onSubcommandInfo = async (interaction: CommandInteraction) => {
     try {
         const account = await AccountProxy.getByDiscordId(interaction.user.id);
         if (!account) throw new Error('Please, connect your Discord.');
 
-        const discordGuild = await DiscordGuild.findOne({ guildId: interaction.guild.id });
-        if (!discordGuild) throw new Error('Could not find server in database.');
+        const { discordGuild, error } = await getDiscordGuild(interaction);
+        if (error) throw new Error(error);
 
         const pool = await AssetPool.findById(discordGuild.poolId);
         if (!pool) throw new Error('Could not find connected campaign.');

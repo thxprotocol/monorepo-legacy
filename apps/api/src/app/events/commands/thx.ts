@@ -8,10 +8,14 @@ import {
 } from './thx/index';
 
 export const commands: any[] = [
-    new SlashCommandBuilder().setName('connect').setDescription('Connect your server to a campaign.'),
-    new SlashCommandBuilder().setName('quest').setDescription('Complete a quest.'),
-    new SlashCommandBuilder().setName('buy').setDescription('Buy a reward from the shop.'),
-    new SlashCommandBuilder().setName('info').setDescription('Campaign and participant info.'),
+    new SlashCommandBuilder()
+        .setName('info')
+        .setDescription('View your rank, quests and rewards in this campaign.')
+        .addStringOption((option) =>
+            option.setName('campaign').setDescription('Campaign to search for').setAutocomplete(true),
+        ),
+    new SlashCommandBuilder().setName('quest').setDescription('Complete a quest and earn points.'),
+    new SlashCommandBuilder().setName('buy').setDescription('Buy a reward with points.'),
     new SlashCommandBuilder()
         .setName('remove-points')
         .setDescription('Remove an amount of points for a user.')
@@ -35,6 +39,9 @@ export const commands: any[] = [
         )
         .addIntegerOption((option) =>
             option.setName('amount').setDescription('The amount of points to transfer').setRequired(true),
+        )
+        .addStringOption((option) =>
+            option.setName('campaign').setDescription('Campaign to search for').setAutocomplete(true),
         )
         .addStringOption((option) =>
             option.setName('secret').setDescription('The optional secret for increased security'),

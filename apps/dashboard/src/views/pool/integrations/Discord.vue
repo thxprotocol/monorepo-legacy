@@ -46,10 +46,10 @@
                         <code>/info</code>
                     </b-badge>
                     <b-badge variant="light" class="p-2 mr-2 font-weight-normal">
-                        <code>/give-points</code> :member :amount :secret
+                        <code>/give-points</code> :member :amount :campaign :secret
                     </b-badge>
                     <b-badge variant="light" class="p-2 mr-2 font-weight-normal">
-                        <code>/remove-points</code> :member :amount :secret
+                        <code>/remove-points</code> :member :amount :campaign :secret
                     </b-badge>
                 </b-form-group>
             </b-col>

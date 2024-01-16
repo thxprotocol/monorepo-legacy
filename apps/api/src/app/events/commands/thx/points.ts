@@ -66,9 +66,10 @@ export async function getDiscordGuild(interaction: CommandInteraction | ButtonIn
     const choice = ((interaction as CommandInteraction).options as any).getString('campaign');
     if (!choice) return { error: 'Please, select a campaign for this command.' };
 
-    const poolId = choice.substring(choice.length - 25, choice.length - 1);
-    const discordGuild = discordGuilds.find((g) => g.poolId === poolId);
+    const campaign = await AssetPool.findOne({ 'settings.title': choice });
+    if (!campaign) return { error: 'Could not find campaing for this choice.' };
 
+    const discordGuild = discordGuilds.find((g) => g.poolId === String(campaign._id));
     return { discordGuild };
 }
 
