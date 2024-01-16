@@ -1,19 +1,25 @@
 import db from '@thxnetwork/api/util/database';
 import { mockStart } from './mock';
-import { safeVersion } from '@thxnetwork/api/config/contracts';
+import { getContractConfig, safeVersion } from '@thxnetwork/api/config/contracts';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { ChainId } from '@thxnetwork/types/enums';
 import { sub, sub2, sub3, userWalletAddress, userWalletAddress2, userWalletAddress3 } from './constants';
 import { Wallet } from '@thxnetwork/api/services/SafeService';
 import Safe, { SafeFactory } from '@safe-global/protocol-kit';
 import { contractNetworks } from '@thxnetwork/api/config/contracts';
+import { poll } from '../polling';
 
 export async function beforeAllCallback(options = { skipWalletCreation: false }) {
     await db.truncate();
     mockStart();
 
+    const { web3, defaultAccount, ethAdapter } = getProvider(ChainId.Hardhat);
+    const fn = () => web3.eth.getCode(getContractConfig(ChainId.Hardhat, 'THX_ERC1155').address);
+    const fnCondition = (result: string) => result === '0x';
+
+    await poll(fn, fnCondition, 500);
+
     if (!options.skipWalletCreation) {
-        const { defaultAccount, ethAdapter } = getProvider(ChainId.Hardhat);
         const chainId = ChainId.Hardhat;
         const safeFactory = await SafeFactory.create({
             safeVersion,
