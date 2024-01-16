@@ -74,6 +74,14 @@ export const paginatedResults = async (page: number, limit: number, search: stri
         },
         {
             $lookup: {
+                from: 'discordrolerewards',
+                localField: 'id',
+                foreignField: 'poolId',
+                as: 'discordRoleRewards',
+            },
+        },
+        {
+            $lookup: {
                 from: 'dailyrewards',
                 localField: 'id',
                 foreignField: 'poolId',
@@ -113,6 +121,14 @@ export const paginatedResults = async (page: number, limit: number, search: stri
             },
         },
         {
+            $lookup: {
+                from: 'gitcoinquests',
+                localField: 'id',
+                foreignField: 'poolId',
+                as: 'gitcoinquests',
+            },
+        },
+        {
             $addFields: {
                 totalQuestCount: {
                     $size: {
@@ -122,12 +138,19 @@ export const paginatedResults = async (page: number, limit: number, search: stri
                             '$socialquests',
                             '$customquests',
                             '$web3quests',
+                            '$gitcoinquests',
                         ],
                     },
                 },
                 totalRewardsCount: {
                     $size: {
-                        $concatArrays: ['$erc20Perks', '$erc721Perks', '$customRewards', '$couponRewards'],
+                        $concatArrays: [
+                            '$erc20Perks',
+                            '$erc721Perks',
+                            '$customRewards',
+                            '$couponRewards',
+                            '$discordRoleRewards',
+                        ],
                     },
                 },
                 participantCount: { $size: '$participants' },
