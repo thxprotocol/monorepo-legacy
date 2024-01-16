@@ -5,7 +5,7 @@ import { v4 } from 'uuid';
 import { toChecksumAddress } from 'web3-utils';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
-import { Wallet } from '@thxnetwork/api/services/WalletService';
+import { Wallet } from '@thxnetwork/api/services/SafeService';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import { Event } from '@thxnetwork/api/models/Event';
 

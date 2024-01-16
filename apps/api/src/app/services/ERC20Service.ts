@@ -14,10 +14,10 @@ import { TERC20DeployCallbackArgs, TERC20TransferFromCallBackArgs } from '@thxne
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import ERC20Transfer from '../models/ERC20Transfer';
 import { WalletDocument } from '../models/Wallet';
-import WalletService, { Wallet } from './WalletService';
-import { ContractName } from '@thxnetwork/contracts/exports';
+import { TokenContractName } from '@thxnetwork/contracts/exports';
 import BN from 'bn.js';
 import { ERC20Perk } from '../models/ERC20Perk';
+import SafeService, { Wallet } from './SafeService';
 import PoolService from './PoolService';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
@@ -53,8 +53,8 @@ export const deploy = async (params: ICreateERC20Params, forceSync = true) => {
         logoImgUrl: params.logoImgUrl,
     });
 
-    const contract = getContractFromName(params.chainId, erc20.contractName as ContractName);
-    const bytecode = getByteCodeForContractName(erc20.contractName as ContractName);
+    const contract = getContractFromName(params.chainId, erc20.contractName as TokenContractName);
+    const bytecode = getByteCodeForContractName(erc20.contractName as TokenContractName);
 
     const fn = contract.deploy({
         data: bytecode,
@@ -71,7 +71,7 @@ export const deploy = async (params: ICreateERC20Params, forceSync = true) => {
 
 export async function deployCallback({ erc20Id }: TERC20DeployCallbackArgs, receipt: TransactionReceipt) {
     const erc20 = await ERC20.findById(erc20Id);
-    const contract = getContractFromName(erc20.chainId, erc20.contractName as ContractName);
+    const contract = getContractFromName(erc20.chainId, erc20.contractName as TokenContractName);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
 
     // Limited and unlimited tokes emit different events. Check if one of the two is emitted.
@@ -285,7 +285,7 @@ async function isMinter(erc20: ERC20Document, address: string) {
 }
 
 async function createERC20Token(erc20: ERC20Document, sub: string) {
-    const wallet = await WalletService.findPrimary(sub, erc20.chainId);
+    const wallet = await SafeService.findPrimary(sub, erc20.chainId);
     await ERC20Token.create({
         sub,
         erc20Id: String(erc20._id),

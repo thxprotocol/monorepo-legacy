@@ -4,7 +4,7 @@ import { param } from 'express-validator';
 import { questInteractionVariantMap } from '@thxnetwork/common/lib/types';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import WalletService from '@thxnetwork/api/services/WalletService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import PointRewardService from '@thxnetwork/api/services/PointRewardService';
 
@@ -15,7 +15,7 @@ const controller = async (req: Request, res: Response) => {
     const quest = await PointReward.findById(req.params.id);
     const account = await AccountProxy.getById(req.auth.sub);
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const wallet = await WalletService.findPrimary(req.auth.sub, pool.chainId);
+    const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
 
     // Get quest variant for quest interaction variant
     const variant = questInteractionVariantMap[quest.interaction];

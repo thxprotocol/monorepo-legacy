@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { body } from 'express-validator';
 import { InsufficientBalanceError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { BN } from 'bn.js';
-import WalletService from '@thxnetwork/api/services/WalletService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import ERC20 from '@thxnetwork/api/models/ERC20';
 
@@ -20,7 +20,7 @@ export const controller = async (req: Request, res: Response) => {
     const erc20 = await ERC20.findById(req.body.erc20Id);
     if (!erc20) throw new NotFoundError('Could not find the ERC20');
 
-    const wallet = await WalletService.findPrimary(req.auth.sub, req.body.chainId);
+    const wallet = await SafeService.findPrimary(req.auth.sub, req.body.chainId);
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
     const walletBalanceInWei = await erc20.contract.methods.balanceOf(wallet.address).call();

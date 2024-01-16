@@ -22,7 +22,6 @@ import { ERC721Perk } from '../models/ERC721Perk';
 import PoolService from './PoolService';
 import TransactionService from './TransactionService';
 import IPFSService from './IPFSService';
-import WalletService from './WalletService';
 import SafeService from './SafeService';
 
 const contractName = 'NonFungibleToken';
@@ -244,7 +243,7 @@ export async function transferFromWalletCallback(
     const events = parseLogs(erc721.contract.options.jsonInterface, receipt.logs);
     assertEvent('Transfer', events);
 
-    const wallet = await WalletService.findOneByAddress(to);
+    const wallet = await SafeService.findOneByAddress(to);
 
     await erc721Token.updateOne({
         state: ERC721TokenState.Transferred,
@@ -291,7 +290,7 @@ export async function transferFromCallback(args: TERC721TransferFromCallBackArgs
     const erc721 = await ERC721.findById(erc721Token.erc721Id);
     const events = parseLogs(erc721.contract.options.jsonInterface, receipt.logs);
     const event = assertEvent('Transfer', events);
-    const wallet = await WalletService.findPrimary(sub, erc721.chainId);
+    const wallet = await SafeService.findPrimary(sub, erc721.chainId);
 
     await erc721Token.updateOne({
         sub,

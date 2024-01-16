@@ -15,7 +15,7 @@ import { addMinutes } from 'date-fns';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
-import WalletService from '@thxnetwork/api/services/WalletService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { poll } from '@thxnetwork/api/util/polling';
 import SafeService from '@thxnetwork/api/services/SafeService';
@@ -159,7 +159,7 @@ describe('NFT Reward Payment', () => {
         let erc721TokenId;
 
         beforeAll(async () => {
-            wallet = await WalletService.findPrimary(sub, ChainId.Hardhat);
+            wallet = await SafeService.findPrimary(sub, ChainId.Hardhat);
             // Add some points for the subs wallet
             await PointBalanceService.add(pool as AssetPoolDocument, wallet._id, 500);
         });

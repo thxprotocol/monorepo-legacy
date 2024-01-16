@@ -11,7 +11,7 @@ import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { poll } from '@thxnetwork/api/util/polling';
 import { signTxHash } from '@thxnetwork/api/util/jest/network';
-import WalletService, { Wallet } from '@thxnetwork/api/services/WalletService';
+import SafeService, { Wallet } from '@thxnetwork/api/services/SafeService';
 import { safeVersion } from '@thxnetwork/api/config/contracts';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { getProvider } from '@thxnetwork/api/util/network';
@@ -44,7 +44,7 @@ describe('ERC721 Transfer', () => {
         const poolId = String(pool._id);
         const safe = await SafeService.create({ chainId, sub, safeVersion, poolId });
 
-        wallet = await WalletService.findPrimary(sub, ChainId.Hardhat);
+        wallet = await SafeService.findPrimary(sub, ChainId.Hardhat);
         erc721 = await ERC721Service.deploy(
             {
                 variant: NFTVariant.ERC721,

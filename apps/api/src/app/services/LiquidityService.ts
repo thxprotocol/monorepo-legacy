@@ -30,20 +30,18 @@ enum JoinKind {
 // }
 
 async function joinPool(wallet: WalletDocument, maxAmountsIn: BigNumber[]) {
-    const vault = new ethers.Contract(
-        BALANCER_VAULT_ADDRESS,
-        getAbiForContractName('BalancerVault') as unknown as ContractInterface,
-    );
-
-    await vault.populateTransaction.joinPool(BALANCER_POOL_ID, wallet.address, wallet.address, {
-        assets: [USDC_ADDRESS],
-        maxAmountsIn,
-        userData: JoinKind.EXACT_TOKENS_IN_FOR_BPT_OUT,
-        fromInternalBalance: false,
-    });
-
+    // const vault = new ethers.Contract(
+    //     BALANCER_VAULT_ADDRESS,
+    //     getAbiForContractName('BalancerVault') as unknown as ContractInterface,
+    // );
+    // await vault.populateTransaction.joinPool(BALANCER_POOL_ID, wallet.address, wallet.address, {
+    //     assets: [USDC_ADDRESS],
+    //     maxAmountsIn,
+    //     userData: JoinKind.EXACT_TOKENS_IN_FOR_BPT_OUT,
+    //     fromInternalBalance: false,
+    // });
     // Propose tx data to relayer and return safeTxHash to client to sign
-    return await TransactionService.sendSafeAsync(wallet, ve.options.address, fn);
+    // return await TransactionService.sendSafeAsync(wallet, ve.options.address, fn);
 }
 
 export { JoinKind, USDC_ADDRESS, COMPANY_SAFE_ADDRESS, BALANCER_VAULT_ADDRESS, BALANCER_POOL_ID };

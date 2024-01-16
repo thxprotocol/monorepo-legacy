@@ -7,7 +7,6 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import WalletService from '@thxnetwork/api/services/WalletService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 
@@ -32,7 +31,7 @@ const controller = async (req: Request, res: Response) => {
     if (perk.pointPrice > 0) throw new ForbiddenError('This perk should be redeemed with points.');
 
     // Find wallet for the authenticated user
-    const wallet = await WalletService.findPrimary(req.auth.sub, pool.chainId);
+    const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
     if (!wallet) throw new NotFoundError('No wallet found for this user');
 
     // Mint an NFT token if the erc721 and metadata for the claim exists.

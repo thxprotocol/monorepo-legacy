@@ -4,7 +4,7 @@ import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import WalletService from '@thxnetwork/api/services/WalletService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 export const validation = [
     body('erc721Id').exists().isMongoId(),
@@ -23,7 +23,7 @@ export const controller = async (req: Request, res: Response) => {
     const erc721Token = await ERC721Token.findById(req.body.erc721TokenId);
     if (!erc721Token) throw new NotFoundError('Could not find token for wallet');
 
-    const wallet = await WalletService.findPrimary(req.auth.sub, erc721.chainId);
+    const wallet = await SafeService.findPrimary(req.auth.sub, erc721.chainId);
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
     const owner = await erc721.contract.methods.ownerOf(erc721Token.tokenId).call();

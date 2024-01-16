@@ -22,7 +22,7 @@ import TransactionService from './TransactionService';
 import type { TAccount, TERC1155, TERC1155Metadata, TERC1155Token } from '@thxnetwork/types/interfaces';
 import { WalletDocument } from '../models/Wallet';
 import IPFSService from './IPFSService';
-import WalletService from './WalletService';
+import SafeService from './SafeService';
 import { API_URL, VERSION } from '../config/secrets';
 import { ERC721Perk } from '../models/ERC721Perk';
 
@@ -209,7 +209,7 @@ export async function transferFromCallback(args: TERC1155TransferFromCallbackArg
     const { contract, chainId } = await PoolService.getById(assetPoolId);
     const events = parseLogs(contract.options.jsonInterface, receipt.logs);
     const event = assertEvent('ERC71155TransferredSingle', events);
-    const wallet = await WalletService.findPrimary(sub, chainId);
+    const wallet = await SafeService.findPrimary(sub, chainId);
 
     await ERC1155Token.findByIdAndUpdate(erc1155TokenId, {
         sub,
@@ -259,7 +259,7 @@ export async function transferFromWalletCallback(
     // Throwing manually due to missing contract events for successful transfers
     if (ownerOfToken !== to) throw new Error('ERC721Transfer tx failed.');
 
-    const toWallet = await WalletService.findOneByAddress(to);
+    const toWallet = await SafeService.findOneByAddress(to);
     await ERC1155Token.findByIdAndUpdate(erc1155TokenId, {
         state: ERC1155TokenState.Transferred,
         recipient: to,

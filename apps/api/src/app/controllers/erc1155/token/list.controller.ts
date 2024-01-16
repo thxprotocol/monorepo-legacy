@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { ERC1155Token, ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
 import { query } from 'express-validator';
-import WalletService from '@thxnetwork/api/services/WalletService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 import type { TERC1155, TERC1155Token } from '@thxnetwork/types/interfaces';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 
@@ -10,7 +10,7 @@ const validation = [query('chainId').exists().isNumeric(), query('recipient').op
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC1155']
     const chainId = Number(req.query.chainId);
-    const wallet = await WalletService.findPrimary(req.auth.sub, chainId);
+    const wallet = await SafeService.findPrimary(req.auth.sub, chainId);
     const tokens = req.query.recipient
         ? await ERC1155Token.find({ recipient: req.query.recipient })
         : await ERC1155Service.findTokensByWallet(wallet);
