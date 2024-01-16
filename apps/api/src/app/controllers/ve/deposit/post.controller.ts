@@ -7,10 +7,10 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { BigNumber } from 'ethers';
+import { BPT_ADDRESS } from '@thxnetwork/api/config/secrets';
 
 export const validation = [
     body('veAddress').isEthereumAddress(),
-    body('bptAddress').isEthereumAddress(),
     body('amountInWei').isString(),
     body('endTimestamp').isInt(),
 ];
@@ -22,7 +22,7 @@ export const controller = async (req: Request, res: Response) => {
     const { web3 } = getProvider(ChainId.Hardhat);
 
     // Check sufficient BPT approval
-    const bpt = new web3.eth.Contract(contractArtifacts['BPTToken'].abi, req.body.bptAddress);
+    const bpt = new web3.eth.Contract(contractArtifacts['BPTToken'].abi, BPT_ADDRESS);
     const amount = await bpt.methods.allowance(wallet.address, req.body.veAddress).call();
     if (BigNumber.from(amount).lt(req.body.amountInWei)) throw new ForbiddenError('Insufficient allowance');
 

@@ -10,7 +10,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     await deploy('BPT', {
         from: owner,
-        args: ['80THX-20USDC', '80THX-20USDC', owner],
+        args: [],
         log: true,
         autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
         waitConfirmations: network.live ? 3 : 0,

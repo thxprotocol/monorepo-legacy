@@ -3,7 +3,7 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { AbiItem } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
 import { contractConfig, TNetworkName, TokenContractName } from '@thxnetwork/contracts/exports';
-import { HARDHAT_NAME, POLYGON_NAME } from '@thxnetwork/api/config/secrets';
+import { BPT_ADDRESS, HARDHAT_NAME, POLYGON_NAME } from '@thxnetwork/api/config/secrets';
 import { ContractNetworksConfig } from '@safe-global/protocol-kit';
 import { SafeVersion } from '@safe-global/safe-core-sdk-types';
 
@@ -29,7 +29,16 @@ export const contractNetworks = {
         signMessageLibAddress: '0x658FAD2acB6d1E615f295E566ee9a6d32Cc97b10',
         createCallAddress: '0x40Efd8a16485213445E6d8b9a4266Fd2dFf7C69a',
         simulateTxAccessorAddress: '0xFF1eE64b8806C0891e8F73b37f8403F441b552E1',
+        // VE
+        BPTToken: '',
+        TestToken: '',
+        RewardFaucet: '',
+        RewardDistributor: '',
+        SmartWalletWhitelist: '',
+        VotingEscrow: '',
+        Launchpad: '',
         // Tokens
+        BPT: '0xe1c01805a21ee0DC535afa93172a5F21CE160649',
         LimitedSupplyToken: '0xf228ADAa4c3D07C8285C1025421afe2c4F320C59',
         UnlimitedSupplyToken: '0x8613B8E442219e4349fa5602C69431131a7ED114',
         NonFungibleToken: '0x8B219D3d1FC64e03F6cF3491E7C7A732bF253EC8',
@@ -37,8 +46,9 @@ export const contractNetworks = {
     },
 } as ContractNetworksConfig;
 
-export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: string } } = {
+const contractArtifacts: { [contractName: string]: { abi: any; bytecode: string } } = {
     BPTToken,
+    BPT: BPTToken,
     TestToken,
     RewardFaucet,
     RewardDistributor,
@@ -46,7 +56,14 @@ export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: 
     VotingEscrow,
     Launchpad,
 };
+const getChainId = () => (process.env.NODE_ENV !== 'production' ? ChainId.Hardhat : ChainId.Polygon);
+const getContract = (contractName: TokenContractName, chainId: ChainId) => {
+    const { signer } = getProvider(chainId);
+    return new ethers.Contract(BPT_ADDRESS, contractArtifacts[contractName].abi, signer);
+};
+export { contractArtifacts, getChainId, getContract };
 
+// Relatively old methods
 export const deploy = async (contractName: string, args: any[], signer: ethers.Signer): Promise<ethers.Contract> => {
     if (!contractArtifacts[contractName]) throw new Error('No artifact for contract name');
     const factory = new ethers.ContractFactory(
@@ -80,10 +97,6 @@ export const getByteCodeForContractName = (contractName: TokenContractName): str
 
 export const getContractFromName = (chainId: ChainId, contractName: TokenContractName, address?: string) => {
     return getContractFromAbi(chainId, getAbiForContractName(contractName), address);
-};
-
-export const getContract = (chainId: ChainId, contractName: TokenContractName) => {
-    return getContractFromName(chainId, contractName, getContractConfig(chainId, contractName).address);
 };
 
 const chainIdToName = (chainId: ChainId): TNetworkName => {

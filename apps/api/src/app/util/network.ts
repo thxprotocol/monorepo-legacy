@@ -40,7 +40,7 @@ const networks: {
 if (HARDHAT_RPC) {
     networks[ChainId.Hardhat] = (() => {
         const web3 = new Web3(HARDHAT_RPC);
-        const hardhatProvider = new (ethers as any).providers.JsonRpcProvider(HARDHAT_RPC);
+        const hardhatProvider = new ethers.providers.JsonRpcProvider(HARDHAT_RPC);
         const signer = new Wallet(PRIVATE_KEY, hardhatProvider) as unknown as Signer;
         const methods = [
             { name: 'setAutomine', call: 'evm_setAutomine', params: 1 },
@@ -69,7 +69,7 @@ if (POLYGON_RELAYER) {
         const readProvider = new Web3(POLYGON_RPC);
         const signer = new DefenderRelaySigner(
             { apiKey: POLYGON_RELAYER_API_KEY, apiSecret: POLYGON_RELAYER_API_SECRET },
-            new (ethers as any).providers.JsonRpcProvider(POLYGON_RPC),
+            new ethers.providers.JsonRpcProvider(POLYGON_RPC),
             { speed: RELAYER_SPEED },
         );
 

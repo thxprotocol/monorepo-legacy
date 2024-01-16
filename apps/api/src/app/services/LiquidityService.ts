@@ -1,7 +1,7 @@
 import { BigNumber, ContractInterface, ethers } from 'ethers';
-import { getAbiForContractName } from '../config/contracts';
-import TransactionService from './TransactionService';
 import { WalletDocument } from '../models/Wallet';
+import { getProvider } from '@thxnetwork/api/util/network';
+import { ChainId } from '@thxnetwork/common/lib/types';
 
 const USDC_ADDRESS = '';
 const COMPANY_SAFE_ADDRESS = '';
@@ -14,20 +14,6 @@ enum JoinKind {
     TOKEN_IN_FOR_EXACT_BPT_OUT,
     ALL_TOKENS_IN_FOR_EXACT_BPT_OUT,
 }
-
-// joinPool(
-//     bytes32 poolId,
-//     address sender,
-//     address recipient,
-//     JoinPoolRequest request
-// )
-
-// struct JoinPoolRequest {
-//     address[] assets,
-//     uint256[] maxAmountsIn,
-//     bytes userData,
-//     bool fromInternalBalance
-// }
 
 async function joinPool(wallet: WalletDocument, maxAmountsIn: BigNumber[]) {
     // const vault = new ethers.Contract(
