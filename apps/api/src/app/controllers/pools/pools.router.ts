@@ -10,6 +10,7 @@ import DeleteController from './delete.controller';
 import RouterSubscriptions from './subscriptions/subscriptions.router';
 import RouterCollaborators from './collaborators/collaborators.router';
 import RouterParticipants from './participants/participants.router';
+import RouterAnalytics from './analytics/analytics.router';
 import RouterEvents from './events/events.router';
 import RouterQuests from './quests/quests.router';
 import RouterGuilds from './guilds/guilds.router';
@@ -47,9 +48,9 @@ router.delete(
     DeleteController.controller,
 );
 router.use('/:id/subscription', RouterSubscriptions); // TODO Should not be in /pools but root resource instead
-
 router.use('/:id/collaborators', RouterCollaborators);
 router.use('/:id/participants', RouterParticipants);
+router.use('/:id/analytics', RouterAnalytics);
 router.use('/:id/topup', RouterTopups);
 router.use('/:id/wallets', RouterWallets);
 router.use('/:id/quests', RouterQuests);

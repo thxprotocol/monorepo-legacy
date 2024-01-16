@@ -1,5 +1,10 @@
 import { subMinutes } from 'date-fns';
-import { QuestVariant, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
+import {
+    AccessTokenKind,
+    QuestVariant,
+    RewardConditionInteraction,
+    RewardConditionPlatform,
+} from '@thxnetwork/types/enums';
 import { TAccount } from '@thxnetwork/types/interfaces';
 import { AssetPool } from '../models/AssetPool';
 import { PointReward } from '../models/PointReward';
@@ -16,10 +21,13 @@ function containsValue(text: string, hashtag: string) {
 export async function createTwitterQuests() {
     for await (const pool of AssetPool.find({ 'settings.isTwitterSyncEnabled': true })) {
         const endDate = new Date();
-        const startDate = subMinutes(endDate, 15);
+        const startDate = subMinutes(endDate, 60);
         try {
             const { isAuthorized } = await TwitterDataProxy.getTwitter(pool.sub);
-            if (!isAuthorized) continue;
+            if (!isAuthorized) {
+                logger.error(`Started autoquest but ${pool.sub} has no Twitter access.`);
+                continue;
+            }
 
             const latestTweetsForPoolOwner = await TwitterDataProxy.getLatestTweets(pool.sub, startDate, endDate);
             if (!latestTweetsForPoolOwner.length) continue;
@@ -35,18 +43,29 @@ export async function createTwitterQuests() {
                     return { ...tweet, isExistingQuest };
                 }),
             );
+            logger.info(`Found ${latestTweets.length} posts for ${pool.sub} in campaign ${pool._id}`);
+
             const filteredTweets = latestTweets.filter((tweet) => {
                 return !tweet.isExistingQuest && hashtag && containsValue(tweet.text, hashtag);
             });
-            if (!filteredTweets.length) continue;
+            if (!filteredTweets.length) {
+                logger.info(`Found no new autoquests for ${pool.sub} in campaign ${pool._id}`);
+                continue;
+            }
 
             const account: TAccount = await AccountProxy.getById(pool.sub);
+            const twitterAccount = account.connectedAccounts.find((token) => token.kind === AccessTokenKind.Twitter);
+            if (!twitterAccount) {
+                logger.error(`Could not find Twitter accounts for ${pool.sub} in campaign ${pool._id}`);
+                continue;
+            }
+
             const quests = await Promise.all(
                 filteredTweets.map(async (tweet) => {
                     try {
                         const contentMetadata = JSON.stringify({
-                            url: `https://twitter.com/${account.twitterUsername}/status/${tweet.id}`,
-                            username: account.twitterUsername,
+                            url: `https://twitter.com/${twitterAccount.metadata.username}/status/${tweet.id}`,
+                            username: twitterAccount.metadata.username,
                             text: tweet.text,
                         });
                         return await QuestService.create(QuestVariant.Twitter, pool._id, {
@@ -62,7 +81,7 @@ export async function createTwitterQuests() {
                             isPublished,
                         });
                     } catch (error) {
-                        logger.error(error);
+                        logger.error(error.message);
                     }
                 }),
             );
@@ -74,7 +93,7 @@ export async function createTwitterQuests() {
 
             await MailService.send(account.email, subject, message);
 
-            logger.info(`[${pool.sub}] Created ${filteredTweets.length} Twitter Quests`);
+            logger.info(`Created ${filteredTweets.length} Twitter Quests in campaign ${pool._id}`);
         } catch (error) {
             logger.info(error);
         }

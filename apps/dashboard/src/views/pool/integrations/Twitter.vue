@@ -1,27 +1,23 @@
 <template>
     <div>
+        <b-alert
+            v-if="pool.owner && !pool.owner.twitterAccess && pool.owner.sub === account.sub"
+            show
+            variant="warning"
+            class="d-flex align-items-center"
+        >
+            <i class="fab fa-discord mr-2" />
+            Please connect your Twitter account!
+            <b-button size="sm" variant="primary" to="/account" class="ml-auto">Connect Twitter</b-button>
+        </b-alert>
         <b-form-row>
-            <b-col md="4"> </b-col>
-            <b-col md="8">
-                <b-alert show variant="warning" v-if="!account.twitterAccess">
-                    <i class="fab fa-discord mr-2" />
-                    Please <b-link to="/account">connect your X account!</b-link>!
-                </b-alert>
-            </b-col>
             <b-col md="4">
                 <div>
                     <strong>Automation</strong>
                 </div>
                 <p class="text-muted">Automatically create Repost & Like Quests for your posts on X.</p>
             </b-col>
-            <b-col md="8" v-if="pool.owner">
-                <b-alert show variant="warning" v-if="!pool.owner.twitterAccess && pool.owner.sub === account.sub">
-                    <i class="fab fa-twitter mr-2"></i>
-                    <b-link @click="$store.dispatch('account/connect', AccessTokenKind.Twitter)">
-                        Connect your Twitter account
-                    </b-link>
-                    to enable Twitter quest automation.
-                </b-alert>
+            <b-col md="8">
                 <b-form-group description="Searches for new posts in your connected account every 15 minutes">
                     <b-form-checkbox
                         v-model="isTwitterSyncEnabled"
@@ -30,8 +26,13 @@
                         class="m-0"
                     >
                         Enable automated <strong>Twitter Quests</strong>
-                        <template v-if="pool.owner.twitterAccess && pool.owner.twitterUsername">
-                            for <code>@{{ pool.owner.twitterUsername }}</code>
+                        <template v-if="pool.owner && pool.owner.twitterAccess && pool.owner.twitterUsername">
+                            for
+                            <code>
+                                @{{
+                                    pool.owner.connectedAccounts.find(({ kind }) => kind == 'twitter').metadata.username
+                                }}
+                            </code>
                         </template>
                     </b-form-checkbox>
                 </b-form-group>

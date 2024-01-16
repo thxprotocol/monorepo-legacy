@@ -1,8 +1,15 @@
-import { ChatInputCommandInteraction, StringSelectMenuInteraction, ButtonInteraction } from 'discord.js';
+import {
+    ChatInputCommandInteraction,
+    StringSelectMenuInteraction,
+    ButtonInteraction,
+    AutocompleteInteraction,
+} from 'discord.js';
 import { handleError } from './commands/error';
 import { onSelectQuestComplete, onClickQuestComplete, onClickRewardList, onClickQuestList } from './handlers/index';
 import { logger } from '../util/logger';
 import router from './commands/thx';
+import DiscordGuild from '../models/DiscordGuild';
+import { AssetPool, AssetPoolDocument } from '../models/AssetPool';
 
 export enum DiscordStringSelectMenuVariant {
     QuestComplete = 'thx.campaign.quest.entry.create',
@@ -18,6 +25,18 @@ export enum DiscordButtonVariant {
 
 const stringSelectMenuMap = {
     [DiscordStringSelectMenuVariant.QuestComplete]: onSelectQuestComplete,
+};
+
+export const onAutoComplete = async (interaction: AutocompleteInteraction) => {
+    if (!interaction.isAutocomplete()) return;
+
+    const discordGuilds = await DiscordGuild.find({ guildId: interaction.guildId });
+    const focusedValue = interaction.options.getFocused();
+    const campaigns = await Promise.all(discordGuilds.map(({ poolId }) => AssetPool.findById(poolId)));
+    const choices = campaigns.filter((c) => !!c).map((c: AssetPoolDocument) => `${c.settings.title}`);
+    const filtered = choices.filter((choice) => choice.startsWith(focusedValue));
+
+    await interaction.respond(filtered.map((choice) => ({ name: choice, value: choice })));
 };
 
 const onInteractionCreated = async (

@@ -1,5 +1,6 @@
 <template>
     <b-dropdown
+        :disabled="disabled"
         variant="light"
         class="w-100 dropdown-select-multiple"
         menu-class="p-0 w-100"
@@ -15,6 +16,7 @@
                 >
                     {{ option.label }}
                     <b-button
+                        :disabled="disabled"
                         variant="dark"
                         size="sm"
                         class="rounded-pill p-0 ml-2"
@@ -48,6 +50,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})
 export default class BaseDropdownSelectMultiple extends Vue {
+    @Prop() disabled!: boolean;
     @Prop() options!: {
         img: string;
         label: string;

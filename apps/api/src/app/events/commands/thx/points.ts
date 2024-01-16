@@ -1,4 +1,4 @@
-import { CommandInteraction, User } from 'discord.js';
+import { ButtonInteraction, CommandInteraction, User } from 'discord.js';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { PointBalance } from '@thxnetwork/api/models/PointBalance';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
@@ -58,6 +58,21 @@ const pointsFunctionMap = {
     [DiscordCommandVariant.RemovePoints]: removePoints,
 };
 
+export async function getDiscordGuild(interaction: CommandInteraction | ButtonInteraction) {
+    const discordGuilds = await DiscordGuild.find({ guildId: interaction.guild.id });
+    if (!discordGuilds.length) return { error: 'No campaign found ' };
+    if (discordGuilds.length === 1) return { discordGuild: discordGuilds[0] };
+
+    const choice = ((interaction as CommandInteraction).options as any).getString('campaign');
+    if (!choice) return { error: 'Please, select a campaign for this command.' };
+
+    const campaign = await AssetPool.findOne({ 'settings.title': choice });
+    if (!campaign) return { error: 'Could not find campaing for this choice.' };
+
+    const discordGuild = discordGuilds.find((g) => g.poolId === String(campaign._id));
+    return { discordGuild };
+}
+
 export const onSubcommandPoints = async (interaction: CommandInteraction, variant: DiscordCommandVariant) => {
     try {
         const account = await AccountProxy.getByDiscordId(interaction.user.id);
@@ -66,12 +81,12 @@ export const onSubcommandPoints = async (interaction: CommandInteraction, varian
         const user = interaction.options.getUser('user');
         if (!user) throw new Error('Please, provide a valid username.');
 
-        const discordGuild = await DiscordGuild.findOne({ guildId: interaction.guild.id });
-        if (!discordGuild) throw new Error('Could not find server in database.');
+        const { discordGuild, error } = await getDiscordGuild(interaction);
+        if (error) throw new Error(error);
 
         // Check optional secret
         const secret = interaction.options.get('secret');
-        if (discordGuild.secret.length) {
+        if (discordGuild.secret && discordGuild.secret.length) {
             if (!secret) throw new Error('Please, provide a secret.');
             if (discordGuild.secret !== secret.value) throw new Error('Please, provide a valid secret.');
         }

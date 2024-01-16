@@ -1,8 +1,7 @@
-import { ButtonInteraction, ButtonStyle, ComponentAssertions, StringSelectMenuInteraction } from 'discord.js';
+import { ButtonInteraction, ButtonStyle, StringSelectMenuInteraction } from 'discord.js';
 import { QuestVariant } from '@thxnetwork/common/lib/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 import QuestService, { questMap } from '@thxnetwork/api/services/QuestService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { handleError } from '../../commands/error';
@@ -20,17 +19,14 @@ export async function completeQuest(
     const account = await AccountProxy.getByDiscordId(interaction.user.id);
     if (!account) throw new Error('Could not find your THX account.');
 
-    const discordGuild = await DiscordGuild.findOne({ guildId: interaction.guild.id });
-    if (!discordGuild) throw new Error('Could not find this Discord server.');
+    const quest = await QuestService.findById(variant, questId);
+    if (!quest) throw new Error('Could not find this quest.');
 
-    const pool = await PoolService.getById(discordGuild.poolId);
+    const pool = await PoolService.getById(quest.poolId);
     if (!pool) throw new Error('Could not find this campaign.');
 
     const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
     if (!wallet) throw new Error('Could not find your wallet.');
-
-    const quest = await QuestService.findById(variant, questId);
-    if (!quest) throw new Error('Could not find this quest.');
 
     const validationResult = await QuestService.validate(variant, quest, account, wallet);
     if (!validationResult.result) throw new Error(validationResult.reason);
@@ -61,17 +57,14 @@ export async function onSelectQuestComplete(interaction: StringSelectMenuInterac
         const account = await AccountProxy.getByDiscordId(interaction.user.id);
         if (!account) throw new Error('Could not find your THX account.');
 
-        const discordGuild = await DiscordGuild.findOne({ guildId: interaction.guild.id });
-        if (!discordGuild) throw new Error('Could not find this Discord server.');
+        const quest = await QuestService.findById(variant, questId);
+        if (!quest) throw new Error('Could not find this quest.');
 
-        const pool = await PoolService.getById(discordGuild.poolId);
+        const pool = await PoolService.getById(quest.poolId);
         if (!pool) throw new Error('Could not find this campaign.');
 
         const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
         if (!wallet) throw new Error('Could not find your wallet.');
-
-        const quest = await QuestService.findById(variant, questId);
-        if (!quest) throw new Error('Could not find this quest.');
 
         const isAvailable = await QuestService.isAvailable(variant, quest, account, wallet);
         const brand = await Brand.findOne({ poolId: pool._id });

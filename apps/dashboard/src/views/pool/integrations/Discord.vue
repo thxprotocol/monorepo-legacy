@@ -1,13 +1,16 @@
 <template>
     <div>
+        <b-alert
+            v-if="pool.owner && !pool.owner.discordAccess && pool.owner.sub === account.sub"
+            show
+            variant="warning"
+            class="d-flex align-items-center"
+        >
+            <i class="fab fa-discord mr-2" />
+            Please connect your Discord account!
+            <b-button size="sm" variant="primary" to="/account" class="ml-auto">Connect Discord</b-button>
+        </b-alert>
         <b-form-row>
-            <b-col md="4"> </b-col>
-            <b-col md="8">
-                <b-alert show variant="warning" v-if="!account.discordAccess">
-                    <i class="fab fa-discord mr-2" />
-                    Please <b-link to="/account">connect your Discord account!</b-link>!
-                </b-alert>
-            </b-col>
             <b-col md="4">
                 <div class="">
                     <strong>Servers</strong>
@@ -38,20 +41,25 @@
                             </b-button>
                         </div>
                     </template>
-                    <BaseDropdownSelectMultiple :options="options" @select="onSelectGuild" @remove="onRemoveGuild" />
+                    <BaseDropdownSelectMultiple
+                        :disabled="pool.owner && pool.owner.sub !== account.sub"
+                        :options="options"
+                        @select="onSelectGuild"
+                        @remove="onRemoveGuild"
+                    />
                 </b-form-group>
-                <b-form-group label="Commands">
+                <b-form-group label="Commands" description="* Required command parameters.">
                     <b-badge variant="light" class="p-2 mr-2 font-weight-normal">
                         <code>/quests</code>
                     </b-badge>
                     <b-badge variant="light" class="p-2 mr-2 font-weight-normal">
-                        <code>/info</code>
+                        <code>/info</code> :campaign
                     </b-badge>
                     <b-badge variant="light" class="p-2 mr-2 font-weight-normal">
-                        <code>/give-points</code> :member :amount :secret
+                        <code>/give-points</code> :member* :amount* :campaign :secret
                     </b-badge>
                     <b-badge variant="light" class="p-2 mr-2 font-weight-normal">
-                        <code>/remove-points</code> :member :amount :secret
+                        <code>/remove-points</code> :member* :amount* :campaign :secret
                     </b-badge>
                 </b-form-group>
             </b-col>
@@ -131,9 +139,9 @@ import { TAvailableGuild } from '@thxnetwork/dashboard/store/modules/account';
 @Component({
     components: {
         BaseCardURLWebhook,
+        BaseDropdownSelectMultiple,
         BaseDropdownDiscordChannel,
         BaseDropdownDiscordRole,
-        BaseDropdownSelectMultiple,
     },
     computed: {
         ...mapGetters({
@@ -164,6 +172,7 @@ export default class IntegrationDiscordView extends Vue {
     }
 
     get options() {
+        if (!this.availableGuilds) return [];
         return this.availableGuilds
             .filter((guild: TAvailableGuild) => (guild.permissions & 0x00000008) === 0x00000008)
             .map((guild: TAvailableGuild) => {
