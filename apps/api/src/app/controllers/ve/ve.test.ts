@@ -4,7 +4,7 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { getProvider } from '@thxnetwork/api/util/network';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { ChainId } from '@thxnetwork/types/enums';
-import { contractArtifacts } from '@thxnetwork/api/config/contracts';
+import { deploy, contractArtifacts } from '@thxnetwork/api/config/contracts';
 import { sub, userWalletPrivateKey, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
@@ -18,15 +18,6 @@ describe('VESytem', () => {
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
-    const deploy = async (contractName: string, args: any[]): Promise<Contract> => {
-        if (!contractArtifacts[contractName]) throw new Error('No artifact for contract name');
-        const factory = new ethers.ContractFactory(
-            contractArtifacts[contractName].abi,
-            contractArtifacts[contractName].bytecode,
-            signer,
-        );
-        return await factory.deploy(...args);
-    };
     const totalSupplyInWei = String(ethers.utils.parseUnits('1000000', 'ether'));
     const amountInWei = String(ethers.utils.parseUnits('1000', 'ether'));
 
@@ -43,22 +34,22 @@ describe('VESytem', () => {
         it('Deploy Tokens', async () => {
             safeWallet = await SafeService.findPrimary(sub, ChainId.Hardhat);
             expect(safeWallet.address).toBeDefined();
-            testBPT = await deploy('BPTToken', []);
+            testBPT = await deploy('BPTToken', [], signer);
             expect(testBPT.address).toBeDefined();
-            testToken = await deploy('TestToken', []);
+            testToken = await deploy('TestToken', [], signer);
             expect(testToken.address).toBeDefined();
         });
 
         it('Deploy Launchpad', async () => {
-            const votingEscrowImpl = await deploy('VotingEscrow', []);
-            const rewardDistributorImpl = await deploy('RewardDistributor', []);
-            const rewardFaucetImpl = await deploy('RewardFaucet', []);
+            const votingEscrowImpl = await deploy('VotingEscrow', [], signer);
+            const rewardDistributorImpl = await deploy('RewardDistributor', [], signer);
+            const rewardFaucetImpl = await deploy('RewardFaucet', [], signer);
 
-            launchpad = await deploy('Launchpad', [
-                votingEscrowImpl.address,
-                rewardDistributorImpl.address,
-                rewardFaucetImpl.address,
-            ]);
+            launchpad = await deploy(
+                'Launchpad',
+                [votingEscrowImpl.address, rewardDistributorImpl.address, rewardFaucetImpl.address],
+                signer,
+            );
 
             expect(launchpad.address).toBeDefined();
         });
@@ -82,7 +73,7 @@ describe('VESytem', () => {
             vethx = new ethers.Contract(votingEscrow, contractArtifacts['VotingEscrow'].abi, signer);
             rdthx = new ethers.Contract(rewardDistributor, contractArtifacts['RewardDistributor'].abi, signer);
             rfthx = new ethers.Contract(rewardFaucet, contractArtifacts['RewardFaucet'].abi, signer);
-            smartCheckerList = await deploy('SmartWalletWhitelist', [defaultAccount]);
+            smartCheckerList = await deploy('SmartWalletWhitelist', [defaultAccount], signer);
             expect(smartCheckerList.address).toBeDefined();
 
             // Add smart wallet whitelist checker

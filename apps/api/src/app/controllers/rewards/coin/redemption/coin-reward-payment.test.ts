@@ -16,6 +16,8 @@ import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import ERC20, { ERC20Document } from '@thxnetwork/api/models/ERC20';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import ERC20Service from '@thxnetwork/api/services/ERC20Service';
+import { getProvider } from '@thxnetwork/api/util/network';
 
 const user = request.agent(app);
 
@@ -42,9 +44,9 @@ describe('Coin Reward Payment', () => {
                 type: ERC20Type.Limited,
                 totalSupply,
             })
-            .expect(({ body }: request.Response) => {
+            .expect(async ({ body }: request.Response) => {
                 expect(isAddress(body.address)).toBe(true);
-                erc20 = body;
+                erc20 = await ERC20.findById(body._id);
             })
             .expect(201, done);
     });
@@ -58,20 +60,32 @@ describe('Coin Reward Payment', () => {
                 chainId: ChainId.Hardhat,
             })
             .expect(async (res: request.Response) => {
-                expect(res.body.settings.isArchived).toBe(false);
+                expect(res.body.address).toBeDefined();
+                expect(res.body.safe).toBeDefined();
+                expect(res.body.address).toBe(res.body.safe.address);
                 poolId = res.body._id;
-                campaignSafe = await SafeService.findOneByPool(res.body, res.body.chainId);
+                campaignSafe = res.body.safe;
+
                 await PointBalanceService.add(res.body, wallet._id, 5000);
             })
             .expect(201);
     });
 
-    it('POST /pools/:id/topup', (done) => {
-        const amount = fromWei(totalSupply, 'ether'); // 100 eth
-        user.post(`/v1/pools/${poolId}/topup`)
-            .set({ 'Authorization': dashboardAccessToken, 'X-PoolId': poolId })
-            .send({ erc20Id: erc20._id, amount })
-            .expect(200, done);
+    it('Wait for Campaign Safe and topup', async () => {
+        const { web3, defaultAccount } = getProvider(ChainId.Hardhat);
+        await poll(
+            () => web3.eth.getCode(campaignSafe.address),
+            (data: string) => data === '0x',
+            1000,
+        );
+
+        await erc20.contract.methods.approve(defaultAccount, totalSupply).send();
+        await erc20.contract.methods
+            .transferFrom(defaultAccount, campaignSafe.address, totalSupply)
+            .send({ from: defaultAccount });
+
+        const balance = await erc20.contract.methods.balanceOf(campaignSafe.address).call();
+        expect(balance).toBe(totalSupply);
     });
 
     it('Wait for balance', async () => {

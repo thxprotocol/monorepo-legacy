@@ -25,7 +25,7 @@ function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
 
     switch (erc20.type) {
         case ERC20Type.Limited: {
-            return [erc20.name, erc20.symbol, defaultAccount, toWei(String(totalSupply))];
+            return [erc20.name, erc20.symbol, defaultAccount, totalSupply];
         }
         case ERC20Type.Unlimited: {
             return [erc20.name, erc20.symbol, defaultAccount];

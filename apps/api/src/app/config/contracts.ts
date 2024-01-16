@@ -14,6 +14,7 @@ import VotingEscrow from './contracts/VotingEscrow.json';
 import Launchpad from './contracts/Launchpad.json';
 import TestToken from './contracts/TestToken.json';
 import RewardFaucet from './contracts/RewardFaucet.json';
+import { ethers } from 'ethers';
 
 export const safeVersion: SafeVersion = '1.3.0';
 
@@ -44,6 +45,16 @@ export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: 
     SmartWalletWhitelist,
     VotingEscrow,
     Launchpad,
+};
+
+export const deploy = async (contractName: string, args: any[], signer: ethers.Signer): Promise<ethers.Contract> => {
+    if (!contractArtifacts[contractName]) throw new Error('No artifact for contract name');
+    const factory = new ethers.ContractFactory(
+        contractArtifacts[contractName].abi,
+        contractArtifacts[contractName].bytecode,
+        signer,
+    );
+    return await factory.deploy(...args);
 };
 
 export const getContractConfig = (
