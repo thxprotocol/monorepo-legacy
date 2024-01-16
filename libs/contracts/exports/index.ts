@@ -6,6 +6,7 @@ export type TNetworkName = typeof networkNames[number];
 
 export const contractNames = ['BalancerVault'] as const;
 export const tokenContractNames = [
+    'BPT',
     'LimitedSupplyToken',
     'UnlimitedSupplyToken',
     'NonFungibleToken',

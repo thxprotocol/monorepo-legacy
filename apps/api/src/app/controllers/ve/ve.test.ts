@@ -10,6 +10,7 @@ import SafeService from '@thxnetwork/api/services/SafeService';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { signTxHash, timeTravel } from '@thxnetwork/api/util/jest/network';
 import { poll } from '@thxnetwork/api/util/polling';
+import { BPT_ADDRESS } from '@thxnetwork/api/config/secrets';
 
 const user = request.agent(app);
 const { signer, defaultAccount } = getProvider(ChainId.Hardhat);
@@ -24,7 +25,6 @@ describe('VESytem', () => {
     let safeWallet!: WalletDocument,
         launchpad!: Contract,
         testBPT!: Contract,
-        testToken!: Contract,
         smartCheckerList!: Contract,
         vethx!: Contract,
         rdthx!: Contract,
@@ -34,10 +34,8 @@ describe('VESytem', () => {
         it('Deploy Tokens', async () => {
             safeWallet = await SafeService.findPrimary(sub, ChainId.Hardhat);
             expect(safeWallet.address).toBeDefined();
-            testBPT = await deploy('BPTToken', [], signer);
-            expect(testBPT.address).toBeDefined();
-            testToken = await deploy('TestToken', [], signer);
-            expect(testToken.address).toBeDefined();
+            testBPT = new ethers.Contract(BPT_ADDRESS, contractArtifacts['BPTToken'].abi, signer);
+            expect(testBPT.address).toBe(BPT_ADDRESS);
         });
 
         it('Deploy Launchpad', async () => {
@@ -56,7 +54,7 @@ describe('VESytem', () => {
 
         it('Deploy VESystem', async () => {
             let tx = await launchpad.deploy(
-                testBPT.address,
+                BPT_ADDRESS,
                 'Voting Escrow THX',
                 'VeTHX',
                 7776000, // 90 days
@@ -94,6 +92,7 @@ describe('VESytem', () => {
     describe('Deposit BPT ', () => {
         it('Balance = total', async () => {
             let tx = await testBPT.mint(safeWallet.address, totalSupplyInWei);
+            console.log(tx);
             tx = await tx.wait();
             const event = tx.events.find((ev) => ev.event === 'Transfer');
             expect(event).toBeDefined();
@@ -113,7 +112,7 @@ describe('VESytem', () => {
             const { status, body } = await user
                 .post('/v1/ve/approve')
                 .set({ Authorization: widgetAccessToken })
-                .send({ amountInWei, veAddress: vethx.address, bptAddress: testBPT.address });
+                .send({ amountInWei, veAddress: vethx.address });
             expect(body.safeTxHash).toBeDefined();
             expect(status).toBe(201);
 
@@ -186,35 +185,35 @@ describe('VESytem', () => {
             await timeTravel(60 * 60 * 24 * 7);
 
             // Add test THX as allowed reward token (incentive)
-            await rdthx.addAllowedRewardTokens([testToken.address]);
+            await rdthx.addAllowedRewardTokens([testBPT.address]);
 
             // Mint 10000 tokens for relayer to deposit into reward distributor
-            await testToken.mint(defaultAccount, depositAmount);
+            await testBPT.mint(defaultAccount, depositAmount);
 
             // Deposit 10000 tokens into rdthx
-            await testToken.approve(rfthx.address, depositAmount);
-            await rfthx.depositEqualWeeksPeriod(testToken.address, depositAmount, '4');
+            await testBPT.approve(rfthx.address, depositAmount);
+            await rfthx.depositEqualWeeksPeriod(testBPT.address, depositAmount, '4');
 
-            console.log(await rfthx.getUpcomingRewardsForNWeeks(testToken.address, 0));
-            console.log(await rfthx.getUpcomingRewardsForNWeeks(testToken.address, 1));
-            console.log(await rfthx.getUpcomingRewardsForNWeeks(testToken.address, 2));
-            console.log(await rfthx.getUpcomingRewardsForNWeeks(testToken.address, 4));
+            console.log(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 0));
+            console.log(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 1));
+            console.log(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 2));
+            console.log(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 4));
         });
         it('Claim Tokens (after 8 days)', async () => {
             // Travel pas end date of the first reward eligible week
             await timeTravel(60 * 60 * 24 * 8);
 
-            const balance = await testToken.balanceOf(safeWallet.address);
+            const balance = await testBPT.balanceOf(safeWallet.address);
             console.log(String(balance));
 
-            let tx = await rdthx.claimToken(safeWallet.address, testToken.address);
+            let tx = await rdthx.claimToken(safeWallet.address, testBPT.address);
             tx = await tx.wait();
             console.log(tx.events);
 
             const event = tx.events.find((ev) => ev.event === 'TokenCheckpointed');
             expect(event).toBeDefined();
 
-            const balanceAfterClaim = await testToken.balanceOf(safeWallet.address);
+            const balanceAfterClaim = await testBPT.balanceOf(safeWallet.address);
             console.log(String(balanceAfterClaim));
         });
     });

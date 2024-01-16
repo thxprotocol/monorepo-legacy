@@ -8,7 +8,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const { owner } = await getNamedAccounts();
 
-    await deploy('UnlimitedSupplyToken', {
+    await deploy('BPT', {
         from: owner,
         args: ['80THX-20USDC', '80THX-20USDC', owner],
         log: true,
