@@ -17,11 +17,16 @@
                         <b-form-group label="Description">
                             <b-textarea v-model="description" />
                         </b-form-group>
-                        <b-form-group label="Discord Roles">
+                        <b-form-group
+                            :label="`Discord Role (${guild.name})`"
+                            v-for="(guild, key) of pool.guilds"
+                            :key="key"
+                        >
                             <BaseDropdownDiscordRole
+                                class="mb-1"
                                 @click="discordRoleId = $event.id"
                                 :role-id="discordRoleId"
-                                :guilds="pool.guilds"
+                                :guild="guild"
                             />
                         </b-form-group>
                         <b-form-group label="Point Price">
