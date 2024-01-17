@@ -13,7 +13,6 @@ import { poll } from '@thxnetwork/api/util/polling';
 import { signTxHash } from '@thxnetwork/api/util/jest/network';
 import SafeService, { Wallet } from '@thxnetwork/api/services/SafeService';
 import { safeVersion } from '@thxnetwork/api/config/contracts';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import { getProvider } from '@thxnetwork/api/util/network';
 
 const user = request.agent(app);

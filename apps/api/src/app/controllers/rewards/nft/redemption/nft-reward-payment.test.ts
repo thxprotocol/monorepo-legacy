@@ -15,7 +15,6 @@ import { addMinutes } from 'date-fns';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { poll } from '@thxnetwork/api/util/polling';
 import SafeService from '@thxnetwork/api/services/SafeService';
