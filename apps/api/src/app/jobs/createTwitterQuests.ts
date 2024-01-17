@@ -1,4 +1,4 @@
-import { subMinutes } from 'date-fns';
+import { subMinutes, subSeconds } from 'date-fns';
 import {
     AccessTokenKind,
     QuestVariant,
@@ -20,7 +20,9 @@ function containsValue(text: string, hashtag: string) {
 
 export async function createTwitterQuests() {
     for await (const pool of AssetPool.find({ 'settings.isTwitterSyncEnabled': true })) {
-        const endDate = new Date();
+        const now = new Date();
+        // EndDate should be 10 prior to now or else X API will return a 400
+        const endDate = subSeconds(now, 10);
         const startDate = subMinutes(endDate, 60);
         try {
             const { isAuthorized } = await TwitterDataProxy.getTwitter(pool.sub);
@@ -28,12 +30,12 @@ export async function createTwitterQuests() {
                 logger.error(`Started autoquest but ${pool.sub} has no Twitter access.`);
                 continue;
             }
-
-            const latestTweetsForPoolOwner = await TwitterDataProxy.getLatestTweets(pool.sub, startDate, endDate);
-            if (!latestTweetsForPoolOwner.length) continue;
-
             const { hashtag, title, description, amount, locks, isPublished } =
                 pool.settings.defaults.conditionalRewards;
+
+            const latestTweetsForPoolOwner = await TwitterDataProxy.searchTweets(pool.sub, hashtag, startDate, endDate);
+            if (!latestTweetsForPoolOwner.length) continue;
+
             const latestTweets = await Promise.all(
                 latestTweetsForPoolOwner.map(async (tweet: any) => {
                     const isExistingQuest = await PointReward.exists({
@@ -52,6 +54,7 @@ export async function createTwitterQuests() {
                 logger.info(`Found no new autoquests for ${pool.sub} in campaign ${pool._id}`);
                 continue;
             }
+            logger.info(`Found ${filteredTweets.length} new autoquest for ${pool.sub} in campaign ${pool._id}`);
 
             const account: TAccount = await AccountProxy.getById(pool.sub);
             const twitterAccount = account.connectedAccounts.find((token) => token.kind === AccessTokenKind.Twitter);
@@ -85,7 +88,7 @@ export async function createTwitterQuests() {
                     }
                 }),
             );
-            console.log({ quests });
+
             const subject = `Published ${quests.length} quest${quests.length && 's'}!`;
             const message = `We have detected ${quests.length} new tweet${quests.length && 's'}. A Twitter Quest ${
                 quests.length && 'for each'

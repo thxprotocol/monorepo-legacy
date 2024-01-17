@@ -40,6 +40,23 @@ export default class TwitterDataProxy {
         return { isAuthorized: data.isAuthorized, tweets: data.tweets, users: data.users };
     }
 
+    static async searchTweets(sub: string, hashtag: string, startDate: Date, endDate: Date) {
+        const params = new URLSearchParams();
+        params.append('startDate', String(startDate.getTime()));
+        params.append('endDate', String(endDate.getTime()));
+        params.append('hashtag', hashtag);
+
+        const { data } = await authClient({
+            method: 'GET',
+            url: `/account/${sub}/twitter/tweets/search`,
+            headers: {
+                Authorization: await getAuthAccessToken(),
+            },
+            params,
+        });
+        return data;
+    }
+
     static async getLatestTweets(sub: string, startDate: Date, endDate: Date) {
         const params = new URLSearchParams();
         params.append('startDate', String(startDate.getTime()));
