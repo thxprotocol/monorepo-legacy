@@ -10,12 +10,7 @@ export const getSearchTweets = async (req: Request, res: Response) => {
 
     const token = account.getToken(AccessTokenKind.Twitter);
     const decodedHashtag = decodeURIComponent(String(req.query.hashtag));
-    const tweets = await TwitterService.searchTweets(
-        token,
-        decodedHashtag,
-        new Date(Number(req.query.startDate)),
-        new Date(Number(req.query.endDate)),
-    );
+    const tweets = await TwitterService.searchTweets(token, decodedHashtag);
 
     res.json(tweets);
 };

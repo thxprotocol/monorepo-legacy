@@ -1,4 +1,3 @@
-import { subMinutes, subSeconds } from 'date-fns';
 import {
     AccessTokenKind,
     QuestVariant,
@@ -20,10 +19,6 @@ function containsValue(text: string, hashtag: string) {
 
 export async function createTwitterQuests() {
     for await (const pool of AssetPool.find({ 'settings.isTwitterSyncEnabled': true })) {
-        const now = new Date();
-        // EndDate should be 10 prior to now or else X API will return a 400
-        const endDate = subSeconds(now, 10);
-        const startDate = subMinutes(endDate, 60);
         try {
             const { isAuthorized } = await TwitterDataProxy.getTwitter(pool.sub);
             if (!isAuthorized) {
@@ -33,7 +28,7 @@ export async function createTwitterQuests() {
             const { hashtag, title, description, amount, locks, isPublished } =
                 pool.settings.defaults.conditionalRewards;
 
-            const latestTweetsForPoolOwner = await TwitterDataProxy.searchTweets(pool.sub, hashtag, startDate, endDate);
+            const latestTweetsForPoolOwner = await TwitterDataProxy.searchTweets(pool.sub, hashtag);
             if (!latestTweetsForPoolOwner.length) continue;
 
             const latestTweets = await Promise.all(
