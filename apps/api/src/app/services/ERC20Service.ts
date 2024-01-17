@@ -5,7 +5,7 @@ import TransactionService from './TransactionService';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { ChainId, ERC20Type, TransactionState } from '@thxnetwork/types/enums';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
+import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/services/ContractService';
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { ERC20Token } from '@thxnetwork/api/models/ERC20Token';
 import { getProvider } from '@thxnetwork/api/util/network';

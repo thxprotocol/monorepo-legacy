@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { body } from 'express-validator';
 import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { ChainId } from '@thxnetwork/common/lib/types/enums';
-import { contractArtifacts } from '@thxnetwork/api/config/contracts';
+import { contractArtifacts } from '@thxnetwork/contracts/exports';
 import { getProvider } from '@thxnetwork/api/util/network';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import TransactionService from '@thxnetwork/api/services/TransactionService';

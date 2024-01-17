@@ -16,7 +16,7 @@ export const controller = async (req: Request, res: Response) => {
     const amount = await VoteEscrowService.getBPTAllowance(wallet);
     if (BigNumber.from(amount).lt(req.body.amountInWei)) throw new ForbiddenError('Insufficient allowance');
 
-    // Check lockEndTimestamp to be more than today
+    // Check lockEndTimestamp to be more than today + 3 months
     const lockEndTimestamp = new Date(req.body.lockEndTimestamp).getTime();
     if (Date.now() > lockEndTimestamp) throw new ForbiddenError('lockEndTimestamp needs be larger than today');
 

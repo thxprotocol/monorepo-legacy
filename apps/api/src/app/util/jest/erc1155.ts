@@ -1,5 +1,5 @@
 import { API_URL, MINIMUM_GAS_LIMIT, VERSION } from '@thxnetwork/api/config/secrets';
-import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/config/contracts';
+import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/services/ContractService';
 import { ChainId } from '@thxnetwork/types/enums';
 import { getProvider } from '../network';
 

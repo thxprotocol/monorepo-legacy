@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { getAbiForContractName } from '@thxnetwork/api/config/contracts';
+import { getAbiForContractName } from '@thxnetwork/api/services/ContractService';
 import { BPT_ADDRESS, PRIVATE_KEY } from '@thxnetwork/api/config/secrets';
 import db from '@thxnetwork/api/util/database';
 

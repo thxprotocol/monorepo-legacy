@@ -1,12 +1,12 @@
 import db from '@thxnetwork/api/util/database';
 import { mockStart } from './mock';
-import { safeVersion } from '@thxnetwork/api/config/contracts';
+import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { ChainId } from '@thxnetwork/types/enums';
 import { sub, sub2, sub3, userWalletAddress, userWalletAddress2, userWalletAddress3 } from './constants';
 import { Wallet } from '@thxnetwork/api/services/SafeService';
 import Safe, { SafeFactory } from '@safe-global/protocol-kit';
-import { contractNetworks } from '@thxnetwork/api/config/contracts';
+import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { poll } from '../polling';
 
 export async function beforeAllCallback(options = { skipWalletCreation: false }) {

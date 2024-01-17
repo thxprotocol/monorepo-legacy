@@ -3,7 +3,7 @@ import { WalletDocument } from '../models/Wallet';
 import { getProvider } from '@thxnetwork/api/util/network';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { VE_ADDRESS, BPT_ADDRESS } from '@thxnetwork/api/config/secrets';
-import { contractArtifacts } from '@thxnetwork/api/config/contracts';
+import { contractArtifacts } from '@thxnetwork/contracts/exports';
 import { ChainId } from '@thxnetwork/common/lib/types';
 
 async function getBPTAllowance(wallet: WalletDocument) {

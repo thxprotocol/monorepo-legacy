@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { getChainId, getContract } from '@thxnetwork/api/config/contracts';
+import { getChainId, getContract } from '@thxnetwork/api/services/ContractService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [];

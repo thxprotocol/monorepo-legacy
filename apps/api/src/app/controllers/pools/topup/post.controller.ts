@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { InsufficientBalanceError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { body, param } from 'express-validator';
-import { getAbiForContractName } from '@thxnetwork/api/config/contracts';
+import { getAbiForContractName } from '@thxnetwork/api/services/ContractService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
