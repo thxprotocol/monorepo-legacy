@@ -85,7 +85,7 @@ const controller = async (req: Request, res: Response) => {
     const uuid = v4();
     const quest = await ModelQuest.create({ ...req.body, image, uuid, poolId });
 
-    res.json(quest);
+    res.status(201).json(quest);
 };
 
 export default { controller, validation };
