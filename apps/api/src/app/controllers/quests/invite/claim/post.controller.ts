@@ -7,7 +7,7 @@ import MailService from '@thxnetwork/api/services/MailService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { v4 } from 'uuid';
 import { body, param } from 'express-validator';
-import WalletService from '@thxnetwork/api/services/WalletService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [param('uuid').exists().isString(), body('sub').exists().isMongoId()];
 
@@ -21,7 +21,7 @@ const controller = async (req: Request, res: Response) => {
     if (!account) throw new NotFoundError('No account for that sub could be found.');
 
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const wallet = await WalletService.findPrimary(req.body.sub, pool.chainId);
+    const wallet = await SafeService.findPrimary(req.body.sub, pool.chainId);
     const claim = await ReferralRewardClaim.create({
         referralRewardId: reward._id,
         poolId: pool._id,

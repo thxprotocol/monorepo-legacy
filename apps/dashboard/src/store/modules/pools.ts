@@ -341,8 +341,26 @@ class PoolModule extends VuexModule {
         });
     }
 
+    @Action({ rawError: true })
+    async listQuests({ pool, page, limit, isPublished }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/quests`,
+            headers: { 'X-PoolId': pool._id },
+            params: { page, limit, isPublished },
+        });
+
+        data.results = data.results.map((q) => {
+            q.delete = (quest) => this.context.dispatch('removeQuest', quest);
+            q.update = (quest) => this.context.dispatch('updateQuest', quest);
+            return q;
+        });
+
+        this.context.commit('setQuests', { poolId: pool._id, result: data });
+    }
+
     @Action
-    async patchQuest(payload: TQuest) {
+    async updateQuest(payload: TQuest) {
         await axios({
             method: 'PATCH',
             url: `/pools/${payload.poolId}/quests/${payload._id}`,
@@ -360,47 +378,6 @@ class PoolModule extends VuexModule {
             data: payload,
         });
         this.context.commit('unsetQuest', payload);
-    }
-
-    @Action({ rawError: true })
-    async listQuests({ pool, page, limit, isPublished }) {
-        const { data } = await axios({
-            method: 'GET',
-            url: `/pools/${pool._id}/quests`,
-            headers: { 'X-PoolId': pool._id },
-            params: { page, limit, isPublished },
-        });
-        data.results = data.results.map((q) => {
-            q.delete = (payload: TQuest) => this.context.dispatch('deleteQuest', payload);
-            q.update = (payload: TQuest) => this.context.dispatch('updateQuest', payload);
-            return q;
-        });
-        this.context.commit('setQuests', { poolId: pool._id, result: data });
-    }
-
-    @Action
-    async deleteQuest(quest: TQuest) {
-        this.context.dispatch('pools/removeQuest', quest, { root: true });
-    }
-
-    @Action
-    async updateQuest(quest: TQuest) {
-        switch (quest.variant) {
-            case QuestVariant.Daily:
-                return this.context.dispatch('dailyRewards/update', quest, { root: true });
-            case QuestVariant.Invite:
-                return this.context.dispatch('referralRewards/update', quest, { root: true });
-            case QuestVariant.Discord:
-            case QuestVariant.YouTube:
-            case QuestVariant.Twitter:
-                return this.context.dispatch('pointRewards/update', quest, { root: true });
-            case QuestVariant.Custom:
-                return this.context.dispatch('milestoneRewards/update', quest, { root: true });
-            case QuestVariant.Web3:
-                return this.context.dispatch('web3Quests/update', quest, { root: true });
-            case QuestVariant.Gitcoin:
-                return this.context.dispatch('pools/patchQuest', quest, { root: true });
-        }
     }
 
     @Action({ rawError: true })

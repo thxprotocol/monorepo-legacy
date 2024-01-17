@@ -46,6 +46,7 @@ import BaseModal from './BaseModal.vue';
 import BaseModalQuestCreate from './BaseModalQuestCreate.vue';
 import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
 import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
+import { questInteractionVariantMap } from '@thxnetwork/common/lib/types';
 
 @Component({
     components: {
@@ -148,8 +149,12 @@ export default class ModalRewardPointsCreate extends Vue {
     onSubmit() {
         this.isLoading = true;
         this.$store
-            .dispatch(`pointRewards/${this.reward ? 'update' : 'create'}`, {
+            .dispatch(`pools/${this.reward ? 'updateQuest' : 'createQuest'}`, {
                 ...this.reward,
+                variant:
+                    this.rewardCondition.platform !== RewardConditionPlatform.None
+                        ? questInteractionVariantMap[this.rewardCondition.interaction]
+                        : RewardConditionInteraction.None,
                 _id: this.reward ? this.reward._id : undefined,
                 poolId: this.pool._id,
                 title: this.title,

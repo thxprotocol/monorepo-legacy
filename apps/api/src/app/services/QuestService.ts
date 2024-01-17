@@ -35,6 +35,7 @@ import { logger } from '../util/logger';
 import { GitcoinQuest } from '../models/GitcoinQuest';
 import { GitcoinQuestEntry } from '../models/GitcoinQuestEntry';
 import QuestGitcoinService from './QuestGitcoinService';
+import ImageService from './ImageService';
 
 type TValidationResult = {
     result: boolean;

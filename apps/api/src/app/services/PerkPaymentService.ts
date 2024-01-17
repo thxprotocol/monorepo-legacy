@@ -8,7 +8,7 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import { ForbiddenError, BadRequestError } from '@thxnetwork/api/util/errors';
 import MailService from './MailService';
 import { Widget } from './WidgetService';
-import { Wallet } from './WalletService';
+import { Wallet } from './SafeService';
 
 async function parsePaymentIntent(event) {
     const { id, amount, currency } = event.data.object;

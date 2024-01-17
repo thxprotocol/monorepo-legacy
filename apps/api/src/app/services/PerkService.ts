@@ -4,7 +4,7 @@ import { ERC721PerkDocument } from '../models/ERC721Perk';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { ERC1155Token, ERC1155TokenDocument } from '../models/ERC1155Token';
 import { ERC721Token, ERC721TokenDocument } from '../models/ERC721Token';
-import WalletService from './WalletService';
+import SafeService from './SafeService';
 import ERC1155Service from './ERC1155Service';
 import ERC721Service from './ERC721Service';
 import { ClaimDocument } from '../models/Claim';
@@ -64,7 +64,7 @@ export async function getIsLockedForWallet(perk: PerkDocument, wallet: WalletDoc
 
 export async function getIsLockedForSub(perk: PerkDocument, sub: string, pool: AssetPoolDocument) {
     if (!perk.locks.length) return;
-    const wallet = await WalletService.findPrimary(sub, pool.chainId);
+    const wallet = await SafeService.findPrimary(sub, pool.chainId);
     if (!wallet) return true;
     return await LockService.getIsLocked(perk.locks, wallet);
 }

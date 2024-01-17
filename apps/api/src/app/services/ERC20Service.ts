@@ -14,7 +14,7 @@ import { TERC20DeployCallbackArgs, TERC20TransferFromCallBackArgs } from '@thxne
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import ERC20Transfer from '../models/ERC20Transfer';
 import { WalletDocument } from '../models/Wallet';
-import WalletService, { Wallet } from './WalletService';
+import SafeService, { Wallet } from './SafeService';
 import { ContractName } from '@thxnetwork/contracts/exports';
 import BN from 'bn.js';
 import { ERC20Perk } from '../models/ERC20Perk';
@@ -285,7 +285,7 @@ async function isMinter(erc20: ERC20Document, address: string) {
 }
 
 async function createERC20Token(erc20: ERC20Document, sub: string) {
-    const wallet = await WalletService.findPrimary(sub, erc20.chainId);
+    const wallet = await SafeService.findPrimary(sub, erc20.chainId);
     await ERC20Token.create({
         sub,
         erc20Id: String(erc20._id),

@@ -75,7 +75,7 @@ import type { TInfoLink, TPool, TWeb3Quest } from '@thxnetwork/types/interfaces'
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { isAddress } from 'web3-utils';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, QuestVariant } from '@thxnetwork/types/enums';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { NODE_ENV } from '@thxnetwork/dashboard/config/secrets';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
@@ -131,8 +131,9 @@ export default class ModalQuestWeb3Create extends Vue {
     onSubmit() {
         this.isLoading = true;
         this.$store
-            .dispatch(`web3Quests/${this.reward ? 'update' : 'create'}`, {
+            .dispatch(`pools/${this.reward ? 'updateQuest' : 'createQuest'}`, {
                 ...this.reward,
+                variant: QuestVariant.Web3,
                 page: 1,
                 index: this.reward ? this.reward.index : this.total,
                 isPublished: this.isPublished,

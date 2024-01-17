@@ -60,7 +60,7 @@
 <script lang="ts">
 import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TQuestLock, type TMilestoneReward } from '@thxnetwork/types/index';
+import { QuestVariant, TQuestLock, type TMilestoneReward } from '@thxnetwork/types/index';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
@@ -110,8 +110,10 @@ export default class ModalQuestCustomCreate extends Vue {
     onSubmit() {
         this.isLoading = true;
         this.$store
-            .dispatch(`milestoneRewards/${this.reward ? 'update' : 'create'}`, {
+            .dispatch(`pools/${this.reward ? 'updateQuest' : 'createQuest'}`, {
                 ...this.reward,
+                _id: this.reward ? this.reward._id : undefined,
+                variant: QuestVariant.Custom,
                 page: 1,
                 poolId: String(this.pool._id),
                 title: this.title,
