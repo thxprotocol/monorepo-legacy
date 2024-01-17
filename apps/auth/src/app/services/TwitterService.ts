@@ -246,13 +246,7 @@ export class TwitterService {
         return data.data;
     }
 
-    static async searchTweets(token: IAccessToken, content: string) {
-        const emojiRegex = /<a?:.+?:\d{18}>|\p{Extended_Pictographic}/gu;
-        const parts = content.split(emojiRegex).filter((text) => !text.match(emojiRegex));
-        const queryContent = parts
-            .filter((text) => text && text.length > 1) // Filter out all single characters and empty strings
-            .map((text) => `"${text}"`)
-            .join(' ');
+    static async searchTweets(token: IAccessToken, query: string) {
         const { data } = await twitterClient({
             url: '/tweets/search/recent',
             method: 'GET',
@@ -260,7 +254,7 @@ export class TwitterService {
                 Authorization: `Bearer ${token.accessToken}`,
             },
             params: {
-                query: `from:${token.userId} ${queryContent}`,
+                query: `from:${token.userId} ${query}`,
             },
         });
         return data.data;

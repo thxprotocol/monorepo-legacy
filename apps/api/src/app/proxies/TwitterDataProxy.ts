@@ -40,9 +40,18 @@ export default class TwitterDataProxy {
         return { isAuthorized: data.isAuthorized, tweets: data.tweets, users: data.users };
     }
 
+    static parseSearchQuery(content: string) {
+        const emojiRegex = /<a?:.+?:\d{18}>|\p{Extended_Pictographic}/gu;
+        return content
+            .split(emojiRegex)
+            .filter((text) => text && text.length > 1 && !text.match(emojiRegex))
+            .map((text) => `"${text}"`)
+            .join(' ');
+    }
     static async searchTweets(sub: string, content: string) {
+        const query = content.startsWith('#') ? content : this.parseSearchQuery(content);
         const params = new URLSearchParams();
-        params.append('hashtag', content);
+        params.append('query', query);
 
         const { data } = await authClient({
             method: 'GET',
