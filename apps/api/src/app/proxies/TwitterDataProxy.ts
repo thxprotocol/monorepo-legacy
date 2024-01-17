@@ -48,8 +48,8 @@ export default class TwitterDataProxy {
             .map((text) => `"${text}"`)
             .join(' ');
     }
-    static async searchTweets(sub: string, content: string) {
-        const query = content.startsWith('#') ? content : this.parseSearchQuery(content);
+
+    static async searchTweets(sub: string, query: string) {
         const params = new URLSearchParams();
         params.append('query', query);
 
@@ -75,7 +75,8 @@ export default class TwitterDataProxy {
     }
 
     static async validateMessage(account: TAccount, message: string) {
-        const results = await this.searchTweets(account.sub, message);
+        const query = this.parseSearchQuery(message);
+        const results = await this.searchTweets(account.sub, query);
         if (!results.length)
             return {
                 result: false,
