@@ -42,7 +42,7 @@
         "@vee-validate/rules": "^4.6.7",
         "alchemy-sdk": "^2.4.1",
         "axios": "^1.6.2",
-        "axios-better-stacktrace": "^2.1.2",
+        "axios-better-stacktrace": "^2.1.6",
         "bcrypt": "^5.1.0",
         "bluebird": "^3.5.5",
         "bootstrap": "^4.6.1",

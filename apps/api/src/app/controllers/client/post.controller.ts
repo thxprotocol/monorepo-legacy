@@ -23,8 +23,7 @@ export default {
                 request_uris: [],
                 redirect_uris: [],
                 response_types: [],
-                scope: 'openid',
-                // scope: 'openid events:write events:read identity:write',
+                scope: 'openid events:write identities:read identities:write',
             },
         };
         const payload = grantMap[grantType];

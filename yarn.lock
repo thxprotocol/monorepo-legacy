@@ -9488,10 +9488,10 @@ aws4@^1.8.0:
   resolved "https://registry.npmjs.org/aws4/-/aws4-1.11.0.tgz"
   integrity sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
 
-axios-better-stacktrace@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.npmjs.org/axios-better-stacktrace/-/axios-better-stacktrace-2.1.2.tgz"
-  integrity sha512-/ikpK5W7UhCAdl9pQss1vpTfLtOQpbv8edRZ2a9wWSux2dnGmqjVHkFsMKnyllysxm046C016lqGjUgGNECcag==
+axios-better-stacktrace@^2.1.6:
+  version "2.1.6"
+  resolved "https://registry.yarnpkg.com/axios-better-stacktrace/-/axios-better-stacktrace-2.1.6.tgz#8d6586b101af56fb890e2a4e3e37963229b05b63"
+  integrity sha512-t0oR9MU9H5IHjEA2TggmwYBdeBmvJw5krrKhOipiIjwZEoUpViuuzB+4uZsOholmZnljFUPPKE2wTGxILBmB+Q==
 
 axios@0.21.1:
   version "0.21.1"
