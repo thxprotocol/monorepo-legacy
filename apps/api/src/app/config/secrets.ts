@@ -109,3 +109,4 @@ export const BOT_TOKEN = process.env.BOT_TOKEN;
 export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 export const GITCOIN_API_KEY = process.env.GITCOIN_API_KEY;
 export const BPT_ADDRESS = process.env.BPT_ADDRESS;
+export const VE_ADDRESS = process.env.VE_ADDRESS;

@@ -2,40 +2,26 @@ import { Request, Response } from 'express';
 import { body } from 'express-validator';
 import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { ChainId } from '@thxnetwork/common/lib/types/enums';
-import { contractArtifacts } from '@thxnetwork/api/config/contracts';
-import { getProvider } from '@thxnetwork/api/util/network';
-import SafeService from '@thxnetwork/api/services/SafeService';
-import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { BigNumber } from 'ethers';
-import { BPT_ADDRESS } from '@thxnetwork/api/config/secrets';
+import SafeService from '@thxnetwork/api/services/SafeService';
+import VoteEscrowService from '@thxnetwork/api/services/VoteEscrowService';
 
-export const validation = [
-    body('veAddress').isEthereumAddress(),
-    body('amountInWei').isString(),
-    body('endTimestamp').isInt(),
-];
+export const validation = [body('amountInWei').isString(), body('lockEndTimestamp').isISO8601()];
 
 export const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findPrimary(req.auth.sub, ChainId.Hardhat);
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
-    const { web3 } = getProvider(ChainId.Hardhat);
-
     // Check sufficient BPT approval
-    const bpt = new web3.eth.Contract(contractArtifacts['BPTToken'].abi, BPT_ADDRESS);
-    const amount = await bpt.methods.allowance(wallet.address, req.body.veAddress).call();
+    const amount = await VoteEscrowService.getBPTAllowance(wallet);
     if (BigNumber.from(amount).lt(req.body.amountInWei)) throw new ForbiddenError('Insufficient allowance');
 
-    const ve = new web3.eth.Contract(contractArtifacts['VotingEscrow'].abi, req.body.veAddress);
+    // Check lockEndTimestamp to be more than today
+    const lockEndTimestamp = new Date(req.body.lockEndTimestamp).getTime();
+    if (Date.now() > lockEndTimestamp) throw new ForbiddenError('lockEndTimestamp needs be larger than today');
 
-    // Check for lock and determine ve fn to call
-    const lock = await ve.methods.locked(wallet.address).call();
-    const fn = BigNumber.from(lock.amount).eq(0)
-        ? ve.methods.create_lock(req.body.amountInWei, req.body.endTimestamp)
-        : ve.methods.increase_amount(req.body.amountInWei);
-
-    // Propose tx data to relayer and return safeTxHash to client to sign
-    const tx = await TransactionService.sendSafeAsync(wallet, ve.options.address, fn);
+    // Deposit funds for wallet
+    const tx = await VoteEscrowService.deposit(wallet, req.body.amountInWei, lockEndTimestamp);
 
     res.status(201).json(tx);
 };
