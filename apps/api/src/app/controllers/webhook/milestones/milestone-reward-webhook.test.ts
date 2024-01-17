@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, QuestVariant } from '@thxnetwork/types/enums';
 import {
     dashboardAccessToken,
     userWalletAddress2,
@@ -36,9 +36,10 @@ describe('Milestone Rewards', () => {
     });
 
     it('POST /milestone-rewards', (done) => {
-        user.post('/v1/milestone-rewards/')
+        user.post(`/v1/pools/${pool._id}/quests`)
             .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
             .send({
+                variant: QuestVariant.Custom,
                 title: 'Expiration date is next 30 min',
                 description: 'Lorem ipsum dolor sit amet',
                 amount: 100,

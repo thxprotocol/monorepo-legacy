@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, QuestVariant } from '@thxnetwork/types/enums';
 import { dashboardAccessToken, userWalletAddress2, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
@@ -29,9 +29,10 @@ describe('Daily Rewards WebHooks', () => {
     });
 
     it('POST /daily-rewards', (done) => {
-        user.post('/v1/daily-rewards/')
+        user.post(`/v1/pools/${poolId}/quests`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
+                variant: QuestVariant.Daily,
                 title: 'Expiration date is next 30 min',
                 description: 'Lorem ipsum dolor sit amet',
                 amounts: JSON.stringify([100]),

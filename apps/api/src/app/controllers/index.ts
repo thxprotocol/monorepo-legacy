@@ -22,7 +22,6 @@ import widgetRouter from './widget/widget.router';
 import questsRouter from './quests/quests.router';
 import rewardsRouter from './rewards/rewards.router';
 import leaderboardsRouter from './leaderboards/leaderboards.router';
-import transactionsRouter from './transactions/transactions.router';
 import webhookRouter from './webhook/webhook.router';
 import webhooksRouter from './webhooks/webhooks.router';
 import widgetsRouter from './widgets/widgets.router';
