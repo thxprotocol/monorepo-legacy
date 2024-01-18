@@ -22,7 +22,6 @@ async function controller(req: Request, res: Response) {
     let pool,
         claim,
         brand,
-        shopifyStoreUrl,
         authenticationMethods = Object.values(AccountVariant);
 
     if (params.pool_id) {
@@ -110,7 +109,7 @@ async function controller(req: Request, res: Response) {
 
     res.render('signin', {
         uid,
-        params: { ...params, ...brand, claim, isWidget, isDashboard, isSignup, shopifyStoreUrl },
+        params: { ...params, ...brand, claim, isWidget, isDashboard, isSignup },
         alert,
     });
 }

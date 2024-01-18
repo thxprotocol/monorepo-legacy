@@ -21,22 +21,14 @@ const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
 
     const isAvailable = wallet ? await PointRewardService.isAvailable(quest, account, wallet) : false;
-    const { messages, pointsAvailable, pointsClaimed, amount } = await PointRewardService.getPointsAvailable(
-        quest,
-        account,
-    );
-    const q = PointRewardService.findOne(quest, wallet);
     const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : true;
+    const socialQuest = await PointRewardService.findOne(quest, wallet);
 
     res.json({
-        ...q,
-        amount: amount || quest.amount,
-        pointsAvailable,
-        pointsClaimed,
+        ...socialQuest,
         isLocked,
         isClaimed: !isAvailable, // Should deprecate
         isAvailable,
-        messages,
     });
 };
 

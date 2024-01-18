@@ -6,7 +6,6 @@ import { hubspot } from '@thxnetwork/auth/util/hubspot';
 import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
 import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
 import { oidc } from '@thxnetwork/auth/util/oidc';
-import Cookies from 'cookies';
 
 export const callbackPreAuth = async (req: Request, res: Response) => {
     // Get code from url
@@ -24,13 +23,6 @@ export const callbackPreAuth = async (req: Request, res: Response) => {
     // See if interaction still exists and throw if not
     const interaction = await oidc.Interaction.find(uid);
     if (!interaction) throw new UnauthorizedError('Your session has expired.');
-
-    // Set cookie for Twitter redirected OAuth requests so it can continu in its webview
-    if (req.path === '/callback/twitter') {
-        const cookies = new Cookies(req, res, { keys: oidcConfig.cookies.keys as string[] });
-        cookies.set('_interaction', uid, oidcConfig.cookies.short);
-        cookies.set('_interaction_resume', uid, oidcConfig.cookies.short);
-    }
 
     return { interaction, code };
 };

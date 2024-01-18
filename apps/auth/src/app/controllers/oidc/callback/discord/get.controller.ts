@@ -1,4 +1,4 @@
-import e, { Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { AccountService } from '../../../../services/AccountService';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { callbackPostSSOCallback, callbackPreAuth } from '../../get';
