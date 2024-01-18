@@ -11,7 +11,7 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
 import { TERC721Perk } from '@thxnetwork/types/interfaces';
-import { safeVersion } from '@thxnetwork/api/config/contracts';
+import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
 const user = request.agent(app);

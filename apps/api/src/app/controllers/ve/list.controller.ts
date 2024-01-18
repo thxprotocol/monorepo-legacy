@@ -4,6 +4,7 @@ import { ChainId } from '@thxnetwork/common/lib/types/enums';
 import { contractArtifacts } from '@thxnetwork/contracts/exports';
 import { getProvider } from '@thxnetwork/api/util/network';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import { VE_ADDRESS } from '@thxnetwork/api/config/secrets';
 
 export const validation = [];
 
@@ -12,7 +13,7 @@ export const controller = async (req: Request, res: Response) => {
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
     const { web3 } = getProvider(ChainId.Hardhat);
-    const ve = new web3.eth.Contract(contractArtifacts['VotingEscrow'].abi, String(req.query.veAddress)); // TODO replace with const
+    const ve = new web3.eth.Contract(contractArtifacts['VotingEscrow'].abi, VE_ADDRESS);
 
     // Check for lock and determine ve fn to call
     const { amount, end } = await ve.methods.locked(wallet.address).call();

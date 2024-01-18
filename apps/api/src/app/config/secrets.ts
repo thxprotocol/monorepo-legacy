@@ -110,3 +110,6 @@ export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 export const GITCOIN_API_KEY = process.env.GITCOIN_API_KEY;
 export const BPT_ADDRESS = process.env.BPT_ADDRESS;
 export const VE_ADDRESS = process.env.VE_ADDRESS;
+export const RD_ADDRESS = '0x2c603713cf81109358d267941e9Ffc5A7EA76a47';
+export const RF_ADDRESS = '0x8B9D83774c84769A18797326F29F4590131189F2';
+export const SC_ADDRESS = '0x76aBe9ec9b15947ba1Ca910695B8b6CffeD8E6CA';

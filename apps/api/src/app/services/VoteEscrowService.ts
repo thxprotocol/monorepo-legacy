@@ -2,14 +2,23 @@ import { BigNumber } from 'ethers';
 import { WalletDocument } from '../models/Wallet';
 import { getProvider } from '@thxnetwork/api/util/network';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
-import { VE_ADDRESS, BPT_ADDRESS } from '@thxnetwork/api/config/secrets';
+import { VE_ADDRESS } from '@thxnetwork/api/config/secrets';
 import { contractArtifacts } from '@thxnetwork/contracts/exports';
 import { ChainId } from '@thxnetwork/common/lib/types';
 
-async function getBPTAllowance(wallet: WalletDocument) {
+async function getAllowance(wallet: WalletDocument, tokenAddress: string, spender: string) {
     const { web3 } = getProvider(ChainId.Hardhat);
-    const bpt = new web3.eth.Contract(contractArtifacts['BPTToken'].abi, BPT_ADDRESS);
-    return await bpt.methods.allowance(wallet.address, VE_ADDRESS).call();
+    const bpt = new web3.eth.Contract(contractArtifacts['BPTToken'].abi, tokenAddress);
+    return await bpt.methods.allowance(wallet.address, spender).call();
+}
+
+async function approve(wallet: WalletDocument, tokenAddress: string, spender: string, amount: string) {
+    const { web3 } = getProvider(ChainId.Hardhat);
+    const bpt = new web3.eth.Contract(contractArtifacts['BPTToken'].abi, tokenAddress);
+    const fn = bpt.methods.approve(spender, amount);
+
+    // Propose tx data to relayer and return safeTxHash to client to sign
+    return await TransactionService.sendSafeAsync(wallet, bpt.options.address, fn);
 }
 
 async function deposit(wallet: WalletDocument, amountInWei: string, endTimestamp: number) {
@@ -30,4 +39,4 @@ function withdraw() {
     //
 }
 
-export default { getBPTAllowance, deposit, withdraw };
+export default { approve, getAllowance, deposit, withdraw };

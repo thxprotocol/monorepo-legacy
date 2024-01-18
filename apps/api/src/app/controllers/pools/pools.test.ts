@@ -12,7 +12,7 @@ import {
     dashboardAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { getAbiForContractName, getByteCodeForContractName } from '@thxnetwork/api/config/contracts';
+import { getAbiForContractName, getByteCodeForContractName } from '@thxnetwork/api/services/ContractService';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { Contract } from 'web3-eth-contract';
 import { getProvider } from '@thxnetwork/api/util/network';

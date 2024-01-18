@@ -12,7 +12,7 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import { poll } from '@thxnetwork/api/util/polling';
 import { signTxHash } from '@thxnetwork/api/util/jest/network';
 import SafeService, { Wallet } from '@thxnetwork/api/services/SafeService';
-import { safeVersion } from '@thxnetwork/api/config/contracts';
+import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { getProvider } from '@thxnetwork/api/util/network';
 
 const user = request.agent(app);

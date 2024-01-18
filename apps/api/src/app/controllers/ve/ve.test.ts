@@ -10,7 +10,7 @@ import SafeService from '@thxnetwork/api/services/SafeService';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { signTxHash, timeTravel } from '@thxnetwork/api/util/jest/network';
 import { poll } from '@thxnetwork/api/util/polling';
-import { BPT_ADDRESS } from '@thxnetwork/api/config/secrets';
+import { BPT_ADDRESS, RD_ADDRESS, RF_ADDRESS, SC_ADDRESS, VE_ADDRESS } from '@thxnetwork/api/config/secrets';
 
 const user = request.agent(app);
 const { signer, defaultAccount } = getProvider(ChainId.Hardhat);
@@ -23,70 +23,24 @@ describe('VESytem', () => {
     const amountInWei = String(ethers.utils.parseUnits('1000', 'ether'));
 
     let safeWallet!: WalletDocument,
-        launchpad!: Contract,
         testBPT!: Contract,
         smartCheckerList!: Contract,
         vethx!: Contract,
         rdthx!: Contract,
-        rfthx!: Contract;
+        rfthx!: Contract,
+        scthx!: Contract;
 
-    describe('Init system', () => {
-        it('Deploy Tokens', async () => {
-            safeWallet = await SafeService.findPrimary(sub, ChainId.Hardhat);
-            expect(safeWallet.address).toBeDefined();
-            testBPT = new ethers.Contract(BPT_ADDRESS, contractArtifacts['BPTToken'].abi, signer);
-            expect(testBPT.address).toBe(BPT_ADDRESS);
-        });
+    it('Deploy Tokens', async () => {
+        safeWallet = await SafeService.findPrimary(sub, ChainId.Hardhat);
+        expect(safeWallet.address).toBeDefined();
 
-        //     it('Deploy Launchpad', async () => {
-        //         const votingEscrowImpl = await deploy('VotingEscrow', [], signer);
-        //         const rewardDistributorImpl = await deploy('RewardDistributor', [], signer);
-        //         const rewardFaucetImpl = await deploy('RewardFaucet', [], signer);
+        testBPT = new ethers.Contract(BPT_ADDRESS, contractArtifacts['BPTToken'].abi, signer);
+        expect(testBPT.address).toBe(BPT_ADDRESS);
 
-        //         launchpad = await deploy(
-        //             'Launchpad',
-        //             [votingEscrowImpl.address, rewardDistributorImpl.address, rewardFaucetImpl.address],
-        //             signer,
-        //         );
-
-        //         expect(launchpad.address).toBeDefined();
-        //     });
-
-        //     it('Deploy VESystem', async () => {
-        //         let tx = await launchpad.deploy(
-        //             BPT_ADDRESS,
-        //             'Voting Escrow THX',
-        //             'VeTHX',
-        //             7776000, // 90 days
-        //             Math.ceil(Date.now() / 1000) + 60 * 60 * 24 * 7, // 7 days from now
-        //             defaultAccount, // Admin unlock all
-        //             defaultAccount, // Admin early unlock
-        //         );
-        //         tx = await tx.wait();
-
-        //         const event = tx.events.find((event: any) => event.event == 'VESystemCreated');
-        //         const { votingEscrow, rewardDistributor, rewardFaucet, admin } = event.args;
-        //         expect(admin).toBe(defaultAccount);
-
-        //         vethx = new ethers.Contract(votingEscrow, contractArtifacts['VotingEscrow'].abi, signer);
-        //         rdthx = new ethers.Contract(rewardDistributor, contractArtifacts['RewardDistributor'].abi, signer);
-        //         rfthx = new ethers.Contract(rewardFaucet, contractArtifacts['RewardFaucet'].abi, signer);
-        //         smartCheckerList = await deploy('SmartWalletWhitelist', [defaultAccount], signer);
-        //         expect(smartCheckerList.address).toBeDefined();
-
-        //         // Add smart wallet whitelist checker
-        //         await vethx.commit_smart_wallet_checker(smartCheckerList.address);
-        //         await vethx.apply_smart_wallet_checker();
-
-        //         await vethx.set_early_unlock(true);
-        //         // await vethx.set_early_unlock_penalty_speed(1);
-
-        //         // Set early exit penalty treasury to reward distributor
-        //         await vethx.set_penalty_treasury(rewardDistributor);
-
-        //         expect(rdthx.address).toBeDefined();
-        //         expect(vethx.address).toBeDefined();
-        //     });
+        vethx = new ethers.Contract(VE_ADDRESS, contractArtifacts['VotingEscrow'].abi, signer);
+        rdthx = new ethers.Contract(RD_ADDRESS, contractArtifacts['RewardDistributor'].abi, signer);
+        rfthx = new ethers.Contract(RF_ADDRESS, contractArtifacts['RewardFaucet'].abi, signer);
+        scthx = new ethers.Contract(SC_ADDRESS, contractArtifacts['SmartWalletWhitelist'].abi, signer);
     });
 
     describe('Deposit BPT ', () => {
@@ -100,6 +54,7 @@ describe('VESytem', () => {
         });
 
         it('WhiteList Safe Wallet', async () => {
+            // Move this to step 1 in VE UI modals
             let tx = await smartCheckerList.approveWallet(safeWallet.address);
             tx = await tx.wait();
             const event = tx.events.find((ev) => ev.event === 'ApproveWallet');
@@ -110,7 +65,7 @@ describe('VESytem', () => {
             const { status, body } = await user
                 .post('/v1/ve/approve')
                 .set({ Authorization: widgetAccessToken })
-                .send({ amountInWei, veAddress: vethx.address });
+                .send({ amountInWei, spender: VE_ADDRESS });
             expect(body.safeTxHash).toBeDefined();
             expect(status).toBe(201);
 
@@ -123,6 +78,7 @@ describe('VESytem', () => {
         });
 
         it('Wait for approved amount', async () => {
+            // Replace with API call
             await poll(
                 () => testBPT.allowance(safeWallet.address, vethx.address),
                 (result: BigNumber) => result.eq(0),
@@ -135,7 +91,7 @@ describe('VESytem', () => {
             const { status, body } = await user
                 .post('/v1/ve/deposit')
                 .set({ Authorization: widgetAccessToken })
-                .send({ amountInWei, veAddress: vethx.address, bptAddress: testBPT.address, endTimestamp });
+                .send({ amountInWei, endTimestamp });
             expect(body.safeTxHash).toBeDefined();
             expect(status).toBe(201);
 
@@ -163,11 +119,7 @@ describe('VESytem', () => {
         });
 
         it('List locks ', async () => {
-            const { status, body } = await user
-                .get('/v1/ve')
-                .set({ Authorization: widgetAccessToken })
-                .query({ veAddress: vethx.address })
-                .send();
+            const { status, body } = await user.get('/v1/ve').set({ Authorization: widgetAccessToken }).send();
 
             expect(Number(body[0].end)).toBeGreaterThan(Number(body[0].now));
             expect(body[0].amount).toBe(amountInWei);
