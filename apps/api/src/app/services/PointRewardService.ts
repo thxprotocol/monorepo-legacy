@@ -205,13 +205,21 @@ function getRestartDates(quest: TPointReward) {
     return { now, start, endDay, end };
 }
 
-function findOne(quest: PointRewardDocument, wallet?: WalletDocument) {
+const getDiscordMessageData = async (quest: PointRewardDocument, wallet: WalletDocument) => {
+    if (!wallet || quest.interaction !== RewardConditionInteraction.DiscordMessage) return;
+    const account = await AccountProxy.getById(wallet.sub);
+    return await getPointsAvailable(quest, account);
+};
+
+async function findOne(quest: PointRewardDocument, wallet?: WalletDocument) {
     const restartDates = getRestartDates(quest);
+    const discordMessageData = await getDiscordMessageData(quest, wallet);
     return {
         ...quest.toJSON(),
-        contentMetadata: quest.contentMetadata && JSON.parse(quest.contentMetadata),
         pointsAvailable: quest.amount,
+        contentMetadata: quest.contentMetadata && JSON.parse(quest.contentMetadata),
         restartDates,
+        ...discordMessageData,
     };
 }
 
