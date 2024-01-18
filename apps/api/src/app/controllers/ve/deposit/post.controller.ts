@@ -7,7 +7,7 @@ import SafeService from '@thxnetwork/api/services/SafeService';
 import VoteEscrowService from '@thxnetwork/api/services/VoteEscrowService';
 import { BPT_ADDRESS, VE_ADDRESS } from '@thxnetwork/api/config/secrets';
 
-export const validation = [body('amountInWei').isString(), body('lockEndTimestamp').isISO8601()];
+export const validation = [body('amountInWei').isString(), body('lockEndTimestamp').isInt()];
 
 export const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findPrimary(req.auth.sub, ChainId.Hardhat);
@@ -18,11 +18,10 @@ export const controller = async (req: Request, res: Response) => {
     if (BigNumber.from(amount).lt(req.body.amountInWei)) throw new ForbiddenError('Insufficient allowance');
 
     // Check lockEndTimestamp to be more than today + 3 months
-    const lockEndTimestamp = new Date(req.body.lockEndTimestamp).getTime();
-    if (Date.now() > lockEndTimestamp) throw new ForbiddenError('lockEndTimestamp needs be larger than today');
+    if (Date.now() > req.body.lockEndTimestamp) throw new ForbiddenError('lockEndTimestamp needs be larger than today');
 
     // Deposit funds for wallet
-    const tx = await VoteEscrowService.deposit(wallet, req.body.amountInWei, lockEndTimestamp);
+    const tx = await VoteEscrowService.deposit(wallet, req.body.amountInWei, req.body.lockEndTimestamp);
 
     res.status(201).json(tx);
 };

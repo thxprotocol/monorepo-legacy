@@ -86,13 +86,13 @@ describe('VESytem', () => {
         });
 
         it('Deposit 1000', async () => {
-            const endTimestamp = Math.ceil(Date.now() / 1000) + 60 * 60 * 24 * 12; // 12 weeks from now
+            const lockEndTimestamp = Math.ceil(Date.now() / 1000) + 60 * 60 * 24 * 12; // 12 weeks from now
             const { status, body } = await user
                 .post('/v1/ve/deposit')
                 .set({ Authorization: widgetAccessToken })
-                .send({ amountInWei, endTimestamp });
-            expect(body.safeTxHash).toBeDefined();
+                .send({ amountInWei, lockEndTimestamp });
             expect(status).toBe(201);
+            expect(body.safeTxHash).toBeDefined();
 
             const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
             await user
@@ -182,8 +182,8 @@ describe('VESytem', () => {
                 .post('/v1/ve/withdraw')
                 .set({ Authorization: widgetAccessToken })
                 .send({ isEarly: true, veAddress: vethx.address });
-            expect(body.safeTxHash).toBeDefined();
             expect(status).toBe(201);
+            expect(body.safeTxHash).toBeDefined();
 
             const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
             await user
