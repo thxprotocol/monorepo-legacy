@@ -8,8 +8,6 @@ import { IAccessToken } from '@thxnetwork/types/interfaces';
 import { formatDistance } from 'date-fns';
 import { AxiosResponse } from 'axios';
 
-const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
-const ERROR_NOT_AUTHORIZED = 'Not authorized for Twitter API';
 const ERROR_TOKEN_REQUEST_FAILED = 'Failed to request access token';
 
 export class TwitterService {
@@ -248,7 +246,7 @@ export class TwitterService {
         return data.data;
     }
 
-    static async searchTweets(token: IAccessToken, hashtag: string, startDate: Date, endDate: Date) {
+    static async searchTweets(token: IAccessToken, query: string) {
         const { data } = await twitterClient({
             url: '/tweets/search/recent',
             method: 'GET',
@@ -256,24 +254,7 @@ export class TwitterService {
                 Authorization: `Bearer ${token.accessToken}`,
             },
             params: {
-                query: `from:${token.userId} ${hashtag}`,
-            },
-        });
-        return data.data;
-    }
-
-    static async getLatestTweets(token: IAccessToken, startDate: Date, endDate: Date) {
-        const { data } = await twitterClient({
-            url: `/users/${token.userId}/tweets`,
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token.accessToken}`,
-            },
-            params: {
-                'start_time': startDate.toISOString(),
-                'end_time': endDate.toISOString(),
-                'expansions': 'author_id',
-                'user.fields': 'username',
+                query: `from:${token.userId} ${query}`,
             },
         });
         return data.data;

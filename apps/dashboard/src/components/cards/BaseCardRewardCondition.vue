@@ -123,7 +123,8 @@ export default class BaseCardRewardCondition extends Vue {
         this.platform = this.rewardCondition ? getPlatform(this.rewardCondition.platform) : getPlatform(0);
         this.interaction = this.rewardCondition ? getInteraction(this.rewardCondition.interaction) : getInteraction(0);
         this.content = this.rewardCondition ? this.rewardCondition.content : '';
-        this.contentMetadata = this.rewardCondition ? this.rewardCondition.contentMetadata : {};
+        this.contentMetadata =
+            this.rewardCondition && this.rewardCondition.contentMetadata ? this.rewardCondition.contentMetadata : '';
         this.isVisible = !!this.platform.type;
     }
 

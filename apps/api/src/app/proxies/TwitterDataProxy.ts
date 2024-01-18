@@ -40,31 +40,22 @@ export default class TwitterDataProxy {
         return { isAuthorized: data.isAuthorized, tweets: data.tweets, users: data.users };
     }
 
-    static async searchTweets(sub: string, hashtag: string, startDate: Date, endDate: Date) {
+    static parseSearchQuery(content: string) {
+        const emojiRegex = /<a?:.+?:\d{18}>|\p{Extended_Pictographic}/gu;
+        return content
+            .split(emojiRegex)
+            .filter((text) => text && text.length > 1 && !text.match(emojiRegex))
+            .map((text) => `"${text}"`)
+            .join(' ');
+    }
+
+    static async searchTweets(sub: string, query: string) {
         const params = new URLSearchParams();
-        params.append('startDate', String(startDate.getTime()));
-        params.append('endDate', String(endDate.getTime()));
-        params.append('hashtag', hashtag);
+        params.append('query', query);
 
         const { data } = await authClient({
             method: 'GET',
             url: `/account/${sub}/twitter/tweets/search`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
-            params,
-        });
-        return data;
-    }
-
-    static async getLatestTweets(sub: string, startDate: Date, endDate: Date) {
-        const params = new URLSearchParams();
-        params.append('startDate', String(startDate.getTime()));
-        params.append('endDate', String(endDate.getTime()));
-
-        const { data } = await authClient({
-            method: 'GET',
-            url: `/account/${sub}/twitter/tweets/latest`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
@@ -84,16 +75,18 @@ export default class TwitterDataProxy {
     }
 
     static async validateMessage(account: TAccount, message: string) {
-        const now = Date.now();
-        const start = new Date(now - 24 * 60 * 60 * 1000);
-        const end = new Date(now);
-        const [latestTweet] = await this.getLatestTweets(account.sub, start, end);
-        if (!latestTweet) return { result: false, reason: `X: Could not find a post in the last 24 hours.` };
+        const query = this.parseSearchQuery(message);
+        const results = await this.searchTweets(account.sub, query);
+        if (!results.length)
+            return {
+                result: false,
+                reason: `X: Could not find a post matching the requirements for your account in the last 7 days.`,
+            };
 
-        const textA = String(latestTweet.text).toLowerCase().trim();
-        const textB = encode(message).toLowerCase().trim();
-        if (textA.includes(textB)) return { result: true, reason: '' };
-        return { result: false, reason: `X: Your last post does not contain exactly "${message}".` };
+        return {
+            result: true,
+            reason: '',
+        };
     }
 
     static async validateLike(account: TAccount, channelItem: string) {

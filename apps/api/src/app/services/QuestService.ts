@@ -35,6 +35,7 @@ import { logger } from '../util/logger';
 import { GitcoinQuest } from '../models/GitcoinQuest';
 import { GitcoinQuestEntry } from '../models/GitcoinQuestEntry';
 import QuestGitcoinService from './QuestGitcoinService';
+import { Wallet } from 'ethers';
 
 type TValidationResult = {
     result: boolean;
@@ -336,6 +337,13 @@ function findById(variant: QuestVariant, questId: string) {
     return model.findById(questId);
 }
 
+async function findOne(variant: QuestVariant, questId: string, wallet: WalletDocument) {
+    const quest = findById(variant, questId);
+    const q = await questMap[variant].service.findOne(quest, wallet);
+    const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : true;
+    return { ...q, isLocked };
+}
+
 async function list(pool: AssetPoolDocument, wallet?: WalletDocument) {
     const questVariants = Object.keys(QuestVariant).filter((v) => !isNaN(Number(v)));
     const callback: any = async (variant: QuestVariant) => {
@@ -367,4 +375,4 @@ async function list(pool: AssetPoolDocument, wallet?: WalletDocument) {
 }
 
 export { questMap };
-export default { list, getAmount, isAvailable, create, update, complete, validate, findById };
+export default { findOne, list, getAmount, isAvailable, create, update, complete, validate, findById };

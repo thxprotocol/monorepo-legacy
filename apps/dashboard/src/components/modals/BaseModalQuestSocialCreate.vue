@@ -113,7 +113,7 @@ export default class ModalRewardPointsCreate extends Vue {
             : {
                   ...this.getConditionDefaults(this.variant),
                   content: '',
-                  contentMetadata: {},
+                  contentMetadata: '',
               };
         this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
         this.locks = this.reward ? this.reward.locks : this.locks;

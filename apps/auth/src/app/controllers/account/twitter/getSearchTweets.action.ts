@@ -9,13 +9,8 @@ export const getSearchTweets = async (req: Request, res: Response) => {
     if (!isAuthorized) throw new Error('Not authorized for Twitter');
 
     const token = account.getToken(AccessTokenKind.Twitter);
-    const decodedHashtag = decodeURIComponent(String(req.query.hashtag));
-    const tweets = await TwitterService.searchTweets(
-        token,
-        decodedHashtag,
-        new Date(Number(req.query.startDate)),
-        new Date(Number(req.query.endDate)),
-    );
+    const decodedHashtag = decodeURIComponent(String(req.query.query));
+    const tweets = await TwitterService.searchTweets(token, decodedHashtag);
 
     res.json(tweets);
 };
