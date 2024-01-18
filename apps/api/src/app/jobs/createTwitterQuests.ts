@@ -31,10 +31,10 @@ export async function createTwitterQuests() {
             logger.info(JSON.stringify(tweets));
 
             const promises = tweets.map(async (tweet: any) => {
-                const isExistingQuest = await PointReward.exists({
+                const isExistingQuest = !!(await PointReward.exists({
                     poolId: String(pool._id),
                     content: tweet.id,
-                });
+                }));
                 return { ...tweet, isExistingQuest };
             });
             const recentTweets = await Promise.all(promises);
@@ -61,6 +61,7 @@ export async function createTwitterQuests() {
                             url: `https://twitter.com/${twitterAccount.metadata.username}/status/${tweet.id}`,
                             username: twitterAccount.metadata.username,
                             text: tweet.text,
+                            minFollowersCount: 0,
                         });
                         return await QuestService.create(QuestVariant.Twitter, pool._id, {
                             index: 0,

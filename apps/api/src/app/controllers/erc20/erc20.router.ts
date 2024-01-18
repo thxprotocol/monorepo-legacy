@@ -1,23 +1,29 @@
 import express from 'express';
 import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import { upload } from '@thxnetwork/api/util/multer';
-import ReadERC20 from './get.controller';
-import ListERC20 from './list.controller';
+import RouterAllowance from './allowance/allowance.router';
+import RouterTransfer from './transfer/transfer.router';
+import RouterBalance from './balance/balance.router';
+import RouterPreview from './preview/preview.router';
+
+import CreateController from './post.controller';
+import ReadController from './get.controller';
+import UpdateController from './patch.controller';
+import DeleteController from './delete.controller';
+import ListController from './list.controller';
+
 import ListERC20Token from './token/list.controller';
 import ReadERC20Token from './token/get.controller';
-import CreateERC20 from './post.controller';
 import ImportERC20 from './token/post.controller';
-import DeleteERC20 from './delete.controller';
-import UpdateERC20 from './patch.controller';
-import PreviewERC20 from './import_preview/post.controller';
-import CreateTransferERC20 from './transfer/post.controller';
-import ReadTransferERC20 from './transfer/get.controller';
-import ListTransferERC20 from './transfer/list.controller';
-import ReadERC20Balance from './balance/get.controller';
 
 const router = express.Router();
 
-// Token Resource
+router.use('/transfer', RouterTransfer);
+router.use('/balance', RouterBalance);
+router.use('/allowance', RouterAllowance);
+router.use('/preview', RouterPreview);
+
+// Token Resource shoudl move into /wallet
 router.get(
     '/token',
     guard.check(['erc20:read']),
@@ -31,41 +37,33 @@ router.post(
     assertRequestInput(ImportERC20.validation),
     ImportERC20.controller,
 );
+// End
 
-// Transfer Resource
-router.get(
-    '/transfer',
-    guard.check(['erc20:read']),
-    ListTransferERC20.controller,
-    assertRequestInput(ListTransferERC20.validation),
-);
-router.get('/transfer/:id', guard.check(['erc20:read']), ReadTransferERC20.controller);
-router.post('/transfer', assertRequestInput(CreateTransferERC20.validation), CreateTransferERC20.controller);
-
-// ERC20 Resource
-router.get('/', guard.check(['erc20:read']), assertRequestInput(ListERC20.validation), ListERC20.controller);
-router.get('/:id', guard.check(['erc20:read']), assertRequestInput(ReadERC20.validation), ReadERC20.controller);
 router.post(
     '/',
     upload.single('file'),
     guard.check(['erc20:write', 'erc20:read']),
-    assertRequestInput(CreateERC20.validation),
-    CreateERC20.controller,
+    assertRequestInput(CreateController.validation),
+    CreateController.controller,
+);
+router.get(
+    '/:id',
+    guard.check(['erc20:read']),
+    assertRequestInput(ReadController.validation),
+    ReadController.controller,
 );
 router.patch(
     '/:id',
     guard.check(['erc20:write', 'erc20:read']),
-    assertRequestInput(UpdateERC20.validation),
-    UpdateERC20.controller,
+    assertRequestInput(UpdateController.validation),
+    UpdateController.controller,
 );
-router.delete('/:id', guard.check(['erc20:write']), assertRequestInput(DeleteERC20.validation), DeleteERC20.controller);
-
-router.get(
-    '/:id/balance/:address',
-    guard.check(['erc20:read']),
-    assertRequestInput(ReadERC20Balance.validation),
-    ReadERC20Balance.controller,
+router.delete(
+    '/:id',
+    guard.check(['erc20:write']),
+    assertRequestInput(DeleteController.validation),
+    DeleteController.controller,
 );
-router.post('/preview', assertRequestInput(PreviewERC20.validation), PreviewERC20.controller);
+router.get('/', guard.check(['erc20:read']), assertRequestInput(ListController.validation), ListController.controller);
 
 export default router;

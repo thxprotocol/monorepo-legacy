@@ -1,6 +1,6 @@
 import { body, check, param } from 'express-validator';
 import { Request, Response } from 'express';
-import { questMap } from '@thxnetwork/api/services/QuestService';
+import QuestService, { questMap } from '@thxnetwork/api/services/QuestService';
 import { isValidUrl } from '@thxnetwork/api/util/url';
 import { ChainId, TInfoLink } from '@thxnetwork/common/lib/types';
 import { v4 } from 'uuid';
@@ -81,9 +81,8 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const poolId = req.params.id;
     const image = req.file && (await ImageService.upload(req.file));
-    const ModelQuest = questMap[req.body.variant].models.quest;
     const uuid = v4();
-    const quest = await ModelQuest.create({ ...req.body, image, uuid, poolId });
+    const quest = await QuestService.create(req.body.variant, poolId, { ...req.body, image, uuid, poolId });
 
     res.status(201).json(quest);
 };

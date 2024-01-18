@@ -11,12 +11,15 @@ import { ethers } from 'ethers';
 export const safeVersion: SafeVersion = '1.3.0';
 
 const getChainId = () => (process.env.NODE_ENV !== 'production' ? ChainId.Hardhat : ChainId.Polygon);
-const getContract = (contractName: TokenContractName, chainId: ChainId) => {
+const getContract = (contractName: TokenContractName, chainId: ChainId, address: string) => {
+    const { signer } = getProvider(chainId);
+    return new ethers.Contract(address, contractArtifacts[contractName].abi, signer);
+};
+const getBPTContract = (contractName: TokenContractName, chainId: ChainId) => {
     const { signer } = getProvider(chainId);
     return new ethers.Contract(BPT_ADDRESS, contractArtifacts[contractName].abi, signer);
 };
 
-// Relatively old methods
 export const deploy = async (contractName: string, args: any[], signer: ethers.Signer): Promise<ethers.Contract> => {
     if (!contractArtifacts[contractName]) throw new Error('No artifact for contract name');
     const factory = new ethers.ContractFactory(
@@ -61,7 +64,7 @@ const chainIdToName = (chainId: ChainId): TNetworkName => {
     }
 };
 
-export { contractArtifacts, getChainId, getContract };
+export { contractArtifacts, getBPTContract, getChainId, getContract };
 export default {
     getContractConfig,
     getContractFromAbi,

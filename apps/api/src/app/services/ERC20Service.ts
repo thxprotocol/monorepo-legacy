@@ -202,18 +202,6 @@ export const importToken = async (chainId: number, address: string, sub: string,
     return erc20;
 };
 
-export const getOnChainERC20Token = async (chainId: number, address: string) => {
-    const contract = getContractFromName(chainId, 'LimitedSupplyToken', address);
-
-    const [name, symbol, totalSupply] = await Promise.all([
-        contract.methods.name().call(),
-        contract.methods.symbol().call(),
-        contract.methods.totalSupply().call(),
-    ]);
-
-    return { name, symbol, totalSupply };
-};
-
 export const update = (erc20: ERC20Document, updates: IERC20Updates) => {
     return ERC20.findByIdAndUpdate(erc20._id, updates, { new: true });
 };
@@ -310,7 +298,6 @@ export default {
     getTokenById,
     update,
     initialize,
-    getOnChainERC20Token,
     queryDeployTransaction,
     transferFrom,
     transferFromCallBack,

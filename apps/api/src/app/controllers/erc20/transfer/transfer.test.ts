@@ -16,7 +16,7 @@ import { signTxHash } from '@thxnetwork/api/util/jest/network';
 
 const user = request.agent(app);
 
-describe('ERC20Transfer', () => {
+describe('ERC20 Transfer', () => {
     let erc20: ERC20Document, wallet: WalletDocument;
 
     beforeAll(beforeAllCallback);

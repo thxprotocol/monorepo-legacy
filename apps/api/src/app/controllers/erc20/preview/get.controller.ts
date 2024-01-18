@@ -8,15 +8,19 @@ const validation = [query('address').isEthereumAddress()];
 
 export const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findPrimary(req.auth.sub);
-    if (!wallet) throw new NotFoundError('Could not find wallet for account');
+    if (!wallet) throw new NotFoundError('Could not find wallet for account.');
 
-    const contract = ContractService.getContractFromAbi(
+    const contract = ContractService.getContractFromName(
         wallet.chainId,
-        ContractService.getAbiForContractName('LimitedSupplyToken'),
+        'LimitedSupplyToken',
         req.query.address as string,
     );
-    const balance = await contract.methods.balanceOf(req.params.address).call();
+    const [name, symbol, totalSupply] = await Promise.all([
+        contract.methods.name().call(),
+        contract.methods.symbol().call(),
+        contract.methods.totalSupply().call(),
+    ]);
 
-    res.json({ balance });
+    res.json({ name, symbol, totalSupply });
 };
 export default { controller, validation };
