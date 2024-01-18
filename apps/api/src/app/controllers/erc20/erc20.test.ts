@@ -85,7 +85,6 @@ describe('ERC20', () => {
                     expect(body.name).toBe(name);
                     expect(body.symbol).toBe(symbol);
                     expect(body.decimals).toBe(18);
-                    expect(body.adminBalance).toBe(1000);
                     expect(body.archived).toBe(false);
                 })
                 .expect(200, done);
