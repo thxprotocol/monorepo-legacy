@@ -38,56 +38,56 @@ describe('VESytem', () => {
             expect(testBPT.address).toBe(BPT_ADDRESS);
         });
 
-    //     it('Deploy Launchpad', async () => {
-    //         const votingEscrowImpl = await deploy('VotingEscrow', [], signer);
-    //         const rewardDistributorImpl = await deploy('RewardDistributor', [], signer);
-    //         const rewardFaucetImpl = await deploy('RewardFaucet', [], signer);
+        //     it('Deploy Launchpad', async () => {
+        //         const votingEscrowImpl = await deploy('VotingEscrow', [], signer);
+        //         const rewardDistributorImpl = await deploy('RewardDistributor', [], signer);
+        //         const rewardFaucetImpl = await deploy('RewardFaucet', [], signer);
 
-    //         launchpad = await deploy(
-    //             'Launchpad',
-    //             [votingEscrowImpl.address, rewardDistributorImpl.address, rewardFaucetImpl.address],
-    //             signer,
-    //         );
+        //         launchpad = await deploy(
+        //             'Launchpad',
+        //             [votingEscrowImpl.address, rewardDistributorImpl.address, rewardFaucetImpl.address],
+        //             signer,
+        //         );
 
-    //         expect(launchpad.address).toBeDefined();
-    //     });
+        //         expect(launchpad.address).toBeDefined();
+        //     });
 
-    //     it('Deploy VESystem', async () => {
-    //         let tx = await launchpad.deploy(
-    //             BPT_ADDRESS,
-    //             'Voting Escrow THX',
-    //             'VeTHX',
-    //             7776000, // 90 days
-    //             Math.ceil(Date.now() / 1000) + 60 * 60 * 24 * 7, // 7 days from now
-    //             defaultAccount, // Admin unlock all
-    //             defaultAccount, // Admin early unlock
-    //         );
-    //         tx = await tx.wait();
+        //     it('Deploy VESystem', async () => {
+        //         let tx = await launchpad.deploy(
+        //             BPT_ADDRESS,
+        //             'Voting Escrow THX',
+        //             'VeTHX',
+        //             7776000, // 90 days
+        //             Math.ceil(Date.now() / 1000) + 60 * 60 * 24 * 7, // 7 days from now
+        //             defaultAccount, // Admin unlock all
+        //             defaultAccount, // Admin early unlock
+        //         );
+        //         tx = await tx.wait();
 
-    //         const event = tx.events.find((event: any) => event.event == 'VESystemCreated');
-    //         const { votingEscrow, rewardDistributor, rewardFaucet, admin } = event.args;
-    //         expect(admin).toBe(defaultAccount);
+        //         const event = tx.events.find((event: any) => event.event == 'VESystemCreated');
+        //         const { votingEscrow, rewardDistributor, rewardFaucet, admin } = event.args;
+        //         expect(admin).toBe(defaultAccount);
 
-    //         vethx = new ethers.Contract(votingEscrow, contractArtifacts['VotingEscrow'].abi, signer);
-    //         rdthx = new ethers.Contract(rewardDistributor, contractArtifacts['RewardDistributor'].abi, signer);
-    //         rfthx = new ethers.Contract(rewardFaucet, contractArtifacts['RewardFaucet'].abi, signer);
-    //         smartCheckerList = await deploy('SmartWalletWhitelist', [defaultAccount], signer);
-    //         expect(smartCheckerList.address).toBeDefined();
+        //         vethx = new ethers.Contract(votingEscrow, contractArtifacts['VotingEscrow'].abi, signer);
+        //         rdthx = new ethers.Contract(rewardDistributor, contractArtifacts['RewardDistributor'].abi, signer);
+        //         rfthx = new ethers.Contract(rewardFaucet, contractArtifacts['RewardFaucet'].abi, signer);
+        //         smartCheckerList = await deploy('SmartWalletWhitelist', [defaultAccount], signer);
+        //         expect(smartCheckerList.address).toBeDefined();
 
-    //         // Add smart wallet whitelist checker
-    //         await vethx.commit_smart_wallet_checker(smartCheckerList.address);
-    //         await vethx.apply_smart_wallet_checker();
+        //         // Add smart wallet whitelist checker
+        //         await vethx.commit_smart_wallet_checker(smartCheckerList.address);
+        //         await vethx.apply_smart_wallet_checker();
 
-    //         await vethx.set_early_unlock(true);
-    //         // await vethx.set_early_unlock_penalty_speed(1);
+        //         await vethx.set_early_unlock(true);
+        //         // await vethx.set_early_unlock_penalty_speed(1);
 
-    //         // Set early exit penalty treasury to reward distributor
-    //         await vethx.set_penalty_treasury(rewardDistributor);
+        //         // Set early exit penalty treasury to reward distributor
+        //         await vethx.set_penalty_treasury(rewardDistributor);
 
-    //         expect(rdthx.address).toBeDefined();
-    //         expect(vethx.address).toBeDefined();
-    //     });
-    // });
+        //         expect(rdthx.address).toBeDefined();
+        //         expect(vethx.address).toBeDefined();
+        //     });
+    });
 
     describe('Deposit BPT ', () => {
         it('Balance = total', async () => {
