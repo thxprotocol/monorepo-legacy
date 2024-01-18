@@ -24,7 +24,6 @@ describe('VESytem', () => {
 
     let safeWallet!: WalletDocument,
         testBPT!: Contract,
-        smartCheckerList!: Contract,
         vethx!: Contract,
         rdthx!: Contract,
         rfthx!: Contract,
@@ -55,7 +54,7 @@ describe('VESytem', () => {
 
         it('WhiteList Safe Wallet', async () => {
             // Move this to step 1 in VE UI modals
-            let tx = await smartCheckerList.approveWallet(safeWallet.address);
+            let tx = await scthx.approveWallet(safeWallet.address);
             tx = await tx.wait();
             const event = tx.events.find((ev) => ev.event === 'ApproveWallet');
             expect(event).toBeDefined();
