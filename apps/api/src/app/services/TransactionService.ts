@@ -11,7 +11,6 @@ import { deployCallback as erc20DeployCallback } from './ERC20Service';
 import { RelayerTransactionPayload } from '@openzeppelin/defender-relay-client';
 import { Contract } from 'web3-eth-contract';
 import { WalletDocument } from '../models/Wallet';
-import WalletManagerService from './WalletManagerService';
 import ERC721Service from './ERC721Service';
 import WithdrawalService from './WithdrawalService';
 import ERC1155Service from './ERC1155Service';
@@ -277,12 +276,6 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
             break;
         case 'withdrawForCallback':
             await WithdrawalService.withdrawForCallback(tx.callback.args, receipt);
-            break;
-        case 'grantRoleCallBack':
-            await WalletManagerService.grantRoleCallBack(tx.callback.args, receipt);
-            break;
-        case 'revokeRoleCallBack':
-            await WalletManagerService.revokeRoleCallBack(tx.callback.args, receipt);
             break;
         case 'erc721nTransferFromCallback':
             await ERC721Service.transferFromCallback(tx.callback.args, receipt);

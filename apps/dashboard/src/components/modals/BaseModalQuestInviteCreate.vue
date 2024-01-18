@@ -69,7 +69,7 @@
 <script lang="ts">
 import hljs from 'highlight.js/lib/core';
 import Shell from 'highlight.js/lib/languages/shell';
-import { TQuestLock, type TReferralReward } from '@thxnetwork/types/index';
+import { QuestVariant, TQuestLock, type TReferralReward } from '@thxnetwork/types/index';
 import { mapGetters } from 'vuex';
 import { UserProfile } from 'oidc-client-ts';
 import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
@@ -162,8 +162,9 @@ export default class ModalReferralRewardCreate extends Vue {
     onSubmit() {
         this.isLoading = true;
         this.$store
-            .dispatch(`referralRewards/${this.reward ? 'update' : 'create'}`, {
+            .dispatch(`pools/${this.reward ? 'updateQuest' : 'createQuest'}`, {
                 ...this.reward,
+                variant: QuestVariant.Invite,
                 page: 1,
                 poolId: String(this.pool._id),
                 title: this.title,
