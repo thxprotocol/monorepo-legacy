@@ -7,7 +7,7 @@
             </b-form-group>
             <b-form-group label="Contract Address">
                 <b-input-group>
-                    <b-form-input v-model="erc20Address" :disabled="!!erc20" @input="getPreview" />
+                    <b-form-input v-model="erc20Address" :disabled="!!erc20" @input="onInputAddress" />
                     <template #append>
                         <b-button
                             v-if="erc20"
@@ -109,14 +109,9 @@ export default class ModalERC20Import extends Vue {
         this.erc20LogoImgUrl = erc20 && erc20.logoURI ? erc20.logoURI : '';
     }
 
-    async getPreview(address: string) {
-        if (!isAddress(address)) {
-            this.showPreview = false;
-            this.name = '';
-            this.symbol = '';
-            this.totalSupplyInWei = '';
-            return;
-        }
+    async onInputAddress(address: string) {
+        if (!isAddress(address)) throw new Error('Invalid Contract Address');
+
         try {
             this.previewLoading = true;
             const { name, symbol, totalSupplyInWei } = await this.$store.dispatch('erc20/preview', {
@@ -131,7 +126,7 @@ export default class ModalERC20Import extends Vue {
         } catch (err) {
             this.previewLoading = false;
             this.showPreview = false;
-            throw new Error('Invalid Contract Address');
+            throw new Error('Could not import for this address.');
         }
     }
 }

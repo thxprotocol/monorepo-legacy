@@ -39,7 +39,7 @@
         </div>
         <div class="container container-md">
             <base-nothing-here
-                v-if="!Object.values(erc20s).length"
+                v-if="!Object.values(erc20List).length"
                 text-submit="Create a Coin"
                 title="You have not created a Coin yet"
                 description="Coins could be used for making payments, exchanging value, point systems
@@ -47,8 +47,8 @@
                 @clicked="$bvModal.show('modalERC20Create')"
             />
             <b-row v-else>
-                <b-col md="6" lg="4" :key="erc20._id" v-for="erc20 of erc20s">
-                    <base-card-erc20 :erc20="erc20" />
+                <b-col md="6" lg="4" :key="key" v-for="(erc20, key) of erc20List">
+                    <BaseCardERC20 :erc20="erc20" />
                 </b-col>
             </b-row>
         </div>
@@ -60,29 +60,29 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
+import { IERC20s } from '@thxnetwork/dashboard/types/erc20';
 import ModalErc20Create from '@thxnetwork/dashboard/components/modals/BaseModalERC20Create.vue';
 import ModalErc20Import from '@thxnetwork/dashboard/components/modals/BaseModalERC20Import.vue';
-import BaseCardErc20 from '@thxnetwork/dashboard/components/cards/BaseCardERC20.vue';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import BaseBtnToggleArchive from '@thxnetwork/dashboard/components/buttons/BaseBtnToggleArchive.vue';
 import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
-import { IERC20s } from '@thxnetwork/dashboard/types/erc20';
+import BaseCardERC20 from '@thxnetwork/dashboard/components/cards/BaseCardERC20.vue';
 
 @Component({
     components: {
         BaseBtnToggleArchive,
-        BaseCardErc20,
+        BaseCardERC20,
         ModalErc20Create,
         ModalErc20Import,
         BaseNothingHere,
         BaseModalPoolCreate,
     },
     computed: mapGetters({
-        erc20s: 'erc20/all',
+        erc20List: 'erc20/all',
     }),
 })
-export default class Tokens extends Vue {
-    erc20s!: IERC20s;
+export default class CoinsView extends Vue {
+    erc20List!: IERC20s;
 
     loadList() {
         this.$store.dispatch('erc20/list');

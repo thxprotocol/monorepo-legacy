@@ -3,23 +3,22 @@ import app from '@thxnetwork/api/';
 import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { isAddress } from 'ethers/lib/utils';
-import { dashboardAccessToken, tokenTotalSupply } from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { toWei } from 'web3-utils';
 
 const http = request.agent(app);
 
 describe('ERC20', () => {
+    const totalSupply = toWei('1000'),
+        name = 'Test Token',
+        symbol = 'TTK';
     let tokenAddress: string, tokenName: string, tokenSymbol: string, erc20Id: string;
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     describe('POST /erc20', () => {
-        const totalSupply = toWei('1000'),
-            name = 'Test Token',
-            symbol = 'TTK';
-
         it('Able to create unlimited token and return address', (done) => {
             http.post('/v1/erc20')
                 .set('Authorization', dashboardAccessToken)
@@ -122,7 +121,7 @@ describe('ERC20', () => {
                     expect(body).toBeDefined();
                     expect(body.name).toBe(tokenName);
                     expect(body.symbol).toBe(tokenSymbol);
-                    expect(body.totalSupplyInWei).toBe(tokenTotalSupply);
+                    expect(body.totalSupplyInWei).toBe(totalSupply);
                 })
                 .expect(200, done);
         });

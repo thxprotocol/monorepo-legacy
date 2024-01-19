@@ -72,6 +72,8 @@ export default class BaseCardERC20 extends Vue {
 
     waitForAddress() {
         const taskFn = async () => {
+            console.log(this.erc20);
+            debugger;
             const erc20 = await this.$store.dispatch('erc20/read', this.erc20._id);
             if (erc20 && erc20.address.length) {
                 this.isDeploying = false;

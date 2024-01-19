@@ -9,24 +9,33 @@ import { track } from '@thxnetwork/mixpanel';
 @Module({ namespaced: true })
 class ERC20Module extends VuexModule {
     _all: IERC20s = {};
+    _balances: { [tokenAddress: string]: string } = {};
 
     get all() {
         return this._all;
     }
 
-    @Mutation
-    set(erc20: TERC20) {
-        Vue.set(this._all, erc20._id, erc20);
+    get balances() {
+        return this._balances;
     }
 
     @Mutation
-    setBalance({ id, balance }: { id: string; balance: string }) {
-        Vue.set(this._all[id], 'poolBalance', balance);
+    set(erc20: TERC20) {
+        if (!erc20.logoImgUrl || !erc20.logoImgUrl.length) {
+            erc20.logoImgUrl = `https://api.dicebear.com/7.x/identicon/svg?seed=${erc20.address}`;
+        }
+        Vue.set(this._all, erc20._id, erc20);
     }
 
     @Mutation
     unset(erc20: TERC20) {
         Vue.delete(this._all, erc20._id);
+    }
+
+    @Mutation
+    setBalance(data: { tokenAddress: string; address: string; balance: string }) {
+        if (!this._all[data.tokenAddress]) Vue.set(this._all, data.tokenAddress, {});
+        Vue.set(this._all[data.tokenAddress], data.address, data.balance);
     }
 
     @Mutation
@@ -44,39 +53,32 @@ class ERC20Module extends VuexModule {
             params,
         });
 
-        for (const _id of data) {
-            this.context.commit('set', { _id, loading: true });
+        for (const erc20 of data) {
+            this.context.commit('set', erc20);
         }
     }
 
     @Action({ rawError: true })
-    async read(id: string) {
+    async getBalance({ tokenAddress, address }: { tokenAddress: string; address: string }) {
         const { data } = await axios({
             method: 'GET',
-            url: '/erc20/' + id,
+            url: '/erc20/balance',
+            params: {
+                tokenAddress,
+                address,
+            },
         });
-        if (!data.logoImgUrl || data.logoImgUrl.length == 0) {
-            data.logoImgUrl = `https://api.dicebear.com/7.x/identicon/svg?seed=${data.address}`;
-        }
-        const erc20 = {
-            ...data,
-            loading: false,
-            logoURI: data.logoImgUrl || `https://api.dicebear.com/7.x/identicon/svg?seed=${data.address}`,
-        };
-
-        this.context.commit('set', erc20);
-
-        return erc20;
+        this.context.commit('setBalance', data);
     }
 
     @Action({ rawError: true })
-    async getBalance({ id, address }: { id: string; address: string }) {
+    async read(erc20: TERC20) {
         const { data } = await axios({
             method: 'GET',
-            url: '/erc20/' + id + '/balance/' + address,
+            url: '/erc20/' + erc20._id,
         });
 
-        this.context.commit('setBalance', { id, balance: data });
+        this.context.commit('set', data);
     }
 
     @Action({ rawError: true })
