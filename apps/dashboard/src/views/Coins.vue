@@ -38,11 +38,6 @@
             </b-jumbotron>
         </div>
         <div class="container container-md">
-            <b-row>
-                <b-col class="text-right pb-3">
-                    <base-btn-toggle-archive @archived="$store.dispatch('erc20/list', { archived: $event })" />
-                </b-col>
-            </b-row>
             <base-nothing-here
                 v-if="!Object.values(erc20s).length"
                 text-submit="Create a Coin"

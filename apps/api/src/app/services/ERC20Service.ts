@@ -33,8 +33,8 @@ function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     }
 }
 
-export async function findBySub(sub: string, includeIsArchived: boolean) {
-    const pools = await PoolService.getAllBySub(sub, includeIsArchived);
+export async function findBySub(sub: string) {
+    const pools = await PoolService.getAllBySub(sub);
     const coinRewards = await ERC20Perk.find({ poolId: pools.map((p) => String(p._id)) });
     const erc20Ids = coinRewards.map((c) => c.erc20Id);
     const erc20s = await ERC20.find({ sub, archived: includeIsArchived });

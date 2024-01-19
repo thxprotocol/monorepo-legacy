@@ -107,13 +107,13 @@ class ERC20Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async remove(id: string) {
+    async remove(erc20: TERC20) {
         await axios({
             method: 'DELETE',
-            url: '/erc20/' + id,
+            url: '/erc20/' + erc20._id,
         });
 
-        this.context.commit('unset', id);
+        this.context.commit('unset', erc20._id);
     }
 
     @Action({ rawError: true })
@@ -132,13 +132,12 @@ class ERC20Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async preview(payload: { chainId: ChainId; address: string }) {
+    async preview(params: { chainId: ChainId; address: string }) {
         const { data } = await axios({
-            method: 'POST',
+            method: 'get',
             url: '/erc20/preview',
-            data: payload,
+            params,
         });
-
         return data;
     }
 }

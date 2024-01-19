@@ -15,12 +15,12 @@ export const controller = async (req: Request, res: Response) => {
         'LimitedSupplyToken',
         req.query.address as string,
     );
-    const [name, symbol, totalSupply] = await Promise.all([
+    const [name, symbol, totalSupplyInWei] = await Promise.all([
         contract.methods.name().call(),
         contract.methods.symbol().call(),
         contract.methods.totalSupply().call(),
     ]);
 
-    res.json({ name, symbol, totalSupply });
+    res.json({ name, symbol, totalSupplyInWei });
 };
 export default { controller, validation };

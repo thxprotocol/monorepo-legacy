@@ -101,8 +101,8 @@ async function deploy(
     return AssetPool.findByIdAndUpdate(pool._id, { 'settings.slug': String(pool._id) }, { new: true });
 }
 
-async function getAllBySub(sub: string, includeIsArchived?: boolean) {
-    const pools = await AssetPool.find({ sub, ...(includeIsArchived ? {} : { 'settings.isArchived': false }) });
+async function getAllBySub(sub: string) {
+    const pools = await AssetPool.find({ sub });
     // Only query for collabs of not already owned pools
     const collaborations = await Collaborator.find({ sub, poolId: { $nin: pools.map(({ _id }) => String(_id)) } });
     const poolIds = collaborations.map((c) => c.poolId);
@@ -110,7 +110,6 @@ async function getAllBySub(sub: string, includeIsArchived?: boolean) {
 
     const collaborationPools = await AssetPool.find({
         _id: poolIds,
-        ...(includeIsArchived ? {} : { 'settings.isArchived': false }),
     });
 
     return pools.concat(collaborationPools);
