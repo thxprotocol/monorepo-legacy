@@ -1,15 +1,16 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import type { IERC20s, TERC20 } from '@thxnetwork/dashboard/types/erc20';
+import type { IERC20s, TERC20, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
 import { ChainId } from '../enums/chainId';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { track } from '@thxnetwork/mixpanel';
+import { TPool } from '@thxnetwork/common/lib/types';
 
 @Module({ namespaced: true })
 class ERC20Module extends VuexModule {
     _all: IERC20s = {};
-    _balances: { [tokenAddress: string]: string } = {};
+    _balances: TERC20BalanceState = {};
 
     get all() {
         return this._all;
@@ -34,8 +35,8 @@ class ERC20Module extends VuexModule {
 
     @Mutation
     setBalance(data: { tokenAddress: string; address: string; balance: string }) {
-        if (!this._all[data.tokenAddress]) Vue.set(this._all, data.tokenAddress, {});
-        Vue.set(this._all[data.tokenAddress], data.address, data.balance);
+        if (!this._balances[data.tokenAddress]) Vue.set(this._balances, data.tokenAddress, {});
+        Vue.set(this._balances[data.tokenAddress], data.address, data.balance);
     }
 
     @Mutation
@@ -59,16 +60,18 @@ class ERC20Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async getBalance({ tokenAddress, address }: { tokenAddress: string; address: string }) {
+    async balanceOf({ pool, tokenAddress }: { pool: TPool; tokenAddress: string }) {
         const { data } = await axios({
             method: 'GET',
-            url: '/erc20/balance',
+            url: `/pools/${pool._id}/erc20/balance`,
+            headers: {
+                'X-PoolId': pool._id,
+            },
             params: {
                 tokenAddress,
-                address,
             },
         });
-        this.context.commit('setBalance', data);
+        this.context.commit('setBalance', { tokenAddress, address: pool.address, balance: data.balanceInWei });
     }
 
     @Action({ rawError: true })

@@ -16,6 +16,7 @@ import RouterQuests from './quests/quests.router';
 import RouterGuilds from './guilds/guilds.router';
 import RouterTopups from './topup/topup.router';
 import RouterWallets from './wallets/wallets.router';
+import RouterERC20 from './erc20/erc20.router';
 
 const router = express.Router({ mergeParams: true });
 
@@ -56,5 +57,6 @@ router.use('/:id/wallets', RouterWallets);
 router.use('/:id/quests', RouterQuests);
 router.use('/:id/events', RouterEvents);
 router.use('/:id/guilds', RouterGuilds);
+router.use('/:id/erc20', RouterERC20);
 
 export default router;

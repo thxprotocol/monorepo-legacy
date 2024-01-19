@@ -4,7 +4,7 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import ContractService from '@thxnetwork/api/services/ContractService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
-const validation = [query('address').isEthereumAddress()];
+const validation = [query('tokenAddress').isEthereumAddress()];
 
 export const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findPrimary(req.auth.sub);
@@ -13,9 +13,9 @@ export const controller = async (req: Request, res: Response) => {
     const contract = ContractService.getContractFromAbi(
         wallet.chainId,
         ContractService.getAbiForContractName('LimitedSupplyToken'),
-        req.query.address as string,
+        req.query.tokenAddress as string,
     );
-    const balance = await contract.methods.balanceOf(req.params.address).call();
+    const balance = await contract.methods.balanceOf(req.params.tokenAddress).call();
 
     res.json({ balance });
 };

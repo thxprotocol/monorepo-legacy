@@ -30,8 +30,8 @@
                                 <b-form-file v-model="imageFile" accept="image/*" @change="onImgChange" />
                             </b-input-group>
                         </b-form-group>
-                        <b-form-group label="Coin">
-                            <BaseDropdownSelectERC20 @selected="erc20Id = $event._id" :chainId="pool.chainId" />
+                        <b-form-group label="Coin" :description="`Balance: ${balance}`">
+                            <BaseDropdownSelectERC20 @update="onUpdateERC20" :chainId="pool.chainId" :erc20="erc20" />
                         </b-form-group>
                         <b-row>
                             <b-col md="6">
@@ -81,12 +81,14 @@
 </template>
 
 <script lang="ts">
-import type { TERC20Perk, TPool } from '@thxnetwork/types/interfaces';
+import type { TERC20, TERC20Perk, TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
+import { mapGetters } from 'vuex';
+import { IERC20s, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
 
 @Component({
     components: {
@@ -95,6 +97,10 @@ import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
         BaseCardRewardLimits,
         BaseDropdownSelectERC20,
     },
+    computed: mapGetters({
+        erc20List: 'erc20/all',
+        erc20BalanceList: 'erc20/balances',
+    }),
 })
 export default class ModalRewardERC20Create extends Vue {
     isSubmitDisabled = false;
@@ -112,10 +118,21 @@ export default class ModalRewardERC20Create extends Vue {
     imageFile: File | null = null;
     image = '';
     isPromoted = false;
+    erc20List!: IERC20s;
+    erc20BalanceList!: TERC20BalanceState;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TERC20Perk;
+
+    get erc20() {
+        return this.erc20List[this.erc20Id];
+    }
+
+    get balance() {
+        if (!this.erc20 || !this.erc20BalanceList[this.erc20.address]) return '';
+        return this.erc20BalanceList[this.erc20.address][this.pool.address];
+    }
 
     onShow() {
         this.erc20Id = this.reward ? this.reward.erc20Id : this.erc20Id;
@@ -129,6 +146,11 @@ export default class ModalRewardERC20Create extends Vue {
         this.claimAmount = this.reward ? this.reward.claimAmount : 0;
         this.image = this.reward && this.reward.image ? this.reward.image : '';
         this.isPromoted = this.reward ? this.reward.isPromoted : this.isPromoted;
+    }
+
+    onUpdateERC20(erc20: TERC20 | null) {
+        this.erc20Id = erc20 ? erc20._id : '';
+        this.$store.dispatch('erc20/balanceOf', { tokenAddress: this.erc20.address, pool: this.pool });
     }
 
     onSubmit() {

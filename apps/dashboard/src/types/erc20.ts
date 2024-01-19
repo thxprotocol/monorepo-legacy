@@ -25,3 +25,9 @@ export type TERC20 = {
 export interface IERC20s {
     [id: string]: TERC20;
 }
+
+export type TERC20BalanceState = {
+    [tokenAddress: string]: {
+        [address: string]: string;
+    };
+};
