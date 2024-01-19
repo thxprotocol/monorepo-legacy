@@ -66,7 +66,7 @@ describe('ERC20', () => {
         });
 
         it('Able to return list of created token', (done) => {
-            http.get('/v1/erc20?archived=false')
+            http.get('/v1/erc20')
                 .set('Authorization', dashboardAccessToken)
                 .expect(({ body }: request.Response) => {
                     expect(body.length).toEqual(2);
@@ -85,7 +85,6 @@ describe('ERC20', () => {
                     expect(body.name).toBe(name);
                     expect(body.symbol).toBe(symbol);
                     expect(body.decimals).toBe(18);
-                    expect(body.archived).toBe(false);
                 })
                 .expect(200, done);
         });
@@ -95,12 +94,9 @@ describe('ERC20', () => {
         it('should to update a created token', (done) => {
             http.patch('/v1/erc20/' + erc20Id)
                 .set('Authorization', dashboardAccessToken)
-                .send({
-                    archived: true,
-                })
+                .send()
                 .expect(({ body }: request.Response) => {
                     expect(body).toBeDefined();
-                    expect(body.archived).toBe(true);
                 })
                 .expect(200, done);
         });

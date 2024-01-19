@@ -20,7 +20,7 @@ describe('ERC721', () => {
 
     describe('POST /erc721', () => {
         it('should create and return contract details', async () => {
-            const logoImg = await createImage();
+            const logoImg = createImage();
             await user
                 .post('/v1/erc721')
                 .set('Authorization', dashboardAccessToken)
@@ -38,7 +38,6 @@ describe('ERC721', () => {
                     expect(body.symbol).toBe(symbol);
                     expect(body.description).toBe(description);
                     expect(isAddress(body.address)).toBe(true);
-                    expect(body.archived).toBe(false);
                     expect(body.logoImgUrl).toBeDefined();
                     erc721ID = body._id;
                 })
@@ -83,12 +82,9 @@ describe('ERC721', () => {
             it('should update a created token', (done) => {
                 user.patch('/v1/erc721/' + erc721ID)
                     .set('Authorization', dashboardAccessToken)
-                    .send({
-                        archived: true,
-                    })
+                    .send()
                     .expect(({ body }: request.Response) => {
                         expect(body).toBeDefined();
-                        expect(body.archived).toBe(true);
                     })
                     .expect(200, done);
             });

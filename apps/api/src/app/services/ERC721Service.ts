@@ -74,11 +74,11 @@ export async function findById(id: string): Promise<ERC721Document> {
     return erc721;
 }
 
-export async function findBySub(sub: string, includeIsArchived: boolean): Promise<ERC721Document[]> {
-    const pools = await PoolService.getAllBySub(sub, includeIsArchived);
+export async function findBySub(sub: string): Promise<ERC721Document[]> {
+    const pools = await PoolService.getAllBySub(sub);
     const nftRewards = await ERC721Perk.find({ poolId: pools.map((p) => String(p._id)) });
     const erc721Ids = nftRewards.map((c) => c.erc721Id);
-    const erc721s = await ERC721.find({ sub, archived: includeIsArchived });
+    const erc721s = await ERC721.find({ sub });
 
     return erc721s.concat(await ERC721.find({ _id: erc721Ids }));
 }

@@ -5,7 +5,7 @@ import { fromWei } from 'web3-utils';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 
-const validation = [param('id').exists().isMongoId()];
+const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     let erc20 = await ERC20Service.queryDeployTransaction(await ERC20Service.getById(req.params.id));
