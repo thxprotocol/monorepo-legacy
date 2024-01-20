@@ -15,7 +15,7 @@ import { questInteractionVariantMap } from '@thxnetwork/common/lib/types/maps';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import WalletService from '@thxnetwork/api/services/WalletService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 import { GitcoinQuest } from '@thxnetwork/api/models/GitcoinQuest';
 
@@ -45,7 +45,7 @@ async function createSelectMenuQuests(interaction: CommandInteraction | ButtonIn
     const account = await AccountProxy.getByDiscordId(interaction.user.id);
     if (!account) throw new Error('No THX account found for this Discord user.');
 
-    const wallet = await WalletService.findPrimary(account.sub, campaigns[0].chainId);
+    const wallet = await SafeService.findPrimary(account.sub, campaigns[0].chainId);
     if (!wallet) throw new Error('No wallet found for this account.');
 
     const quests = (await findQuests(campaigns)).flat();

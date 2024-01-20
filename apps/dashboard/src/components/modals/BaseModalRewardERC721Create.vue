@@ -60,15 +60,6 @@
                         </b-form-group>
                     </b-col>
                     <b-col md="6">
-                        <!-- <BaseCardCommerce
-                            v-if="profile && profile.plan === 1"
-                            class="mb-3"
-                            :pool="pool"
-                            :price="price"
-                            :price-currency="priceCurrency"
-                            @change-price="price = $event"
-                            @change-price-currency="priceCurrency = $event"
-                        /> -->
                         <BaseCardRewardExpiry
                             class="mb-3"
                             :expiryDate="expiryDate"
@@ -116,7 +107,6 @@ import type { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
-import BaseCardCommerce from '../cards/BaseCardCommerce.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
 import { mapGetters } from 'vuex';
 import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
@@ -128,7 +118,6 @@ import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 @Component({
     components: {
         BaseModal,
-        BaseCardCommerce,
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
         BaseDropdownERC721Metadata,

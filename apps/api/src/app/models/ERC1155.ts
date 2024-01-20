@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { TERC1155 } from '@thxnetwork/types/interfaces';
-import { getAbiForContractName } from '@thxnetwork/api/config/contracts';
+import { getAbiForContractName } from '@thxnetwork/api/services/ContractService';
 import { getProvider } from '@thxnetwork/api/util/network';
 
 export type ERC1155Document = mongoose.Document & TERC1155;

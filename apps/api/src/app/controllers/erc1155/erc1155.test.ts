@@ -35,7 +35,6 @@ describe('ERC1155', () => {
                     expect(body.name).toBe(name);
                     expect(body.description).toBe(description);
                     expect(isAddress(body.address)).toBe(true);
-                    expect(body.archived).toBe(false);
                     expect(body.logoImgUrl).toBeDefined();
                     erc1155ID = body._id;
                 })
@@ -79,12 +78,9 @@ describe('ERC1155', () => {
             it('should update a created token', (done) => {
                 user.patch('/v1/erc1155/' + erc1155ID)
                     .set('Authorization', dashboardAccessToken)
-                    .send({
-                        archived: true,
-                    })
+                    .send()
                     .expect(({ body }: request.Response) => {
                         expect(body).toBeDefined();
-                        expect(body.archived).toBe(true);
                     })
                     .expect(200, done);
             });

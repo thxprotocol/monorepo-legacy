@@ -6,27 +6,14 @@ import { query } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { ChainId } from '@thxnetwork/types/enums';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
-import WalletService from '@thxnetwork/api/services/WalletService';
-import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import WithdrawalService from '@thxnetwork/api/services/WithdrawalService';
 
 const validation = [query('chainId').exists().isNumeric()];
 
 export const controller = async (req: Request, res: Response) => {
-    /*
-    #swagger.tags = ['ERC20 Token']
-    #swagger.responses[200] = { 
-        description: 'Get a list of ERC20 tokens for this user.',
-        schema: { 
-            type: 'array',
-            items: { 
-                $ref: '#/definitions/ERC20Token',
-            } 
-        }
-    }
-    */
     const chainId = Number(req.query.chainId) as ChainId;
-    const wallet = await WalletService.findPrimary(req.auth.sub, chainId);
+    const wallet = await SafeService.findPrimary(req.auth.sub, chainId);
     if (!wallet) throw new NotFoundError('Could not find the wallet for the user');
 
     const thxWallet = await SafeService.getWalletMigration(req.auth.sub, chainId);

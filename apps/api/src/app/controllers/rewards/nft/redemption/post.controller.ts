@@ -17,7 +17,6 @@ import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC1155Document } from '@thxnetwork/api/models/ERC1155';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import PerkService from '@thxnetwork/api/services/PerkService';
-import WalletService from '@thxnetwork/api/services/WalletService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [param('uuid').exists()];
@@ -36,7 +35,7 @@ const controller = async (req: Request, res: Response) => {
     const nft = await PerkService.getNFT(perk);
     if (!nft) throw new NotFoundError('Could not find the nft for this perk');
 
-    const wallet = await WalletService.findPrimary(req.auth.sub, pool.chainId);
+    const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
     const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
     if (!pointBalance || Number(pointBalance.balance) < Number(perk.pointPrice))
         throw new BadRequestError('Not enough points on this account for this perk.');

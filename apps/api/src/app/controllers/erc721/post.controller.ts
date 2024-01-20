@@ -35,7 +35,6 @@ const controller = async (req: Request, res: Response) => {
             symbol: req.body.symbol,
             description: req.body.description,
             baseURL,
-            archived: false,
             logoImgUrl,
         },
         forceSync,

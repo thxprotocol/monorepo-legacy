@@ -18,13 +18,6 @@ export const validation = [
 ];
 
 export const controller = async (req: Request, res: Response) => {
-    /*
-    #swagger.tags = ['ERC20 Contract']
-    #swagger.responses[200] = { 
-            description: 'Deploy an ERC20 contract for this user.',
-            schema: { $ref: '#/definitions/ERC20' } 
-    }
-    */
     const logoImgUrl = req.file && (await ImageService.upload(req.file));
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : false;
 

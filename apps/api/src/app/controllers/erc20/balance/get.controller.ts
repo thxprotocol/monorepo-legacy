@@ -1,19 +1,22 @@
 import { Request, Response } from 'express';
+import { query } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import ERC20Service from '@thxnetwork/api/services/ERC20Service';
-import { param } from 'express-validator';
+import ContractService from '@thxnetwork/api/services/ContractService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
-const validation = [param('id').exists().isMongoId(), param('address').exists().isString()];
+const validation = [query('tokenAddress').isEthereumAddress()];
 
 export const controller = async (req: Request, res: Response) => {
-    /*
-    #swagger.tags = ['ERC20 Balance']
-    */
-    const erc20 = await ERC20Service.getById(req.params.id);
-    if (!erc20) throw new NotFoundError('Could not find the ERC20');
+    const wallet = await SafeService.findPrimary(req.auth.sub);
+    if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
-    const balance = await erc20.contract.methods.balanceOf(req.params.address).call();
+    const contract = ContractService.getContractFromAbi(
+        wallet.chainId,
+        ContractService.getAbiForContractName('LimitedSupplyToken'),
+        req.query.tokenAddress as string,
+    );
+    const balanceInWei = await contract.methods.balanceOf(wallet.address).call();
 
-    res.status(200).json(balance);
+    res.json({ balanceInWei });
 };
 export default { controller, validation };

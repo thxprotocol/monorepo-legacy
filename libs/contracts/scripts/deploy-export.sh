@@ -23,12 +23,12 @@ VERSION=`echo $(node -e "console.log(require('$BASE_DIR/package.json').version);
 npx hardhat deploy --network hardhat --export exports/hardhat/latest.json
 
 # Deploy and export for all networks.
-for NETWORK in maticdev matic 
-do
-    echo ""
-    echo "Deploying to $NETWORK:"
-    npx hardhat deploy --network $NETWORK --export $BASE_DIR/exports/$NETWORK/$VERSION.json
-done
+# for NETWORK in maticdev matic 
+# do
+#     echo ""
+#     echo "Deploying to $NETWORK:"
+#     npx hardhat deploy --network $NETWORK --export $BASE_DIR/exports/$NETWORK/$VERSION.json
+# done
 
 # Exports the latest versions of abis for direct imports.
 npx nx run contracts:build-abi

@@ -7,7 +7,7 @@
             </b-form-group>
             <b-form-group label="Contract Address">
                 <b-input-group>
-                    <b-form-input v-model="erc20Address" :disabled="!!erc20" @input="getPreview" />
+                    <b-form-input v-model="erc20Address" :disabled="!!erc20" @input="onInputAddress" />
                     <template #append>
                         <b-button
                             v-if="erc20"
@@ -23,12 +23,17 @@
             <div v-if="previewLoading">
                 <p><i class="fas fa-spinner fa-spin"></i> loading token info...</p>
             </div>
-            <div v-if="showPreview">
-                <p>
-                    <strong>{{ name }}</strong> ({{ symbol }})
-                </p>
-                <p><strong>Total Supply:</strong> {{ totalSupply }}</p>
-            </div>
+            <b-card v-if="showPreview">
+                <b-form-group label="Name">
+                    <strong>{{ name }}</strong>
+                </b-form-group>
+                <b-form-group label="Symbol">
+                    <strong>{{ symbol }}</strong>
+                </b-form-group>
+                <b-form-group label="Total Supply (wei)">
+                    <strong>{{ totalSupplyInWei }}</strong>
+                </b-form-group>
+            </b-card>
         </template>
 
         <template #btn-primary>
@@ -73,7 +78,7 @@ export default class ModalERC20Import extends Vue {
     showPreview = false;
     name = '';
     symbol = '';
-    totalSupply = '';
+    totalSupplyInWei = '';
     previewLoading = false;
 
     @Prop() chainId!: ChainId;
@@ -104,29 +109,24 @@ export default class ModalERC20Import extends Vue {
         this.erc20LogoImgUrl = erc20 && erc20.logoURI ? erc20.logoURI : '';
     }
 
-    async getPreview(address: string) {
-        if (address.length != 42) {
-            this.showPreview = false;
-            this.name = '';
-            this.symbol = '';
-            this.totalSupply = '';
-            return;
-        }
+    async onInputAddress(address: string) {
+        if (!isAddress(address)) throw new Error('Invalid Contract Address');
+
         try {
             this.previewLoading = true;
-            const { name, symbol, totalSupply } = await this.$store.dispatch('erc20/preview', {
+            const { name, symbol, totalSupplyInWei } = await this.$store.dispatch('erc20/preview', {
                 chainId: this.chainId,
                 address: address,
             });
             this.name = name;
             this.symbol = symbol;
-            this.totalSupply = totalSupply;
+            this.totalSupplyInWei = totalSupplyInWei;
             this.previewLoading = false;
             this.showPreview = true;
         } catch (err) {
             this.previewLoading = false;
             this.showPreview = false;
-            throw new Error('Invalid Contract Address');
+            throw new Error('Could not import for this address.');
         }
     }
 }

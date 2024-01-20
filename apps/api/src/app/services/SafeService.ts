@@ -1,7 +1,8 @@
 import { Wallet as WalletModel, WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { ChainId } from '@thxnetwork/types/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { contractNetworks, safeVersion } from '@thxnetwork/api/config/contracts';
+import { contractNetworks } from '@thxnetwork/contracts/exports';
+import { getChainId, safeVersion } from '@thxnetwork/api/services/ContractService';
 import { toChecksumAddress } from 'web3-utils';
 import { MONGODB_URI } from '@thxnetwork/api/config/secrets';
 import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit';
@@ -182,7 +183,8 @@ function findOneByAddress(address: string) {
     return Wallet.findOne({ address: toChecksumAddress(address) });
 }
 
-async function findPrimary(sub: string, chainId: ChainId) {
+async function findPrimary(sub: string, chainId?: ChainId) {
+    if (!chainId) chainId = getChainId();
     const account = await AccountProxy.getById(sub);
     const isMetamask = account.variant === AccountVariant.Metamask;
     return await Wallet.findOne({

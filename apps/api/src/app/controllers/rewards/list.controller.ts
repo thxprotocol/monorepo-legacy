@@ -7,7 +7,7 @@ import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import WalletService from '@thxnetwork/api/services/WalletService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { CustomReward } from '@thxnetwork/api/models/CustomReward';
@@ -56,7 +56,7 @@ const controller = async (req: Request, res: Response) => {
         const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
         sub = token.sub;
         account = await AccountProxy.getById(sub);
-        wallet = await WalletService.findPrimary(sub, pool.chainId);
+        wallet = await SafeService.findPrimary(sub, pool.chainId);
     }
 
     const getRewardDefaults = async (r, Model) => {

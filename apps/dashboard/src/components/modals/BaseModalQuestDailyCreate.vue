@@ -70,6 +70,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
+import { QuestVariant } from '@thxnetwork/common/lib/types';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseDropdownEventType from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownEventType.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
@@ -126,8 +127,9 @@ export default class ModalRewardDailyCreate extends Vue {
     onSubmit() {
         this.isLoading = true;
         this.$store
-            .dispatch(`dailyRewards/${this.reward ? 'update' : 'create'}`, {
+            .dispatch(`pools/${this.reward ? 'updateQuest' : 'createQuest'}`, {
                 ...this.reward,
+                variant: QuestVariant.Daily,
                 _id: this.reward ? this.reward._id : undefined,
                 poolId: this.pool._id,
                 title: this.title,

@@ -7,7 +7,7 @@ import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
-import WalletService from '@thxnetwork/api/services/WalletService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [body('claimUuids').exists().isArray()];
 
@@ -20,7 +20,7 @@ const controller = async (req: Request, res: Response) => {
             if (!claim) throw new NotFoundError('Could not find the reward claim for this uuid');
 
             const account = await AccountProxy.getById(claim.sub);
-            const wallet = await WalletService.findPrimary(claim.sub, pool.chainId);
+            const wallet = await SafeService.findPrimary(claim.sub, pool.chainId);
 
             if (!claim.isApproved) {
                 claim = await ReferralRewardClaim.findByIdAndUpdate(claim._id, { isApproved: true }, { new: true });

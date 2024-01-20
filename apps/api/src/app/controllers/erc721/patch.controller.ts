@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { body, param } from 'express-validator';
-import ERC721Service from '@thxnetwork/api/services/ERC721Service';
+import { param } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
+import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 
-export const validation = [param('id').exists(), body('archived').exists().isBoolean()];
+export const validation = [param('id').isMongoId()];
 
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721']

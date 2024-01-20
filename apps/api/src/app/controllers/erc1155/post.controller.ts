@@ -27,7 +27,6 @@ const controller = async (req: Request, res: Response) => {
             chainId: req.body.chainId,
             name: req.body.name,
             description: req.body.description,
-            archived: false,
             logoImgUrl,
         },
         forceSync,

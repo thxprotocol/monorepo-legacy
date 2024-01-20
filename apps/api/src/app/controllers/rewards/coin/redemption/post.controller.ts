@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { toWei } from 'web3-utils';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { getContractFromName } from '@thxnetwork/api/config/contracts';
+import { getContractFromName } from '@thxnetwork/api/services/ContractService';
 import { BigNumber } from 'ethers';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 import { ChainId, ERC20Type } from '@thxnetwork/types/enums';

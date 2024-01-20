@@ -12,13 +12,11 @@ import {
     dashboardAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { currentVersion } from '@thxnetwork/contracts/exports';
-import { getByteCodeForContractName, getContract } from '@thxnetwork/api/config/contracts';
+import { getAbiForContractName, getByteCodeForContractName } from '@thxnetwork/api/services/ContractService';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { Contract } from 'web3-eth-contract';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { poll } from '@thxnetwork/api/util/polling';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import { TWallet } from '@thxnetwork/common/lib/types/interfaces';
 
 const user = request.agent(app);
@@ -30,10 +28,8 @@ describe('Default Pool', () => {
         await beforeAllCallback();
 
         userWallet = createWallet(userWalletPrivateKey2);
-
-        const { options } = getContract(ChainId.Hardhat, 'LimitedSupplyToken', currentVersion);
         tokenContract = await TransactionService.deploy(
-            options.jsonInterface,
+            getAbiForContractName('LimitedSupplyToken'),
             getByteCodeForContractName('LimitedSupplyToken'),
             [tokenName, tokenSymbol, userWallet.address, tokenTotalSupply],
             ChainId.Hardhat,

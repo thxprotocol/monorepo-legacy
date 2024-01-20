@@ -10,7 +10,7 @@ import BrandService from '@thxnetwork/api/services/BrandService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { Identity } from '@thxnetwork/api/models/Identity';
-import { safeVersion } from '@thxnetwork/api/config/contracts';
+import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { logger } from '@thxnetwork/api/util/logger';
 
 export const validation = [param('id').isMongoId()];

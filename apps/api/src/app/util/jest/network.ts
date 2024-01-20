@@ -2,16 +2,16 @@ import { VOTER_PK, DEPOSITOR_PK } from './constants';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { ChainId } from '@thxnetwork/types/enums';
 import { ethers } from 'ethers';
-import { contractNetworks } from '@thxnetwork/api/config/contracts';
+import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { HARDHAT_RPC } from '@thxnetwork/api/config/secrets';
 import Safe, { EthersAdapter } from '@safe-global/protocol-kit';
 
 const { web3 } = getProvider(ChainId.Hardhat);
 
-export const voter = web3.eth.accounts.privateKeyToAccount(VOTER_PK);
-export const depositor = web3.eth.accounts.privateKeyToAccount(DEPOSITOR_PK);
+const voter = web3.eth.accounts.privateKeyToAccount(VOTER_PK) as any;
+const depositor = web3.eth.accounts.privateKeyToAccount(DEPOSITOR_PK) as any;
 
-export function createWallet(privateKey: string) {
+function createWallet(privateKey: string): any {
     return web3.eth.accounts.privateKeyToAccount(privateKey);
 }
 
@@ -41,3 +41,5 @@ export async function signTxHash(safeAddress: string, safeTxHash: string, privat
 
     return { safeTxHash, signature: signature.data };
 }
+
+export { voter, depositor, createWallet };

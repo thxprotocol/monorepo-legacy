@@ -1,31 +1,26 @@
 import db from '@thxnetwork/api/util/database';
 import { mockStart } from './mock';
-import { safeVersion } from '@thxnetwork/api/config/contracts';
+import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { ChainId } from '@thxnetwork/types/enums';
-import { getContract, getContractConfig } from '@thxnetwork/api/config/contracts';
-import { poll } from '../polling';
-import { currentVersion } from '@thxnetwork/contracts/exports';
 import { sub, sub2, sub3, userWalletAddress, userWalletAddress2, userWalletAddress3 } from './constants';
 import { Wallet } from '@thxnetwork/api/services/SafeService';
 import Safe, { SafeFactory } from '@safe-global/protocol-kit';
-import { contractNetworks } from '@thxnetwork/api/config/contracts';
+import { contractNetworks } from '@thxnetwork/contracts/exports';
+import { poll } from '../polling';
 
 export async function beforeAllCallback(options = { skipWalletCreation: false }) {
     await db.truncate();
     mockStart();
 
     const { web3, defaultAccount, ethAdapter } = getProvider(ChainId.Hardhat);
-    const fn = () => web3.eth.getCode(getContractConfig(ChainId.Hardhat, 'OwnershipFacet').address);
+    // Wait for this hardhat log:
+    // deploying "SmartWalletWhitelist" (tx: "")...: deployed at 0x76aBe9ec9b15947ba1Ca910695B8b6CffeD8E6CA
+    const lastDeployedContractAddress = '0x76aBe9ec9b15947ba1Ca910695B8b6CffeD8E6CA';
+    const fn = () => web3.eth.getCode(lastDeployedContractAddress);
     const fnCondition = (result: string) => result === '0x';
 
     await poll(fn, fnCondition, 500);
-
-    const registryAddress = getContractConfig(ChainId.Hardhat, 'Registry', currentVersion).address;
-    const factory = getContract(ChainId.Hardhat, 'Factory');
-
-    // TODO Make this part of hardhat container build
-    await factory.methods.initialize(defaultAccount, registryAddress).send({ from: defaultAccount });
 
     if (!options.skipWalletCreation) {
         const chainId = ChainId.Hardhat;

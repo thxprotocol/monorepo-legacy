@@ -3,7 +3,7 @@ import { recoverSigner } from '@thxnetwork/api/util/network';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { ChainId } from '@thxnetwork/types/enums';
 import { NODE_ENV } from '@thxnetwork/api/config/secrets';
-import { safeVersion } from '@thxnetwork/api/config/contracts';
+import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import SafeService from '@thxnetwork/api/services/SafeService';
 

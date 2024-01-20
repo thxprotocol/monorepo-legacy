@@ -1,13 +1,10 @@
 import { Request, Response } from 'express';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { query } from 'express-validator';
 
-export const validation = [query('archived').optional().isBoolean()];
+export const validation = [];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Pools']
-    const isArchived = req.query.archived ? JSON.parse(String(req.query.archived)) : false;
-    const pools = await PoolService.getAllBySub(req.auth.sub, isArchived);
+    const pools = await PoolService.getAllBySub(req.auth.sub);
     res.json(pools);
 };
 

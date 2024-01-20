@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { body, param } from 'express-validator';
+import { param } from 'express-validator';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 
-export const validation = [param('id').exists(), body('archived').exists().isBoolean()];
+export const validation = [param('id').isMongoId()];
 
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC1155']
