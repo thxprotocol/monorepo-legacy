@@ -6,8 +6,9 @@ import { contractArtifacts } from '@thxnetwork/contracts/exports';
 import { getProvider } from '@thxnetwork/api/util/network';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
+import { VE_ADDRESS } from '@thxnetwork/api/config/secrets';
 
-export const validation = [body('veAddress').isEthereumAddress(), body('isEarly').isBoolean()];
+export const validation = [body('isEarly').isBoolean()];
 
 export const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findPrimary(req.auth.sub, ChainId.Hardhat);
@@ -16,7 +17,7 @@ export const controller = async (req: Request, res: Response) => {
     const { web3 } = getProvider(ChainId.Hardhat);
 
     // Check sufficient BPT approval
-    const ve = new web3.eth.Contract(contractArtifacts['VotingEscrow'].abi, req.body.veAddress);
+    const ve = new web3.eth.Contract(contractArtifacts['VotingEscrow'].abi, VE_ADDRESS);
     const lock = await ve.methods.locked(wallet.address).call();
     const latest = await web3.eth.getBlockNumber();
     const now = (await web3.eth.getBlock(latest)).timestamp;

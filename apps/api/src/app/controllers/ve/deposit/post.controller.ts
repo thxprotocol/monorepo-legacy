@@ -6,6 +6,7 @@ import { BigNumber } from 'ethers';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import VoteEscrowService from '@thxnetwork/api/services/VoteEscrowService';
 import { BPT_ADDRESS, VE_ADDRESS } from '@thxnetwork/api/config/secrets';
+import { getProvider } from '@thxnetwork/api/util/network';
 
 export const validation = [body('amountInWei').isString(), body('lockEndTimestamp').isInt()];
 
@@ -18,7 +19,10 @@ export const controller = async (req: Request, res: Response) => {
     if (BigNumber.from(amount).lt(req.body.amountInWei)) throw new ForbiddenError('Insufficient allowance');
 
     // Check lockEndTimestamp to be more than today + 3 months
-    if (Date.now() > req.body.lockEndTimestamp) throw new ForbiddenError('lockEndTimestamp needs be larger than today');
+    const { web3 } = getProvider();
+    const latest = await web3.eth.getBlockNumber();
+    const now = (await web3.eth.getBlock(latest)).timestamp;
+    if (now > req.body.lockEndTimestamp) throw new ForbiddenError('lockEndTimestamp needs be larger than today');
 
     // Deposit funds for wallet
     const tx = await VoteEscrowService.deposit(wallet, req.body.amountInWei, req.body.lockEndTimestamp);
