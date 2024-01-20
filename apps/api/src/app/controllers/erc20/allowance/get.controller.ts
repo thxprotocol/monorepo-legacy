@@ -15,8 +15,8 @@ export const controller = async (req: Request, res: Response) => {
         'LimitedSupplyToken',
         req.query.tokenAddress as string,
     );
-    const allowance = await contract.methods.allowance(wallet.address, req.params.spender).call();
+    const allowanceInWei = await contract.methods.allowance(wallet.address, req.query.spender).call();
 
-    res.json({ allowance: String(allowance) });
+    res.json({ allowanceInWei: String(allowanceInWei) });
 };
 export default { controller, validation };

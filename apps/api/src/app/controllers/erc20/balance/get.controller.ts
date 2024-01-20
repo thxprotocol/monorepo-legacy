@@ -15,8 +15,8 @@ export const controller = async (req: Request, res: Response) => {
         ContractService.getAbiForContractName('LimitedSupplyToken'),
         req.query.tokenAddress as string,
     );
-    const balance = await contract.methods.balanceOf(req.params.tokenAddress).call();
+    const balanceInWei = await contract.methods.balanceOf(wallet.address).call();
 
-    res.json({ balance });
+    res.json({ balanceInWei });
 };
 export default { controller, validation };
