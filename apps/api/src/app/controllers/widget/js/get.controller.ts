@@ -438,8 +438,12 @@ if (typeof window.THXWidget !== 'undefined') {
         
         onMessage(event) {
             if (event.origin !== this.settings.widgetUrl) return;
-            const { message, amount, isAuthenticated } = event.data;
+            const { message, amount, isAuthenticated, url } = event.data;
             switch (message) {
+                case 'thx.auth.signin': {
+                    this.onSignin(url);
+                    break
+                }
                 case 'thx.widget.ready': {
                     this.onWidgetReady();
                     break
@@ -458,6 +462,10 @@ if (typeof window.THXWidget !== 'undefined') {
                     break;
                 }
             }
+        }
+
+        onSignin(url) {
+            window.open(url, '_blank');
         }
 
         onClickLauncher() {
