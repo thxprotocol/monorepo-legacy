@@ -68,7 +68,7 @@ class RequestManager extends OIDCManager {
             headers['X-PoolId'] = (config && config.poolId) || (options && options.poolId);
         }
 
-        return headers;
+        return { ...headers, ...config?.headers };
     }
 
     private async handleResponse(r: AxiosResponse) {
