@@ -1,32 +1,16 @@
 import { body, check, validationResult } from 'express-validator';
 import { Response, Request, NextFunction } from 'express';
-import { BadRequestError } from './errors';
 import { TInfoLink } from '@thxnetwork/common/lib/types';
 import { isValidUrl } from './url';
-import ImageService from '../services/ImageService';
 
 export const validate = (validations: any) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         await Promise.all(validations.map((validation: any) => validation.run(req)));
-
         const errors = validationResult(req);
-
-        if (errors.isEmpty()) {
-            return next();
-        }
-
+        if (errors.isEmpty()) return next();
         res.status(400).json({ errors: errors.array() });
     };
 };
-
-export const confirmPassword = body('confirmPassword')
-    .exists()
-    .custom((confirmPassword, { req }) => {
-        if (confirmPassword !== req.body.password) {
-            throw new BadRequestError('Passwords are not identical');
-        }
-        return true;
-    });
 
 export const defaults = {
     quest: [
@@ -51,7 +35,7 @@ export const defaults = {
         body('locks')
             .optional()
             .custom((value) => {
-                const locks = JSON.parse(value);
+                const locks = value && JSON.parse(value);
                 return Array.isArray(locks);
             })
             .customSanitizer((locks) => locks && JSON.parse(locks)),
@@ -74,7 +58,7 @@ export const defaults = {
         body('locks')
             .optional()
             .custom((value) => {
-                const locks = JSON.parse(value);
+                const locks = value && JSON.parse(value);
                 return Array.isArray(locks);
             })
             .customSanitizer((locks) => locks && JSON.parse(locks)),

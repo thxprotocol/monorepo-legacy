@@ -203,7 +203,12 @@ describe('NFT Reward Payment', () => {
         it('Wait for ownerOf', async () => {
             const { contract } = await ERC721.findById(perk.erc721Id);
             const safe = await SafeService.findPrimary(sub, ChainId.Hardhat);
-            await poll(contract.methods.ownerOf(1).call, (result: string) => result !== safe.address, 1000);
+
+            await poll(
+                async () => (await ERC721Token.findById(erc721TokenId)).tokenId,
+                (result: any) => result.length,
+                1000,
+            );
 
             const owner = await contract.methods.ownerOf(1).call();
             expect(owner).toEqual(safe.address);

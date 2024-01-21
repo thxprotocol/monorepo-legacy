@@ -258,7 +258,7 @@ async function transactionMined(tx: TransactionDocument, receipt: TransactionRec
 }
 
 async function executeCallback(tx: TransactionDocument, receipt: TransactionReceipt) {
-    if (!tx.callback) return;
+    if (!tx || !tx.callback) return;
     switch (tx.callback.type) {
         case 'Erc20DeployCallback':
             await erc20DeployCallback(tx.callback.args, receipt);
