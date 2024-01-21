@@ -11,7 +11,7 @@ import { body } from 'express-validator';
 export const validation = [
     body('isEarlyAttempt')
         .isBoolean()
-        .customSanitizer((val: string) => JSON.parse(val)),
+        .customSanitizer((val: string) => (val ? JSON.parse(val) : false)),
 ];
 
 export const controller = async (req: Request, res: Response) => {

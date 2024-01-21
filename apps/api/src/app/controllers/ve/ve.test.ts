@@ -170,7 +170,7 @@ describe('VESytem', () => {
             const { status, body } = await user
                 .post('/v1/ve/withdraw')
                 .set({ Authorization: widgetAccessToken })
-                .send({ isEarly: false });
+                .send({ isEarlyAttempt: false });
             expect(status).toBe(403);
             expect(body.error.message).toBe('Funds are locked');
         });
@@ -179,7 +179,7 @@ describe('VESytem', () => {
             const { status, body } = await user
                 .post('/v1/ve/withdraw')
                 .set({ Authorization: widgetAccessToken })
-                .send({ isEarly: true });
+                .send({ isEarlyAttempt: true });
             expect(status).toBe(201);
             expect(body.safeTxHash).toBeDefined();
 
