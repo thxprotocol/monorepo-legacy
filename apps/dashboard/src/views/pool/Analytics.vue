@@ -192,9 +192,15 @@
                             >
                                 <div class="d-flex center-center">
                                     <div class="mr-3 text-gray">#{{ result.rank }}</div>
-                                    <b-avatar size="25" variant="light" :src="result.account.profileImg" class="mr-3" />
+                                    <b-avatar
+                                        v-if="result.account"
+                                        size="25"
+                                        variant="light"
+                                        :src="result.account.profileImg"
+                                        class="mr-3"
+                                    />
                                     <div>
-                                        {{ result.account.username }}
+                                        {{ result.account ? result.account.username : 'Unkown' }}
                                         <sup
                                             v-if="result.subscription"
                                             v-b-tooltip
