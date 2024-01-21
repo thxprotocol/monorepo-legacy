@@ -139,7 +139,7 @@ describe('Coin Reward Payment', () => {
     it('PATCH /erc20-perks/:id', (done) => {
         user.patch(`/v1/erc20-perks/${perk._id}`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-            .send({ ...perk, expiryDate: addMinutes(new Date(), 30) })
+            .send({ ...perk, expiryDate: new Date(addMinutes(new Date(), 30)).toISOString() })
             .expect(({ body }: request.Response) => {
                 perk = body;
             })
