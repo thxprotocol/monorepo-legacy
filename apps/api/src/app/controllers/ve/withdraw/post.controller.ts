@@ -1,19 +1,24 @@
 import { Request, Response } from 'express';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { ChainId } from '@thxnetwork/common/lib/types/enums';
 import { contractArtifacts } from '@thxnetwork/contracts/exports';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { VE_ADDRESS } from '@thxnetwork/api/config/secrets';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
+import { body } from 'express-validator';
 
-export const validation = [];
+export const validation = [
+    body('isEarlyAttempt')
+        .isBoolean()
+        .customSanitizer((val: string) => JSON.parse(val)),
+];
 
 export const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findPrimary(req.auth.sub, ChainId.Hardhat);
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
-    const { web3 } = getProvider(ChainId.Hardhat);
+    const { web3 } = getProvider();
 
     // Check sufficient BPT approval
     const ve = new web3.eth.Contract(contractArtifacts['VotingEscrow'].abi, VE_ADDRESS);
@@ -23,6 +28,7 @@ export const controller = async (req: Request, res: Response) => {
 
     // Check if client requests early exit and end date has not past
     const isEarlyWithdraw = Number(lock.end) > Number(now);
+    if (!req.body.isEarlyAttempt && isEarlyWithdraw) throw new ForbiddenError('Funds are locked');
 
     // Check for lock and determine ve function to call
     const fn = isEarlyWithdraw ? ve.methods.withdraw_early() : ve.methods.withdraw();

@@ -11,7 +11,6 @@ import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { signTxHash, timeTravel } from '@thxnetwork/api/util/jest/network';
 import { poll } from '@thxnetwork/api/util/polling';
 import { BPT_ADDRESS, RD_ADDRESS, RF_ADDRESS, SC_ADDRESS, VE_ADDRESS } from '@thxnetwork/api/config/secrets';
-import { bn } from 'date-fns/locale';
 
 const user = request.agent(app);
 const { signer, defaultAccount } = getProvider(ChainId.Hardhat);
@@ -20,7 +19,6 @@ describe('VESytem', () => {
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
-    const totalSupplyInWei = String(ethers.utils.parseUnits('1000000', 'ether'));
     const amountInWei = String(ethers.utils.parseUnits('1000', 'ether'));
 
     let safeWallet!: WalletDocument,
