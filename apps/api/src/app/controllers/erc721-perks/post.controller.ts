@@ -1,4 +1,4 @@
-import { body, check } from 'express-validator';
+import { body } from 'express-validator';
 import { Request, Response } from 'express';
 import { createERC721Perk } from '@thxnetwork/api/util/rewards';
 import { TERC721Perk } from '@thxnetwork/types/interfaces/ERC721Perk';
@@ -8,36 +8,24 @@ import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC1155Document } from '@thxnetwork/api/models/ERC1155';
 import { NFTVariant } from '@thxnetwork/types/enums';
+import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
+import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
+import { defaults } from '@thxnetwork/api/util/validation';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
-import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
-import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [
-    check('file')
-        .optional()
-        .custom((value, { req }) => {
-            return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
-        }),
-    body('title').exists().isString(),
-    body('description').exists().isString(),
+    ...defaults.reward,
     body('erc721Id').optional().isString(),
     body('erc1155Id').optional().isString(),
     body('metadataIds').optional().isString(),
     body('tokenId').optional().isString(),
-    body('pointPrice').optional().isNumeric(),
-    body('expiryDate').optional().isISO8601(),
-    body('limit').optional().isInt(),
-    body('isPromoted').optional().isBoolean(),
     body('claimLimit').optional().isInt(),
     body('claimAmount').optional().isInt({ lt: 5001 }),
-    body('tokenGatingVariant').optional().isString(),
-    body('tokenGatingContractAddress').optional().isString(),
-    body('tokenGatingAmount').optional().isInt(),
     body('redirectUrl').optional().isURL({ require_tld: false }),
 ];
 

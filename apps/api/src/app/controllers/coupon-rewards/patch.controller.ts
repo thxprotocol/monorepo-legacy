@@ -1,26 +1,12 @@
 import ImageService from '@thxnetwork/api/services/ImageService';
 import { Request, Response } from 'express';
-import { body, param } from 'express-validator';
+import { param } from 'express-validator';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import { CouponReward } from '@thxnetwork/api/models/CouponReward';
 import { CouponCode } from '@thxnetwork/api/models/CouponCode';
+import { defaults } from '@thxnetwork/api/util/validation';
 
-const validation = [
-    param('id').isMongoId(),
-    body('webshopURL').optional().isURL({ require_tld: false }),
-    body('codes')
-        .optional()
-        .custom((value: string) => {
-            if (!value) return true;
-            const arr = JSON.parse(value);
-            if (arr.length > 0) return true;
-            if (arr.length === 0) return true;
-            return false;
-        }),
-    body('locks')
-        .optional()
-        .customSanitizer((locks) => locks && JSON.parse(locks)),
-];
+const validation = [param('id').isMongoId(), ...defaults.reward];
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');

@@ -35,6 +35,7 @@ import { logger } from '../util/logger';
 import { GitcoinQuest } from '../models/GitcoinQuest';
 import { GitcoinQuestEntry } from '../models/GitcoinQuestEntry';
 import QuestGitcoinService from './QuestGitcoinService';
+import ImageService from './ImageService';
 
 type TValidationResult = {
     result: boolean;
@@ -257,9 +258,13 @@ async function notifyDiscord(
     );
 }
 
-async function update(variant: QuestVariant, questId: string, data: Partial<TQuest>) {
+async function update(variant: QuestVariant, questId: string, data: Partial<TQuest>, file?: Express.Multer.File) {
     const model = questMap[variant].models.quest;
     const quest = await model.findById(questId);
+
+    if (file) {
+        data.image = await ImageService.upload(file);
+    }
 
     // We only want to notify when the quest is set to published (and not updated while published already)
     if (data.isPublished && Boolean(data.isPublished) !== quest.isPublished) {
@@ -269,9 +274,13 @@ async function update(variant: QuestVariant, questId: string, data: Partial<TQue
     return await model.findByIdAndUpdate(questId, data, { new: true });
 }
 
-async function create(variant: QuestVariant, poolId: string, data: Partial<TQuest>) {
+async function create(variant: QuestVariant, poolId: string, data: Partial<TQuest>, file?: Express.Multer.File) {
     const model = questMap[variant].models.quest;
     const quest = await model.create({ ...data, poolId, variant, uuid: v4() });
+
+    if (file) {
+        data.image = await ImageService.upload(file);
+    }
 
     if (data.isPublished) {
         await notify(variant, quest);

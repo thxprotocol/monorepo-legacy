@@ -3,8 +3,9 @@ import { Request, Response } from 'express';
 import { DiscordRoleReward } from '@thxnetwork/api/models/DiscordRoleReward';
 import { body } from 'express-validator';
 import { v4 } from 'uuid';
+import { defaults } from '@thxnetwork/api/util/validation';
 
-const validation = [body('discordRoleId').isString()];
+const validation = [...defaults.reward, body('discordRoleId').optional().isString()];
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');

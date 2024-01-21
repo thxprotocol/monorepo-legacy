@@ -5,9 +5,8 @@
         :title="(quest ? 'Update ' : 'Create ') + variant"
         :id="id"
         :error="error"
-        :loading="loading"
     >
-        <template #modal-body v-if="!loading">
+        <template #modal-body>
             <form v-on:submit.prevent="$emit('submit')" id="formQuestCreate">
                 <b-row>
                     <b-col md="6">
@@ -93,7 +92,10 @@
                 variant="primary"
                 block
             >
-                {{ (quest ? 'Update ' : 'Create ') + variant }}
+                <b-spinner small v-if="loading" />
+                <template v-else>
+                    {{ (quest ? 'Update ' : 'Create ') + variant }}
+                </template>
             </b-button>
         </template>
     </base-modal>

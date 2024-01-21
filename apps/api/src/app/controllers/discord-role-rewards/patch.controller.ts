@@ -1,16 +1,11 @@
 import ImageService from '@thxnetwork/api/services/ImageService';
 import { Request, Response } from 'express';
-import { body, param } from 'express-validator';
+import { param } from 'express-validator';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import { DiscordRoleReward } from '@thxnetwork/api/models/DiscordRoleReward';
+import CreateController from './post.controller';
 
-const validation = [
-    param('id').isMongoId(),
-    body('discordRoleId').isString(),
-    body('locks')
-        .optional()
-        .customSanitizer((locks) => locks && JSON.parse(locks)),
-];
+const validation = [param('id').isMongoId(), ...CreateController.validation];
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');

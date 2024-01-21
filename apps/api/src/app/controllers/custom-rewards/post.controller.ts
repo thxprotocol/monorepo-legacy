@@ -5,8 +5,13 @@ import { Webhook } from '@thxnetwork/api/models/Webhook';
 import { body } from 'express-validator';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import { v4 } from 'uuid';
+import { defaults } from '@thxnetwork/api/util/validation';
 
-const validation = [body('webhookId').isMongoId(), body('metadata').optional().isString()];
+const validation = [
+    ...defaults.reward,
+    body('webhookId').optional().isMongoId(),
+    body('metadata').optional().isString(),
+];
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');
