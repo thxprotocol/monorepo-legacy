@@ -5,9 +5,8 @@
         :title="(reward ? 'Update' : 'Create') + ' NFT Reward'"
         :id="id"
         :error="error"
-        :loading="isLoading"
     >
-        <template #modal-body v-if="!isLoading">
+        <template #modal-body>
             <form v-on:submit.prevent="onSubmit()" id="formRewardPointsCreate">
                 <b-row>
                     <b-col md="6">
@@ -91,7 +90,10 @@
                 variant="primary"
                 block
             >
-                {{ (reward ? 'Update' : 'Create') + ' NFT Reward' }}
+                <b-spinner small v-if="isLoading" />
+                <template v-else>
+                    {{ (reward ? 'Update' : 'Create') + ' NFT Reward' }}
+                </template>
             </b-button>
         </template>
     </base-modal>

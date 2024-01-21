@@ -5,9 +5,8 @@
         :title="(reward ? 'Update' : 'Create') + ' Custom Reward'"
         :id="id"
         :error="error"
-        :loading="isLoading"
     >
-        <template #modal-body v-if="!isLoading">
+        <template #modal-body>
             <form v-on:submit.prevent="onSubmit()" id="formRewardCustomCreate">
                 <b-row>
                     <b-col md="6">
@@ -72,7 +71,10 @@
                 variant="primary"
                 block
             >
-                {{ (reward ? 'Update' : 'Create') + ' Custom Reward' }}
+                <b-spinner small v-if="isLoading" />
+                <template v-else>
+                    {{ (reward ? 'Update' : 'Create') + ' Custom Reward' }}
+                </template>
             </b-button>
         </template>
     </base-modal>

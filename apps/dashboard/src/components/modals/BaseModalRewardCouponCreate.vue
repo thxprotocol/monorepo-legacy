@@ -5,9 +5,8 @@
         :title="(reward ? 'Update' : 'Create') + ' Coupon Reward'"
         :id="id"
         :error="error"
-        :loading="isLoading"
     >
-        <template #modal-body v-if="!isLoading">
+        <template #modal-body>
             <b-tabs content-class="mt-3">
                 <b-tab title="Reward">
                     <form v-on:submit.prevent="onSubmit" id="formRewardCouponCreate">
@@ -97,7 +96,10 @@
                 variant="primary"
                 block
             >
-                {{ (reward ? 'Update' : 'Create') + ' Coupon Reward' }}
+                <b-spinner small v-if="isLoading" />
+                <template v-else>
+                    {{ (reward ? 'Update' : 'Create') + ' Coupon Reward' }}
+                </template>
             </b-button>
         </template>
     </base-modal>

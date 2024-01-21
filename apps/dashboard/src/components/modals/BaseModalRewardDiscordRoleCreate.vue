@@ -5,9 +5,8 @@
         :title="(reward ? 'Update' : 'Create') + ' Discord Role Reward'"
         :id="id"
         :error="error"
-        :loading="isLoading"
     >
-        <template #modal-body v-if="!isLoading">
+        <template #modal-body>
             <form v-on:submit.prevent="onSubmit" id="formRewardDiscordRoleCreate">
                 <b-row>
                     <b-col md="6">
@@ -17,11 +16,7 @@
                         <b-form-group label="Description">
                             <b-textarea v-model="description" />
                         </b-form-group>
-                        <b-form-group
-                            :label="`Discord Role (${guild.name})`"
-                            v-for="(guild, key) of pool.guilds"
-                            :key="key"
-                        >
+                        <b-form-group :label="`Discord Role (${guild.name})`" v-for="(guild, key) of guilds" :key="key">
                             <BaseDropdownDiscordRole
                                 class="mb-1"
                                 @click="discordRoleId = $event.id"
@@ -66,7 +61,10 @@
                 variant="primary"
                 block
             >
-                {{ (reward ? 'Update' : 'Create') + ' Discord Role Reward' }}
+                <b-spinner small v-if="isLoading" />
+                <template v-else>
+                    {{ (reward ? 'Update' : 'Create') + ' Discord Role Reward' }}
+                </template>
             </b-button>
         </template>
     </base-modal>
@@ -121,6 +119,11 @@ export default class ModalRewardCustomCreate extends Vue {
 
     get isSubmitDisabled() {
         return this.isLoading;
+    }
+
+    get guilds() {
+        if (!this.pool.guilds) return [];
+        return this.pool.guilds.filter((g) => g.isConnected);
     }
 
     onShow() {

@@ -73,7 +73,10 @@
                 variant="primary"
                 block
             >
-                {{ reward ? 'Update Coin Reward' : 'Create Coin Reward' }}
+                <b-spinner small v-if="isLoading" />
+                <template v-else>
+                    {{ reward ? 'Update Coin Reward' : 'Create Coin Reward' }}
+                </template>
             </b-button>
         </template>
     </base-modal>
