@@ -92,7 +92,7 @@
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
                         <b-dropdown-item
-                            :disabled="item.reward.variant !== RewardVariant.NFT"
+                            v-if="item.reward.variant === RewardVariant.NFT"
                             v-b-modal="`modalRewardClaimsDownload${item.reward._id}`"
                         >
                             QR Codes
@@ -289,7 +289,7 @@ export default class RewardsView extends Vue {
                 title: r.title,
                 pointPrice: r.pointPrice,
                 supply: { progress: r.payments ? r.payments.length : 0, limit: r.limit },
-                expiry: r.expiryDate && format(new Date(r.expiryDate), 'dd-MM-yyyy HH:mm'),
+                expiry: r.expiryDate ? format(new Date(r.expiryDate), 'dd-MM-yyyy HH:mm') : 'Never',
                 created: format(new Date(r.createdAt), 'dd-MM-yyyy HH:mm'),
                 reward: r,
             }))

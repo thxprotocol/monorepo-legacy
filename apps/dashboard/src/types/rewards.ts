@@ -63,6 +63,7 @@ export const platformList: IChannel[] = [
             RewardConditionInteraction.TwitterRetweet,
             RewardConditionInteraction.TwitterMessage,
         ],
+        kind: AccessTokenKind.Twitter,
     },
     {
         type: RewardConditionPlatform.Discord,
@@ -73,6 +74,7 @@ export const platformList: IChannel[] = [
             RewardConditionInteraction.DiscordMessage,
             RewardConditionInteraction.DiscordMessageReaction,
         ],
+        kind: AccessTokenKind.Discord,
     },
 ];
 export const platformInteractionList = [
@@ -178,6 +180,7 @@ export interface IChannel {
     name: string;
     logoURI: string;
     actions: RewardConditionInteraction[];
+    kind?: AccessTokenKind;
 }
 
 export interface IChannelAction {

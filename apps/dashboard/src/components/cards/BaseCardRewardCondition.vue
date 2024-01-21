@@ -5,13 +5,13 @@
             variant="light"
             v-b-toggle.collapse-card-condition
         >
-            <strong>Conditions</strong>
+            <strong>Requirements</strong>
             <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
         </b-button>
         <b-collapse id="collapse-card-condition" v-model="isVisible">
             <hr class="mt-0" />
             <div class="px-3">
-                <p class="text-gray">Configure under what conditions your customers are eligible for this claim.</p>
+                <p class="text-gray">Choose what social behavior is required for this quest.</p>
                 <b-form-group label="Platform">
                     <BaseDropdownChannelTypes @selected="onSelectPlatform" :platform="platform" />
                 </b-form-group>
@@ -19,15 +19,13 @@
                     show
                     variant="warning"
                     class="d-flex align-items-center justify-content-between"
-                    v-if="platform.type === RewardConditionPlatform.Twitter && !profile.twitterAccess"
+                    v-if="platform.kind && !profile[`${platform.name.toLowerCase()}Access`]"
                 >
                     <div>
                         <i class="fas fa-exclamation-circle mr-1" />
-                        Please connect your Twitter account!
+                        Please connect your {{ platform.name }} account!
                     </div>
-                    <b-button @click="onClickConnect(AccessTokenKind.Twitter)" variant="primary" size="sm">
-                        Connect
-                    </b-button>
+                    <b-button @click="onClickConnect(platform.kind)" variant="primary" size="sm"> Connect </b-button>
                 </b-alert>
                 <template v-if="platform && platform.type !== RewardConditionPlatform.None">
                     <b-form-group label="Interaction">
