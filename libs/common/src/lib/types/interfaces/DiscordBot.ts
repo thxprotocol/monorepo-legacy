@@ -2,6 +2,7 @@ import { ButtonStyle } from 'discord.js';
 
 export type TDiscordGuild = {
     _id: string;
+    id: string;
     sub: string;
     poolId: string;
     guildId: string;
@@ -10,9 +11,12 @@ export type TDiscordGuild = {
     name: string;
     roles: TDiscordRole[];
     channels: TDiscordChannel[];
-    isInstalled: boolean;
+    isInvited: boolean;
+    isConnected: boolean;
     secret: string;
     isShownSecret: boolean;
+    icon: string;
+    permissions: any;
 };
 
 export type TDiscordChannel = {

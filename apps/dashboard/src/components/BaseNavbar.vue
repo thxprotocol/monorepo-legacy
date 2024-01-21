@@ -273,12 +273,12 @@ export default class BaseNavbar extends Vue {
 
     mounted() {
         this.$store.dispatch('pools/list', { archived: false }).then(async () => {
-            if (this.$route.params.id) {
-                await this.$store.dispatch('pools/read', this.$route.params.id);
-            } else {
-                if (!this.firstPool) return;
-                await this.$store.dispatch('pools/read', this.firstPool._id);
-            }
+            // if (this.$route.params.id) {
+            //     await this.$store.dispatch('pools/read', this.$route.params.id);
+            // } else {
+            //     if (!this.firstPool) return;
+            //     await this.$store.dispatch('pools/read', this.firstPool._id);
+            // }
         });
     }
 

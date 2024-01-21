@@ -24,6 +24,10 @@ export const controller = async (req: Request, res: Response) => {
     const now = (await web3.eth.getBlock(latest)).timestamp;
     if (now > req.body.lockEndTimestamp) throw new ForbiddenError('lockEndTimestamp needs be larger than today');
 
+    // Check SmartWalletWhitelist
+    const isApproved = await VoteEscrowService.isApprovedAddress(wallet.address);
+    if (!isApproved) throw new ForbiddenError('Wallet address is not on whitelist.');
+
     // Deposit funds for wallet
     const tx = await VoteEscrowService.deposit(wallet, req.body.amountInWei, req.body.lockEndTimestamp);
 

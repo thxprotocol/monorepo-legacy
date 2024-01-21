@@ -25,12 +25,13 @@ router.post(
     CreateQuestInviteClaim.controller,
 );
 
-router.use(checkJwt).use(corsHandler).use('/social', routerQuestSocial);
+router.use(checkJwt).use(corsHandler);
+router.use('/social', routerQuestSocial);
 
 // TODO Refactor other quest endpoints as social router
-router.use(checkJwt).use(corsHandler).post('/daily/:id/claim', CreateQuestDailyClaim.controller);
-router.use(checkJwt).use(corsHandler).post('/custom/claims/:uuid/collect', CreateQuestCustomClaim.controller);
-router.use(checkJwt).use(corsHandler).post('/web3/:uuid/claim', CreateQuestWeb3Claim.controller);
-router.use(checkJwt).use(corsHandler).post('/gitcoin/:uuid/entry', CreateQuestGitcoinEntry.controller);
+router.post('/daily/:id/claim', CreateQuestDailyClaim.controller);
+router.post('/custom/claims/:uuid/collect', CreateQuestCustomClaim.controller);
+router.post('/web3/:uuid/claim', CreateQuestWeb3Claim.controller);
+router.post('/gitcoin/:uuid/entry', CreateQuestGitcoinEntry.controller);
 
 export default router;

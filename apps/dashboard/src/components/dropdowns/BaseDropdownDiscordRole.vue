@@ -38,19 +38,14 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import type { TDiscordGuild } from '@thxnetwork/types/interfaces';
 
-function getRoleById(guild, roleId) {
-    if (!guild.roles) return;
-    return guild.roles.find((role) => role.id === roleId);
-}
-
 @Component({})
 export default class BaseDropdownDiscordRole extends Vue {
     @Prop() roleId!: string;
     @Prop() guild!: TDiscordGuild;
 
     get selectedDiscordRole() {
-        // if (!this.guild) return;
-        return getRoleById(this.guild, this.roleId);
+        if (!this.guild) return;
+        return this.guild.roles.find((role) => role.id === this.roleId);
     }
 }
 </script>

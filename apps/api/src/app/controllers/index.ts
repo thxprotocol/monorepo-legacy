@@ -28,7 +28,8 @@ import widgetsRouter from './widgets/widgets.router';
 import identityRouter from './identity/identity.router';
 import eventsRouter from './events/events.router';
 import dataRouter from './data/data.router';
-import veRouter from './ve/ve.router';
+import RouterVoteEscrow from './ve/ve.router';
+import RouterBPT from './bpt/router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 
 const router = express.Router({ mergeParams: true });
@@ -59,7 +60,8 @@ router.use('/pools', poolsRouter);
 router.use('/widgets', widgetsRouter);
 router.use('/clients', clientRouter);
 router.use('/webhooks', webhooksRouter);
-router.use('/ve', veRouter);
+router.use('/ve', RouterVoteEscrow);
+router.use('/bpt', RouterBPT);
 
 router.use('/erc20', erc20Router);
 router.use('/erc721', erc721Router);

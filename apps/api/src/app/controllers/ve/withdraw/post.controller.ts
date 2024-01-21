@@ -1,14 +1,13 @@
 import { Request, Response } from 'express';
-import { body } from 'express-validator';
-import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { ChainId } from '@thxnetwork/common/lib/types/enums';
 import { contractArtifacts } from '@thxnetwork/contracts/exports';
 import { getProvider } from '@thxnetwork/api/util/network';
+import { VE_ADDRESS } from '@thxnetwork/api/config/secrets';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
-import { VE_ADDRESS } from '@thxnetwork/api/config/secrets';
 
-export const validation = [body('isEarly').isBoolean()];
+export const validation = [];
 
 export const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findPrimary(req.auth.sub, ChainId.Hardhat);
@@ -23,8 +22,7 @@ export const controller = async (req: Request, res: Response) => {
     const now = (await web3.eth.getBlock(latest)).timestamp;
 
     // Check if client requests early exit and end date has not past
-    const isEarlyWithdraw = req.body.isEarly && Number(lock.end) > Number(now);
-    if (!isEarlyWithdraw) throw new ForbiddenError('Funds are locked');
+    const isEarlyWithdraw = Number(lock.end) > Number(now);
 
     // Check for lock and determine ve function to call
     const fn = isEarlyWithdraw ? ve.methods.withdraw_early() : ve.methods.withdraw();

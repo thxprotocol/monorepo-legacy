@@ -1,4 +1,4 @@
-import { ChainId, CollaboratorInviteState } from '@thxnetwork/types/enums';
+import { AccessTokenKind, ChainId, CollaboratorInviteState } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
@@ -26,8 +26,9 @@ import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from './MailService';
 import SafeService from './SafeService';
-import DiscordGuild, { DiscordGuildDocument } from '../models/DiscordGuild';
+import DiscordGuild from '../models/DiscordGuild';
 import { client } from '../../discord';
+import DiscordDataProxy from '../proxies/DiscordDataProxy';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -200,20 +201,22 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                 logger.error(error);
             }
             try {
-                pointBalance = await PointBalance.findOne({
-                    poolId: participant.poolId,
-                    walletId: wallet._id,
-                });
+                pointBalance =
+                    wallet &&
+                    (await PointBalance.findOne({
+                        poolId: participant.poolId,
+                        walletId: wallet._id,
+                    }));
             } catch (error) {
                 logger.error(error);
             }
+
             return {
                 ...participant,
                 account: account && {
                     email: account.email,
                     username: account.username,
                     profileImg: account.profileImg,
-                    twitterUsername: account.twitterUsername,
                     variant: account.variant,
                     connectedAccounts: account.connectedAccounts,
                 },
@@ -265,28 +268,46 @@ function discordColorToHex(discordColorCode) {
     return `#${discordColorCode.toString(16).padStart(6, '0')}`;
 }
 
+async function getGuildRoles(guildId: string) {
+    const guild = await client.guilds.fetch(guildId);
+    return guild.roles.cache.map((role) => ({
+        id: role.id,
+        name: role.name,
+        color: discordColorToHex(role.color),
+    }));
+}
+
+async function getGuildChannels(guildId: string) {
+    const guild = await client.guilds.fetch(guildId);
+    const channels = await guild.channels.fetch();
+    return channels.map((c) => ({ name: c.name, channelId: c.id }));
+}
+
 async function findGuilds(pool: AssetPoolDocument) {
-    const discordGuilds = await DiscordGuild.find({ poolId: pool._id });
-    const fetchGuild = async (guildId: string) => {
-        try {
-            return await client.guilds.fetch(guildId);
-        } catch (res) {
-            return;
-        }
-    };
-    const promises = discordGuilds.map(async (guild: DiscordGuildDocument) => {
-        const g = await fetchGuild(guild.guildId);
-        if (!g) return { ...guild.toJSON(), isInstalled: false };
+    const { isAuthorized, guilds } = await DiscordDataProxy.get(pool.sub);
+    if (!isAuthorized) return [];
 
-        const roles = g.roles.cache.map((role) => ({
-            id: role.id,
-            name: role.name,
-            color: discordColorToHex(role.color),
-        }));
-        const channels = (await g.channels.fetch()).map((c) => ({ name: c.name, channelId: c.id }));
+    const connectedGuilds = await DiscordGuild.find({ poolId: pool._id });
+    const botGuilds = await client.guilds.fetch();
 
-        return { ...guild.toJSON(), channels, roles, isInstalled: true };
+    const promises = guilds.map(async (guild: { id: string; name: string }) => {
+        const connectedGuild = connectedGuilds.find(({ guildId }) => guildId === guild.id);
+        const botGuild = botGuilds.get(guild.id);
+        const roles = botGuild ? await getGuildRoles(guild.id) : [];
+        const channels = botGuild ? await getGuildChannels(guild.id) : [];
+
+        return {
+            ...(connectedGuild && connectedGuild.toJSON()),
+            ...guild,
+            guildId: guild.id,
+            poolId: pool._id,
+            roles,
+            channels,
+            isInvited: !!botGuild,
+            isConnected: !!connectedGuild,
+        };
     });
+
     return await Promise.all(promises);
 }
 

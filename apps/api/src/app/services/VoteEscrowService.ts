@@ -2,9 +2,15 @@ import { BigNumber } from 'ethers';
 import { WalletDocument } from '../models/Wallet';
 import { getProvider } from '@thxnetwork/api/util/network';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
-import { VE_ADDRESS } from '@thxnetwork/api/config/secrets';
+import { SC_ADDRESS, VE_ADDRESS } from '@thxnetwork/api/config/secrets';
 import { contractArtifacts } from '@thxnetwork/contracts/exports';
 import { ChainId } from '@thxnetwork/common/lib/types';
+
+async function isApprovedAddress(address: string) {
+    const { web3 } = getProvider();
+    const whitelist = new web3.eth.Contract(contractArtifacts['SmartWalletWhitelist'].abi, SC_ADDRESS);
+    return await whitelist.methods.check(address).call();
+}
 
 async function getAllowance(wallet: WalletDocument, tokenAddress: string, spender: string) {
     const { web3 } = getProvider(ChainId.Hardhat);
@@ -39,4 +45,4 @@ function withdraw() {
     //
 }
 
-export default { approve, getAllowance, deposit, withdraw };
+export default { isApprovedAddress, approve, getAllowance, deposit, withdraw };

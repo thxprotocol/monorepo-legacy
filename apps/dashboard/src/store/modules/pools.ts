@@ -15,7 +15,6 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
-import { QuestVariant } from '@thxnetwork/common/lib/types';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 
 export interface IPoolAnalytic {
@@ -143,12 +142,6 @@ export type TQuestEntryState = {
     };
 };
 
-export type TGuildState = {
-    [poolId: string]: {
-        [guildId: string]: TDiscordGuild;
-    };
-};
-
 export type TEventState = {
     [poolId: string]: {
         [eventId: string]: TEvent[];
@@ -158,7 +151,6 @@ export type TEventState = {
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
     _all: IPools = {};
-    _guilds: TGuildState = {};
     _quests: TQuestState = {};
     _entries: TQuestEntryState = {};
     _events: TEventState = {};
@@ -168,10 +160,6 @@ class PoolModule extends VuexModule {
 
     get all() {
         return this._all;
-    }
-
-    get guilds() {
-        return this._guilds;
     }
 
     get quests() {
@@ -278,13 +266,14 @@ class PoolModule extends VuexModule {
 
     @Mutation
     setGuild(guild: TDiscordGuild) {
-        if (!this._guilds[guild.poolId]) Vue.set(this._guilds, guild.poolId, {});
-        Vue.set(this._guilds[guild.poolId], guild._id, { ...guild, isShownSecret: false });
+        const index = this._all[guild.poolId].guilds.findIndex((g) => g.id === guild.id);
+        Vue.set(this._all[guild.poolId], index, guild);
     }
 
     @Mutation
     unsetGuild(guild: TDiscordGuild) {
-        Vue.delete(this._guilds[guild.poolId], guild._id);
+        const index = this._all[guild.poolId].guilds.findIndex((g) => g.id === guild.id);
+        Vue.delete(this._all[guild.poolId], index);
     }
 
     @Action({ rawError: true })
@@ -451,8 +440,6 @@ class PoolModule extends VuexModule {
         });
 
         this.context.commit('set', r.data);
-
-        r.data.guilds.forEach((guild: TDiscordGuild) => this.context.commit('setGuild', guild));
 
         return r.data;
     }

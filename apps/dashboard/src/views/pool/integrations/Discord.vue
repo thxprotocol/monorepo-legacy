@@ -124,7 +124,7 @@
 </template>
 
 <script lang="ts">
-import { IPools, TGuildState } from '@thxnetwork/dashboard/store/modules/pools';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
@@ -134,7 +134,6 @@ import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardU
 import BaseDropdownDiscordChannel from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownDiscordChannel.vue';
 import BaseDropdownDiscordRole from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownDiscordRole.vue';
 import BaseDropdownSelectMultiple from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownSelectMultiple.vue';
-import { TAvailableGuild } from '@thxnetwork/dashboard/store/modules/account';
 
 @Component({
     components: {
@@ -146,9 +145,7 @@ import { TAvailableGuild } from '@thxnetwork/dashboard/store/modules/account';
     computed: {
         ...mapGetters({
             pools: 'pools/all',
-            guildList: 'pools/guilds',
             account: 'account/profile',
-            availableGuilds: 'account/guilds',
         }),
     },
 })
@@ -159,43 +156,40 @@ export default class IntegrationDiscordView extends Vue {
 
     account!: TAccount;
     pools!: IPools;
-    availableGuilds!: TAvailableGuild[];
-    guildList!: TGuildState;
 
     get pool() {
         return this.pools[this.$route.params.id];
     }
 
     get guilds() {
-        if (!this.guildList[this.$route.params.id]) return [];
-        return Object.values(this.guildList[this.$route.params.id]);
+        if (!this.pool || !this.pool.guilds) return [];
+        return this.pool.guilds.filter((guild: TDiscordGuild) => guild.isConnected);
     }
 
     get options() {
-        if (!this.availableGuilds) return [];
-        return this.availableGuilds
-            .filter((guild: TAvailableGuild) => (guild.permissions & 0x00000008) === 0x00000008)
-            .map((guild: TAvailableGuild) => {
-                const g = this.guilds.find((g: TDiscordGuild) => g.guildId === guild.id);
+        if (!this.pool || !this.pool.guilds) return [];
+        return this.pool.guilds
+            .filter((guild: TDiscordGuild) => (guild.permissions & 0x00000008) === 0x00000008)
+            .map((guild: TDiscordGuild) => {
                 return {
                     img: guild.icon && `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`,
                     label: guild.name,
-                    value: { _id: g?._id, guildId: guild.id, name: guild.name, poolId: this.pool._id },
-                    disabled: !!g,
-                    selected: !!g,
-                    icon: g && {
-                        variant: g.isInstalled ? 'success' : 'danger',
-                        class: g.isInstalled ? 'fas fa-check' : 'fas fa-exclamation',
+                    value: guild,
+                    disabled: guild.isConnected,
+                    selected: guild.isConnected,
+                    icon: guild.isInvited && {
+                        variant: guild.isConnected ? 'success' : 'danger',
+                        class: guild.isConnected ? 'fas fa-check' : 'fas fa-exclamation',
                     },
                 };
             });
     }
 
-    mounted() {
-        this.$store.dispatch('account/getGuilds');
-    }
-
     onClickDiscordRole(guild: TDiscordGuild, role: TDiscordRole) {
+        // Force reactivity, should be fixed in store
+        const index = this.pool.guilds.findIndex((g) => g.id === guild.id);
+        this.pool.guilds[index].adminRoleId = role.id;
+        // End
         this.updateDiscordGuild({ ...guild, adminRoleId: role.id });
     }
 
@@ -207,14 +201,17 @@ export default class IntegrationDiscordView extends Vue {
         this.$store.dispatch('pools/updateGuild', guild);
     }
 
-    onSelectGuild(guild: TDiscordGuild) {
-        this.$store.dispatch('pools/createGuild', guild);
+    async onSelectGuild(guild: TDiscordGuild) {
+        await this.$store.dispatch('pools/createGuild', guild);
         this.$store.dispatch('pools/read', guild.poolId);
-
-        window.open(this.discordBotInviteUrl, '_blank');
+        // window.open(this.discordBotInviteUrl, '_blank');
     }
 
     onRemoveGuild(guild: TDiscordGuild) {
+        // Force reactivity, should be fixed in store
+        const index = this.pool.guilds.findIndex((g) => g.id === guild.id);
+        this.pool.guilds[index].isConnected = false;
+        // End
         this.$store.dispatch('pools/removeGuild', guild);
     }
 }

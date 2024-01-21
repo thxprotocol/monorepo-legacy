@@ -5,9 +5,8 @@
         :title="reward ? 'Update Coin Reward' : 'Create Coin Reward'"
         :id="id"
         :error="error"
-        :loading="isLoading"
     >
-        <template #modal-body v-if="!isLoading">
+        <template #modal-body>
             <p class="text-gray">
                 Points rewards are distributed to your customers achieving milestones in your customer journey.
             </p>
@@ -89,6 +88,7 @@ import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 import { mapGetters } from 'vuex';
 import { IERC20s, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
+import { AxiosError } from 'axios';
 
 @Component({
     components: {
@@ -153,10 +153,10 @@ export default class ModalRewardERC20Create extends Vue {
         this.$store.dispatch('erc20/balanceOf', { tokenAddress: this.erc20.address, pool: this.pool });
     }
 
-    onSubmit() {
+    async onSubmit() {
         this.isLoading = true;
-        this.$store
-            .dispatch(`erc20Perks/${this.reward ? 'update' : 'create'}`, {
+        try {
+            await this.$store.dispatch(`erc20Perks/${this.reward ? 'update' : 'create'}`, {
                 pool: this.pool,
                 reward: this.reward,
                 payload: {
@@ -174,11 +174,14 @@ export default class ModalRewardERC20Create extends Vue {
                     file: this.imageFile,
                     isPromoted: this.isPromoted,
                 },
-            })
-            .then(() => {
-                this.$bvModal.hide(this.id);
-                this.isLoading = false;
             });
+            this.$bvModal.hide(this.id);
+        } catch (error) {
+            const { message } = error as AxiosError;
+            this.error = message;
+        } finally {
+            this.isLoading = false;
+        }
     }
 
     onChangePointPrice(price: number) {
