@@ -68,18 +68,11 @@
                     <strong class="text-primary">{{ item.amount.amount }} {{ item.amount.symbol }}</strong>
                 </template>
                 <template #cell(supply)="{ item }">
-                    <b-progress style="border-radius: 0.3rem">
-                        <b-progress-bar
-                            :label="
-                                item.supply.limit
-                                    ? `${item.supply.progress}/${item.supply.limit}`
-                                    : String(item.supply.progress)
-                            "
-                            :value="item.supply.progress"
-                            :min="0"
-                            :max="item.supply.limit || item.supply.progress"
-                        />
-                    </b-progress>
+                    {{
+                        item.supply.limit
+                            ? `${item.supply.progress}/${item.supply.limit}`
+                            : String(item.supply.progress) + '/&infin;'
+                    }}
                 </template>
                 <template #cell(title)="{ item }">
                     <b-badge variant="light" class="p-2 mr-2">
@@ -88,7 +81,10 @@
                     {{ item.title }}
                 </template>
                 <template #cell(expiry)="{ item }">
-                    <span class="text-gray">{{ item.expiry }}</span>
+                    <small class="text-gray">{{ item.expiry }}</small>
+                </template>
+                <template #cell(created)="{ item }">
+                    <small class="text-gray">{{ item.created }}</small>
                 </template>
                 <template #cell(reward)="{ item }">
                     <b-dropdown variant="link" size="sm" no-caret right>
@@ -194,15 +190,15 @@ export const contentRewards = {
         icon: 'fab fa-discord', // Suggested icon for shield or protection
         color: '#7289DA', // Suggested color for Discord roles (Discord Blue)
     },
-    // 'qr-codes': {
-    //     tag: 'QR Codes',
-    //     title: 'Offline Reward Distribution',
-    //     description: 'Use QR codes to distribute rewards in offline environments.',
-    //     list: ['Expand reach to offline users', 'Facilitate in-person engagement', 'Enhance brand recognition'],
-    //     docsUrl: 'https://docs.thx.network',
-    //     icon: 'fas fa-qrcode', // Suggested icon for QR codes
-    //     color: '#000000', // Suggested color for QR codes (Black)
-    // },
+    'qr-codes': {
+        tag: 'QR Codes',
+        title: 'Offline Reward Distribution',
+        description: 'Use QR codes to distribute rewards in offline environments.',
+        list: ['Expand reach to offline users', 'Facilitate in-person engagement', 'Enhance brand recognition'],
+        docsUrl: 'https://docs.thx.network',
+        icon: 'fas fa-qrcode', // Suggested icon for QR codes
+        color: '#000000', // Suggested color for QR codes (Black)
+    },
 };
 
 @Component({
@@ -292,8 +288,9 @@ export default class RewardsView extends Vue {
             .map((r: any) => ({
                 title: r.title,
                 pointPrice: r.pointPrice,
-                expiry: r.expiryDate && format(new Date(r.expiryDate), 'dd-MM-yyyy HH:mm'),
                 supply: { progress: r.payments ? r.payments.length : 0, limit: r.limit },
+                expiry: r.expiryDate && format(new Date(r.expiryDate), 'dd-MM-yyyy HH:mm'),
+                created: format(new Date(r.createdAt), 'dd-MM-yyyy HH:mm'),
                 reward: r,
             }))
             .slice(0, this.limit);
@@ -360,9 +357,12 @@ export default class RewardsView extends Vue {
     width: 150px;
 }
 #table-rewards th:nth-child(4) {
-    width: auto;
+    width: 150px;
 }
 #table-rewards th:nth-child(5) {
+    width: 150px;
+}
+#table-rewards th:nth-child(6) {
     width: 100px;
 }
 </style>

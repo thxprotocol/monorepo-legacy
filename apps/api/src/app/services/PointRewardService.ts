@@ -4,7 +4,7 @@ import { paginatedResults } from '../util/pagination';
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { PointBalance } from './PointBalanceService';
-import { TPointReward, TAccount } from '@thxnetwork/types/interfaces';
+import { TPointReward, TAccount, TQuestEntry } from '@thxnetwork/types/interfaces';
 import { RewardConditionPlatform, RewardConditionInteraction, AccessTokenKind } from '@thxnetwork/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import TwitterDataProxy from '@thxnetwork/api/proxies/TwitterDataProxy';
@@ -91,18 +91,18 @@ async function findEntries(quest: PointRewardDocument) {
     const entries = await PointRewardClaim.find({ questId: quest._id });
     const subs = entries.map((entry) => entry.sub);
     const accounts = await AccountProxy.getMany(subs);
+    const pointBalances = await PointBalance.find({
+        poolId: quest.poolId,
+    });
+    const promises = entries.map(async (entry) => {
+        const wallet = await Wallet.findById(entry.walletId);
+        const account = accounts.find((a) => a.sub === wallet.sub);
+        const pointBalance = pointBalances.find((w) => w.walletId === String(wallet._id));
 
-    return await Promise.all(
-        entries.map(async (entry) => {
-            const wallet = await Wallet.findById(entry.walletId);
-            const account = accounts.find((a) => a.sub === wallet.sub);
-            const pointBalance = await PointBalance.findOne({
-                poolId: quest.poolId,
-                walletId: wallet._id,
-            });
-            return { ...entry.toJSON(), account, wallet, pointBalance: pointBalance ? pointBalance.balance : 0 };
-        }),
-    );
+        return { ...entry.toJSON(), account, wallet, pointBalance: pointBalance ? pointBalance.balance : 0 };
+    });
+    const results = await Promise.allSettled(promises);
+    return results.filter((result) => result.status === 'fulfilled').map((result: any) => result.value);
 }
 
 async function isAvailable(quest: PointRewardDocument, account: TAccount, wallet?: WalletDocument) {

@@ -3,7 +3,7 @@
         <b-spinner v-if="isLoading" small variant="primary" />
         <template v-else>
             <small><i class="fas text-muted fa-users mr-1" /></small>
-            {{ questEntries.length }}
+            {{ questEntries.length }}/{{ '&infin;' }}
         </template>
         <BaseModalQuestSocialEntries
             :id="`modalQuestSocialEntries${quest._id}`"

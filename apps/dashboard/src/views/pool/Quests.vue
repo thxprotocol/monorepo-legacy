@@ -113,17 +113,6 @@
                     {{ item.title }}
                 </template>
                 <template #cell(entries)="{ item }">
-                    <template v-if="item.quest.variant === QuestVariant.Invite">
-                        <b-link v-b-modal="`modalReferralQuestClaims${item.quest._id}`" v-if="item.entries">
-                            <small><i class="fas text-muted fa-users mr-1" /></small>
-                            {{ item.entries.length }}
-                        </b-link>
-                        <BaseModalQuestInviteClaims
-                            :id="`modalReferralQuestClaims${item.quest._id}`"
-                            :pool="pool"
-                            :reward="quests[$route.params.id].results.find((q) => q._id === item.quest._id)"
-                        />
-                    </template>
                     <BaseBtnQuestEntries
                         v-if="
                             [QuestVariant.Twitter, QuestVariant.YouTube, QuestVariant.Discord].includes(
@@ -135,9 +124,11 @@
                     />
                 </template>
                 <template #cell(expiry)="{ item }">
-                    <span class="text-muted">{{ item.expiry }}</span>
+                    <small class="text-gray">{{ item.expiry }}</small>
                 </template>
-
+                <template #cell(created)="{ item }">
+                    <small class="text-gray">{{ item.created }}</small>
+                </template>
                 <template #cell(quest)="{ item }">
                     <b-dropdown variant="link" size="sm" right no-caret>
                         <template #button-content>
@@ -346,6 +337,7 @@ export default class QuestsView extends Vue {
             points: quest.amounts ? `${quest.amounts.length} days` : quest.amount,
             entries: quest.entryCount,
             expiry: quest.expiryDate ? format(new Date(quest.expiryDate), 'dd-MM-yyyy HH:mm') : 'Never',
+            created: format(new Date(quest.createdAt), 'dd-MM-yyyy HH:mm'),
             quest: quest,
         }));
     }
@@ -485,9 +477,12 @@ export default class QuestsView extends Vue {
     width: 130px;
 }
 #table-quests th:nth-child(6) {
-    width: 160px;
+    width: 150px;
 }
 #table-quests th:nth-child(7) {
+    width: 150px;
+}
+#table-quests th:nth-child(8) {
     width: 40px;
 }
 </style>

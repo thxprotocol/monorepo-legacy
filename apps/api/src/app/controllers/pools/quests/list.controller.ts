@@ -33,7 +33,7 @@ const controller = async (req: Request, res: Response) => {
         { $match },
     ];
     const arr = await Promise.all(
-        [DailyReward, ReferralReward, PointReward, MilestoneReward, Web3Quest].map(
+        [DailyReward, ReferralReward, PointReward, MilestoneReward, Web3Quest, GitcoinQuest].map(
             async (model) => await model.countDocuments($match),
         ),
     );
