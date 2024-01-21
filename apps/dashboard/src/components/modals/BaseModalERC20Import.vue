@@ -1,9 +1,13 @@
 <template>
     <base-modal :loading="loading" title="Import Token Contract" id="modalERC20Import">
         <template #modal-body v-if="!loading">
-            <BaseFormSelectNetwork :chainId="chainId" @selected="chainId = $event" />
+            <BaseFormSelectNetwork :chainId="selectedChainId" @selected="selectedChainId = $event" />
             <b-form-group label="Existing ERC20 contract">
-                <BaseDropDownSelectPolygonERC20 :erc20="erc20" :chainId="chainId" @selected="onERC20Selected($event)" />
+                <BaseDropDownSelectPolygonERC20
+                    :erc20="erc20"
+                    :chainId="selectedChainId"
+                    @selected="onERC20Selected($event)"
+                />
             </b-form-group>
             <b-form-group label="Contract Address">
                 <b-input-group>
@@ -72,6 +76,7 @@ import { isAddress } from 'web3-utils';
 export default class ModalERC20Import extends Vue {
     loading = false;
     chainInfo = chainInfo;
+    selectedChainId: ChainId | null = null;
     erc20: TERC20 | null = null;
     erc20Address = '';
     erc20LogoImgUrl = '';
@@ -90,13 +95,11 @@ export default class ModalERC20Import extends Vue {
     async submit() {
         this.loading = true;
 
-        const data = {
-            chainId: this.chainId,
+        await this.$store.dispatch('erc20/import', {
+            chainId: this.selectedChainId,
             address: this.erc20Address,
             logoImgUrl: this.erc20LogoImgUrl,
-        };
-
-        await this.$store.dispatch('erc20/import', data);
+        });
 
         this.$bvModal.hide(`modalERC20Import`);
         this.loading = false;
@@ -115,7 +118,7 @@ export default class ModalERC20Import extends Vue {
         try {
             this.previewLoading = true;
             const { name, symbol, totalSupplyInWei } = await this.$store.dispatch('erc20/preview', {
-                chainId: this.chainId,
+                chainId: this.selectedChainId,
                 address: address,
             });
             this.name = name;

@@ -1,20 +1,14 @@
 import { Request, Response } from 'express';
 import { query } from 'express-validator';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
 import ContractService from '@thxnetwork/api/services/ContractService';
-import SafeService from '@thxnetwork/api/services/SafeService';
+import { ChainId } from '@thxnetwork/common/lib/types';
 
-const validation = [query('address').isEthereumAddress()];
+const validation = [query('chainId').isInt(), query('address').isEthereumAddress()];
 
 export const controller = async (req: Request, res: Response) => {
-    const wallet = await SafeService.findPrimary(req.auth.sub);
-    if (!wallet) throw new NotFoundError('Could not find wallet for account.');
-
-    const contract = ContractService.getContractFromName(
-        wallet.chainId,
-        'LimitedSupplyToken',
-        req.query.address as string,
-    );
+    const chainId = req.query.chainId as unknown as ChainId;
+    const contractAddress = req.query.address as string;
+    const contract = ContractService.getContractFromName(chainId, 'LimitedSupplyToken', contractAddress);
     const [name, symbol, totalSupplyInWei] = await Promise.all([
         contract.methods.name().call(),
         contract.methods.symbol().call(),

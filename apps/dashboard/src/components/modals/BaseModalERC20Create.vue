@@ -1,7 +1,7 @@
 <template>
     <base-modal :loading="loading" :error="error" title="Create Coin" id="modalERC20Create">
         <template #modal-body v-if="!loading">
-            <base-form-select-network @selected="chainId = $event" :chainId="chainId" />
+            <base-form-select-network @selected="selectedChainId = $event" :chainId="selectedChainId" />
             <b-form-group label="Variant">
                 <b-form-radio v-model="tokenType" name="tokenType" :value="ERC20Type.Unlimited">
                     <strong>Unlimited Supply Token </strong>
@@ -69,7 +69,7 @@ export default class ModalERC20Create extends Vue {
 
     tokenType = ERC20Type.Unlimited;
     tokenList: TERC20[] = [];
-    // chainId: ChainId = ChainId.PolygonMumbai;
+    selectedChainId: ChainId = ChainId.Polygon;
 
     erc20Token: TERC20 | null = null;
     erc20TokenAddress = '';
@@ -81,11 +81,15 @@ export default class ModalERC20Create extends Vue {
 
     @Prop() chainId!: ChainId;
 
+    mounted() {
+        this.selectedChainId = this.chainId;
+    }
+
     async submit() {
         this.loading = true;
 
         await this.$store.dispatch('erc20/create', {
-            chainId: this.chainId,
+            chainId: this.selectedChainId,
             name: this.name,
             symbol: this.symbol,
             type: this.tokenType,

@@ -23,7 +23,7 @@ router.use('/balance', RouterBalance);
 router.use('/allowance', RouterAllowance);
 router.use('/preview', RouterPreview);
 
-// Token Resource shoudl move into /wallet
+// Token Resource should move into /wallet
 router.get(
     '/token',
     guard.check(['erc20:read']),
@@ -31,6 +31,8 @@ router.get(
     ListERC20Token.controller,
 );
 router.get('/token/:id', guard.check(['erc20:read']), ReadERC20Token.controller);
+
+// Should be /import controller
 router.post(
     '/token',
     guard.check(['erc20:write', 'erc20:read']),

@@ -90,14 +90,14 @@ class ERC20Module extends VuexModule {
 
         const { data } = await axios({
             method: 'POST',
-            url: '/erc20/',
+            url: '/erc20',
             data: formData,
         });
 
         const profile = this.context.rootGetters['account/profile'];
         track('UserCreates', [profile.sub, 'coin']);
 
-        await this.context.dispatch('read', data._id);
+        await this.context.dispatch('read', data);
     }
 
     @Action({ rawError: true })
@@ -108,7 +108,7 @@ class ERC20Module extends VuexModule {
             data: payload,
         });
 
-        await this.context.dispatch('read', data._id);
+        await this.context.dispatch('read', data);
     }
 
     @Action({ rawError: true })
@@ -118,7 +118,7 @@ class ERC20Module extends VuexModule {
             url: '/erc20/' + erc20._id,
         });
 
-        this.context.commit('unset', erc20._id);
+        this.context.commit('unset', erc20);
     }
 
     @Action({ rawError: true })
@@ -130,10 +130,6 @@ class ERC20Module extends VuexModule {
         });
 
         this.context.commit('set', { ...erc20, ...data });
-
-        if (data.archived) {
-            this.context.commit('unset', erc20);
-        }
     }
 
     @Action({ rawError: true })
