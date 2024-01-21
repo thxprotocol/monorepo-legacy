@@ -153,7 +153,10 @@ export default class ModalRewardERC20Create extends Vue {
 
     onUpdateERC20(erc20: TERC20 | null) {
         this.erc20Id = erc20 ? erc20._id : '';
-        this.$store.dispatch('erc20/balanceOf', { tokenAddress: this.erc20.address, pool: this.pool });
+
+        if (this.erc20) {
+            this.$store.dispatch('erc20/balanceOf', { tokenAddress: this.erc20.address, pool: this.pool });
+        }
     }
 
     async onSubmit() {

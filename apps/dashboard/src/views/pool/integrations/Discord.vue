@@ -124,7 +124,7 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { IPools, TGuildState } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
@@ -145,6 +145,7 @@ import BaseDropdownSelectMultiple from '@thxnetwork/dashboard/components/dropdow
     computed: {
         ...mapGetters({
             pools: 'pools/all',
+            guildList: 'pools/guilds',
             account: 'account/profile',
         }),
     },
@@ -156,14 +157,15 @@ export default class IntegrationDiscordView extends Vue {
 
     account!: TAccount;
     pools!: IPools;
+    guildList!: TGuildState;
 
     get pool() {
         return this.pools[this.$route.params.id];
     }
 
     get guilds() {
-        if (!this.pool || !this.pool.guilds) return [];
-        return this.pool.guilds.filter((guild: TDiscordGuild) => guild.isConnected);
+        if (!this.guildList[this.$route.params.id]) return [];
+        return Object.values(this.guildList[this.$route.params.id]).filter((guild: TDiscordGuild) => guild.isConnected);
     }
 
     get options() {

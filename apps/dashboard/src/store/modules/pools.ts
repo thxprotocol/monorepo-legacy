@@ -144,7 +144,12 @@ export type TQuestEntryState = {
 
 export type TEventState = {
     [poolId: string]: {
-        [eventId: string]: TEvent[];
+        [eventId: string]: TEvent;
+    };
+};
+export type TGuildState = {
+    [poolId: string]: {
+        [guildId: string]: TDiscordGuild;
     };
 };
 
@@ -153,6 +158,7 @@ class PoolModule extends VuexModule {
     _all: IPools = {};
     _quests: TQuestState = {};
     _entries: TQuestEntryState = {};
+    _guilds: TGuildState = {};
     _events: TEventState = {};
     _analytics: IPoolAnalytics = {};
     _analyticsLeaderBoard: IPoolAnalyticsLeaderBoard = {};
@@ -160,6 +166,10 @@ class PoolModule extends VuexModule {
 
     get all() {
         return this._all;
+    }
+
+    get guilds() {
+        return this._guilds;
     }
 
     get quests() {
@@ -266,14 +276,13 @@ class PoolModule extends VuexModule {
 
     @Mutation
     setGuild(guild: TDiscordGuild) {
-        const index = this._all[guild.poolId].guilds.findIndex((g) => g.id === guild.id);
-        Vue.set(this._all[guild.poolId], index, guild);
+        if (!this._guilds[guild.poolId]) Vue.set(this._guilds, guild.poolId, {});
+        Vue.set(this._guilds[guild.poolId], guild._id, guild);
     }
 
     @Mutation
     unsetGuild(guild: TDiscordGuild) {
-        const index = this._all[guild.poolId].guilds.findIndex((g) => g.id === guild.id);
-        Vue.delete(this._all[guild.poolId], index);
+        Vue.delete(this._all[guild.poolId], guild._id);
     }
 
     @Action({ rawError: true })
@@ -440,7 +449,7 @@ class PoolModule extends VuexModule {
         });
 
         this.context.commit('set', r.data);
-
+        r.data.guilds.forEach((guild) => this.context.commit('setGuild', guild));
         return r.data;
     }
 

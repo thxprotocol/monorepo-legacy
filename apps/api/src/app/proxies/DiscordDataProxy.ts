@@ -1,18 +1,13 @@
 import axios from 'axios';
 import type { TAccount, TDiscordButton, TDiscordEmbed } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
-import { THXError } from '@thxnetwork/api/util/errors';
 import { client, PermissionFlagsBits } from '../../discord';
 import { AssetPoolDocument } from '../models/AssetPool';
-import { ActionRowBuilder, ButtonBuilder } from 'discord.js';
+import { ActionRowBuilder, ButtonBuilder, Guild, OAuth2Guild } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
 import { logger } from '../util/logger';
-import DiscordGuild from '../models/DiscordGuild';
+import DiscordGuild, { DiscordGuildDocument } from '../models/DiscordGuild';
 import { AccessTokenKind } from '@thxnetwork/common/lib/types/enums';
-
-class NoDataError extends THXError {
-    message = 'Could not find discord data for this account';
-}
 
 export enum NotificationVariant {
     QuestDaily = 0,
@@ -102,5 +97,43 @@ export default class DiscordDataProxy {
             },
         });
         return data;
+    }
+
+    static discordColorToHex(discordColorCode) {
+        return `#${discordColorCode.toString(16).padStart(6, '0')}`;
+    }
+
+    static async getGuildRoles(guild: Guild) {
+        return guild.roles.cache.map((role) => ({
+            id: role.id,
+            name: role.name,
+            color: this.discordColorToHex(role.color),
+        }));
+    }
+
+    static async getGuildChannels(guild: Guild) {
+        const channels = await guild.channels.fetch();
+        return channels.map((c) => ({ name: c.name, channelId: c.id }));
+    }
+
+    static async fetchGuild(guildId: string) {
+        try {
+            return await client.guilds.fetch(guildId);
+        } catch (error) {
+            return;
+        }
+    }
+
+    static async getGuild(guild: DiscordGuildDocument) {
+        const botGuild = await this.fetchGuild(guild.guildId);
+        const roles = botGuild ? await this.getGuildRoles(botGuild) : [];
+        const channels = botGuild ? await this.getGuildChannels(botGuild) : [];
+
+        return {
+            ...guild,
+            roles,
+            channels,
+            isInvited: !!botGuild,
+        };
     }
 }

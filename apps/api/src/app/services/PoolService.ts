@@ -264,25 +264,6 @@ async function inviteCollaborator(pool: AssetPoolDocument, email: string) {
     return collaborator;
 }
 
-function discordColorToHex(discordColorCode) {
-    return `#${discordColorCode.toString(16).padStart(6, '0')}`;
-}
-
-async function getGuildRoles(guildId: string) {
-    const guild = await client.guilds.fetch(guildId);
-    return guild.roles.cache.map((role) => ({
-        id: role.id,
-        name: role.name,
-        color: discordColorToHex(role.color),
-    }));
-}
-
-async function getGuildChannels(guildId: string) {
-    const guild = await client.guilds.fetch(guildId);
-    const channels = await guild.channels.fetch();
-    return channels.map((c) => ({ name: c.name, channelId: c.id }));
-}
-
 async function getAccountGuilds(sub: string) {
     // Try as this is potentially rate limited due to subsequent GET pool for id requests
     try {
@@ -293,27 +274,19 @@ async function getAccountGuilds(sub: string) {
 }
 
 async function findGuilds(pool: AssetPoolDocument) {
-    const { isAuthorized, guilds } = await getAccountGuilds(pool.sub);
+    const { isAuthorized, guilds: userGuilds } = await getAccountGuilds(pool.sub);
     if (!isAuthorized) return [];
 
-    const connectedGuilds = await DiscordGuild.find({ poolId: pool._id });
-    const botGuilds = await client.guilds.fetch();
-    const promises = guilds.map(async (guild: { id: string; name: string }) => {
-        const connectedGuild = connectedGuilds.find(({ guildId }) => guildId === guild.id);
-        const botGuild = botGuilds.get(guild.id);
-        const roles = botGuild ? await getGuildRoles(guild.id) : [];
-        const channels = botGuild ? await getGuildChannels(guild.id) : [];
-
-        return {
-            ...(connectedGuild && connectedGuild.toJSON()),
-            ...guild,
-            guildId: guild.id,
+    const guilds = await DiscordGuild.find({ poolId: pool._id });
+    const promises = userGuilds.map(async (userGuild: { id: string; name: string }) => {
+        const guild = guilds.find(({ guildId }) => guildId === userGuild.id);
+        return await DiscordDataProxy.getGuild({
+            ...(guild && guild.toJSON()),
+            ...userGuild,
+            guildId: userGuild.id,
             poolId: pool._id,
-            roles,
-            channels,
-            isInvited: !!botGuild,
-            isConnected: !!connectedGuild,
-        };
+            isConnected: !!guild,
+        });
     });
 
     return await Promise.all(promises);

@@ -134,10 +134,10 @@
                                         <div>points</div>
                                     </div>
                                     <div
-                                        class="card"
+                                        class="card border-0"
                                         :style="`background-color: ${elements.cardBg.color} !important; color: ${elements.cardText.color} !important;`"
                                     >
-                                        <div class="card-header">
+                                        <div class="card-header border-0">
                                             <div class="card-title mb-0 d-flex justify-content-between">
                                                 Daily Reward
                                                 <strong class="ml-auto" :style="`color: ${colors.accent.color}`">

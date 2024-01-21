@@ -120,6 +120,9 @@
     .table th, .table td {
         border-color: $dark !important;
     }
+    
+    .table thead tr,
+    .table thead tr td,
     .table-hover thead tr {
         background-color: $dark !important;
 

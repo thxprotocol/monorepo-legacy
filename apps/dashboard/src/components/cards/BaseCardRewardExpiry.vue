@@ -11,7 +11,7 @@
         <b-collapse id="collapse-card-expiry" v-model="isVisible">
             <hr class="mt-0" />
             <div class="px-3">
-                <p class="text-gray">Configure until what date and time your customers are allowed for this claim.</p>
+                <p class="text-gray">Increase urgency with expiration dates for your rewards.</p>
                 <b-form-group>
                     <b-row>
                         <b-col md="6">

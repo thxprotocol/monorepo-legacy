@@ -12,7 +12,7 @@
             <hr class="mt-0" />
             <div class="px-3">
                 <b-form-group label="Reward Limit">
-                    <p class="text-muted">Determine the max amount of claims for this perk.</p>
+                    <p class="text-muted">Control the supply of this reward with a purchase limit.</p>
                     <b-form-input
                         @input="$emit('change-reward-limit', $event)"
                         type="number"

@@ -13,8 +13,10 @@
                     <b-dropdown-item-button
                         v-for="(variant, key) of Object.keys(QuestVariant).filter((v) => isNaN(Number(v)))"
                         :key="key"
+                        :disabled="QuestVariant[variant] == QuestVariant.Invite"
                         v-b-modal="`${questModalComponentMap[QuestVariant[variant]]}-${variant}`"
                         button-class="d-flex px-2"
+                        :class="{ 'text-opaque': QuestVariant[variant] === QuestVariant.Invite }"
                     >
                         <b-media>
                             <template #aside>

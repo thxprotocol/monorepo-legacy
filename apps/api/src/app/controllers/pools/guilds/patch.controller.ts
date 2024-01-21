@@ -2,6 +2,7 @@ import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import CreateController from './post.controller';
+import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
 
 const validation = [param('guildId').optional().isMongoId(), ...CreateController.validation];
 
@@ -12,7 +13,9 @@ const controller = async (req: Request, res: Response) => {
         { secret, channelId, adminRoleId, poolId: req.params.id },
         { new: true },
     );
-    res.json(guild);
+    const result = await DiscordDataProxy.getGuild({ ...guild.toJSON(), isConnected: true });
+
+    res.json(result);
 };
 
 export default { controller, validation };
