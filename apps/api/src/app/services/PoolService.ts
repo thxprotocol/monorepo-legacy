@@ -283,13 +283,21 @@ async function getGuildChannels(guildId: string) {
     return channels.map((c) => ({ name: c.name, channelId: c.id }));
 }
 
+async function getAccountGuilds(sub: string) {
+    // Try as this is potentially rate limited due to subsequent GET pool for id requests
+    try {
+        return await DiscordDataProxy.get(sub);
+    } catch (error) {
+        return { isAuthorized: false, guilds: [] };
+    }
+}
+
 async function findGuilds(pool: AssetPoolDocument) {
-    const { isAuthorized, guilds } = await DiscordDataProxy.get(pool.sub);
+    const { isAuthorized, guilds } = await getAccountGuilds(pool.sub);
     if (!isAuthorized) return [];
 
     const connectedGuilds = await DiscordGuild.find({ poolId: pool._id });
     const botGuilds = await client.guilds.fetch();
-
     const promises = guilds.map(async (guild: { id: string; name: string }) => {
         const connectedGuild = connectedGuilds.find(({ guildId }) => guildId === guild.id);
         const botGuild = botGuilds.get(guild.id);
