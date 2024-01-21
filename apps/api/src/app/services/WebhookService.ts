@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 import { Webhook, WebhookDocument } from '@thxnetwork/api/models/Webhook';
-import { Wallet } from '@thxnetwork/api/models/Wallet';
+import { Identity } from '@thxnetwork/api/models/Identity';
 import { WebhookRequest, WebhookRequestDocument } from '@thxnetwork/api/models/WebhookRequest';
 import { Job } from '@hokify/agenda';
 import { agenda } from '@thxnetwork/api/util/agenda';
@@ -10,10 +10,10 @@ import { signPayload } from '@thxnetwork/api/util/signingsecret';
 import { Event, WebhookRequestState } from '@thxnetwork/types/enums';
 
 async function create(webhook: WebhookDocument, sub: string, payload: { type: Event; data: any & { metadata: any } }) {
-    const wallets = (await Wallet.find({ poolId: webhook.poolId, sub })).map((w) => w.uuid);
+    const identities = (await Identity.find({ poolId: webhook.poolId, sub })).map((i) => i.uuid);
     const webhookRequest = await WebhookRequest.create({
         webhookId: webhook._id,
-        payload: JSON.stringify({ ...payload, wallets }),
+        payload: JSON.stringify({ ...payload, identities }),
         state: WebhookRequestState.Pending,
     });
 

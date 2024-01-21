@@ -17,6 +17,9 @@ const validation = [
             if (arr.length === 0) return true;
             return false;
         }),
+    body('locks')
+        .optional()
+        .customSanitizer((locks) => JSON.parse(locks)),
 ];
 
 const controller = async (req: Request, res: Response) => {

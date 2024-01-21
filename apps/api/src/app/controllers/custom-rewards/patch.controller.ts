@@ -5,7 +5,14 @@ import { Webhook } from '@thxnetwork/api/models/Webhook';
 import { body, param } from 'express-validator';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
 
-const validation = [param('id').isMongoId(), body('webhookId').isMongoId(), body('metadata').optional().isString()];
+const validation = [
+    param('id').isMongoId(),
+    body('webhookId').isMongoId(),
+    body('metadata').optional().isString(),
+    body('locks')
+        .optional()
+        .customSanitizer((locks) => JSON.parse(locks)),
+];
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');

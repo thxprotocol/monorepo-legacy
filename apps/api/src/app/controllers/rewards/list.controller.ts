@@ -20,6 +20,7 @@ import { DiscordRoleReward } from '@thxnetwork/api/models/DiscordRoleReward';
 import { DiscordRoleRewardPayment } from '@thxnetwork/api/models/DiscordRoleRewardPayment';
 import { AccessTokenKind } from '@thxnetwork/types/enums';
 import { TAccount } from '@thxnetwork/types/interfaces';
+import { Identity } from '@thxnetwork/api/models/Identity';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks']
@@ -113,11 +114,11 @@ const controller = async (req: Request, res: Response) => {
             customRewards.map(async (r) => {
                 const { isError } = await PerkService.validate({ perk: r, sub, pool });
                 const defaults = await getRewardDefaults(r, CustomRewardPayment);
-                // @dev Having a Virtual Wallet for this pool is required in order for the external system to target the right user
-                const wallets = sub ? await Wallet.find({ poolId: pool._id, sub, uuid: { $exists: true } }) : [];
+                // @dev Having an Identity for this pool is required in order for the external system to target the right user
+                const identities = sub ? await Identity.find({ poolId: pool._id, sub }) : [];
                 return {
                     ...defaults,
-                    isDisabled: isError || !wallets.length,
+                    isDisabled: isError || !identities.length,
                     isOwned: false,
                 };
             }),

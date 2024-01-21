@@ -4,7 +4,13 @@ import { body, param } from 'express-validator';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import { DiscordRoleReward } from '@thxnetwork/api/models/DiscordRoleReward';
 
-const validation = [param('id').isMongoId(), body('discordRoleId').isString()];
+const validation = [
+    param('id').isMongoId(),
+    body('discordRoleId').isString(),
+    body('locks')
+        .optional()
+        .customSanitizer((locks) => JSON.parse(locks)),
+];
 
 const controller = async (req: Request, res: Response) => {
     const poolId = req.header('X-PoolId');

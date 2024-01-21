@@ -42,13 +42,14 @@
                     </b-list-group>
                 </b-col>
                 <b-col md="6">
-                    <p class="text-muted">Example: Set up your webhook endpoint to receive live events from THX API.</p>
-                    <pre
+                    <p class="text-muted">Set up your webhook endpoint to receive live events from THX API.</p>
+                    <b-link href="https://docs.thx.network/developers/webhooks" target="_blank">View Examples</b-link>
+                    <!-- <pre
                         class="rounded p-3 mb-2 text-white w-auto small"
                         style="background-color: #282c34; overflow: scroll; white-space: pre; tab-size: 2"
                     >
                         <code class="language-html" v-html="exampleController"></code>
-                    </pre>
+                    </pre> -->
                 </b-col>
             </b-row>
         </template>
