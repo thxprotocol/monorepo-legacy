@@ -1,31 +1,35 @@
 import { Request, Response } from 'express';
 import { query } from 'express-validator';
-import { ChainId, TransactionState } from '@thxnetwork/types/enums';
+import { TransactionState } from '@thxnetwork/types/enums';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
+import { WalletDocument } from '@thxnetwork/api/models/Wallet';
+import { getChainId } from '@thxnetwork/api/services/ContractService';
 import SafeService from '@thxnetwork/api/services/SafeService';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
 
 const validation = [query('chainId').optional().isNumeric()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Account Wallet']
     const wallet = await SafeService.findPrimary(
         req.auth.sub,
-        req.query.chainId ? Number(req.query.chainId) : ChainId.Polygon,
+        req.query.chainId ? Number(req.query.chainId) : getChainId(),
     );
-    if (!wallet) throw new NotFoundError('Could not find wallet');
+    const wallets = [];
+    if (wallet) wallets.push(wallet);
 
-    const pendingTransactions = await Transaction.find({
-        walletId: String(wallet._id),
-        state: TransactionState.Confirmed,
-    });
+    const result = await Promise.all(
+        wallets.map(async (wallet: WalletDocument) => {
+            const pendingTransactions = await Transaction.find({
+                walletId: String(wallet._id),
+                state: TransactionState.Confirmed,
+            });
+            return {
+                ...wallet.toJSON(),
+                pendingTransactions,
+            };
+        }),
+    );
 
-    res.json([
-        {
-            ...wallet.toJSON(),
-            pendingTransactions,
-        },
-    ]);
+    res.json(result);
 };
 
 export default { controller, validation };
