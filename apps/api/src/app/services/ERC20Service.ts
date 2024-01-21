@@ -132,6 +132,8 @@ export const getTokensForWallet = (wallet: WalletDocument) => {
 
 export const getById = async (id: string) => {
     const erc20 = await ERC20.findById(id);
+    if (!erc20) return;
+
     erc20.logoImgUrl = erc20.logoImgUrl || `https://api.dicebear.com/7.x/identicon/svg?seed=${erc20.address}`;
     return erc20;
 };
