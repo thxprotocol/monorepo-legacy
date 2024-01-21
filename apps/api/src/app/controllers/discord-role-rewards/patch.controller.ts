@@ -9,7 +9,7 @@ const validation = [
     body('discordRoleId').isString(),
     body('locks')
         .optional()
-        .customSanitizer((locks) => JSON.parse(locks)),
+        .customSanitizer((locks) => locks && JSON.parse(locks)),
 ];
 
 const controller = async (req: Request, res: Response) => {

@@ -32,7 +32,7 @@ const validationBaseQuest = [
             const locks = JSON.parse(value);
             return Array.isArray(locks);
         })
-        .customSanitizer((locks) => JSON.parse(locks)),
+        .customSanitizer((locks) => locks && JSON.parse(locks)),
     // Daily
     body('amounts')
         .optional()

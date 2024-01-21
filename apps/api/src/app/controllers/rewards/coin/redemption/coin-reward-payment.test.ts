@@ -56,9 +56,7 @@ describe('Coin Reward Payment', () => {
         await user
             .post('/v1/pools')
             .set('Authorization', dashboardAccessToken)
-            .send({
-                chainId: ChainId.Hardhat,
-            })
+            .send()
             .expect(async (res: request.Response) => {
                 expect(res.body.address).toBeDefined();
                 expect(res.body.safe).toBeDefined();
@@ -114,6 +112,7 @@ describe('Coin Reward Payment', () => {
                 limit: 1,
                 pointPrice: 1500,
                 expiryDate,
+                locks: JSON.stringify([]),
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();

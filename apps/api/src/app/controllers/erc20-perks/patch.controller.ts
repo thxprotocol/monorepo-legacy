@@ -17,16 +17,12 @@ const validation = [
             return ['jpg', 'jpeg', 'gif', 'png'].includes(req.file.mimetype);
         }),
     body('isPromoted').optional().isBoolean(),
-    body('tokenGatingContractAddress').optional().isString(),
-    body('tokenGatingVariant').optional().isString(),
-    body('tokenGatingAmount').optional().isInt(),
     body('locks')
         .optional()
-        .customSanitizer((locks) => JSON.parse(locks)),
+        .customSanitizer((locks) => locks && JSON.parse(locks)),
 ];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['RewardsToken']
     let reward = await ERC20PerkService.get(req.params.id);
     if (!reward) throw new NotFoundError('Could not find the reward');
     const image = req.file && (await ImageService.upload(req.file));

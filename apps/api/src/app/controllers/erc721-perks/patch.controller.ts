@@ -28,7 +28,7 @@ const validation = [
     body('tokenGatingAmount').optional().isInt(),
     body('locks')
         .optional()
-        .customSanitizer((locks) => JSON.parse(locks)),
+        .customSanitizer((locks) => locks && JSON.parse(locks)),
 ];
 
 const controller = async (req: Request, res: Response) => {
