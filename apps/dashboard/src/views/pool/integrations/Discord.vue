@@ -188,10 +188,6 @@ export default class IntegrationDiscordView extends Vue {
     }
 
     onClickDiscordRole(guild: TDiscordGuild, role: TDiscordRole) {
-        // Force reactivity, should be fixed in store
-        const index = this.pool.guilds.findIndex((g) => g.id === guild.id);
-        this.pool.guilds[index].adminRoleId = role.id;
-        // End
         this.updateDiscordGuild({ ...guild, adminRoleId: role.id });
     }
 
@@ -206,14 +202,9 @@ export default class IntegrationDiscordView extends Vue {
     async onSelectGuild(guild: TDiscordGuild) {
         await this.$store.dispatch('pools/createGuild', guild);
         this.$store.dispatch('pools/read', guild.poolId);
-        // window.open(this.discordBotInviteUrl, '_blank');
     }
 
     onRemoveGuild(guild: TDiscordGuild) {
-        // Force reactivity, should be fixed in store
-        const index = this.pool.guilds.findIndex((g) => g.id === guild.id);
-        this.pool.guilds[index].isConnected = false;
-        // End
         this.$store.dispatch('pools/removeGuild', guild);
     }
 }
