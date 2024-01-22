@@ -5,12 +5,6 @@ import { body } from 'express-validator';
 export const validation = [body('address').exists().isString(), body('chainId').exists().isInt()];
 
 export const controller = async (req: Request, res: Response) => {
-    /*
-    #swagger.tags = ['ERC721 Contract']
-    #swagger.responses[200] = { 
-            description: 'returns symbol, name and totalSupply of an onchain erc721 token'
-    }
-    */
     const ownedNFTs = await getNFTsForOwner(req.body.address, req.body.contractAddress);
     res.status(200).json(ownedNFTs);
 };

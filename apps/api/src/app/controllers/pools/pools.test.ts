@@ -70,8 +70,8 @@ describe('Default Pool', () => {
                 .get(`/v1/pools/${poolId}`)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect((res: request.Response) => {
-                    expect(isAddress(res.body.address)).toBe(true);
-                    poolAddress = res.body.address;
+                    expect(isAddress(res.body.safeAddress)).toBe(true);
+                    poolAddress = res.body.safeAddress;
                 })
                 .expect(200);
         });

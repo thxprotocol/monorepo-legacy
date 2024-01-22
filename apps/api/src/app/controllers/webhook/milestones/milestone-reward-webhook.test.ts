@@ -1,12 +1,7 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, QuestVariant } from '@thxnetwork/types/enums';
-import {
-    dashboardAccessToken,
-    userWalletAddress2,
-    widgetAccessToken,
-    widgetAccessToken2,
-} from '@thxnetwork/api/util/jest/constants';
+import { dashboardAccessToken, userWalletAddress2, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
@@ -25,11 +20,9 @@ describe('Milestone Rewards', () => {
     it('POST /pools', (done) => {
         user.post('/v1/pools')
             .set('Authorization', dashboardAccessToken)
-            .send({
-                chainId: ChainId.Hardhat,
-            })
+            .send({})
             .expect((res: request.Response) => {
-                expect(isAddress(res.body.address)).toBe(true);
+                expect(isAddress(res.body.safeAddress)).toBe(true);
                 pool = res.body;
             })
             .expect(201, done);
