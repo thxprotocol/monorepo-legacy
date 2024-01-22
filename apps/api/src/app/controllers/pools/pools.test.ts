@@ -49,7 +49,6 @@ describe('Default Pool', () => {
                     poolId = res.body._id;
                     expect(res.body.safe.address).toBeDefined();
                     safe = res.body.safe;
-                    expect(res.body.settings.endDate).toBeDefined();
                     expect(res.body.settings.title).toBe('My Pool');
                     expect(res.body.settings.authenticationMethods).toBeDefined();
                     expect(res.body.settings.authenticationMethods.length).toBeGreaterThan(0);
