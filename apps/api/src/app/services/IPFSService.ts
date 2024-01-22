@@ -1,20 +1,30 @@
-import { ImportCandidate } from 'ipfs-core-types/src/utils';
-import { API_URL, INFURA_IPFS_PROJECT_ID, INFURA_IPFS_PROJECT_SECRET, NODE_ENV } from '../config/secrets';
-import { create, urlSource } from 'ipfs-http-client';
+import { API_URL, NODE_ENV } from '../config/secrets';
 import { ERC721Document } from '../models/ERC721';
 import { ERC1155Document } from '../models/ERC1155';
 import { NFTVariant } from '@thxnetwork/common/lib/types';
+import axios from 'axios';
+import pinataSDK from '@pinata/sdk';
+import https from 'https';
 
-const ipfsClient = create({
-    host: 'ipfs.infura.io',
-    port: 5001,
-    protocol: 'https',
-    headers: {
-        Authorization: `Basic ${Buffer.from(`${INFURA_IPFS_PROJECT_ID}:${INFURA_IPFS_PROJECT_SECRET}`).toString(
-            'base64',
-        )}`,
-    },
-});
+const pinata = new pinataSDK({ pinataJWTKey: process.env.PINATA_API_JWT });
+
+if (NODE_ENV !== 'production') {
+    const httpsAgent = new https.Agent({
+        rejectUnauthorized: false,
+    });
+    axios.defaults.httpsAgent = httpsAgent;
+}
+
+export async function addUrlSource(url: string) {
+    const response = await axios.get(url, { responseType: 'stream' });
+    const urlParts = url.split('/');
+    const name = urlParts[urlParts.length - 1];
+    const { IpfsHash } = await pinata.pinFileToIPFS(response.data, {
+        pinataMetadata: { name },
+        pinataOptions: { cidVersion: 0 },
+    });
+    return IpfsHash;
+}
 
 async function getTokenURI(nft: ERC721Document | ERC1155Document, metadataId: string, tokenId?: string) {
     const tokenUri = {
@@ -26,20 +36,10 @@ async function getTokenURI(nft: ERC721Document | ERC1155Document, metadataId: st
 
     const metadataUrl = {
         [NFTVariant.ERC721]: `${API_URL}/v1/metadata/${metadataId}`,
-        [NFTVariant.ERC1155]: `${API_URL}/v1/erc1155/${nft._id}/${tokenId}`,
+        [NFTVariant.ERC1155]: `${API_URL}/v1/metadata/erc1155/${nft._id}/${tokenId}`,
     };
-    const result = await addImageUrl(metadataUrl[nft.variant]);
-    return result.cid.toString();
+
+    return await addUrlSource(metadataUrl[nft.variant]);
 }
 
-export async function add(file: Express.Multer.File) {
-    return await ipfsClient.add({
-        content: file.buffer,
-    } as ImportCandidate);
-}
-
-export async function addImageUrl(url: string) {
-    return await ipfsClient.add(urlSource(url) as ImportCandidate);
-}
-
-export default { add, addImageUrl, getTokenURI };
+export default { addUrlSource, getTokenURI };

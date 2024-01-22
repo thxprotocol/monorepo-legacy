@@ -38,11 +38,6 @@
             </b-jumbotron>
         </div>
         <div class="container container-md">
-            <b-row>
-                <b-col class="text-right pb-3">
-                    <base-btn-toggle-archive @archived="$store.dispatch('erc721/list', { archived: $event })" />
-                </b-col>
-            </b-row>
             <base-nothing-here
                 v-if="!Object.values(erc721s).length && !Object.values(erc1155s).length"
                 text-submit="Create an NFT"
@@ -53,20 +48,10 @@
             />
             <b-row v-else>
                 <b-col md="6" lg="4" :key="erc721._id" v-for="erc721 of erc721s">
-                    <base-card-erc721 :erc721="erc721" />
-                    <base-modal-pool-create
-                        :erc721="erc721"
-                        :tokenId="erc721._id"
-                        @created="$store.dispatch('erc721/list')"
-                    />
+                    <BaseCardERC721 :erc721="erc721" />
                 </b-col>
                 <b-col md="6" lg="4" :key="erc1155._id" v-for="erc1155 of erc1155s">
-                    <base-card-erc1155 :erc1155="erc1155" />
-                    <base-modal-pool-create
-                        :erc1155="erc1155"
-                        :tokenId="erc1155._id"
-                        @created="$store.dispatch('erc1155/list')"
-                    />
+                    <BaseCardERC1155 :erc1155="erc1155" />
                 </b-col>
             </b-row>
         </div>
@@ -80,8 +65,8 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import ModalErc721Create from '@thxnetwork/dashboard/components/modals/BaseModalERC721Create.vue';
-import BaseCardErc721 from '@thxnetwork/dashboard/components/cards/BaseCardERC721.vue';
-import BaseCardErc1155 from '@thxnetwork/dashboard/components/cards/BaseCardERC1155.vue';
+import BaseCardERC721 from '@thxnetwork/dashboard/components/cards/BaseCardERC721.vue';
+import BaseCardERC1155 from '@thxnetwork/dashboard/components/cards/BaseCardERC1155.vue';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import BaseBtnToggleArchive from '@thxnetwork/dashboard/components/buttons/BaseBtnToggleArchive.vue';
@@ -92,8 +77,8 @@ import { IERC1155s } from '../types/erc1155';
 @Component({
     components: {
         BaseBtnToggleArchive,
-        BaseCardErc721,
-        BaseCardErc1155,
+        BaseCardERC721,
+        BaseCardERC1155,
         ModalErc721Create,
         BaseNothingHere,
         BaseModalPoolCreate,

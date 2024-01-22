@@ -1,4 +1,4 @@
-import { AWS_S3_PUBLIC_BUCKET_NAME, IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
+import { AWS_S3_PUBLIC_BUCKET_NAME, IPFS_BASE_URL, NODE_ENV } from '@thxnetwork/api/config/secrets';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ImageService from '@thxnetwork/api/services/ImageService';
@@ -39,7 +39,6 @@ const controller = async (req: Request, res: Response) => {
     const erc721 = await ERC721Service.findById(req.params.id);
     if (!erc721) throw new NotFoundError('Could not find this NFT in the database');
 
-    const account = await AccountProxy.getById(req.auth.sub);
     const zip = createArchiver().jsZip;
     const contents = await zip.loadAsync(req.file.buffer);
 
@@ -65,11 +64,10 @@ const controller = async (req: Request, res: Response) => {
             );
 
             const imageUrl = req.file && (await ImageService.upload(req.file));
-
             let image = imageUrl;
-            if (account.plan === AccountPlanType.Premium) {
-                const result = await IPFSService.add({ buffer: file } as Express.Multer.File);
-                image = IPFS_BASE_URL + result.cid.toString();
+            if (NODE_ENV === 'production') {
+                const cid = await IPFSService.addUrlSource(imageUrl);
+                image = IPFS_BASE_URL + cid;
             }
 
             await ERC721Metadata.create({

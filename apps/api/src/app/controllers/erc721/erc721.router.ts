@@ -5,6 +5,7 @@ import ListERC721 from './list.controller';
 import ListERC721Metadata from './metadata/list.controller';
 import ListERC721Token from './token/list.controller';
 import ReadERC721Token from './token/get.controller';
+import RemoveERC721 from './delete.controller';
 import CreateERC721 from './post.controller';
 import CreateMultipleERC721Metadata from './metadata/images/post.controller';
 import { upload } from '@thxnetwork/api/util/multer';
@@ -93,6 +94,13 @@ router.get(
     guard.check(['erc721:read']),
     ReadERC721Metadata.controller,
     assertRequestInput(ReadERC721Metadata.validation),
+);
+
+router.delete(
+    '/:id',
+    guard.check(['erc721:read', 'erc721:write']),
+    assertRequestInput(RemoveERC721.validation),
+    RemoveERC721.controller,
 );
 
 export default router;

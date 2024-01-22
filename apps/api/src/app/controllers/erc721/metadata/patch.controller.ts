@@ -3,9 +3,7 @@ import { body, param } from 'express-validator';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import IPFSService from '@thxnetwork/api/services/IPFSService';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import { AccountPlanType } from '@thxnetwork/types/enums';
-import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
+import { IPFS_BASE_URL, NODE_ENV } from '@thxnetwork/api/config/secrets';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 
 const validation = [
@@ -27,12 +25,10 @@ const controller = async (req: Request, res: Response) => {
     const tokens = metadata.tokens || [];
     if (tokens.length) throw new BadRequestError('There token minted with this metadata');
 
-    const account = await AccountProxy.getById(req.auth.sub);
     let image = req.body.imageUrl;
-
-    if (req.body.imageUrl && account.plan === AccountPlanType.Premium) {
-        const result = await IPFSService.addImageUrl(req.body.image);
-        image = IPFS_BASE_URL + result.cid.toString();
+    if (req.body.imageUrl && NODE_ENV === 'production') {
+        const cid = await IPFSService.addUrlSource(req.body.imageUrl);
+        image = IPFS_BASE_URL + cid;
     }
 
     metadata.name = req.body.name || metadata.name;

@@ -212,52 +212,6 @@ export const getOnChainERC721Token = async (chainId: number, address: string) =>
     return { name, symbol, totalSupply };
 };
 
-export async function transferFromWallet(
-    erc721: ERC721Document,
-    erc721Token: ERC721TokenDocument,
-    wallet: WalletDocument,
-    to: string,
-): Promise<TransactionDocument> {
-    const tx = await TransactionService.sendSafeAsync(
-        wallet,
-        erc721.address,
-        erc721.contract.methods.transferFrom(wallet.address, to, erc721Token.tokenId),
-        {
-            type: 'erc721TransferFromWalletCallback',
-            args: {
-                erc721Id: String(erc721._id),
-                erc721TokenId: String(erc721Token._id),
-                walletId: String(wallet._id),
-                to,
-            },
-        },
-    );
-
-    await erc721Token.updateOne({ state: ERC721TokenState.Transferring, transactions: [tx._id] });
-
-    return tx;
-}
-
-export async function transferFromWalletCallback(
-    args: TERC721TransferFromWalletCallbackArgs,
-    receipt: TransactionReceipt,
-) {
-    const { erc721Id, erc721TokenId, to } = args;
-    const erc721 = await ERC721.findById(erc721Id);
-    const erc721Token = await ERC721Token.findById(erc721TokenId);
-    const events = parseLogs(erc721.contract.options.jsonInterface, receipt.logs);
-    assertEvent('Transfer', events);
-
-    const wallet = await SafeService.findOneByAddress(to);
-
-    await erc721Token.updateOne({
-        state: ERC721TokenState.Transferred,
-        recipient: toChecksumAddress(to),
-        sub: wallet && wallet.sub,
-        walletId: wallet && String(wallet._id),
-    });
-}
-
 export async function transferFrom(
     erc721: ERC721Document,
     wallet: WalletDocument,

@@ -113,3 +113,4 @@ export const VE_ADDRESS = process.env.VE_ADDRESS || '0x4Cfe0Ad25f543Be60a582BE4C
 export const RD_ADDRESS = process.env.RD_ADDRESS || '0x2c603713cf81109358d267941e9Ffc5A7EA76a47';
 export const RF_ADDRESS = process.env.RF_ADDRESS || '0x8B9D83774c84769A18797326F29F4590131189F2';
 export const SC_ADDRESS = process.env.SC_ADDRESS || '0x76aBe9ec9b15947ba1Ca910695B8b6CffeD8E6CA';
+export const PINATA_API_JWT = process.env.PINATA_API_JWT || '';

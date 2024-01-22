@@ -6,12 +6,6 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
-    /* 
-    #swagger.tags = ['ERC1155']
-    #swagger.responses[200] = { 
-        description: "Get information of the ERC1155 contract.",
-        schema: { $ref: '#/definitions/ERC1155' } } 
-    */
     let erc1155 = await ERC1155Service.findById(req.params.id);
 
     if (!erc1155) throw new NotFoundError();

@@ -2,6 +2,7 @@ import express from 'express';
 import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import ReadERC1155 from './get.controller';
 import ListERC1155 from './list.controller';
+import RemoveERC1155 from './delete.controller';
 import ListERC1155Metadata from './metadata/list.controller';
 import ListERC1155Token from './token/list.controller';
 import ReadERC1155Token from './token/get.controller';
@@ -15,6 +16,7 @@ import PatchERC1155Metadata from './metadata/patch.controller';
 import DeleteERC1155Metadata from './metadata/delete.controller';
 import ImportERC1155Contract from './import/post.controller';
 import PreviewERC1155Contract from './import/preview/post.controller';
+import CreateERC1155Transfer from './transfer/post.controller';
 
 const router = express.Router();
 
@@ -77,6 +79,20 @@ router.get(
     guard.check(['erc1155:read']),
     ReadERC1155Metadata.controller,
     assertRequestInput(ReadERC1155Metadata.validation),
+);
+
+router.post(
+    '/transfer',
+    // guard.check(['erc1155_transfer:read', 'erc1155_transfer:write']),
+    assertRequestInput(CreateERC1155Transfer.validation),
+    CreateERC1155Transfer.controller,
+);
+
+router.delete(
+    '/:id',
+    guard.check(['erc1155:read', 'erc1155:write']),
+    assertRequestInput(RemoveERC1155.validation),
+    RemoveERC1155.controller,
 );
 
 export default router;

@@ -100,6 +100,16 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async remove(erc721: TERC721) {
+        await axios({
+            method: 'DELETE',
+            url: `/erc721/${erc721._id}`,
+        });
+
+        this.context.commit('unset', erc721);
+    }
+
+    @Action({ rawError: true })
     async listMetadata({ page = 1, limit, erc721 }: MetadataListProps) {
         const params = new URLSearchParams();
         params.set('page', String(page));

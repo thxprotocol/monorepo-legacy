@@ -1,14 +1,14 @@
 <template>
-    <base-card
-        :is-loading="isLoading"
-        :is-deploying="isDeploying"
-        :body-bg-variant="erc721.archived ? 'light' : null"
-        classes="cursor-pointer"
-        @click="onClick"
-    >
+    <base-card :is-loading="isLoading" :is-deploying="isDeploying" classes="cursor-pointer" @click="onClick">
         <template #card-header>
             <base-badge-network v-if="!isLoading" :chainId="erc721.chainId" />
-            <base-dropdown-menu-nft :archived="isArchived" :nft="erc721" @archive="archive" class="ml-auto" />
+            <b-dropdown size="sm" variant="link" right no-caret toggle-class="d-flex align-items-center float-right">
+                <template #button-content>
+                    <i class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted" aria-hidden="true" style="font-size: 1rem"></i>
+                </template>
+                <b-dropdown-item @click.stop="remove"> Remove </b-dropdown-item>
+                <b-dropdown-item @click.stop="openTokenUrl"> Block Explorer </b-dropdown-item>
+            </b-dropdown>
         </template>
         <template #card-body>
             <div class="mb-3 d-flex align-items-center">
@@ -43,6 +43,7 @@ import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeN
 import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
 import BaseDropdownMenuNft from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownMenuNft.vue';
 import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 
 @Component({
     components: {
@@ -63,6 +64,11 @@ export default class BaseCardERC721 extends Vue {
 
     get isArchived() {
         return this.erc721.address ? this.erc721.archived : false;
+    }
+
+    openTokenUrl() {
+        const url = `${chainInfo[this.erc721.chainId].blockExplorer}/token/${this.erc721.address}`;
+        return (window as any).open(url, '_blank').focus();
     }
 
     async mounted() {
@@ -97,12 +103,9 @@ export default class BaseCardERC721 extends Vue {
         this.$router.push({ path: `/nft/${this.erc721.variant}/${this.erc721._id}` });
     }
 
-    async archive() {
+    async remove() {
         this.isLoading = true;
-        await this.$store.dispatch('erc721/update', {
-            erc721: this.erc721,
-            data: { archived: !this.erc721.archived },
-        });
+        await this.$store.dispatch('erc721/remove', this.erc721);
         this.isLoading = false;
     }
 }

@@ -137,10 +137,10 @@ export async function mint(
         { upsert: true, new: true },
     );
 
-    const txId = await TransactionService.sendSafeAsync(
+    const tx = await TransactionService.sendSafeAsync(
         safe,
         erc1155.address,
-        erc1155.contract.methods.mint(wallet.address, metadata.tokenId, amount),
+        erc1155.contract.methods.mint(wallet.address, metadata.tokenId, amount, '0x'),
         {
             type: 'erc1155TokenMintCallback',
             args: { erc1155tokenId: String(erc1155token._id) },
@@ -149,7 +149,7 @@ export async function mint(
 
     return await ERC1155Token.findByIdAndUpdate(
         erc1155token._id,
-        { transactions: [txId], state: ERC1155TokenState.Transferring },
+        { transactions: [tx._id], state: ERC1155TokenState.Transferring },
         { new: true },
     );
 }
@@ -162,7 +162,7 @@ export async function mintCallback(args: TERC1155TokenMintCallbackArgs, receipt:
 
     await ERC1155Token.findByIdAndUpdate(erc1155tokenId, {
         state: ERC1155TokenState.Minted,
-        tokenId: Number(event.args.tokenId),
+        tokenId: event.args.id,
         recipient: event.args.recipient,
     });
 }
@@ -189,7 +189,7 @@ export async function transferFrom(
     const tx = await TransactionService.sendSafeAsync(
         wallet,
         erc1155.address,
-        erc1155.contract.methods.transferFrom(wallet.address, to, erc1155Token.tokenId, amount),
+        erc1155.contract.methods.safeTransferFrom(wallet.address, to, erc1155Token.tokenId, amount, '0x'),
         {
             type: 'erc1155TransferFromCallback',
             args: {

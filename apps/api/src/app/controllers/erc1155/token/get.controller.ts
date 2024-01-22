@@ -6,7 +6,6 @@ import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 const validation = [param('id').exists().isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['ERC1155 Token']
     const token = await ERC1155Service.queryMintTransaction(await ERC1155Service.findTokenById(req.params.id));
     if (!token) throw new NotFoundError('ERC1155Token not found');
 
@@ -19,7 +18,7 @@ const controller = async (req: Request, res: Response) => {
     const balance = await erc1155.contract.methods.balanceOf(token.recipient, metadata.tokenId).call();
     const tokenUri = token.tokenId ? await erc1155.contract.methods.uri(token.tokenId).call() : '';
 
-    res.status(200).json({
+    res.json({
         ...token.toJSON(),
         tokenUri,
         balance,

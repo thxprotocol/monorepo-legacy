@@ -97,6 +97,16 @@ class ERC1155Module extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async remove(erc1155: TERC1155) {
+        await axios({
+            method: 'DELETE',
+            url: `/erc1155/${erc1155._id}`,
+        });
+
+        this.context.commit('unset', erc1155);
+    }
+
+    @Action({ rawError: true })
     async listMetadata({ page = 1, limit, erc1155 }: MetadataListProps) {
         const params = new URLSearchParams();
         params.set('page', String(page));
