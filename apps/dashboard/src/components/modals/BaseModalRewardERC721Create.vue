@@ -234,7 +234,7 @@ export default class ModalRewardERC721Create extends Vue {
     async onSelectToken(token: TERC721Token | TERC1155Token) {
         this.tokenId = token ? token._id : '';
 
-        if ((token as any).nft.variant == NFTVariant.ERC1155) {
+        if (token && (token as any).nft.variant == NFTVariant.ERC1155) {
             const balance = await this.$store.dispatch('erc1155/getBalance', { pool: this.pool, token });
             this.erc1155Balance = balance;
         }
