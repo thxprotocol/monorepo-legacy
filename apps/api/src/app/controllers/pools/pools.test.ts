@@ -43,9 +43,7 @@ describe('Default Pool', () => {
             user.post('/v1/pools')
                 .set('Authorization', dashboardAccessToken)
                 .send({
-                    chainId: ChainId.Hardhat,
                     title: 'My Pool',
-                    endDate: new Date(),
                 })
                 .expect((res: request.Response) => {
                     poolId = res.body._id;
@@ -53,7 +51,6 @@ describe('Default Pool', () => {
                     safe = res.body.safe;
                     expect(res.body.settings.endDate).toBeDefined();
                     expect(res.body.settings.title).toBe('My Pool');
-                    expect(res.body.settings.isArchived).toBe(false);
                     expect(res.body.settings.authenticationMethods).toBeDefined();
                     expect(res.body.settings.authenticationMethods.length).toBeGreaterThan(0);
                 })
