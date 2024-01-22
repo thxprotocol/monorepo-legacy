@@ -70,7 +70,7 @@ const getPlatformUserId = async (reward: TPointReward, account: TAccount) => {
     try {
         switch (reward.platform) {
             case RewardConditionPlatform.Google:
-                return await YouTubeDataProxy.getUserId(account);
+                return await YouTubeDataProxy.getUserId(account, AccessTokenKind.YoutubeManage);
             case RewardConditionPlatform.Twitter:
                 return await TwitterDataProxy.getUserId(account);
             case RewardConditionPlatform.Discord: {

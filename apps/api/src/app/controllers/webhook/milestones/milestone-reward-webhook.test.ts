@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, QuestVariant } from '@thxnetwork/types/enums';
+import { QuestVariant } from '@thxnetwork/types/enums';
 import { dashboardAccessToken, userWalletAddress2, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';

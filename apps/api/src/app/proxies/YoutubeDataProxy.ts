@@ -8,7 +8,7 @@ class NoYoutubeDataError extends THXError {
 }
 
 export default class YoutubeDataProxy {
-    static async getUserId(account: TAccount) {
+    static async getUserId(account: TAccount, kind = AccessTokenKind.Google) {
         const { data } = await authClient({
             method: 'GET',
             url: `/account/${account.sub}`,
@@ -17,7 +17,7 @@ export default class YoutubeDataProxy {
             },
         });
 
-        const token = data.connectedAccounts.find((token) => token.kind === AccessTokenKind.Google);
+        const token = data.connectedAccounts.find((token) => token.kind === kind);
         if (!token) return;
         return token.userId;
     }

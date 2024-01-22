@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, QuestVariant } from '@thxnetwork/types/enums';
+import { QuestVariant } from '@thxnetwork/types/enums';
 import { dashboardAccessToken, userWalletAddress2, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
@@ -18,9 +18,7 @@ describe('Daily Rewards WebHooks', () => {
     it('POST /pools', (done) => {
         user.post('/v1/pools')
             .set('Authorization', dashboardAccessToken)
-            .send({
-                chainId: ChainId.Hardhat,
-            })
+            .send()
             .expect((res: request.Response) => {
                 expect(isAddress(res.body.safeAddress)).toBe(true);
                 poolId = res.body._id;
