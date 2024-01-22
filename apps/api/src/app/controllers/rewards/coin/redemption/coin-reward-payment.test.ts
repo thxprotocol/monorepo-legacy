@@ -58,9 +58,8 @@ describe('Coin Reward Payment', () => {
             .set('Authorization', dashboardAccessToken)
             .send({ chainId: ChainId.Hardhat })
             .expect(async (res: request.Response) => {
-                expect(res.body.address).toBeDefined();
+                expect(res.body.safeAddress).toBeDefined();
                 expect(res.body.safe).toBeDefined();
-                expect(res.body.address).toBe(res.body.safe.address);
                 poolId = res.body._id;
                 campaignSafe = res.body.safe;
 

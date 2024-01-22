@@ -67,7 +67,7 @@ describe('NFT Rewards', () => {
                 chainId: ChainId.Hardhat,
             })
             .expect(({ body }: request.Response) => {
-                expect(isAddress(body.address)).toBe(true);
+                expect(isAddress(body.safeAddress)).toBe(true);
                 poolId = body._id;
             })
             .expect(201, done);
