@@ -5,6 +5,7 @@ import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import { Transaction } from '@thxnetwork/api/models/Transaction';
 
 export const validation = [
     body('erc721Id').exists().isMongoId(),
@@ -14,9 +15,6 @@ export const validation = [
 ];
 
 export const controller = async (req: Request, res: Response) => {
-    /*
-    #swagger.tags = ['ERC20Transaction']
-    */
     const erc721 = await ERC721.findById(req.body.erc721Id);
     if (!erc721) throw new NotFoundError('Could not find the ERC721');
 
@@ -29,7 +27,8 @@ export const controller = async (req: Request, res: Response) => {
     const owner = await erc721.contract.methods.ownerOf(erc721Token.tokenId).call();
     if (owner !== wallet.address) throw new ForbiddenError('Account is not owner of given tokenId');
 
-    const tx = await ERC721Service.transferFrom(erc721, wallet, req.body.to, erc721Token);
+    const receiverToken = await ERC721Service.transferFrom(erc721, wallet, req.body.to, erc721Token);
+    const tx = await Transaction.findById(receiverToken.transactions[0]);
 
     res.status(201).json(tx);
 };

@@ -14,13 +14,14 @@ import { signTxHash } from '@thxnetwork/api/util/jest/network';
 import SafeService, { Wallet } from '@thxnetwork/api/services/SafeService';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { getProvider } from '@thxnetwork/api/util/network';
+import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 
 const user = request.agent(app);
 
 describe('ERC721 Transfer', () => {
     let erc721: ERC721Document,
         erc721Token: ERC721TokenDocument,
-        wallet: WalletDocument,
+        pool: AssetPoolDocument,
         to = '',
         safeTxHash = '';
     const chainId = ChainId.Hardhat,
@@ -28,22 +29,35 @@ describe('ERC721 Transfer', () => {
         symbol = 'TST',
         baseURL = 'https://example.com',
         logoImgUrl = 'https://img.url',
-        metadataName = '',
-        metadataImageUrl = '',
-        metadataIPFSImageUrl = '',
-        metadataDescription = '',
-        metadataExternalUrl = '';
+        metadataName = 'Testname',
+        metadataImageUrl = 'Testimageurl',
+        metadataIPFSImageUrl = 'TestIPFSimageurl',
+        metadataDescription = 'Testdescription',
+        metadataExternalUrl = 'TestexternalURL';
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
-    it('Deploy ERC721', async () => {
-        const { web3 } = getProvider(ChainId.Hardhat);
-        const pool = await PoolService.deploy(sub, chainId, 'My Reward Campaign', new Date());
-        const poolId = String(pool._id);
-        const safe = await SafeService.create({ chainId, sub, safeVersion, poolId });
+    it('Deploy Campaign Safe', async () => {
+        const { web3 } = getProvider(chainId);
+        pool = await PoolService.deploy(sub, chainId, 'My Reward Campaign', new Date());
+        const safe = await SafeService.create({ chainId, sub, safeVersion, poolId: String(pool._id) });
 
-        wallet = await SafeService.findPrimary(sub, ChainId.Hardhat);
+        // Wait for safe address to return code
+        await poll(
+            () => web3.eth.getCode(safe.address),
+            (data: string) => data === '0x',
+            1000,
+        );
+        const code = await web3.eth.getCode(safe.address);
+        const result = code !== '0x';
+
+        expect(result).toBe(true);
+    });
+
+    it('Deploy ERC721', async () => {
+        const { web3 } = getProvider(chainId);
+
         erc721 = await ERC721Service.deploy(
             {
                 variant: NFTVariant.ERC721,
@@ -59,9 +73,40 @@ describe('ERC721 Transfer', () => {
             true,
         );
 
-        // Add MINTER_ROLE to campaing safe
+        // Wait for nft address to return code
+        await poll(
+            async () => (await ERC721.findById(erc721._id)).address,
+            (address: string) => !address || !address.length,
+            1000,
+        );
+
+        erc721 = await ERC721.findById(erc721._id);
+
+        const code = await web3.eth.getCode(erc721.address);
+        const result = code !== '0x';
+        expect(result).toBe(true);
+    });
+
+    it('Add ERC721 minter', async () => {
+        pool = await AssetPool.findById(pool._id);
+
+        const safe = await SafeService.findOneByPool(pool, pool.chainId);
+        erc721 = await ERC721.findById(erc721._id);
+
         await ERC721Service.addMinter(erc721, safe.address);
 
+        // Wait for nft address to return code
+        await poll(
+            async () => await ERC721Service.isMinter(erc721, safe.address),
+            (isMinter: boolean) => !isMinter,
+            1000,
+        );
+
+        const isMinter = await ERC721Service.isMinter(erc721, safe.address);
+        expect(isMinter).toBe(true);
+    });
+
+    it('Create ERC721 Metadata', async () => {
         // Create metadata for token
         const metadata = await ERC721Metadata.create({
             erc721Id: String(erc721._id),
@@ -71,33 +116,39 @@ describe('ERC721 Transfer', () => {
             description: metadataDescription,
             externalUrl: metadataExternalUrl,
         });
+        const safe = await SafeService.findOneByPool(pool, pool.chainId);
 
         // Wait for safe address to return code
+        const { web3 } = getProvider(chainId);
         await poll(
             () => web3.eth.getCode(safe.address),
             (data: string) => data === '0x',
             1000,
         );
 
+        const wallet = await SafeService.findPrimary(sub);
+
         // Mint a token for metadata
         erc721Token = await ERC721Service.mint(safe, erc721, wallet, metadata);
 
         // Wait for tokenId to be set in mint callback
         await poll(
-            () => ERC721Token.findById(erc721Token._id),
-            (token: ERC721TokenDocument) => !token.tokenId,
+            async () => (await ERC721Token.findById(erc721Token._id)).tokenId,
+            (tokenId?: number) => typeof tokenId === 'undefined',
             1000,
         );
+
+        erc721Token = await ERC721Token.findById(erc721Token._id);
+
+        expect(erc721Token.tokenId).toBeDefined();
     });
 
     it('Transfer ERC721 ownership', async () => {
         const receiver = await Wallet.findOne({ sub: sub2, safeVersion });
-        to = receiver.address;
-
         const { status, body } = await user.post('/v1/erc721/transfer').set({ Authorization: widgetAccessToken }).send({
             erc721Id: erc721._id,
             erc721TokenId: erc721Token._id,
-            to,
+            to: receiver.address,
         });
 
         expect(status).toBe(201);
@@ -107,6 +158,7 @@ describe('ERC721 Transfer', () => {
     });
 
     it('Confirm tx', async () => {
+        const wallet = await SafeService.findPrimary(sub);
         const { signature } = await signTxHash(wallet.address, safeTxHash, userWalletPrivateKey);
         const res2 = await user
             .post(`/v1/account/wallet/confirm`)
@@ -117,12 +169,13 @@ describe('ERC721 Transfer', () => {
     });
 
     it('Wait for ownerOf', async () => {
+        const receiver = await Wallet.findOne({ sub: sub2, safeVersion });
         const token = await ERC721Token.findById(erc721Token._id);
         const { contract } = await ERC721.findById(erc721._id);
 
-        await poll(contract.methods.ownerOf(token.tokenId).call, (result: string) => result !== to, 1000);
+        await poll(contract.methods.ownerOf(token.tokenId).call, (result: string) => result !== receiver.address, 1000);
 
         const owner = await contract.methods.ownerOf(token.tokenId).call();
-        expect(owner).toEqual(to);
+        expect(owner).toEqual(receiver.address);
     });
 });

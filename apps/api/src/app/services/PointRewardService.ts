@@ -34,7 +34,6 @@ const questConditionMap: {
         const validationResultUser = await TwitterDataProxy.validateUser(account, quest);
         if (!validationResultUser.result) return validationResultUser;
         const validationResultRepost = await TwitterDataProxy.validateRetweet(account, quest.content);
-        console.log(validationResultRepost);
         if (!validationResultRepost.result) return validationResultRepost;
     },
     [RewardConditionInteraction.TwitterLikeRetweet]: async (account, quest) => {

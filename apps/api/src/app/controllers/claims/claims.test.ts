@@ -184,18 +184,18 @@ describe('QR Codes', () => {
                 .expect(403, done);
         });
 
-        // it('First attempt other claim for other account should succeed', (done) => {
-        //     user.post(`/v1/claims/${claims[1].uuid}/collect`)
-        //         .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
-        //         .expect(({ body }: request.Response) => {
-        //             expect(body.erc721).toBeDefined();
-        //             expect(body.claim).toBeDefined();
-        //             expect(body.payment).toBeDefined();
-        //             expect(body.token).toBeDefined();
-        //             expect(body.metadata).toBeDefined();
-        //             expect(body.reward).toBeDefined();
-        //         })
-        //         .expect(200, done);
-        // });
+        it('First attempt other claim for other account should succeed', (done) => {
+            user.post(`/v1/claims/${claims[1].uuid}/collect`)
+                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
+                .expect(({ body }: request.Response) => {
+                    expect(body.erc721).toBeDefined();
+                    expect(body.claim).toBeDefined();
+                    expect(body.payment).toBeDefined();
+                    expect(body.token).toBeDefined();
+                    expect(body.metadata).toBeDefined();
+                    expect(body.reward).toBeDefined();
+                })
+                .expect(200, done);
+        });
     });
 });

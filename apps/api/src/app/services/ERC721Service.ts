@@ -107,7 +107,7 @@ export async function mint(
         metadataId: String(metadata._id),
         walletId: wallet._id,
     });
-    console.log(wallet.address, tokenUri);
+
     const tx = await TransactionService.sendSafeAsync(
         safe,
         erc721.address,
@@ -118,7 +118,7 @@ export async function mint(
         },
     );
 
-    return ERC721Token.findByIdAndUpdate(
+    return await ERC721Token.findByIdAndUpdate(
         erc721token._id,
         { transactions: [String(tx._id)], state: ERC721TokenState.Transferring },
         { new: true },
@@ -134,7 +134,7 @@ export async function mintCallback(args: TERC721TokenMintCallbackArgs, receipt: 
     await token.updateOne({
         state: ERC721TokenState.Minted,
         tokenId: Number(event.args.tokenId),
-        recipient: event.args.recipient,
+        recipient: event.args.to,
     });
 }
 
@@ -292,8 +292,7 @@ export async function transferFromCallback(args: TERC721TransferFromCallBackArgs
     const { erc721TokenId, sub } = args;
     const erc721Token = await ERC721Token.findById(erc721TokenId);
     const erc721 = await ERC721.findById(erc721Token.erc721Id);
-    const abi = getAbiForContractName('NonFungibleToken');
-    const events = parseLogs(abi, receipt.logs);
+    const events = parseLogs(erc721.contract.options.jsonInterface, receipt.logs);
     const event = assertEvent('Transfer', events);
     const wallet = sub && (await SafeService.findPrimary(sub, erc721.chainId));
 
