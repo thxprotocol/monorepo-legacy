@@ -15,6 +15,9 @@ const controller = async (req: Request, res: Response) => {
     const poolId = String(pool._id);
     const safe = await SafeService.create({ chainId: req.body.chainId, sub: req.auth.sub, safeVersion, poolId });
 
+    // Update predicted safe address for pool
+    await pool.updateOne({ safeAddress: safe.address });
+
     res.status(201).json({ ...pool.toJSON(), safeAddress: safe.address, safe });
 };
 
