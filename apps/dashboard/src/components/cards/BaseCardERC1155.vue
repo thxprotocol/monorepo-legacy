@@ -7,7 +7,6 @@
                     <i class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted" aria-hidden="true" style="font-size: 1rem"></i>
                 </template>
                 <b-dropdown-item @click.stop="remove"> Remove </b-dropdown-item>
-                <b-dropdown-item @click.stop="openTokenUrl"> Block Explorer </b-dropdown-item>
             </b-dropdown>
         </template>
         <template #card-body>
@@ -21,12 +20,10 @@
                     {{ erc1155.variant && erc1155.variant.toUpperCase() }}
                 </b-badge>
             </p>
-            <p>
-                <span class="text-muted">Base URL</span><br />
-                <b-badge variant="primary" class="mr-1 mb-1">
-                    {{ erc1155.baseURL }}
-                </b-badge>
-            </p>
+            <b-form-group>
+                <template #label>Address</template>
+                <BaseAnchorAddress :chain-id="erc1155.chainId" :address="erc1155.address" />
+            </b-form-group>
             <b-button block variant="light" class="rounded-pill">Manage Metadata</b-button>
         </template>
     </base-card>
@@ -41,7 +38,7 @@ import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeN
 import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
 import BaseDropdownMenuNft from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownMenuNft.vue';
 import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
-import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
+import BaseAnchorAddress from '../BaseAnchorAddress.vue';
 
 @Component({
     components: {
@@ -50,6 +47,7 @@ import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
         BaseBadgeNetwork,
         BaseIdenticon,
         BaseDropdownMenuNft,
+        BaseAnchorAddress,
     },
 })
 export default class BaseCardERC1155 extends Vue {
@@ -57,11 +55,6 @@ export default class BaseCardERC1155 extends Vue {
     isLoading = true;
     isDeploying = false;
     error = '';
-
-    openTokenUrl() {
-        const url = `${chainInfo[this.erc1155.chainId].blockExplorer}/token/${this.erc1155.address}`;
-        return (window as any).open(url, '_blank').focus();
-    }
 
     @Prop() erc1155!: TERC1155;
 

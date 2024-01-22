@@ -121,8 +121,9 @@ export async function mint(
     const erc1155token = await ERC1155Token.findOneAndUpdate(
         {
             erc1155Id: String(erc1155._id),
-            walletId: String(wallet._id),
             tokenId: metadata.tokenId,
+            sub: wallet.sub,
+            walletId: String(wallet._id),
         },
         {
             sub: wallet.sub,
@@ -198,6 +199,27 @@ export async function transferFrom(
                 sub: toWallet && toWallet.sub,
             },
         },
+    );
+    const metadata = await ERC1155Metadata.findById(erc1155Token.metadataId);
+
+    await ERC1155Token.findOneAndUpdate(
+        {
+            erc1155Id: String(erc1155._id),
+            tokenId: metadata.tokenId,
+            sub: wallet.sub,
+            walletId: String(wallet._id),
+        },
+        {
+            sub: wallet.sub,
+            tokenUri: erc1155.baseURL.replace('{id}', erc1155Token.tokenUri),
+            recipient: wallet.address,
+            state: ERC1155TokenState.Pending,
+            erc1155Id: String(erc1155._id),
+            metadataId: String(metadata._id),
+            walletId: String(wallet._id),
+            tokenId: metadata.tokenId,
+        },
+        { upsert: true, new: true },
     );
 
     return await ERC1155Token.findByIdAndUpdate(

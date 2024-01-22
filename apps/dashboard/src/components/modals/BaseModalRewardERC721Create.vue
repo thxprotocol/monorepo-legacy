@@ -231,9 +231,13 @@ export default class ModalRewardERC721Create extends Vue {
         this.metadataId = metadata ? metadata._id : '';
     }
 
-    onSelectToken(token: TERC721Token | TERC1155Token) {
+    async onSelectToken(token: TERC721Token | TERC1155Token) {
         this.tokenId = token ? token._id : '';
-        this.erc1155Balance = token ? (token.balance as string) : '';
+
+        if ((token as any).nft.variant == NFTVariant.ERC1155) {
+            const balance = await this.$store.dispatch('erc1155/getBalance', { pool: this.pool, token });
+            this.erc1155Balance = balance;
+        }
     }
 
     onChangeRedirectURL(redirectUrl: string) {

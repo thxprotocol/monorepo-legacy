@@ -107,6 +107,20 @@ class ERC1155Module extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async getBalance({ pool, token }: any) {
+        if (!token) return;
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/erc1155/balance`,
+            params: {
+                contractAddress: token.nft.address,
+                tokenId: token.tokenId,
+            },
+        });
+        return data.balance;
+    }
+
+    @Action({ rawError: true })
     async listMetadata({ page = 1, limit, erc1155 }: MetadataListProps) {
         const params = new URLSearchParams();
         params.set('page', String(page));

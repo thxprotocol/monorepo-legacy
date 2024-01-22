@@ -27,7 +27,6 @@ import AccountProxy from '../proxies/AccountProxy';
 import MailService from './MailService';
 import SafeService from './SafeService';
 import DiscordGuild from '../models/DiscordGuild';
-import { client } from '../../discord';
 import DiscordDataProxy from '../proxies/DiscordDataProxy';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';

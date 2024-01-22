@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [param('id').exists().isMongoId()];
 
@@ -15,15 +16,18 @@ const controller = async (req: Request, res: Response) => {
     const metadata = await ERC1155Service.findMetadataById(token.metadataId);
     if (!metadata) throw new NotFoundError('ERC1155Metadata not found');
 
-    const balance = await erc1155.contract.methods.balanceOf(token.recipient, metadata.tokenId).call();
+    const wallet = await SafeService.findPrimary(req.auth.sub);
+    if (!wallet) throw new NotFoundError('Safe not found for account');
+
+    const balance = await erc1155.contract.methods.balanceOf(wallet.address, metadata.tokenId).call();
     const tokenUri = token.tokenId ? await erc1155.contract.methods.uri(token.tokenId).call() : '';
 
     res.json({
         ...token.toJSON(),
-        tokenUri,
-        balance,
         nft: erc1155.toJSON(),
         metadata: metadata.toJSON(),
+        tokenUri,
+        balance,
     });
 };
 
