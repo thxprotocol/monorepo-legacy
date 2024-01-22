@@ -8,12 +8,12 @@ import https from 'https';
 
 const pinata = new pinataSDK({ pinataJWTKey: process.env.PINATA_API_JWT });
 
-if (NODE_ENV === 'test') {
-    const httpsAgent = new https.Agent({
-        rejectUnauthorized: false,
-    });
-    axios.defaults.httpsAgent = httpsAgent;
-}
+// if (NODE_ENV === 'test') {
+//     const httpsAgent = new https.Agent({
+//         rejectUnauthorized: false,
+//     });
+//     axios.defaults.httpsAgent = httpsAgent;
+// }
 
 export async function addUrlSource(url: string) {
     const response = await axios.get(url, { responseType: 'stream' });
