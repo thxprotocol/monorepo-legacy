@@ -288,7 +288,7 @@ export default class BaseNavbar extends Vue {
     }
 
     async onPoolSelect(pool: TPool) {
-        if (!pool.safe.address) {
+        if (!pool.safeAddress) {
             await this.$store.dispatch('pools/read', pool._id);
         }
         if (pool._id === this.$route.params.id) return;

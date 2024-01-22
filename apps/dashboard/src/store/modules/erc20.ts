@@ -71,7 +71,7 @@ class ERC20Module extends VuexModule {
                 tokenAddress,
             },
         });
-        this.context.commit('setBalance', { tokenAddress, address: pool.safe.address, balance: data.balanceInWei });
+        this.context.commit('setBalance', { tokenAddress, address: pool.safeAddress, balance: data.balanceInWei });
     }
 
     @Action({ rawError: true })

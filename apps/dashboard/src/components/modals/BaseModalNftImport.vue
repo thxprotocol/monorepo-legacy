@@ -9,10 +9,10 @@
             <b-alert v-if="pool" variant="info" show>
                 Please transfer or mint tokens to this campaign contract address on {{ chainInfo[pool.chainId].name }}:
                 <b-link
-                    :href="`${chainInfo[pool.chainId].blockExplorer}/address/${pool.safe.address}`"
+                    :href="`${chainInfo[pool.chainId].blockExplorer}/address/${pool.safeAddress}`"
                     class="font-weight-bold"
                 >
-                    {{ pool.safe.address }}
+                    {{ pool.safeAddress }}
                 </b-link>
             </b-alert>
             <b-card bg-variant="light">
@@ -154,7 +154,7 @@ export default class ModalNftImport extends Vue {
         try {
             this.previewLoading = true;
             this.tokens = await this.$store.dispatch(`${this.variant}/preview`, {
-                address: this.pool.safe.address,
+                address: this.pool.safeAddress,
                 contractAddress: address,
             });
             this.previewLoading = false;

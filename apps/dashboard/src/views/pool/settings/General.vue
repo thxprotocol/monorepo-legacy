@@ -85,12 +85,12 @@
                     description="Your assets are stored in Safe's battle-tested multisigs."
                 >
                     <b-input-group>
-                        <b-form-input disabled :value="pool.safe && pool.safe.address" />
+                        <b-form-input disabled :value="pool.safe && pool.safeAddress" />
                         <template #append>
                             <b-button
                                 :disabled="!slug.length"
                                 variant="dark"
-                                v-clipboard:copy="pool.safe && pool.safe.address"
+                                v-clipboard:copy="pool.safe && pool.safeAddress"
                                 v-clipboard:success="() => (isCopied = true)"
                                 class="ml-0"
                             >
@@ -101,7 +101,7 @@
                     <template #description>
                         Your assets are stored in
                         <b-link
-                            :href="`https://app.safe.global/apps/open?safe=matic:${pool.safe && pool.safe.address}`"
+                            :href="`https://app.safe.global/apps/open?safe=matic:${pool.safe && pool.safeAddress}`"
                             target="_blank"
                         >
                             Safe's battle-tested multisigs
