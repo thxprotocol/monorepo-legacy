@@ -20,7 +20,7 @@ describe('Milestone Rewards', () => {
     it('POST /pools', (done) => {
         user.post('/v1/pools')
             .set('Authorization', dashboardAccessToken)
-            .send({})
+            .send()
             .expect((res: request.Response) => {
                 expect(isAddress(res.body.safeAddress)).toBe(true);
                 pool = res.body;
