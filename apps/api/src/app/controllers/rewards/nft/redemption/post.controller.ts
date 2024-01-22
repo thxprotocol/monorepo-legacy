@@ -49,7 +49,6 @@ const controller = async (req: Request, res: Response) => {
 
     let token: ERC721TokenDocument | ERC1155TokenDocument, metadata: ERC721MetadataDocument | ERC1155MetadataDocument;
 
-    console.log(perk);
     // Mint a token if metadataId is present
     if (perk.metadataId) {
         // Handle erc721 mints
@@ -68,7 +67,6 @@ const controller = async (req: Request, res: Response) => {
                 metadata as ERC1155MetadataDocument,
                 String(perk.erc1155Amount),
             );
-            console.log(token);
         }
     }
 
