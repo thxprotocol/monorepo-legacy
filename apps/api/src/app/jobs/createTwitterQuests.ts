@@ -40,7 +40,9 @@ export async function createTwitterQuests() {
             const recentTweets = await Promise.all(promises);
             logger.info(`Found ${recentTweets.length} posts for ${pool.sub} in ${pool.settings.title}`);
 
-            const newTweets = recentTweets.filter((tweet) => !tweet.isExistingQuest);
+            const newTweets = recentTweets.filter(
+                (tweet) => !tweet.isExistingQuest && tweet.text.includes(`#${hashtag}`),
+            );
             if (!newTweets.length) {
                 logger.info(`Found no new autoquests for ${pool.sub} in ${pool.settings.title}`);
                 continue;
