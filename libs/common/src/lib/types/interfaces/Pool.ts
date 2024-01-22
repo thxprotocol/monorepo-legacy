@@ -38,8 +38,6 @@ export type TPool = {
     rank: number;
     token: string;
     signingSecret: string;
-    address: string;
-    safeAddress: string;
     contract: Contract;
     chainId: ChainId;
     sub: string;

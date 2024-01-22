@@ -24,10 +24,10 @@
                     <strong>{{ chainInfo[erc20.chainId].name }}</strong> to
                     <b-link
                         class="mr-2 bg-light p-1"
-                        v-clipboard:copy="pool.address"
+                        v-clipboard:copy="pool.safe.address"
                         v-clipboard:success="() => (isCopied = true)"
                     >
-                        <strong>{{ pool.address }}</strong>
+                        <strong>{{ pool.safe.address }}</strong>
                         <i class="fas ml-2" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
                     </b-link>
                     to top up your pool.

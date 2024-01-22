@@ -134,7 +134,7 @@ export default class ModalRewardERC20Create extends Vue {
 
     get balance() {
         if (!this.erc20 || !this.erc20BalanceList[this.erc20.address]) return '';
-        return this.erc20BalanceList[this.erc20.address][this.pool.address];
+        return this.erc20BalanceList[this.erc20.address][this.pool.safe.address as string];
     }
 
     onShow() {
