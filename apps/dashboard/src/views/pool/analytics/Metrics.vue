@@ -209,7 +209,6 @@ export default class ViewAnalyticsMetrics extends Vue {
 
     get metrics() {
         if (!this.analyticsMetrics[this.$route.params.id]) return null;
-        debugger;
         return this.analyticsMetrics[this.$route.params.id];
     }
 
@@ -242,7 +241,6 @@ export default class ViewAnalyticsMetrics extends Vue {
         endDate.setHours(23, 59, 59, 0);
 
         await this.$store.dispatch('pools/readAnalyticsMetrics', { poolId: this.pool._id, startDate, endDate });
-        debugger;
     }
 
     onChangeDaysRange(daysRange: number) {

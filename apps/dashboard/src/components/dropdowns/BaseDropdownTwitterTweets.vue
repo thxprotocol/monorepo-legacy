@@ -72,7 +72,6 @@ export default class BaseDropdownTwitterTweets extends Vue {
     }
 
     onInputFollowersMin(amount: number) {
-        debugger;
         this.minFollowersCount = amount;
         this.submit();
     }

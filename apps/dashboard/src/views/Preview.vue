@@ -275,7 +275,6 @@ export default class WidgetPreviewView extends Vue {
         initWidget(this.$route.params.poolId, '#thx-widget-preview');
 
         const { data } = await axios.get(API_URL + '/v1/widget/' + this.$route.params.poolId);
-        debugger;
         this.title = data.title;
         this.slug = data.slug;
         this.logoImgUrl = data.logoUrl || this.defaultLogoImgUrl;
