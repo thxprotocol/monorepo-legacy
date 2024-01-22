@@ -28,7 +28,7 @@
             "dependsOn": ["^build"],
             "executor": "nx:run-commands",
             "options": {
-                "command": "node index.js {args.app} {args.version} {args.webhook}",
+                "command": "node notify.js {args.app} {args.version} {args.webhook}",
                 "cwd": "dist/apps/dashboard"
             }
         },
