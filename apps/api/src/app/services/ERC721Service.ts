@@ -289,7 +289,5 @@ export default {
     getOnChainERC721Token,
     transferFrom,
     transferFromCallback,
-    transferFromWallet,
-    transferFromWalletCallback,
     queryTransferFromTransaction,
 };
