@@ -42,7 +42,7 @@ describe('ERC721 import', () => {
             // Mint 1 token in the collection
             await TransactionService.sendAsync(
                 nftContract.options.address,
-                nftContract.methods.mint(pool.address, 'tokenuri.json'),
+                nftContract.methods.mint(pool.safeAddress, 'tokenuri.json'),
                 chainId,
             );
 

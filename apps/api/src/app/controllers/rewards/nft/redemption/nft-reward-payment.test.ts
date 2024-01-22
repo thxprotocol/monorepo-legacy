@@ -57,7 +57,7 @@ describe('NFT Reward Payment', () => {
             // Mint 1 token in the collection
             await TransactionService.sendAsync(
                 nftContract.options.address,
-                nftContract.methods.mint(pool.address, 'tokenuri.json'),
+                nftContract.methods.mint(pool.safeAddress, 'tokenuri.json'),
                 chainId,
             );
 
@@ -79,7 +79,7 @@ describe('NFT Reward Payment', () => {
                     expect(body.erc721Tokens[0].sub).toBeUndefined();
                     expect(body.erc721Tokens[0].erc721Id).toBe(body.erc721._id);
                     expect(body.erc721Tokens[0].state).toBe(ERC721TokenState.Minted);
-                    expect(body.erc721Tokens[0].recipient).toBe(pool.address);
+                    expect(body.erc721Tokens[0].recipient).toBe(pool.safeAddress);
                     expect(body.erc721Tokens[0].tokenId).toBeDefined();
                     expect(body.erc721Tokens[0].metadataId).toBeDefined();
                     erc721 = body.erc721;
