@@ -6,7 +6,6 @@ import { ChainId } from '@thxnetwork/types/enums';
 import { logger } from '@thxnetwork/api/util/logger';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { license, name, version } from '../../../../package.json';
-import { assetsPath } from '@thxnetwork/api/util/path';
 
 function handleError(error: Error) {
     newrelic.noticeError(error);
@@ -44,8 +43,6 @@ const controller = async (_req: Request, res: Response) => {
     } else {
         result.mainnet = await getNetworkDetails(ChainId.Polygon);
     }
-
-    result.assetPath = assetsPath;
 
     res.header('Content-Type', 'application/json').send(JSON.stringify(result, null, 4));
 };
