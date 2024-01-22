@@ -36,7 +36,7 @@ describe('QR Codes', () => {
     beforeAll(async () => {
         await beforeAllCallback();
 
-        pool = await PoolService.deploy(sub, chainId, 'My Reward Campaign', new Date());
+        pool = await PoolService.deploy(sub, 'My Reward Campaign');
         poolId = String(pool._id);
 
         const safe = await SafeService.create({ sub, chainId, safeVersion, poolId });
