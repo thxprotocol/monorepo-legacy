@@ -87,11 +87,11 @@ const controller = async (req: Request, res: Response) => {
         if (perk.erc1155Id) {
             token = await ERC1155Token.findById(perk.tokenId);
             token = await ERC1155Service.transferFrom(
-                pool,
-                token as ERC1155TokenDocument,
                 nft as ERC1155Document,
-                wallet,
+                safe,
+                wallet.address,
                 String(perk.erc1155Amount),
+                token as ERC1155TokenDocument,
             );
         }
         metadata = await PerkService.getMetadata(perk, token);

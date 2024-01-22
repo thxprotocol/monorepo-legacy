@@ -1,6 +1,10 @@
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
-import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/services/ContractService';
+import {
+    getAbiForContractName,
+    getByteCodeForContractName,
+    getContractFromName,
+} from '@thxnetwork/api/services/ContractService';
 import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
@@ -270,7 +274,6 @@ export async function transferFrom(
                 erc721Id: String(erc721._id),
                 erc721TokenId: String(erc721Token._id),
                 sub: toWallet && toWallet.sub,
-                assetPoolId: String(wallet.poolId),
             },
         },
     );
@@ -288,9 +291,10 @@ export async function transferFromCallback(args: TERC721TransferFromCallBackArgs
     const { erc721TokenId, sub } = args;
     const erc721Token = await ERC721Token.findById(erc721TokenId);
     const erc721 = await ERC721.findById(erc721Token.erc721Id);
-    const events = parseLogs(erc721.contract.options.jsonInterface, receipt.logs);
+    const abi = getAbiForContractName('NonFungibleToken');
+    const events = parseLogs(abi, receipt.logs);
     const event = assertEvent('Transfer', events);
-    const wallet = await SafeService.findPrimary(sub, erc721.chainId);
+    const wallet = sub && (await SafeService.findPrimary(sub, erc721.chainId));
 
     await erc721Token.updateOne({
         sub,

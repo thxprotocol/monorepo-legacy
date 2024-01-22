@@ -1,6 +1,10 @@
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
-import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/services/ContractService';
+import {
+    getAbiForContractName,
+    getByteCodeForContractName,
+    getContractFromName,
+} from '@thxnetwork/api/services/ContractService';
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { ERC1155, ERC1155Document, IERC1155Updates } from '@thxnetwork/api/models/ERC1155';
 import { ERC1155Metadata, ERC1155MetadataDocument } from '@thxnetwork/api/models/ERC1155Metadata';
@@ -178,43 +182,46 @@ export async function queryMintTransaction(erc1155Token: ERC1155TokenDocument): 
 }
 
 export async function transferFrom(
-    pool: AssetPoolDocument,
-    erc1155Token: ERC1155TokenDocument,
     erc1155: ERC1155Document,
     wallet: WalletDocument,
+    to: string,
     amount: string,
-    forceSync = true,
+    erc1155Token: ERC1155TokenDocument,
 ): Promise<ERC1155TokenDocument> {
-    const txId = await TransactionService.sendAsync(
-        pool.contract.options.address,
-        pool.contract.methods.transferFromERC1155(erc1155.address, wallet.address, erc1155Token.tokenId, amount),
-        pool.chainId,
-        forceSync,
+    const toWallet = await SafeService.findOneByAddress(to);
+    const tx = await TransactionService.sendSafeAsync(
+        wallet,
+        erc1155.address,
+        erc1155.contract.methods.transferFrom(wallet.address, to, erc1155Token.tokenId, amount),
         {
             type: 'erc1155TransferFromCallback',
             args: {
                 erc1155Id: String(erc1155._id),
                 erc1155TokenId: String(erc1155Token._id),
-                sub: wallet.sub,
-                assetPoolId: String(pool._id),
+                sub: toWallet && toWallet.sub,
             },
         },
     );
 
-    return ERC1155Token.findByIdAndUpdate(erc1155Token._id, { transactions: [txId] }, { new: true });
+    return await ERC1155Token.findByIdAndUpdate(
+        erc1155Token._id,
+        { transactions: [String(tx._id)], state: ERC1155TokenState.Transferring },
+        { new: true },
+    );
 }
 
 export async function transferFromCallback(args: TERC1155TransferFromCallbackArgs, receipt: TransactionReceipt) {
-    const { assetPoolId, erc1155TokenId, sub } = args;
-    const { contract, chainId } = await PoolService.getById(assetPoolId);
-    const events = parseLogs(contract.options.jsonInterface, receipt.logs);
-    const event = assertEvent('ERC71155TransferredSingle', events);
-    const wallet = await SafeService.findPrimary(sub, chainId);
+    const { erc1155Id, erc1155TokenId, sub } = args;
+    const { chainId } = await ERC1155.findById(erc1155Id);
+    const abi = getAbiForContractName('THX_ERC1155');
+    const events = parseLogs(abi, receipt.logs);
+    const event = assertEvent('TransferSingle', events);
+    const wallet = sub && (await SafeService.findPrimary(sub, chainId));
 
     await ERC1155Token.findByIdAndUpdate(erc1155TokenId, {
         sub,
         state: ERC1155TokenState.Transferred,
-        tokenId: Number(event.args.tokenId),
+        tokenId: event.args.id,
         recipient: event.args.to,
         walletId: wallet && String(wallet._id),
     });
@@ -231,11 +238,11 @@ export async function transferFromWallet(
         erc1155.address,
         erc1155.contract.methods.transferFrom(safe.address, wallet.address, erc1155Token.tokenId),
         {
-            type: 'erc721TransferFromWalletCallback',
+            type: 'erc1155TransferFromWalletCallback',
             args: {
                 walletId: String(safe._id),
-                erc721Id: String(erc1155._id),
-                erc721TokenId: String(erc1155Token._id),
+                erc1155Id: String(erc1155._id),
+                erc1155TokenId: String(erc1155Token._id),
                 to: wallet.address,
             },
         },
