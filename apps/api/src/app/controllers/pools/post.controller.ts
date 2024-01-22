@@ -15,7 +15,7 @@ const controller = async (req: Request, res: Response) => {
     const poolId = String(pool._id);
     const safe = await SafeService.create({ chainId: req.body.chainId, sub: req.auth.sub, safeVersion, poolId });
 
-    res.status(201).json({ ...pool.toJSON(), address: safe.address, safe });
+    res.status(201).json({ ...pool.toJSON(), safeAddress: safe.address, safe });
 };
 
 export default { controller, validation };
