@@ -107,6 +107,7 @@ export async function mint(
         metadataId: String(metadata._id),
         walletId: wallet._id,
     });
+    console.log(wallet.address, tokenUri);
     const tx = await TransactionService.sendSafeAsync(
         safe,
         erc721.address,

@@ -1,5 +1,5 @@
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
-import { API_URL, INFURA_IPFS_PROJECT_ID, INFURA_IPFS_PROJECT_SECRET } from '../config/secrets';
+import { API_URL, INFURA_IPFS_PROJECT_ID, INFURA_IPFS_PROJECT_SECRET, NODE_ENV } from '../config/secrets';
 import { create, urlSource } from 'ipfs-http-client';
 import { ERC721Document } from '../models/ERC721';
 import { ERC1155Document } from '../models/ERC1155';
@@ -18,10 +18,17 @@ const ipfsClient = create({
 
 async function getTokenURI(nft: ERC721Document | ERC1155Document, metadataId: string, tokenId?: string) {
     const tokenUri = {
-        [NFTVariant.ERC721]: `${API_URL}/v1/metadata/${metadataId}`,
-        [NFTVariant.ERC1155]: `${API_URL}/v1/erc1155/metadata/${metadataId}/${tokenId}`,
+        [NFTVariant.ERC721]: metadataId,
+        [NFTVariant.ERC1155]: tokenId,
     };
-    const result = await addImageUrl(tokenUri[nft.variant]);
+    // During tests we can not grab data from an url due to TLS issues, hence we return the internally used tokenUri
+    if (NODE_ENV === 'test') return tokenUri[nft.variant];
+
+    const metadataUrl = {
+        [NFTVariant.ERC721]: `${API_URL}/v1/metadata/${metadataId}`,
+        [NFTVariant.ERC1155]: `${API_URL}/v1/erc1155/${nft._id}/${tokenId}`,
+    };
+    const result = await addImageUrl(metadataUrl[nft.variant]);
     return result.cid.toString();
 }
 
