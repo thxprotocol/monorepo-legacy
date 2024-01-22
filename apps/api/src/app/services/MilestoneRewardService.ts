@@ -39,8 +39,9 @@ async function findByPool(assetPool: AssetPoolDocument, page: number, limit: num
 
 async function validate(quest: MilestoneRewardDocument, wallet: WalletDocument) {
     try {
-        const identity = await Identity.findOne({ poolId: quest.poolId, sub: wallet.sub });
-        if (!identity) {
+        // See if there are identities
+        const identities = await Identity.find({ poolId: quest.poolId, sub: wallet.sub });
+        if (!identities.length) {
             throw new Error('No identity connected to this account');
         }
 
@@ -53,7 +54,11 @@ async function validate(quest: MilestoneRewardDocument, wallet: WalletDocument) 
             throw new Error('Quest entry limit has been reached');
         }
 
-        const events = await Event.find({ identityId: identity._id, poolId: quest.poolId });
+        const events = await Event.find({
+            identityId: { $in: identities.map(({ _id }) => String(_id)) },
+            poolId: quest.poolId,
+            name: quest.eventName,
+        });
         if (entries.length >= events.length) {
             throw new Error('Insufficient custom events found for this quest');
         }
