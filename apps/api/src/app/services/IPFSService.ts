@@ -1,10 +1,9 @@
 import { ImportCandidate } from 'ipfs-core-types/src/utils';
 import { API_URL, INFURA_IPFS_PROJECT_ID, INFURA_IPFS_PROJECT_SECRET } from '../config/secrets';
 import { create, urlSource } from 'ipfs-http-client';
-import AccountProxy from '../proxies/AccountProxy';
-import { AccountPlanType } from '@thxnetwork/types/enums';
 import { ERC721Document } from '../models/ERC721';
 import { ERC1155Document } from '../models/ERC1155';
+import { NFTVariant } from '@thxnetwork/common/lib/types';
 
 const ipfsClient = create({
     host: 'ipfs.infura.io',
@@ -17,11 +16,12 @@ const ipfsClient = create({
     },
 });
 
-async function getTokenURI(nft: ERC721Document | ERC1155Document, metadataId: string) {
-    const account = await AccountProxy.getById(nft.sub);
-    if (account.plan !== AccountPlanType.Premium) return metadataId;
-
-    const result = await addImageUrl(`${API_URL}/v1/metadata/${metadataId}`);
+async function getTokenURI(nft: ERC721Document | ERC1155Document, metadataId: string, tokenId?: string) {
+    const tokenUri = {
+        [NFTVariant.ERC721]: `${API_URL}/v1/metadata/${metadataId}`,
+        [NFTVariant.ERC1155]: `${API_URL}/v1/erc1155/metadata/${metadataId}/${tokenId}`,
+    };
+    const result = await addImageUrl(tokenUri[nft.variant]);
     return result.cid.toString();
 }
 

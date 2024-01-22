@@ -61,11 +61,11 @@ const controller = async (req: Request, res: Response) => {
         if (perk.erc1155Id) {
             metadata = await PerkService.getMetadata(perk);
             token = await ERC1155Service.mint(
-                pool,
+                safe,
                 nft as ERC1155Document,
+                wallet,
                 metadata as ERC1155MetadataDocument,
                 String(perk.erc1155Amount),
-                wallet,
             );
         }
     }

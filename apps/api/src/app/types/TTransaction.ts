@@ -101,12 +101,10 @@ type SwapCreateCallback = {
 
 export type TERC721TokenMintCallbackArgs = {
     erc721tokenId: string;
-    assetPoolId: string;
 };
 
 export type TERC1155TokenMintCallbackArgs = {
     erc1155tokenId: string;
-    assetPoolId: string;
 };
 
 export type TERC1155TokenTransferCallbackArgs = {

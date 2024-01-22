@@ -29,7 +29,7 @@ export const controller = async (req: Request, res: Response) => {
     const owner = await erc721.contract.methods.ownerOf(erc721Token.tokenId).call();
     if (owner !== wallet.address) throw new ForbiddenError('Account is not owner of given tokenId');
 
-    const tx = await ERC721Service.transferFromWallet(erc721, erc721Token, wallet, req.body.to);
+    const tx = await ERC721Service.transferFrom(erc721, wallet, req.body.to, erc721Token);
 
     res.status(201).json(tx);
 };

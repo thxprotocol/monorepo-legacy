@@ -113,7 +113,7 @@ export async function mint(
         erc721.contract.methods.mint(wallet.address, tokenUri),
         {
             type: 'erc721TokenMintCallback',
-            args: { erc721tokenId: String(erc721token._id), assetPoolId: safe.poolId },
+            args: { erc721tokenId: String(erc721token._id) },
         },
     );
 
