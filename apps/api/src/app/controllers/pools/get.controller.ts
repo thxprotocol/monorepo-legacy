@@ -16,7 +16,6 @@ import { logger } from '@thxnetwork/api/util/logger';
 export const validation = [param('id').isMongoId()];
 
 export const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
     let safe = await SafeService.findOneByPool(pool, pool.chainId);
 
@@ -31,18 +30,16 @@ export const controller = async (req: Request, res: Response) => {
         logger.info(`[${req.params.id}] Deployed Campaign Safe ${safe.address}`);
     }
 
-    const [widget, brand, wallets, collaborators, owner, events, identities, guilds, subscriberCount] =
-        await Promise.all([
-            Widget.findOne({ poolId: req.params.id }),
-            BrandService.get(req.params.id),
-            Wallet.find({ poolId: req.params.id }),
-            PoolService.findCollaborators(pool),
-            AccountProxy.getById(pool.sub),
-            Event.find({ poolId: pool._id }).distinct('name'),
-            Identity.find({ poolId: pool._id }),
-            PoolService.findGuilds(pool),
-            PoolSubscription.countDocuments({ poolId: req.params.id }),
-        ]);
+    const [widget, brand, wallets, collaborators, owner, events, identities, subscriberCount] = await Promise.all([
+        Widget.findOne({ poolId: req.params.id }),
+        BrandService.get(req.params.id),
+        Wallet.find({ poolId: req.params.id }),
+        PoolService.findCollaborators(pool),
+        AccountProxy.getById(pool.sub),
+        Event.find({ poolId: pool._id }).distinct('name'), // Seperate list (many)
+        Identity.find({ poolId: pool._id }), // Seperate list (many)
+        PoolSubscription.countDocuments({ poolId: req.params.id }),
+    ]);
 
     res.json({
         ...pool.toJSON(),
@@ -53,7 +50,6 @@ export const controller = async (req: Request, res: Response) => {
         wallets,
         widget,
         brand,
-        guilds,
         subscriberCount,
         owner,
         collaborators,

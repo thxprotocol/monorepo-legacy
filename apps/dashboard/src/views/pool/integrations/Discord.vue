@@ -76,7 +76,7 @@
                 </div>
             </b-col>
             <b-col md="8">
-                <div :key="key" v-for="(guild, key) of guilds">
+                <div :key="key" v-for="(guild, key) of connectedGuilds">
                     <b-form-group :label="guild.name">
                         <BaseDropdownDiscordRole
                             :role-id="guild.adminRoleId"
@@ -101,7 +101,7 @@
                 </div>
             </b-col>
             <b-col md="8">
-                <b-form-group :label="guild.name" :key="key" v-for="(guild, key) of guilds">
+                <b-form-group :label="guild.name" :key="key" v-for="(guild, key) of connectedGuilds">
                     <BaseDropdownDiscordChannel
                         @click="updateDiscordGuild"
                         :channel-id="guild.channelId"
@@ -165,26 +165,32 @@ export default class IntegrationDiscordView extends Vue {
 
     get guilds() {
         if (!this.guildList[this.$route.params.id]) return [];
-        return Object.values(this.guildList[this.$route.params.id]).filter((guild: TDiscordGuild) => guild.isConnected);
+        return Object.values(this.guildList[this.$route.params.id]);
     }
 
     get options() {
-        if (!this.pool || !this.pool.guilds) return [];
-        return this.pool.guilds
+        if (!this.guildList[this.$route.params.id]) return [];
+        return Object.values(this.guildList[this.$route.params.id])
             .filter((guild: TDiscordGuild) => (guild.permissions & 0x00000008) === 0x00000008)
-            .map((guild: TDiscordGuild) => {
-                return {
-                    img: guild.icon && `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`,
-                    label: guild.name,
-                    value: guild,
-                    disabled: guild.isConnected,
-                    selected: guild.isConnected,
-                    icon: guild.isInvited && {
-                        variant: guild.isConnected ? 'success' : 'danger',
-                        class: guild.isConnected ? 'fas fa-check' : 'fas fa-exclamation',
-                    },
-                };
-            });
+            .map((guild: TDiscordGuild) => ({
+                img: guild.icon && `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`,
+                label: guild.name,
+                value: guild,
+                disabled: guild.isConnected,
+                selected: guild.isConnected,
+                icon: guild.isInvited && {
+                    variant: guild.isConnected ? 'success' : 'danger',
+                    class: guild.isConnected ? 'fas fa-check' : 'fas fa-exclamation',
+                },
+            }));
+    }
+
+    get connectedGuilds() {
+        return this.guilds.filter((guild: TDiscordGuild) => guild.isConnected);
+    }
+
+    mounted() {
+        this.$store.dispatch('pools/listGuilds', this.pool);
     }
 
     onClickDiscordRole(guild: TDiscordGuild, role: TDiscordRole) {
@@ -200,8 +206,7 @@ export default class IntegrationDiscordView extends Vue {
     }
 
     async onSelectGuild(guild: TDiscordGuild) {
-        await this.$store.dispatch('pools/createGuild', guild);
-        this.$store.dispatch('pools/read', guild.poolId);
+        this.$store.dispatch('pools/createGuild', guild);
     }
 
     onRemoveGuild(guild: TDiscordGuild) {

@@ -3,9 +3,17 @@ import { assertRequestInput, assertPoolAccess, guard } from '@thxnetwork/api/mid
 import CreateController from './post.controller';
 import UpdateController from './patch.controller';
 import RemoveController from './delete.controller';
+import ListController from './list.controller';
 
 const router = express.Router({ mergeParams: true });
 
+router.get(
+    '/',
+    guard.check(['pools:read']),
+    assertPoolAccess,
+    assertRequestInput(ListController.validation),
+    ListController.controller,
+);
 router.post(
     '/',
     guard.check(['pools:read', 'pools:write']),

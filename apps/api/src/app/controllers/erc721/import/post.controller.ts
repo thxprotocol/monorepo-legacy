@@ -17,7 +17,7 @@ const controller = async (req: Request, res: Response) => {
     const contractAddress = req.body.contractAddress;
     const pool = await PoolService.getById(req.header('X-PoolId'));
 
-    const ownedNfts = await getNFTsForOwner(pool.address, contractAddress);
+    const ownedNfts = await getNFTsForOwner(pool.safeAddress, contractAddress);
     if (!ownedNfts.length) throw new NotFoundError('Could not find NFT tokens for this contract address');
 
     const { address, name, symbol } = ownedNfts[0].contract;
@@ -54,7 +54,7 @@ const controller = async (req: Request, res: Response) => {
                     });
                     const erc721Token = await ERC721Token.create({
                         erc721Id: String(erc721._id),
-                        recipient: pool.address,
+                        recipient: pool.safeAddress,
                         state: ERC721TokenState.Minted,
                         metadataId: String(metadata._id),
                         tokenId,

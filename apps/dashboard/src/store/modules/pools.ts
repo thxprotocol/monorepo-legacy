@@ -16,6 +16,7 @@ import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
+import { isContext } from 'vm';
 
 export interface IPoolAnalytic {
     _id: string;
@@ -277,12 +278,12 @@ class PoolModule extends VuexModule {
     @Mutation
     setGuild(guild: TDiscordGuild) {
         if (!this._guilds[guild.poolId]) Vue.set(this._guilds, guild.poolId, {});
-        Vue.set(this._guilds[guild.poolId], guild._id, guild);
+        Vue.set(this._guilds[guild.poolId], guild.guildId, guild);
     }
 
     @Mutation
     unsetGuild(guild: TDiscordGuild) {
-        Vue.delete(this._all[guild.poolId], guild._id);
+        Vue.delete(this._guilds[guild.poolId], guild.guildId);
     }
 
     @Action({ rawError: true })
@@ -297,14 +298,26 @@ class PoolModule extends VuexModule {
     }
 
     @Action
+    async listGuilds(pool: TPool) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/guilds`,
+            headers: { 'X-PoolId': pool._id },
+        });
+        for (const guild of data) {
+            this.context.commit('setGuild', guild);
+        }
+    }
+
+    @Action
     async removeGuild(payload: TDiscordGuild) {
+        this.context.commit('setGuild', { ...payload, isConnected: false });
         await axios({
             method: 'DELETE',
             url: `/pools/${payload.poolId}/guilds/${payload._id}`,
             headers: { 'X-PoolId': payload.poolId },
             data: payload,
         });
-        this.context.commit('unsetGuild', payload);
     }
 
     @Action
@@ -326,7 +339,7 @@ class PoolModule extends VuexModule {
             headers: { 'X-PoolId': payload.poolId },
             data: payload,
         });
-        this.context.commit('setGuild', data);
+        this.context.commit('setGuild', { ...payload, ...data, isConnected: true });
     }
 
     @Action
@@ -449,7 +462,6 @@ class PoolModule extends VuexModule {
         });
 
         this.context.commit('set', r.data);
-        r.data.guilds.forEach((guild) => this.context.commit('setGuild', guild));
         return r.data;
     }
 

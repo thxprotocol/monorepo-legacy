@@ -34,6 +34,7 @@ export type TCampaign = {
 
 export type TPool = {
     _id: string;
+    safeAddress: string;
     guilds: TDiscordGuild[];
     rank: number;
     token: string;

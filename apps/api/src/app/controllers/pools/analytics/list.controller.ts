@@ -8,7 +8,7 @@ export const validation = [param('id').isMongoId(), query('startDate').exists(),
 export const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
-    if (!pool.address) return res.json(pool.toJSON());
+    if (!pool.safeAddress) return res.json(pool.toJSON());
 
     const startDate = new Date(String(req.query.startDate));
     const endDate = new Date(String(req.query.endDate));

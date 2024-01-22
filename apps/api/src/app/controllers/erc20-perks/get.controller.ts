@@ -22,7 +22,7 @@ const controller = async (req: Request, res: Response) => {
         rewardId: perk._id,
     });
 
-    res.json({ ...perk.toJSON(), claims, poolAddress: pool.address, progress: withdrawals.length, payments });
+    res.json({ ...perk.toJSON(), claims, poolAddress: pool.safeAddress, progress: withdrawals.length, payments });
 };
 
 export default { controller, validation };

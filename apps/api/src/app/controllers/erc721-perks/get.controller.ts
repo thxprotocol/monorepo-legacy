@@ -19,7 +19,7 @@ const controller = async (req: Request, res: Response) => {
     const erc721 = await ERC721Service.findById(req.params.id);
     const payments = await ERC721PerkPayment.find({ perkId: reward._id });
 
-    res.json({ ...reward.toJSON(), erc721, claims, payments, poolAddress: pool.address });
+    res.json({ ...reward.toJSON(), erc721, claims, payments, poolAddress: pool.safeAddress });
 };
 
 export default { controller, validation };

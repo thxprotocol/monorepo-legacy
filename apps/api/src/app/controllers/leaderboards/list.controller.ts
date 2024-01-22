@@ -228,7 +228,7 @@ const controller = async (req: Request, res: Response) => {
                             slug: pool.settings.slug || poolId,
                             title: pool.settings.title,
                             expiryDate: pool.settings.endDate,
-                            address: pool.address,
+                            address: pool.safeAddress,
                             chainId: pool.chainId,
                             domain: widget && widget.domain,
                             logoImgUrl: brand && brand.logoImgUrl,

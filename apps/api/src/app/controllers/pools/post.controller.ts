@@ -4,17 +4,12 @@ import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
-const validation = [
-    body('chainId').exists().isNumeric(),
-    body('settings.title').optional().isString().trim().escape().isLength({ max: 50 }),
-    body('startDate').optional({ nullable: true }).isString(),
-    body('endDate').optional({ nullable: true }).isString(),
-];
+const validation = [body('settings.title').optional().isString().trim().escape().isLength({ max: 50 })];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
-    const { chainId, title, startDate, endDate } = req.body;
-    const pool = await PoolService.deploy(req.auth.sub, chainId, title || 'My Quest Campaign', startDate, endDate);
+    const { title } = req.body;
+    const pool = await PoolService.deploy(req.auth.sub, title || 'My Quest Campaign');
 
     // Deploy a Safe for the campaign
     const poolId = String(pool._id);

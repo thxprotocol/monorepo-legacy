@@ -55,7 +55,7 @@ async function main() {
             if (pool) {
                 await Widget.updateOne({ poolId: pool._id }, { domain: new URL(gameDomain).origin });
             } else {
-                pool = await createPool(sub, chainId, gameName, gameDomain);
+                pool = await createPool(sub, gameName, gameDomain);
             }
 
             const poolId = pool._id;

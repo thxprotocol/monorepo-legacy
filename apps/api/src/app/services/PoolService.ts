@@ -28,6 +28,7 @@ import MailService from './MailService';
 import SafeService from './SafeService';
 import DiscordGuild from '../models/DiscordGuild';
 import DiscordDataProxy from '../proxies/DiscordDataProxy';
+import { getChainId } from './ContractService';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -48,7 +49,6 @@ async function getById(id: string) {
     const pool = await AssetPool.findById(id);
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
     pool.safe = safe;
-    pool.address = safe && safe.address;
     return pool;
 }
 
@@ -56,13 +56,8 @@ function getByAddress(address: string) {
     return AssetPool.findOne({ address });
 }
 
-async function deploy(
-    sub: string,
-    chainId: ChainId,
-    title: string,
-    startDate: Date,
-    endDate?: Date,
-): Promise<AssetPoolDocument> {
+async function deploy(sub: string, title: string): Promise<AssetPoolDocument> {
+    const chainId = getChainId();
     const pool = await AssetPool.create({
         sub,
         chainId,
@@ -72,8 +67,6 @@ async function deploy(
         settings: {
             title,
             description: '',
-            startDate,
-            endDate,
             isArchived: false,
             isWeeklyDigestEnabled: true,
             isTwitterSyncEnabled: false,

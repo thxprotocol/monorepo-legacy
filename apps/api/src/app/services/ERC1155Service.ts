@@ -80,7 +80,7 @@ function getBaseURL(erc1155: ERC1155Document) {
 
 const initialize = async (pool: AssetPoolDocument, address: string) => {
     const erc1155 = await findByQuery({ address, chainId: pool.chainId });
-    await addMinter(erc1155, pool.address);
+    await addMinter(erc1155, pool.safeAddress);
 };
 
 export async function findById(id: string): Promise<ERC1155Document> {

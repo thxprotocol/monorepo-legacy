@@ -97,7 +97,7 @@ export async function queryDeployTransaction(erc20: ERC20Document): Promise<ERC2
 
 const initialize = async (pool: AssetPoolDocument, erc20: ERC20Document) => {
     if (erc20 && erc20.type === ERC20Type.Unlimited) {
-        await addMinter(erc20, pool.address);
+        await addMinter(erc20, pool.safeAddress);
     }
 };
 

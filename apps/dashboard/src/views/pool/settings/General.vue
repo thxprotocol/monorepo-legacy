@@ -10,8 +10,8 @@
         </b-form-row>
         <b-form-row>
             <b-col md="4">
-                <strong>Title</strong>
-                <div class="text-muted">Your campaign title will be used to generate your landing page.</div>
+                <strong>Info</strong>
+                <div class="text-muted">This summary is used to explain your campaign to users.</div>
             </b-col>
             <b-col md="8">
                 <b-form-group description="Minimum of 3 and maximum of 50 characters.">
@@ -24,15 +24,31 @@
                         :state="title ? (title.length < 50 ? null : false) : null"
                     />
                 </b-form-group>
+                <b-form-group description="Maximum of 255 characters." class="mb-0">
+                    <b-textarea
+                        v-model="description"
+                        @change="onChangeSettings"
+                        :state="description ? description.length < 255 : null"
+                        placeholder="Some words about your campaign.."
+                    ></b-textarea>
+                </b-form-group>
+            </b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
+            <b-col md="4">
+                <strong>URL</strong>
+                <div class="text-muted">For quests campaigns that do not use the campaign widget.</div>
+            </b-col>
+            <b-col md="8">
                 <b-form-group
                     description="Minimum of 3 and maximum of 25 characters."
                     class="mb-0"
                     :state="isValidSlug"
                     invalid-feedback="This slug is invalid."
                 >
-                    <b-input-group size="sm" :prepend="`${widgetUrl}/c/`">
+                    <b-input-group :prepend="`${widgetUrl}/c/`">
                         <b-form-input
-                            size="sm"
                             :value="slug"
                             :placeholder="slugify(title)"
                             :state="isValidSlug"
@@ -47,7 +63,6 @@
                                 variant="dark"
                                 v-clipboard:copy="`${widgetUrl}/c/${slug}`"
                                 v-clipboard:success="() => (isCopied = true)"
-                                size="sm"
                                 class="ml-0"
                             >
                                 <i class="fas ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
@@ -58,36 +73,10 @@
             </b-col>
         </b-form-row>
         <hr />
+
         <b-form-row>
             <b-col md="4">
-                <strong>About</strong>
-                <div class="text-muted">This summary is used to explain your campaign to users.</div>
-            </b-col>
-            <b-col md="8">
-                <b-form-group description="Maximum of 255 characters." class="mb-0">
-                    <b-textarea
-                        v-model="description"
-                        @change="onChangeSettings"
-                        :state="description ? description.length < 255 : null"
-                        placeholder="Some words about your campaign.."
-                    ></b-textarea>
-                </b-form-group>
-            </b-col>
-        </b-form-row>
-        <hr />
-        <b-form-row>
-            <b-col md="4">
-                <strong>Duration</strong>
-                <div class="text-muted">Configure start and end dates for this campaign.</div>
-            </b-col>
-            <b-col md="8">
-                <BaseDateDuration class="mb-0" :settings="pool.settings" @update="onUpdateDuration" />
-            </b-col>
-        </b-form-row>
-        <hr />
-        <b-form-row>
-            <b-col md="4">
-                <strong>Wallet</strong>
+                <strong>Campaign Wallet</strong>
                 <div class="text-muted">Your campaign wallet is used for fee payments and reward distribution.</div>
             </b-col>
             <b-col md="8">
@@ -103,8 +92,7 @@
                                 variant="dark"
                                 v-clipboard:copy="pool.safe && pool.safe.address"
                                 v-clipboard:success="() => (isCopied = true)"
-                                size="sm"
-                                class="ml-0 px-4"
+                                class="ml-0"
                             >
                                 <i class="fas ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
                             </b-button>
