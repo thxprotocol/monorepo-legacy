@@ -166,7 +166,7 @@ export default class ModalRewardCustomCreate extends Vue {
         this.claimLimit = limit;
     }
 
-    onSubmit() {
+    async onSubmit() {
         if (!this.webhook) {
             this.error = 'Choose a webhook';
             return;
@@ -174,7 +174,7 @@ export default class ModalRewardCustomCreate extends Vue {
         this.isLoading = true;
         this.isSubmitDisabled = true;
 
-        const payload = {
+        await this.$store.dispatch(`rewards/${this.reward ? 'update' : 'create'}`, {
             ...this.reward,
             variant: RewardVariant.Custom,
             webhookId: this.webhook._id,
@@ -187,17 +187,12 @@ export default class ModalRewardCustomCreate extends Vue {
             limit: this.limit,
             pointPrice: this.pointPrice,
             isPromoted: this.isPromoted,
-        };
+        });
 
-        this.$store
-            .dispatch(`rewards/${this.reward ? 'update' : 'create'}`, payload)
-            .then(() => {
-                this.isSubmitDisabled = false;
-                this.isLoading = false;
-                this.$bvModal.hide(this.id);
-                this.$emit('submit');
-            })
-            .catch((response) => (this.error = response.error.message));
+        this.isSubmitDisabled = false;
+        this.isLoading = false;
+        this.$bvModal.hide(this.id);
+        this.$emit('submit');
     }
 
     onImgChange() {

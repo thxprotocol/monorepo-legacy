@@ -7,6 +7,9 @@ import VotingEscrow from './abis/VotingEscrow.json';
 import Launchpad from './abis/Launchpad.json';
 import TestToken from './abis/TestToken.json';
 import RewardFaucet from './abis/RewardFaucet.json';
+import LensReward from './abis/LensReward.json';
+import BalToken from './abis/BalancerToken.json';
+import BalMinter from './abis/BalancerMinter.json';
 import { ContractNetworksConfig } from '@safe-global/protocol-kit';
 
 export const contractNetworks = {
@@ -46,6 +49,9 @@ export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: 
     SmartWalletWhitelist,
     VotingEscrow,
     Launchpad,
+    LensReward,
+    BalToken,
+    BalMinter,
 };
 
 export const networkNames = ['matic', 'maticdev', 'hardhat'] as const;

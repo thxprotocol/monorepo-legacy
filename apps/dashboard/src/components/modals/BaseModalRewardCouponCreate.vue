@@ -181,10 +181,9 @@ export default class ModalRewardCustomCreate extends Vue {
         this.pointPrice = price;
     }
 
-    onSubmit() {
+    async onSubmit() {
         this.isLoading = true;
-
-        const payload = {
+        await this.$store.dispatch(`couponRewards/${this.reward ? 'update' : 'create'}`, {
             ...this.reward,
             variant: RewardVariant.Coupon,
             poolId: this.pool._id,
@@ -196,16 +195,10 @@ export default class ModalRewardCustomCreate extends Vue {
             webshopURL: this.webshopURL,
             pointPrice: this.pointPrice,
             isPromoted: this.isPromoted,
-        };
-
-        this.$store
-            .dispatch(`couponRewards/${this.reward ? 'update' : 'create'}`, payload)
-            .then(() => {
-                this.isLoading = false;
-                this.$bvModal.hide(this.id);
-                this.$emit('submit');
-            })
-            .catch((response) => (this.error = response.error.message));
+        });
+        this.isLoading = false;
+        this.$bvModal.hide(this.id);
+        this.$emit('submit');
     }
 
     onChangeFileCoupons(file: File) {

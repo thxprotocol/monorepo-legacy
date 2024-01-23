@@ -262,10 +262,9 @@ export default class ModalRewardERC721Create extends Vue {
         this.erc1155Amount = amount;
     }
 
-    onSubmit() {
+    async onSubmit() {
         if (!this.nft || (!this.metadataId && !this.selectedMetadataIds.length && !this.tokenId)) {
-            this.error = 'Select a token or metadata for this reward.';
-            return;
+            throw new Error('Select a token or metadata for this reward.');
         }
 
         this.isLoading = true;
@@ -281,39 +280,34 @@ export default class ModalRewardERC721Create extends Vue {
                 break;
         }
 
-        const payload = {
-            page: 1,
-            title: this.title,
-            description: this.description,
-            file: this.imageFile,
-            erc721Id,
-            erc1155Id,
-            erc1155Amount: this.erc1155Amount,
-            tokenId: this.tokenId,
-            metadataIds: JSON.stringify(this.metadataId ? [this.metadataId] : this.selectedMetadataIds),
-            expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
-            limit: this.limit,
-            pointPrice: this.pointPrice,
-            price: this.price,
-            priceCurrency: this.priceCurrency,
-            isPromoted: this.isPromoted,
-            claimAmount: this.claimAmount,
-            claimLimit: this.claimLimit,
-            redirectUrl: this.redirectUrl ? this.redirectUrl : undefined,
-        };
+        await this.$store.dispatch(`erc721Perks/${this.reward ? 'update' : 'create'}`, {
+            pool: this.pool || Object.values(this.pools)[0],
+            reward: this.reward,
+            payload: {
+                page: 1,
+                title: this.title,
+                description: this.description,
+                file: this.imageFile,
+                erc721Id,
+                erc1155Id,
+                erc1155Amount: this.erc1155Amount,
+                tokenId: this.tokenId,
+                metadataIds: JSON.stringify(this.metadataId ? [this.metadataId] : this.selectedMetadataIds),
+                expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
+                limit: this.limit,
+                pointPrice: this.pointPrice,
+                price: this.price,
+                priceCurrency: this.priceCurrency,
+                isPromoted: this.isPromoted,
+                claimAmount: this.claimAmount,
+                claimLimit: this.claimLimit,
+                redirectUrl: this.redirectUrl ? this.redirectUrl : undefined,
+            },
+        });
 
-        this.$store
-            .dispatch(`erc721Perks/${this.reward ? 'update' : 'create'}`, {
-                pool: this.pool || Object.values(this.pools)[0],
-                reward: this.reward,
-                payload,
-            })
-            .then(() => {
-                this.isSubmitDisabled = false;
-                this.isLoading = false;
-                this.$bvModal.hide(this.id);
-            })
-            .catch((response) => (this.error = response.error.message));
+        this.isSubmitDisabled = false;
+        this.isLoading = false;
+        this.$bvModal.hide(this.id);
     }
 
     onImgChange() {

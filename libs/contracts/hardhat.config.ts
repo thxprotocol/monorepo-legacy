@@ -78,6 +78,10 @@ const config: HardhatUserConfig = {
         owner: {
             default: 0,
         },
+        balReceiver: {
+            hardhat: '0xaf9d56684466fcFcEA0a2B7fC137AB864d642946',
+        },
+        // Deprecated collector
         collector: {
             hardhat: '0xaf9d56684466fcFcEA0a2B7fC137AB864d642946',
             maticdev: '0x960911a62FdDf7BA84D0d3aD016EF7D15966F7Dc',

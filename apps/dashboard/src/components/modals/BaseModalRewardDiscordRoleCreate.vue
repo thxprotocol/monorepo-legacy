@@ -141,10 +141,9 @@ export default class ModalRewardCustomCreate extends Vue {
         this.pointPrice = price;
     }
 
-    onSubmit() {
+    async onSubmit() {
         this.isLoading = true;
-
-        const payload = {
+        await this.$store.dispatch(`discordRoleRewards/${this.reward ? 'update' : 'create'}`, {
             ...this.reward,
             variant: RewardVariant.DiscordRole,
             poolId: this.pool._id,
@@ -156,16 +155,10 @@ export default class ModalRewardCustomCreate extends Vue {
             pointPrice: this.pointPrice,
             isPromoted: this.isPromoted,
             discordRoleId: this.discordRoleId,
-        };
-
-        this.$store
-            .dispatch(`discordRoleRewards/${this.reward ? 'update' : 'create'}`, payload)
-            .then(() => {
-                this.isLoading = false;
-                this.$bvModal.hide(this.id);
-                this.$emit('submit');
-            })
-            .catch((response) => (this.error = response.error.message));
+        });
+        this.isLoading = false;
+        this.$bvModal.hide(this.id);
+        this.$emit('submit');
     }
 
     onImgChange() {

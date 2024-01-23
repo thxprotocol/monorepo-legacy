@@ -15,8 +15,8 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
 
     const { web3, defaultAccount, ethAdapter } = getProvider(ChainId.Hardhat);
     // Wait for this hardhat log:
-    // deploying "SmartWalletWhitelist" (tx: "")...: deployed at 0x76aBe9ec9b15947ba1Ca910695B8b6CffeD8E6CA
-    const lastDeployedContractAddress = '0x76aBe9ec9b15947ba1Ca910695B8b6CffeD8E6CA';
+    // deploying "LensReward" (tx: "")...: deployed at 0x774442713f32fa98bf27bEc78c96fb7186f7C223
+    const lastDeployedContractAddress = '0x774442713f32fa98bf27bEc78c96fb7186f7C223';
     const fn = () => web3.eth.getCode(lastDeployedContractAddress);
     const fnCondition = (result: string) => result === '0x';
 

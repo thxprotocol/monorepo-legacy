@@ -29,8 +29,8 @@ export const controller = async (req: Request, res: Response) => {
     if (!isApproved) throw new ForbiddenError('Wallet address is not on whitelist.');
 
     // Deposit funds for wallet
-    const tx = await VoteEscrowService.deposit(wallet, req.body.amountInWei, req.body.lockEndTimestamp);
+    const txs = await VoteEscrowService.deposit(wallet, req.body.amountInWei, req.body.lockEndTimestamp);
 
-    res.status(201).json(tx);
+    res.status(201).json(txs);
 };
 export default { controller, validation };

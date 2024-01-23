@@ -161,33 +161,27 @@ export default class ModalRewardERC20Create extends Vue {
 
     async onSubmit() {
         this.isLoading = true;
-        try {
-            await this.$store.dispatch(`erc20Perks/${this.reward ? 'update' : 'create'}`, {
-                pool: this.pool,
-                reward: this.reward,
-                payload: {
-                    page: 1,
-                    poolId: String(this.pool._id),
-                    erc20Id: this.erc20Id,
-                    title: this.title,
-                    description: this.description,
-                    amount: this.amount,
-                    pointPrice: this.pointPrice,
-                    claimAmount: Number(this.claimAmount),
-                    claimLimit: this.claimLimit,
-                    expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
-                    limit: this.limit,
-                    file: this.imageFile,
-                    isPromoted: this.isPromoted,
-                },
-            });
-            this.$bvModal.hide(this.id);
-        } catch (error) {
-            const { message } = error as AxiosError;
-            this.error = message;
-        } finally {
-            this.isLoading = false;
-        }
+        await this.$store.dispatch(`erc20Perks/${this.reward ? 'update' : 'create'}`, {
+            pool: this.pool,
+            reward: this.reward,
+            payload: {
+                page: 1,
+                poolId: String(this.pool._id),
+                erc20Id: this.erc20Id,
+                title: this.title,
+                description: this.description,
+                amount: this.amount,
+                pointPrice: this.pointPrice,
+                claimAmount: Number(this.claimAmount),
+                claimLimit: this.claimLimit,
+                expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
+                limit: this.limit,
+                file: this.imageFile,
+                isPromoted: this.isPromoted,
+            },
+        });
+        this.$bvModal.hide(this.id);
+        this.isLoading = false;
     }
 
     onChangePointPrice(price: number) {
