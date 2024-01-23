@@ -86,7 +86,7 @@ const routes: Array<RouteConfig> = [
                     },
                     {
                         name: 'DeveloperIdentities',
-                        path: 'wallets',
+                        path: 'identities',
                         component: () => import('../views/pool/developer/Identities.vue'),
                     },
                     {

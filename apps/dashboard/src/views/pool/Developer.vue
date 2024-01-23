@@ -48,7 +48,7 @@ export default class AssetPoolView extends Vue {
         {
             name: 'Identity',
             class: 'fas fa-id-badge',
-            route: 'wallets',
+            route: 'identities',
         },
         {
             name: 'Events',

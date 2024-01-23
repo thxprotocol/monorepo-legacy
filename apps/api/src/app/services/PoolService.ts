@@ -3,7 +3,7 @@ import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
-import { TAccount } from '@thxnetwork/types/interfaces';
+import { TAccount, TParticipant } from '@thxnetwork/types/interfaces';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
 import { DailyReward } from '../models/DailyReward';
@@ -29,6 +29,8 @@ import SafeService from './SafeService';
 import DiscordGuild from '../models/DiscordGuild';
 import DiscordDataProxy from '../proxies/DiscordDataProxy';
 import { getChainId } from './ContractService';
+import { Identity } from '../models/Identity';
+import { TIdentity } from '@thxnetwork/types/interfaces';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -134,6 +136,40 @@ async function getRewardCount(pool: AssetPoolDocument) {
         [ERC20Perk, ERC721Perk, CustomReward].map(async (model) => await find(model, pool)),
     );
     return Array.from(new Set(result.flat(1)));
+}
+
+async function findIdentities(pool: AssetPoolDocument, page: number, limit: number) {
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = await Identity.find({ poolId: pool._id }).countDocuments().exec();
+
+    const identities = {
+        previous: startIndex > 0 && {
+            page: page - 1,
+        },
+        next: endIndex < total && {
+            page: page + 1,
+        },
+        limit,
+        total,
+        results: await Identity.aggregate([
+            { $match: { poolId: String(pool._id) } },
+            { $skip: startIndex },
+            { $limit: limit },
+        ]).exec(),
+    };
+
+    console.log(identities);
+    const subs = identities.results.filter(({ sub }) => !!sub).map(({ sub }) => sub);
+    console.log(subs);
+    const accounts = await AccountProxy.getMany(subs);
+    console.log(accounts);
+    identities.results = identities.results.map((identity: TIdentity) => ({
+        ...identity,
+        account: accounts.find(({ sub }) => sub === identity.sub),
+    }));
+
+    return identities;
 }
 
 async function findParticipants(pool: AssetPoolDocument, page: number, limit: number) {
@@ -308,6 +344,7 @@ export default {
     getParticipantCount,
     getQuestCount,
     getRewardCount,
+    findIdentities,
     findParticipants,
     findGuilds,
     findCollaborators,

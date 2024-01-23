@@ -18,6 +18,7 @@ import RouterTopups from './topup/topup.router';
 import RouterWallets from './wallets/wallets.router';
 import RouterERC20 from './erc20/erc20.router';
 import RouterER1155 from './erc1155/erc1155.router';
+import RouterIdentities from './identities/identities.router';
 
 const router = express.Router({ mergeParams: true });
 
@@ -60,5 +61,6 @@ router.use('/:id/events', RouterEvents);
 router.use('/:id/guilds', RouterGuilds);
 router.use('/:id/erc20', RouterERC20);
 router.use('/:id/erc1155', RouterER1155);
+router.use('/:id/identities', RouterIdentities);
 
 export default router;

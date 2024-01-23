@@ -46,12 +46,6 @@
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
-            <BaseModalRewardClaimsDownload
-                id="modalRewardClaimsDownload"
-                :pool="pool"
-                :selectedItems="selectedItems"
-                :rewards="coinRewards[pool._id]"
-            />
             <BTable id="table-rewards" hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
                 <template #head(pointPrice)> Point Price </template>
@@ -93,7 +87,7 @@
                         </template>
                         <b-dropdown-item
                             v-if="item.reward.variant === RewardVariant.NFT"
-                            v-b-modal="`modalRewardClaimsDownload${item.reward._id}`"
+                            v-b-modal="`modalQRCodes${item.reward._id}`"
                         >
                             QR Codes
                         </b-dropdown-item>
@@ -102,8 +96,8 @@
                         </b-dropdown-item>
                         <b-dropdown-item @click="onClickDelete(item.reward)"> Delete </b-dropdown-item>
                     </b-dropdown>
-                    <BaseModalRewardClaimsDownload
-                        :id="`modalRewardClaimsDownload${item.reward._id}`"
+                    <BaseModalQRCodes
+                        :id="`modalQRCodes${item.reward._id}`"
                         :pool="pool"
                         :selectedItems="[item.reward._id]"
                         :rewards="allRewards.filter((r) => r.variant == RewardVariant.NFT)"
@@ -145,7 +139,7 @@ import BaseModalRewardCouponCreate from '@thxnetwork/dashboard/components/modals
 import BaseModalRewardDiscordRoleCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardDiscordRoleCreate.vue';
 import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
-import BaseModalRewardClaimsDownload from '@thxnetwork/dashboard/components/modals/BaseModalRewardClaimsDownload.vue';
+import BaseModalQRCodes from '@thxnetwork/dashboard/components/modals/BaseModalQRCodes.vue';
 import { hasPremiumAccess } from '@thxnetwork/common';
 import { type TCouponRewardState } from '@thxnetwork/dashboard/store/modules/couponRewards';
 import { type TCustomRewardState } from '@thxnetwork/dashboard/store/modules/rewards';
@@ -210,7 +204,7 @@ export const contentRewards = {
         BaseModalRewardDiscordRoleCreate,
         BaseBadgeRewardConditionPreview,
         BaseCardTableHeader,
-        BaseModalRewardClaimsDownload,
+        BaseModalQRCodes,
     },
     computed: mapGetters({
         pools: 'pools/all',

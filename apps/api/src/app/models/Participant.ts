@@ -1,12 +1,5 @@
 import mongoose from 'mongoose';
-
-export type TParticipant = {
-    sub: string;
-    poolId: string;
-    rank: number;
-    score: number;
-    questEntryCount: number;
-};
+import { TParticipant } from '@thxnetwork/types/index';
 
 export type ParticipantDocument = mongoose.Document & TParticipant;
 

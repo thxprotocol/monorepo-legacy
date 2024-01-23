@@ -6,7 +6,7 @@ export type IdentityDocument = mongoose.Document & TIdentity;
 const identitySchema = new mongoose.Schema(
     {
         poolId: String,
-        uuid: String,
+        uuid: { unique: true, type: String },
         sub: String,
     },
     { timestamps: true },

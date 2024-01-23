@@ -38,3 +38,5 @@ export * from './Quest';
 export * from './GitcoinQuest';
 export * from './DiscordBot';
 export * from './DiscordRoleReward';
+export * from './Participant';
+export * from './Identity';

@@ -16,7 +16,7 @@ import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
-import { isContext } from 'vm';
+import { TIdentity } from '@thxnetwork/common/lib/types/interfaces/Identity';
 
 export interface IPoolAnalytic {
     _id: string;
@@ -153,6 +153,9 @@ export type TGuildState = {
         [guildId: string]: TDiscordGuild;
     };
 };
+export type TIdentityState = {
+    [poolId: string]: TPaginationResult & { results: TIdentity[] };
+};
 
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
@@ -161,12 +164,17 @@ class PoolModule extends VuexModule {
     _entries: TQuestEntryState = {};
     _guilds: TGuildState = {};
     _events: TEventState = {};
+    _identities: TIdentityState = {};
     _analytics: IPoolAnalytics = {};
     _analyticsLeaderBoard: IPoolAnalyticsLeaderBoard = {};
     _analyticsMetrics: IPoolAnalyticsLeaderBoard = {};
 
     get all() {
         return this._all;
+    }
+
+    get identities() {
+        return this._identities;
     }
 
     get guilds() {
@@ -250,6 +258,17 @@ class PoolModule extends VuexModule {
     @Mutation
     setEvents({ poolId, result }: { poolId: string; result: { results: TEvent[] } & TPaginationResult }) {
         Vue.set(this._events, poolId, result);
+    }
+
+    @Mutation
+    setIdentities({ poolId, result }: { poolId: string; result: { results: TIdentity[] } & TPaginationResult }) {
+        Vue.set(this._identities, poolId, result);
+    }
+
+    @Mutation
+    unsetIdentity(identity: TIdentity) {
+        const index = this._identities[identity.poolId].results.findIndex((i) => i._id === identity._id);
+        Vue.delete(this._identities[identity.poolId].results, index);
     }
 
     @Mutation
@@ -340,6 +359,40 @@ class PoolModule extends VuexModule {
             data: payload,
         });
         this.context.commit('setGuild', { ...payload, ...data, isConnected: true });
+    }
+
+    @Action
+    async listIdentities(payload: { pool: TPool; limit: number; page: number }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${payload.pool._id}/identities`,
+            headers: { 'X-PoolId': payload.pool._id },
+            params: {
+                limit: payload.limit,
+                page: payload.page,
+            },
+        });
+
+        this.context.commit('setIdentities', { poolId: payload.pool._id, result: data });
+    }
+
+    @Action
+    async createIdentity(pool: TPool) {
+        await axios({
+            method: 'POST',
+            url: `/pools/${pool._id}/identities`,
+            headers: { 'X-PoolId': pool._id },
+        });
+    }
+
+    @Action
+    async removeIdentity(identity: TIdentity) {
+        await axios({
+            method: 'DELETE',
+            url: `/pools/${identity.poolId}/identities/${identity._id}`,
+            headers: { 'X-PoolId': identity.poolId },
+        });
+        this.context.commit('unsetIdentity', identity);
     }
 
     @Action
@@ -439,13 +492,12 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list(params: { archived?: boolean } = { archived: false }) {
+    async list() {
         this.context.commit('clear');
 
         const r = await axios({
             method: 'GET',
             url: '/pools',
-            params,
         });
 
         r.data.forEach((pool: TPool) => {

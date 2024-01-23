@@ -77,15 +77,10 @@
 <script lang="ts">
 import { type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import BaseModalRewardClaimsDownload from '../modals/BaseModalRewardClaimsDownload.vue';
 
 export type TTableBulkAction = { variant: number; label: string };
 
-@Component({
-    components: {
-        BaseModalRewardClaimsDownload,
-    },
-})
+@Component({})
 export default class BaseCardTableHeader extends Vue {
     @Prop() totals!: { [poolId: string]: number };
     @Prop() selectedItems!: string[];

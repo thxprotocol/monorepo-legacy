@@ -16,7 +16,7 @@
                         class="rounded-pill float-right"
                     >
                         <i class="fas fa-plus mr-2"></i>
-                        API Key
+                        New API Key
                     </b-button>
                     <BaseModalClientCreate id="modalClientCreate" :pool="pool" @submit="onSubmit" />
                 </template>

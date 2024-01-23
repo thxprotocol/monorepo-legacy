@@ -7,7 +7,7 @@
         background-color: $darkest !important;
         color: $light !important;
     }
-
+ 
     // Views
     .section-home > .container-md > .row:nth-child(1) > .col-md-4:before {
         background-color: $dark !important;
@@ -77,6 +77,11 @@
     }
 
     // Pagination 
+    .page-item:not(.active) .page-link {
+        background-color: $dark;
+        border-color: $darker;
+        color: white
+    }
     .page-item.disabled .page-link {
         background-color: $darker;
         border-color: $dark;

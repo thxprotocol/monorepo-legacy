@@ -7,7 +7,6 @@ export type TPaginationParams = Partial<{
 }>;
 
 export type TPaginationResult = {
-    limit: number;
     page: number;
     total: number;
 };

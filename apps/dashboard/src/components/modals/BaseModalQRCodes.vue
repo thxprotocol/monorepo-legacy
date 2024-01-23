@@ -211,14 +211,14 @@ function hex2Rgb(hex: string) {
 }
 
 @Component({
-    name: 'BaseModalRewardClaimsDownload',
+    name: 'BaseModalQRCodes',
     components: {
         BaseParticipantAccount,
         BaseCardTableHeader: () => import('@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue'),
         BaseModal,
     },
 })
-export default class BaseModalRewardClaimsDownload extends Vue {
+export default class BaseModalQRCodes extends Vue {
     format = format;
     isSubmitDisabled = false;
     isLoading = false;
@@ -242,7 +242,7 @@ export default class BaseModalRewardClaimsDownload extends Vue {
 
     onShow() {
         this.getClaimURLs();
-        this.redirectUrl = this.pool.widget.domain;
+        this.redirectUrl = this.pool.widget?.domain;
     }
 
     getClaimURLs() {

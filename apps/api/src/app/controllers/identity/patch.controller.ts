@@ -13,7 +13,9 @@ const controller = async (req: Request, res: Response) => {
     const { uuid } = req.params;
     const { sub } = req.auth;
 
-    if (await Identity.exists({ uuid, sub })) throw new Error('Identity already connected.');
+    // Throw if Identity is connected already
+    const isConnected = await Identity.exists({ uuid, sub: { $exists: true } });
+    if (isConnected) throw new Error('Identity already connected.');
 
     const identity = await Identity.findOneAndUpdate({ uuid }, { sub }, { new: true });
 
