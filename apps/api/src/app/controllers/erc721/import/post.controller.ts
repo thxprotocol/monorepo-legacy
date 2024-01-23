@@ -14,7 +14,7 @@ const validation = [body('contractAddress').exists(), body('chainId').exists().i
 
 const controller = async (req: Request, res: Response) => {
     const chainId = Number(req.body.chainId) as ChainId;
-    const contractAddress = req.body.contractAddress;
+    const contractAddress = toChecksumAddress(req.body.contractAddress);
     const pool = await PoolService.getById(req.header('X-PoolId'));
 
     const ownedNfts = await getNFTsForOwner(pool.safeAddress, contractAddress);
@@ -25,13 +25,13 @@ const controller = async (req: Request, res: Response) => {
         {
             sub: req.auth.sub,
             chainId,
-            address,
+            address: toChecksumAddress(address),
         },
         {
             variant: NFTVariant.ERC721,
             sub: req.auth.sub,
             chainId,
-            address: toChecksumAddress(address, chainId),
+            address: toChecksumAddress(address),
             name,
             symbol,
             archived: false,

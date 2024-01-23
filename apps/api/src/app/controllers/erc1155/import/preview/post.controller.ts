@@ -5,12 +5,6 @@ import { getNFTsForOwner, parseIPFSImageUrl } from '@thxnetwork/api/util/alchemy
 export const validation = [body('address').exists().isString(), body('contractAddress').exists().isString()];
 
 export const controller = async (req: Request, res: Response) => {
-    /*
-    #swagger.tags = ['ERC1155 Contract']
-    #swagger.responses[200] = { 
-            description: 'returns the name of an onchain erc1155 token'
-    }
-    */
     const ownedNFTs = await getNFTsForOwner(req.body.address, req.body.contractAddress);
     res.status(200).json(
         ownedNFTs.map((nft) => {
