@@ -120,7 +120,7 @@ describe('VESytem', () => {
             const { status, body } = await user.get('/v1/ve').set({ Authorization: widgetAccessToken }).send();
 
             expect(Number(body[0].end)).toBeGreaterThan(Number(body[0].now));
-            expect(body[0].amount).toBe(amountInWei);
+            expect(body[0].amount).toBe(Number(amountInWei));
             expect(status).toBe(200);
         });
     });
