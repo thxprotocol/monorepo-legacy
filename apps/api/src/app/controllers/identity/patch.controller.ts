@@ -8,9 +8,14 @@ const validation = [param('uuid').isUUID()];
 
 const controller = async (req: Request, res: Response) => {
     const pool = await AssetPool.findById(req.header('X-PoolId'));
-    if (!pool) throw new NotFoundError('Could not find pool.');
+    if (!pool) throw new NotFoundError('Pool not found.');
 
-    const identity = await Identity.findOneAndUpdate({ uuid: req.params.uuid }, { sub: req.auth.sub }, { new: true });
+    const { uuid } = req.params;
+    const { sub } = req.auth;
+
+    if (await Identity.exists({ uuid, sub })) throw new Error('Identity already connected.');
+
+    const identity = await Identity.findOneAndUpdate({ uuid }, { sub }, { new: true });
 
     res.json(identity);
 };
