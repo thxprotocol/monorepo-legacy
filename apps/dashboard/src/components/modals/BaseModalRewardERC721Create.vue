@@ -312,7 +312,8 @@ export default class ModalRewardERC721Create extends Vue {
                 this.isSubmitDisabled = false;
                 this.isLoading = false;
                 this.$bvModal.hide(this.id);
-            });
+            })
+            .catch((response) => (this.error = response.error.message));
     }
 
     onImgChange() {

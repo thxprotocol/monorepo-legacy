@@ -198,11 +198,14 @@ export default class ModalRewardCustomCreate extends Vue {
             isPromoted: this.isPromoted,
         };
 
-        this.$store.dispatch(`couponRewards/${this.reward ? 'update' : 'create'}`, payload).then(() => {
-            this.isLoading = false;
-            this.$bvModal.hide(this.id);
-            this.$emit('submit');
-        });
+        this.$store
+            .dispatch(`couponRewards/${this.reward ? 'update' : 'create'}`, payload)
+            .then(() => {
+                this.isLoading = false;
+                this.$bvModal.hide(this.id);
+                this.$emit('submit');
+            })
+            .catch((response) => (this.error = response.error.message));
     }
 
     onChangeFileCoupons(file: File) {
