@@ -159,11 +159,9 @@ async function findIdentities(pool: AssetPoolDocument, page: number, limit: numb
         ]).exec(),
     };
 
-    console.log(identities);
     const subs = identities.results.filter(({ sub }) => !!sub).map(({ sub }) => sub);
-    console.log(subs);
     const accounts = await AccountProxy.getMany(subs);
-    console.log(accounts);
+
     identities.results = identities.results.map((identity: TIdentity) => ({
         ...identity,
         account: accounts.find(({ sub }) => sub === identity.sub),

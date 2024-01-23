@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import { param } from 'express-validator';
 
@@ -15,7 +15,7 @@ const controller = async (req: Request, res: Response) => {
 
     // Throw if Identity is connected already
     const isConnected = await Identity.exists({ uuid, sub: { $exists: true } });
-    if (isConnected) throw new Error('Identity already connected.');
+    if (isConnected) throw new ForbiddenError('Identity already connected.');
 
     const identity = await Identity.findOneAndUpdate({ uuid }, { sub }, { new: true });
 
