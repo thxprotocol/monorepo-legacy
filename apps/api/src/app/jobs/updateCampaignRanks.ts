@@ -19,6 +19,7 @@ export async function updateCampaignRanks() {
                     as: 'participants',
                 },
             },
+            // Rewards
             {
                 $lookup: {
                     from: 'erc20perks',
@@ -51,6 +52,15 @@ export async function updateCampaignRanks() {
                     as: 'couponRewards',
                 },
             },
+            {
+                $lookup: {
+                    from: 'discordrolerewards',
+                    localField: 'id',
+                    foreignField: 'poolId',
+                    as: 'discordRoleRewards',
+                },
+            },
+            // Quests
             {
                 $lookup: {
                     from: 'dailyrewards',
@@ -92,6 +102,14 @@ export async function updateCampaignRanks() {
                 },
             },
             {
+                $lookup: {
+                    from: 'gitcoinquests',
+                    localField: 'id',
+                    foreignField: 'poolId',
+                    as: 'gitcoinquests',
+                },
+            },
+            {
                 $addFields: {
                     participantCount: { $size: '$participants' },
                     totalQuestCount: {
@@ -102,12 +120,19 @@ export async function updateCampaignRanks() {
                                 '$socialquests',
                                 '$customquests',
                                 '$web3quests',
+                                '$gitcoinquests',
                             ],
                         },
                     },
                     totalRewardsCount: {
                         $size: {
-                            $concatArrays: ['$erc20Perks', '$erc721Perks', '$customRewards', '$couponRewards'],
+                            $concatArrays: [
+                                '$erc20Perks',
+                                '$erc721Perks',
+                                '$customRewards',
+                                '$couponRewards',
+                                '$discordRoleRewards',
+                            ],
                         },
                     },
                 },
