@@ -2,12 +2,11 @@ const axios = require('axios');
 
 require('dotenv').config();
 
-const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
 const args = process.argv.slice(2);
-const [app, version] = args;
+const [app, version, webhook] = args;
 
-if (webhookUrl && (!app || !version)) {
-    console.error('Usage: yarn notify :app :version');
+if (!app || !version || !webhook) {
+    console.error('Usage: yarn notify :app :version :webhook');
     process.exit(1);
 }
 
@@ -15,7 +14,7 @@ const message = `Released ${app} v${version}`;
 
 async function sendNotification() {
     try {
-        await axios.post(webhookUrl, {
+        await axios.post(webhook, {
             content: message,
         });
         console.log('Discord Message sent successfully');
@@ -24,6 +23,6 @@ async function sendNotification() {
     }
 }
 
-if (webhookUrl) {
+if (webhook) {
     sendNotification();
 }
