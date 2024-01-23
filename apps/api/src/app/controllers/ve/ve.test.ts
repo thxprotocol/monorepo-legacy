@@ -64,8 +64,10 @@ describe('VESytem', () => {
                 .post('/v1/ve/approve')
                 .set({ Authorization: widgetAccessToken })
                 .send({ amountInWei, spender: VE_ADDRESS });
-            expect(body.safeTxHash).toBeDefined();
             expect(status).toBe(201);
+            for (const tx of body) {
+                expect(tx.safeTxHash).toBeDefined();
+            }
 
             const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
             await user
@@ -91,7 +93,9 @@ describe('VESytem', () => {
                 .set({ Authorization: widgetAccessToken })
                 .send({ amountInWei, lockEndTimestamp });
             expect(status).toBe(201);
-            expect(body.safeTxHash).toBeDefined();
+            for (const tx of body) {
+                expect(tx.safeTxHash).toBeDefined();
+            }
 
             const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
             await user
@@ -142,10 +146,10 @@ describe('VESytem', () => {
             await testBPT.approve(rfthx.address, distributionAmount);
             await rfthx.depositEqualWeeksPeriod(testBPT.address, distributionAmount, '4');
 
-            console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 0)));
-            console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 1)));
-            console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 2)));
-            console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 4)));
+            // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 0)));
+            // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 1)));
+            // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 2)));
+            // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 4)));
         });
         it('Claim Tokens (after 8 days)', async () => {
             // Travel past end date of the first reward eligible week
@@ -181,7 +185,9 @@ describe('VESytem', () => {
                 .set({ Authorization: widgetAccessToken })
                 .send({ isEarlyAttempt: true });
             expect(status).toBe(201);
-            expect(body.safeTxHash).toBeDefined();
+            for (const tx of body) {
+                expect(tx.safeTxHash).toBeDefined();
+            }
 
             const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
             await user
@@ -213,11 +219,11 @@ describe('VESytem', () => {
             // Eg:
             // balanceInWei     = 999917384259259259260000
             // rdBalanceInWei   =     82615740740740740000
-            console.log(String(balanceInWei), amountInWei);
+            // console.log(String(balanceInWei), amountInWei);
             // Should be larger due to reward claim
-            console.log(String(balanceInWei));
-            console.log(String(amountInWei));
-            console.log(String(BigNumber.from(balanceInWei).sub(BigNumber.from(amountInWei))));
+            // console.log(String(balanceInWei));
+            // console.log(String(amountInWei));
+            // console.log(String(BigNumber.from(balanceInWei).sub(BigNumber.from(amountInWei))));
             expect(BigNumber.from(balanceInWei).gt(BigNumber.from(amountInWei))).toBe(true);
         });
     });
