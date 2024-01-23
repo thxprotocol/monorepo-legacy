@@ -24,14 +24,6 @@
                 }
             }
         },
-        "notify": {
-            "dependsOn": ["^build"],
-            "executor": "nx:run-commands",
-            "options": {
-                "command": "node notify.js {args.branch} {args.version} {args.webhook}",
-                "cwd": "dist/apps/dashboard"
-            }
-        },
         "serve": {
             "executor": "@nx-plus/vue:dev-server",
             "options": {

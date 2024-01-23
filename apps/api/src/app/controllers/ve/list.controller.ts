@@ -8,6 +8,8 @@ import { VE_ADDRESS } from '@thxnetwork/api/config/secrets';
 
 export const validation = [];
 
+const parseMs = (s) => Number(s) * 1000;
+
 export const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findPrimary(req.auth.sub, ChainId.Hardhat);
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
@@ -20,6 +22,6 @@ export const controller = async (req: Request, res: Response) => {
     const latest = await web3.eth.getBlockNumber();
     const now = (await web3.eth.getBlock(latest)).timestamp;
 
-    res.status(200).json([{ amount, end, now }]);
+    res.status(200).json([{ amount: Number(amount), end: parseMs(end), now: parseMs(now) }]);
 };
 export default { controller, validation };
