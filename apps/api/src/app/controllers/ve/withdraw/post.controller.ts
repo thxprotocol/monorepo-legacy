@@ -29,7 +29,7 @@ export const controller = async (req: Request, res: Response) => {
     if (!req.body.isEarlyAttempt && isEarlyWithdraw) throw new ForbiddenError('Funds are locked');
 
     // Propose the withdraw transaction
-    const txs = VoteEscrowService.withdraw(wallet, isEarlyWithdraw);
+    const txs = await VoteEscrowService.withdraw(wallet, isEarlyWithdraw);
 
     res.status(201).json(txs);
 };
