@@ -85,7 +85,7 @@ class OIDCManager extends BaseManager {
         const url = `${this.authUrl}/token`;
         const params = new URLSearchParams({
             grant_type: THXOIDCGrant.ClientCredentials,
-            scope: 'openid events:write identities:read identities:write',
+            scope: 'openid events:write identities:read identities:write pools:read pools:write',
         });
 
         try {
@@ -98,6 +98,7 @@ class OIDCManager extends BaseManager {
 
             this.setUser(response.data);
         } catch (error) {
+            console.log(error);
             throw new Error('Request for ' + THXOIDCGrant.ClientCredentials + ' grant failed.');
         }
     }

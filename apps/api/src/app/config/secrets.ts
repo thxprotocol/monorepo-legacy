@@ -115,3 +115,4 @@ export const RF_ADDRESS = process.env.RF_ADDRESS || '0x33599eaec2752DB3242323483
 export const SC_ADDRESS = process.env.SC_ADDRESS || '0xb3B2b0fc5ce12aE58EEb13E19547Eb2Dd61A79D5';
 export const LR_ADDRESS = process.env.LR_ADDRESS || '0x774442713f32fa98bf27bEc78c96fb7186f7C223';
 export const PINATA_API_JWT = process.env.PINATA_API_JWT || '';
+export const ALLOWED_API_CLIENT_ID = process.env.ALLOWED_API_CLIENT_ID || '';

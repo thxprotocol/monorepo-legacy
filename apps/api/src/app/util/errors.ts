@@ -105,8 +105,8 @@ class SubjectUnauthorizedError extends ForbiddenError {
     message = 'Not authorized for subject of access token';
 }
 
-class AudienceForbiddenError extends UnauthorizedError {
-    message = 'Forbidden for audience of access token';
+class AudienceUnauthorizedError extends UnauthorizedError {
+    message = 'Not authorized for audience of access token';
 }
 
 class AmountExceedsAllowanceError extends BadRequestError {
@@ -159,7 +159,7 @@ export {
     InternalServerError,
     PromoCodeNotFoundError,
     SubjectUnauthorizedError,
-    AudienceForbiddenError,
+    AudienceUnauthorizedError,
     AmountExceedsAllowanceError,
     InsufficientBalanceError,
     TokenPaymentFailedError,

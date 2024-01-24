@@ -18,7 +18,7 @@ export default {
     ],
     controller: async (req: Request, res: Response) => {
         const poolId = req.header('X-PoolId');
-        const hasAccess = await PoolService.hasAccess(req.auth.sub, poolId);
+        const hasAccess = await PoolService.isSubjectAllowed(req.auth.sub, poolId);
         if (!hasAccess) throw new ForbiddenError('Not your pool');
 
         // Update logo and bg changes

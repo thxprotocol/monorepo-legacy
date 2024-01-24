@@ -68,6 +68,7 @@ Meant for JavaScript backend applications.
 import { THXAPIClient, THXAPIClientOptions } from '@thxnetwork/sdk';
 
 const options: THXAPIClientOptions = {
+    campaignId: '65b0e27845c63cd18e0ab4a6',
     clientId: 'msuq4Znuv3q8hLf7ATnlP',
     clientSecret: 'YP_k8_LnPG58LHqzWGxg3EMBBGVwwJUmqsuQZdoMtEAD-85hJwRt2vxfev23T92h727bDwCqh3cIkx6meT0xxg',
 };
@@ -89,6 +90,69 @@ Events can be used to add requirements for Daily, Invite and Custom Quests.
 
 ```javascript
 thx.events.create({ name: 'level_up', identity: '36d33a59-5398-463a-ac98-0f7d9b201648' });
+```
+
+### 2.3 Quests
+
+Quests can be managed programatically. Specify `content` and `contentMetadata` according to the requirements in order to generate proper card previews.
+
+#### Twitter Post Previews
+
+Use this `content` and `contentMetadata` for these `interaction` variants: `QuestRequirement.TwitterLike`, `QuestRequirement.TwitterRetweet`, `QuestRequirement.TwitterLikeRetweet`.
+
+```javascript
+const interaction = QuestRequirement.TwitterLikeRetweet;
+const content = '46927555';
+const contentMetadata = {
+    url: 'https://twitter.com/twitter/status/1603121182101970945',
+    username: 'johndoe',
+    name: 'John Doe',
+    text: '✨ Loyalty Networks are here✨ #fintech meets #loyalty',
+    minAmountFollowers: 123,
+};
+```
+
+#### Twitter User Previews
+
+Use this `content` and `contentMetadata` for these `interaction` variants: `QuestRequirement.TwitterFollow`.
+
+```javascript
+const interaction = QuestRequirement.TwitterFollow;
+const content = '13241234';
+const contentMetadata = {
+    id: 46927555,
+    name: 'John doe',
+    profileImgUrl: 'https://picsum.com/avatar.jpg',
+    username: 'johndoe',
+    minAmountFollowers: 123,
+};
+```
+
+#### Twitter Message Preview
+
+Use this `content` and `contentMetadata` for these `interaction` variants: ` QuestRequirement.TwitterMessage`,
+
+```javascript
+const interaction = QuestRequirement.TwitterMessage;
+const content = '✨ Loyalty Networks are here✨ #fintech meets #loyalty';
+const contentMetadata = {
+    minFollowersCount: 123,
+};
+```
+
+#### Create Twitter Quest
+
+```javascript
+thx.campaigns.quests.create({
+    variant: QuestVariant.Twitter,
+    title: 'Farm along!',
+    description: 'Get these pointzz...',
+    amount: 123,
+    isPublished: true,
+    interaction,
+    content,
+    contentMetadata,
+});
 ```
 
 ## 3. THXBrowserClient
