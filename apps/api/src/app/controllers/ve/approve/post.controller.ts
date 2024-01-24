@@ -27,6 +27,6 @@ export const controller = async (req: Request, res: Response) => {
     // Propose tx data to relayer and return safeTxHash to client to sign
     const tx = await TransactionService.sendSafeAsync(wallet, bpt.options.address, fn);
 
-    res.status(201).json(tx);
+    res.status(201).json([tx]);
 };
 export default { controller, validation };

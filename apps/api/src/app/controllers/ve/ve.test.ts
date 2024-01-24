@@ -35,6 +35,8 @@ describe('VESytem', () => {
         testBPT = new ethers.Contract(BPT_ADDRESS, contractArtifacts['BPTToken'].abi, signer);
         expect(testBPT.address).toBe(BPT_ADDRESS);
 
+        console.log(VE_ADDRESS);
+
         vethx = new ethers.Contract(VE_ADDRESS, contractArtifacts['VotingEscrow'].abi, signer);
         rdthx = new ethers.Contract(RD_ADDRESS, contractArtifacts['RewardDistributor'].abi, signer);
         rfthx = new ethers.Contract(RF_ADDRESS, contractArtifacts['RewardFaucet'].abi, signer);
@@ -65,14 +67,15 @@ describe('VESytem', () => {
                 .set({ Authorization: widgetAccessToken })
                 .send({ amountInWei, spender: VE_ADDRESS });
             expect(status).toBe(201);
+
             for (const tx of body) {
                 expect(tx.safeTxHash).toBeDefined();
 
-                const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
+                const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
                 await user
                     .post('/v1/account/wallet/confirm')
                     .set({ Authorization: widgetAccessToken })
-                    .send({ chainId: ChainId.Hardhat, safeTxHash: body.safeTxHash, signature })
+                    .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);
             }
         });
@@ -96,11 +99,11 @@ describe('VESytem', () => {
             for (const tx of body) {
                 expect(tx.safeTxHash).toBeDefined();
 
-                const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
+                const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
                 await user
                     .post('/v1/account/wallet/confirm')
                     .set({ Authorization: widgetAccessToken })
-                    .send({ chainId: ChainId.Hardhat, safeTxHash: body.safeTxHash, signature })
+                    .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);
             }
         });
@@ -188,11 +191,11 @@ describe('VESytem', () => {
             for (const tx of body) {
                 expect(tx.safeTxHash).toBeDefined();
 
-                const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
+                const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
                 await user
                     .post('/v1/account/wallet/confirm')
                     .set({ Authorization: widgetAccessToken })
-                    .send({ chainId: ChainId.Hardhat, safeTxHash: body.safeTxHash, signature })
+                    .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);
             }
         });
