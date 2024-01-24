@@ -8,6 +8,7 @@ async function getIsUnlocked(lock: TQuestLock, wallet: WalletDocument): Promise<
 }
 
 async function getIsLocked(locks: TQuestLock[], wallet: WalletDocument) {
+    if (!locks.length) return false;
     const promises = locks.map((lock) => getIsUnlocked(lock, wallet));
     const results = await Promise.allSettled(promises);
     const anyRejected = results.some((result) => result.status === 'rejected');

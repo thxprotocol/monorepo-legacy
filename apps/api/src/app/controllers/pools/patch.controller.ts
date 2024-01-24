@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
+import { JobType, agenda } from '@thxnetwork/api/util/agenda';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 export const validation = [
     param('id').exists(),
@@ -29,11 +30,12 @@ export const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Could not find the Asset Pool for this id');
 
+    const { settings } = req.body;
     const isSlugUsed = !!(await AssetPool.exists({
         '_id': { $ne: pool._id },
-        'settings.slug': req.body.settings.slug,
+        'settings.slug': settings.slug,
     }));
-    if (req.body.settings && req.body.settings.slug && isSlugUsed) {
+    if (settings && settings.slug && isSlugUsed) {
         throw new BadRequestError('This slug is in use already.');
     }
 
@@ -42,6 +44,11 @@ export const controller = async (req: Request, res: Response) => {
         { settings: Object.assign(pool.settings, req.body.settings) },
         { new: true },
     );
+
+    if (settings.isPublished && settings.isPublished !== pool.settings.isPublished) {
+        await agenda.now(JobType.UpdateCampaignRanks);
+    }
+
     return res.json(result);
 };
 export default { controller, validation };

@@ -5,7 +5,7 @@ import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { discordClient } from '../util/axios';
 import { IAccessToken } from '@thxnetwork/types/interfaces';
 
-export const scopes = ['identify', 'email', 'guilds', 'guilds.join', 'guilds.members.read'];
+export const scopes = ['identify', 'email', 'guilds'];
 
 const ERROR_NO_DATA = 'Could not find an Discord data for this accesstoken';
 const ERROR_NOT_AUTHORIZED = 'Not authorized for Discord API';
