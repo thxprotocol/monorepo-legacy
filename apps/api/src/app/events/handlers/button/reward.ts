@@ -17,7 +17,7 @@ export async function onClickRewardRedeem(interaction: ButtonInteraction) {
 
         // await completeReward(interaction, variant, questId);
     } catch (error) {
-        handleError(error, interaction);
+        handleError(error);
     }
 }
 
@@ -51,6 +51,6 @@ export async function onClickRewardList(interaction: ButtonInteraction) {
 
         interaction.reply({ embeds, ephemeral: true });
     } catch (error) {
-        handleError(error, interaction);
+        handleError(error);
     }
 }

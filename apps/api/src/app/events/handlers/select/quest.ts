@@ -119,6 +119,6 @@ export async function onSelectQuestComplete(interaction: StringSelectMenuInterac
             components,
         });
     } catch (error) {
-        handleError(error, interaction);
+        handleError(error);
     }
 }
