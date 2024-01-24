@@ -99,19 +99,14 @@ class AccountModule extends VuexModule {
                 access_token_kind = AccessTokenKind.Discord;
                 break;
             }
-            case RewardConditionPlatform.Shopify: {
-                access_token_kind = AccessTokenKind.Shopify;
-                break;
-            }
         }
-        const client = Mixpanel.client();
+        debugger;
         await this.userManager.signinRedirect({
             extraQueryParams: {
                 prompt: 'connect',
                 channel: payload.platform,
                 return_url: payload.returnUrl,
                 access_token_kind,
-                distinct_id: client && client.get_distinct_id(),
             },
         });
     }

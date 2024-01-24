@@ -56,5 +56,9 @@ export default class SettingsTwitterView extends Vue {
     get pool() {
         return this.pools[this.$route.params.id];
     }
+
+    mounted() {
+        this.$store.dispatch('pools/read', this.$route.params.id);
+    }
 }
 </script>

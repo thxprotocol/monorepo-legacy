@@ -206,18 +206,14 @@ const config: Configuration = {
     },
     cookies: {
         long: {
-            httpOnly: true,
             signed: true,
             secure: true,
-            domain: COOKIE_DOMAIN,
-            sameSite: 'lax',
+            sameSite: 'none',
         },
         short: {
-            httpOnly: true,
             signed: true,
             secure: true,
-            domain: COOKIE_DOMAIN,
-            sameSite: 'lax',
+            sameSite: 'none',
         },
         keys,
     },

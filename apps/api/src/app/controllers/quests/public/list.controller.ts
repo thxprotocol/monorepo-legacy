@@ -12,6 +12,7 @@ const controller = async (req: Request, res: Response) => {
         { collectionName: 'pointrewards', target: 'socialquests' },
         { collectionName: 'milestonerewards', target: 'customquests' },
         { collectionName: 'web3quests', target: 'web3quests' },
+        { collectionName: 'gitcoinquests', target: 'gitcoinquests' },
     ].map(({ collectionName, target }) => ({
         $lookup: {
             from: collectionName,
@@ -52,11 +53,12 @@ const controller = async (req: Request, res: Response) => {
         {
             $match: {
                 'settings.isPublished': true,
+                'rank': { $exists: true },
             },
         },
     ]).exec();
 
-    const quests = decoratedPools
+    const result = decoratedPools
         .map((result) => {
             const mapper = (q) => ({
                 ...q,
@@ -72,6 +74,7 @@ const controller = async (req: Request, res: Response) => {
                     ...result.socialquests.map(mapper),
                     ...result.customquests.map(mapper),
                     ...result.web3quests.map(mapper),
+                    ...result.web3quests.map(mapper),
                 ],
             };
         })
@@ -79,7 +82,7 @@ const controller = async (req: Request, res: Response) => {
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
         .slice(0, 4);
 
-    res.json(quests);
+    res.json(result);
 };
 
 export default { controller, validation };

@@ -6,9 +6,9 @@ export enum AccessTokenKind {
     Twitter = 'twitter',
     Github = 'github',
     Discord = 'discord',
+    DiscordServers = 'discordservers',
     Twitch = 'twitch',
     VerifyEmail = 'verify-email',
     YoutubeView = 'youtube-view',
     YoutubeManage = 'youtube-manage',
-    Shopify = 'shopify',
 }

@@ -23,9 +23,10 @@ export const paginatedResults = async (page: number, limit: number, search: stri
         'settings.isPublished': true,
         ...(search && { 'settings.title': matchTitle(search) }),
     };
+    const total = await AssetPool.countDocuments($match);
     const results = await AssetPool.find($match).sort({ rank: 1 }).skip(startIndex).limit(limit);
 
-    return { limit, results };
+    return { page, total, limit, results };
 };
 
 const validation = [query('page').isInt(), query('limit').isInt(), query('search').optional().isString()];

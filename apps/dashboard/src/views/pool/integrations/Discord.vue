@@ -8,7 +8,7 @@
         >
             <i class="fab fa-discord mr-2" />
             Please connect your Discord account!
-            <b-button size="sm" variant="primary" to="/account" class="ml-auto">Connect Discord</b-button>
+            <b-button size="sm" variant="primary" @click="onClickConnect" class="ml-auto">Connect Discord</b-button>
         </b-alert>
         <b-form-row>
             <b-col md="4">
@@ -129,6 +129,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { DISCORD_BOT_INVITE_URL } from '@thxnetwork/dashboard/config/constants';
+import { RewardConditionPlatform } from '@thxnetwork/common/lib/types';
 import type { TAccount, TDiscordGuild, TDiscordRole } from '@thxnetwork/types/interfaces';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
 import BaseDropdownDiscordChannel from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownDiscordChannel.vue';
@@ -211,6 +212,13 @@ export default class IntegrationDiscordView extends Vue {
 
     onRemoveGuild(guild: TDiscordGuild) {
         this.$store.dispatch('pools/removeGuild', guild);
+    }
+
+    onClickConnect() {
+        this.$store.dispatch('account/connectRedirect', {
+            platform: RewardConditionPlatform.Discord,
+            returnUrl: window.location.href,
+        });
     }
 }
 </script>

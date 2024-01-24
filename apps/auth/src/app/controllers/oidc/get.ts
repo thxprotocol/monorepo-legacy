@@ -1,10 +1,8 @@
-import oidcConfig from '@thxnetwork/auth/config/oidc';
 import { AccountDocument } from '@thxnetwork/auth/models/Account';
 import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
 import { Request, Response } from 'express';
 import { hubspot } from '@thxnetwork/auth/util/hubspot';
 import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
-import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
 import { oidc } from '@thxnetwork/auth/util/oidc';
 
 export const callbackPreAuth = async (req: Request, res: Response) => {

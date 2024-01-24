@@ -9,8 +9,8 @@ import {
 import { YouTubeService } from './YouTubeService';
 import { TInteraction, TAccount, AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
-import bcrypt from 'bcrypt';
 import { generateUsername } from 'unique-username-generator';
+import bcrypt from 'bcrypt';
 
 export class AccountService {
     static async get(sub: string) {
@@ -22,8 +22,8 @@ export class AccountService {
         return await Account.find({ _id: { $in: subs } });
     }
 
-    static async getByDiscordId(discordId: string) {
-        return await Account.findOne({ 'tokens.userId': discordId });
+    static getByDiscordId(discordId: string) {
+        return Account.findOne({ 'tokens.userId': discordId });
     }
 
     static getByEmail(email: string) {
