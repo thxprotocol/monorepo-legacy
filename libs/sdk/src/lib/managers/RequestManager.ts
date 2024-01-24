@@ -4,13 +4,6 @@ import * as jose from 'jose';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import OIDCManager, { THXOIDCGrant } from './OIDCManager';
 
-import https from 'https';
-
-const httpsAgent = new https.Agent({
-    rejectUnauthorized: false,
-});
-axios.defaults.httpsAgent = httpsAgent;
-
 class RequestManager extends OIDCManager {
     constructor(client: THXClient, grantType: THXOIDCGrant) {
         super(client, grantType);
