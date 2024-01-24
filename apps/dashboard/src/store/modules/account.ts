@@ -100,7 +100,6 @@ class AccountModule extends VuexModule {
                 break;
             }
         }
-        debugger;
         await this.userManager.signinRedirect({
             extraQueryParams: {
                 prompt: 'connect',
@@ -184,12 +183,10 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async accountRedirect(returnPath: string) {
-        const client = Mixpanel.client();
         await this.userManager.signinRedirect({
             extraQueryParams: {
                 prompt: 'account-settings',
                 return_url: BASE_URL + returnPath,
-                distinct_id: client && client.get_distinct_id(),
             },
         });
     }
@@ -215,7 +212,9 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async signoutRedirect() {
-        await this.userManager.signoutRedirect({});
+        await this.userManager.signoutRedirect({
+            id_token_hint: this.user?.id_token,
+        });
         this.context.commit('setUser', null);
     }
 
