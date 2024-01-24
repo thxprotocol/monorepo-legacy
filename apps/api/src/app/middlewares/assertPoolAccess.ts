@@ -10,7 +10,7 @@ export async function assertPoolAccess(
 ) {
     if (req.auth.aud === ALLOWED_API_CLIENT_ID) return next();
 
-    const poolId = req.params.id || req.header('X-PoolId'); // Deprecate the header non pool child resources are tested
+    const poolId = req.header('X-PoolId') || req.params.id; // Deprecate the header non pool child resources are tested
     if (!poolId) throw new ForbiddenError('Missing id param or X-PoolId header');
 
     // If there is a sub check if the user is an owner or collaborator
