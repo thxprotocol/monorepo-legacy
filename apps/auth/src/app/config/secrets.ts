@@ -77,3 +77,4 @@ export const HUBSPOT_ACCESS_TOKEN = process.env.HUBSPOT_ACCESS_TOKEN;
 export const BOT_TOKEN = process.env.BOT_TOKEN;
 export const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
 export const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
+export const COOKIE_DOMAIN = NODE_ENV === 'production' ? '.thx.network' : undefined;

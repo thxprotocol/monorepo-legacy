@@ -1,7 +1,7 @@
 import MongoAdapter from '../util/adapter';
 import { Account } from '../models/Account';
 import { AccountDocument } from '../models/Account';
-import { API_URL, INITIAL_ACCESS_TOKEN, NODE_ENV, SECURE_KEY } from '@thxnetwork/auth/config/secrets';
+import { API_URL, INITIAL_ACCESS_TOKEN, NODE_ENV, SECURE_KEY, COOKIE_DOMAIN } from '@thxnetwork/auth/config/secrets';
 import { Configuration, interactionPolicy } from 'oidc-provider';
 import { getJwks } from '../util/jwks';
 
@@ -205,8 +205,20 @@ const config: Configuration = {
         },
     },
     cookies: {
-        long: { signed: true, secure: true, sameSite: 'none' },
-        short: { signed: true, secure: true, sameSite: 'none' },
+        long: {
+            httpOnly: true,
+            signed: true,
+            secure: true,
+            domain: COOKIE_DOMAIN,
+            sameSite: 'lax',
+        },
+        short: {
+            httpOnly: true,
+            signed: true,
+            secure: true,
+            domain: COOKIE_DOMAIN,
+            sameSite: 'lax',
+        },
         keys,
     },
 };
