@@ -67,14 +67,14 @@ describe('VESytem', () => {
             expect(status).toBe(201);
             for (const tx of body) {
                 expect(tx.safeTxHash).toBeDefined();
-            }
 
-            const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
-            await user
-                .post('/v1/account/wallet/confirm')
-                .set({ Authorization: widgetAccessToken })
-                .send({ chainId: ChainId.Hardhat, safeTxHash: body.safeTxHash, signature })
-                .expect(200);
+                const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
+                await user
+                    .post('/v1/account/wallet/confirm')
+                    .set({ Authorization: widgetAccessToken })
+                    .send({ chainId: ChainId.Hardhat, safeTxHash: body.safeTxHash, signature })
+                    .expect(200);
+            }
         });
 
         it('Wait for approved amount', async () => {
@@ -95,14 +95,14 @@ describe('VESytem', () => {
             expect(status).toBe(201);
             for (const tx of body) {
                 expect(tx.safeTxHash).toBeDefined();
-            }
 
-            const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
-            await user
-                .post('/v1/account/wallet/confirm')
-                .set({ Authorization: widgetAccessToken })
-                .send({ chainId: ChainId.Hardhat, safeTxHash: body.safeTxHash, signature })
-                .expect(200);
+                const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
+                await user
+                    .post('/v1/account/wallet/confirm')
+                    .set({ Authorization: widgetAccessToken })
+                    .send({ chainId: ChainId.Hardhat, safeTxHash: body.safeTxHash, signature })
+                    .expect(200);
+            }
         });
 
         it('Balance = total - deposit', async () => {
@@ -187,14 +187,14 @@ describe('VESytem', () => {
             expect(status).toBe(201);
             for (const tx of body) {
                 expect(tx.safeTxHash).toBeDefined();
-            }
 
-            const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
-            await user
-                .post('/v1/account/wallet/confirm')
-                .set({ Authorization: widgetAccessToken })
-                .send({ chainId: ChainId.Hardhat, safeTxHash: body.safeTxHash, signature })
-                .expect(200);
+                const { signature } = await signTxHash(safeWallet.address, body.safeTxHash, userWalletPrivateKey);
+                await user
+                    .post('/v1/account/wallet/confirm')
+                    .set({ Authorization: widgetAccessToken })
+                    .send({ chainId: ChainId.Hardhat, safeTxHash: body.safeTxHash, signature })
+                    .expect(200);
+            }
         });
 
         it('Balance = total + deposit - penalty', async () => {
