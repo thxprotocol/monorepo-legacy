@@ -53,16 +53,6 @@ export const callbackPostAuth = async (
         hubspot.upsert({ email: account.email, plan: account.plan });
     }
 
-    // If a referral code is present in the params store it for the authenticated account
-    if (params.referral_code) {
-        await account.updateOne({ referralCode: params.referral_code });
-    }
-
-    // Transfer pool ownership if there is a pool_transfer_token
-    if (params.pool_id && params.pool_transfer_token) {
-        await PoolProxy.transferOwnership(account, params.pool_id, params.pool_transfer_token);
-    }
-
     return returnUrl;
 };
 
