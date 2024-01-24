@@ -2,6 +2,7 @@ import { Client, GatewayIntentBits, Partials, PermissionFlagsBits } from 'discor
 import { BOT_TOKEN } from '@thxnetwork/api/config/secrets';
 import { eventRegister } from '@thxnetwork/api/util/discord';
 import eventRouter from '@thxnetwork/api/events';
+import { logger } from './app/util/logger';
 
 export const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions],
@@ -9,8 +10,12 @@ export const client = new Client({
 });
 
 export default async () => {
-    eventRegister(client, eventRouter);
-    client.login(BOT_TOKEN);
+    try {
+        eventRegister(client, eventRouter);
+        client.login(BOT_TOKEN);
+    } catch (error) {
+        logger.error(error);
+    }
 };
 
 export { PermissionFlagsBits };

@@ -19,12 +19,8 @@ export const commandRegister = async (commandList: SlashCommandBuilder[]) => {
 };
 
 export const eventRegister = (client: Client<true>, router: { [key: string]: any }) => {
-    try {
-        Object.keys(router).forEach((key) => {
-            client.on(key, router[key]);
-        });
-        client.on(Events.InteractionCreate, onAutoComplete);
-    } catch (error) {
-        logger.error(error);
-    }
+    Object.keys(router).forEach((key) => {
+        client.on(key, router[key]);
+    });
+    client.on(Events.InteractionCreate, onAutoComplete);
 };
