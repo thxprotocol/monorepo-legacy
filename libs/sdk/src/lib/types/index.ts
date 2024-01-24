@@ -1,7 +1,50 @@
 import { AxiosRequestConfig } from 'axios';
+import { QuestVariant } from './enums';
+
+type THXQuestSocialYouTubePreviewData = {
+    //
+};
+
+type THXQuestSocialDiscordPreviewData = {
+    serverId: string;
+    inviteURL: string;
+    limit: number;
+    days: number;
+    channels: number;
+};
+
+type THXQuestSocialTwitterPreviewData = {
+    minFollowersCount: number;
+    url: string;
+    username: string;
+    name: string;
+    text: string;
+    id: string;
+    profileImgUrl: string;
+};
+
+type THXQuestSocialCreateData = {
+    amount: number;
+    interaction: number;
+    content: string;
+    contentMetadata:
+        | Partial<THXQuestSocialTwitterPreviewData>
+        | Partial<THXQuestSocialDiscordPreviewData>
+        | Partial<THXQuestSocialYouTubePreviewData>;
+};
+
+type THXQuestCreateData = {
+    variant: QuestVariant;
+    isPublished: boolean;
+    title: string;
+    description?: string;
+    image?: string;
+    expiryDate?: Date;
+};
 
 type THXAPIClientOptions = {
     apiUrl?: string;
+    campaignId?: string;
 } & THXOIDCConfig;
 
 type THXBrowserClientOptions = {
@@ -35,4 +78,16 @@ type THXWidgetOptions = {
     containerSelector?: string;
 };
 
-export { THXWidgetOptions, THXAPIClientOptions, THXBrowserClientOptions, THXOIDCConfig, THXOIDCUser, THXRequestConfig };
+export {
+    THXQuestSocialYouTubePreviewData,
+    THXQuestSocialDiscordPreviewData,
+    THXQuestSocialTwitterPreviewData,
+    THXQuestCreateData,
+    THXQuestSocialCreateData,
+    THXWidgetOptions,
+    THXAPIClientOptions,
+    THXBrowserClientOptions,
+    THXOIDCConfig,
+    THXOIDCUser,
+    THXRequestConfig,
+};

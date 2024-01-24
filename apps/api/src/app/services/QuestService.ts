@@ -1,8 +1,8 @@
 import { JobType, QuestVariant } from '@thxnetwork/types/enums';
-import { TAccount, TBrand, TQuest, TQuestEntry, TWallet, TWidget } from '@thxnetwork/types/interfaces';
+import { TAccount, TBrand, TPointReward, TQuest, TQuestEntry, TWallet, TWidget } from '@thxnetwork/types/interfaces';
 import DailyRewardService, { DailyReward } from './DailyRewardService';
 import { ReferralReward, ReferralRewardDocument } from '../models/ReferralReward';
-import QuestSocialService, { PointReward } from './PointRewardService';
+import QuestSocialService, { PointReward, platformInteractionMap } from './PointRewardService';
 import { Web3Quest } from '../models/Web3Quest';
 import { MilestoneReward } from '../models/MilestoneReward';
 import { v4 } from 'uuid';
@@ -276,7 +276,9 @@ async function update(variant: QuestVariant, questId: string, data: Partial<TQue
 
 async function create(variant: QuestVariant, poolId: string, data: Partial<TQuest>, file?: Express.Multer.File) {
     const model = questMap[variant].models.quest;
-    const quest = await model.create({ ...data, poolId, variant, uuid: v4() });
+    const { interaction } = data as TPointReward;
+    const platform = interaction && platformInteractionMap[interaction];
+    const quest = await model.create({ ...data, platform, poolId, variant, uuid: v4() });
 
     if (file) {
         data.image = await ImageService.upload(file);

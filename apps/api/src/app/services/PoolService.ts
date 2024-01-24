@@ -1,9 +1,9 @@
-import { AccessTokenKind, ChainId, CollaboratorInviteState } from '@thxnetwork/types/enums';
+import { ChainId, CollaboratorInviteState } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
-import { TAccount, TParticipant } from '@thxnetwork/types/interfaces';
+import { TAccount } from '@thxnetwork/types/interfaces';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
 import { DailyReward } from '../models/DailyReward';
@@ -31,14 +31,15 @@ import DiscordDataProxy from '../proxies/DiscordDataProxy';
 import { getChainId } from './ContractService';
 import { Identity } from '../models/Identity';
 import { TIdentity } from '@thxnetwork/types/interfaces';
+import { Client } from '../models/Client';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
-function isPoolClient(clientId: string, poolId: string) {
-    return AssetPool.exists({ _id: poolId, clientId });
+async function isAudienceAllowed(aud: string, poolId: string) {
+    return !!(await Client.exists({ clientId: aud, poolId }));
 }
 
-async function hasAccess(sub: string, poolId: string) {
+async function isSubjectAllowed(sub: string, poolId: string) {
     const isOwner = await AssetPool.exists({
         _id: poolId,
         sub,
@@ -331,8 +332,8 @@ async function findCollaborators(pool: AssetPoolDocument) {
 }
 
 export default {
-    isPoolClient,
-    hasAccess,
+    isAudienceAllowed,
+    isSubjectAllowed,
     getById,
     getByAddress,
     deploy,

@@ -138,7 +138,6 @@ export default class BaseDropdownTwitterTweets extends Vue {
     }
 
     submit() {
-        debugger;
         this.$emit('selected', {
             content: this.tweetId,
             contentMetadata: {

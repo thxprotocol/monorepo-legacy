@@ -66,6 +66,19 @@ const questConditionMap: {
     },
 };
 
+const platformInteractionMap = {
+    [RewardConditionInteraction.YouTubeLike]: RewardConditionPlatform.Google,
+    [RewardConditionInteraction.YouTubeSubscribe]: RewardConditionPlatform.Google,
+    [RewardConditionInteraction.TwitterLike]: RewardConditionPlatform.Twitter,
+    [RewardConditionInteraction.TwitterRetweet]: RewardConditionPlatform.Twitter,
+    [RewardConditionInteraction.TwitterFollow]: RewardConditionPlatform.Twitter,
+    [RewardConditionInteraction.DiscordGuildJoined]: RewardConditionPlatform.Discord,
+    [RewardConditionInteraction.TwitterMessage]: RewardConditionPlatform.Twitter,
+    [RewardConditionInteraction.TwitterLikeRetweet]: RewardConditionPlatform.Twitter,
+    [RewardConditionInteraction.DiscordMessage]: RewardConditionPlatform.Discord,
+    [RewardConditionInteraction.DiscordMessageReaction]: RewardConditionPlatform.Discord,
+};
+
 const getPlatformUserId = async (reward: TPointReward, account: TAccount) => {
     try {
         switch (reward.platform) {
@@ -222,7 +235,7 @@ async function findOne(quest: PointRewardDocument, wallet?: WalletDocument) {
     };
 }
 
-export { PointReward };
+export { PointReward, platformInteractionMap };
 export default {
     findOne,
     validate,
