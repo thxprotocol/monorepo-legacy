@@ -32,6 +32,7 @@ export interface TERC721Metadata {
 
 export type TERC721 = {
     _id: string;
+    sub: string;
     type: ERC721Variant;
     chainId: ChainId;
     variant: NFTVariant;
