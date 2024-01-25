@@ -116,3 +116,5 @@ export const SC_ADDRESS = process.env.SC_ADDRESS || '0xb3B2b0fc5ce12aE58EEb13E19
 export const LR_ADDRESS = process.env.LR_ADDRESS || '0x774442713f32fa98bf27bEc78c96fb7186f7C223';
 export const PINATA_API_JWT = process.env.PINATA_API_JWT || '';
 export const ALLOWED_API_CLIENT_ID = process.env.ALLOWED_API_CLIENT_ID || '';
+export const BALANCER_POOL_ID = '0xb204bf10bc3a5435017d3db247f56da601dfe08a0002000000000000000000fe';
+export const BAL_ADDRESS = '0xba100000625a3754423978a60c9317c58a424e3d';
