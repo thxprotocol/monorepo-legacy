@@ -35,6 +35,7 @@ export interface TERC1155Metadata {
 
 export type TERC1155 = {
     _id: string;
+    sub: string;
     variant: NFTVariant;
     type: ERC1155Variant;
     chainId: ChainId;

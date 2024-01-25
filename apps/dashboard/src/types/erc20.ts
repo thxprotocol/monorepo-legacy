@@ -9,6 +9,7 @@ export enum ERC20Type {
 export type TERC20 = {
     _id: string;
     type: ERC20Type;
+    sub: string;
     chainId: ChainId;
     address: string;
     name: string;

@@ -35,8 +35,6 @@
                 description="QR Codes are used to distribute NFT's on scale and in a user-friendly way."
             />
         </div>
-        <modal-erc20-create />
-        <modal-erc20-import />
     </div>
 </template>
 
