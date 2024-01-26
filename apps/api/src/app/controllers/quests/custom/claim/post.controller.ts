@@ -7,6 +7,7 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import LockService from '@thxnetwork/api/services/LockService';
 
 const validation = [param('uuid').custom((uuid) => validate(uuid))];
 
@@ -20,6 +21,11 @@ const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
     if (!wallet) {
         return res.json({ error: 'No wallet found for this account' });
+    }
+
+    const isLocked = await LockService.getIsLocked(quest.locks, wallet);
+    if (isLocked) {
+        return res.json({ error: 'Quest is locked' });
     }
 
     const validationResult = await QuestService.validate(QuestVariant.Custom, quest, account, wallet);

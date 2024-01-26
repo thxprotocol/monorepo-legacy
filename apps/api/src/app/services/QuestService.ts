@@ -350,7 +350,7 @@ function findById(variant: QuestVariant, questId: string) {
 async function findOne(variant: QuestVariant, questId: string, wallet: WalletDocument) {
     const quest = findById(variant, questId);
     const q = await questMap[variant].service.findOne(quest, wallet);
-    const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : true;
+    const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : false;
     return { ...q, isLocked };
 }
 
