@@ -139,7 +139,7 @@ export type TQuestState = {
 
 export type TQuestEntryState = {
     [poolId: string]: {
-        [questId: string]: TQuestEntry[];
+        [questId: string]: TPaginationResult & { results: TQuestEntry[] };
     };
 };
 
@@ -266,6 +266,20 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
+    setQuestEntries({
+        poolId,
+        questId,
+        result,
+    }: {
+        poolId: string;
+        questId: string;
+        result: { results: TQuestEntry[] } & TPaginationResult;
+    }) {
+        if (!this._entries[poolId]) Vue.set(this._entries, poolId, {});
+        Vue.set(this._entries[poolId], questId, result);
+    }
+
+    @Mutation
     unsetIdentity(identity: TIdentity) {
         const index = this._identities[identity.poolId].results.findIndex((i) => i._id === identity._id);
         Vue.delete(this._identities[identity.poolId].results, index);
@@ -286,12 +300,6 @@ class PoolModule extends VuexModule {
         const quests = this._quests[quest.poolId].results;
         const index = quests.findIndex((q) => q._id === quest._id);
         Vue.delete(this._quests[quest.poolId].results, index);
-    }
-
-    @Mutation
-    setQuestEntries({ entries, quest }: { entries: TQuestEntry[]; quest: TQuest }) {
-        if (!this._entries[quest.poolId]) Vue.set(this._entries, quest.poolId, {});
-        Vue.set(this._entries[quest.poolId], String(quest._id), entries);
     }
 
     @Mutation
@@ -445,13 +453,21 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async listEntries(quest: TQuest) {
+    async listEntries(payload: { quest: TQuest; limit: number; page: number }) {
         const { data } = await axios({
             method: 'GET',
-            url: `/pools/${quest.poolId}/quests/${quest._id}/entries`,
-            headers: { 'X-PoolId': quest.poolId },
+            url: `/pools/${payload.quest.poolId}/quests/${payload.quest._id}/entries`,
+            headers: { 'X-PoolId': payload.quest.poolId },
+            params: {
+                page: payload.page,
+                limit: payload.limit,
+            },
         });
-        this.context.commit('setQuestEntries', { quest, entries: data });
+        this.context.commit('setQuestEntries', {
+            poolId: payload.quest.poolId,
+            questId: payload.quest._id,
+            result: data,
+        });
     }
 
     @Action({ rawError: true })

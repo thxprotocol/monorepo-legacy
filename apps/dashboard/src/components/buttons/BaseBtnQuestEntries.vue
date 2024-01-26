@@ -3,20 +3,15 @@
         <b-spinner v-if="isLoading" small variant="primary" />
         <template v-else>
             <small><i class="fas text-muted fa-users mr-1" /></small>
-            {{ questEntries.length }}/{{ '&infin;' }}
+            {{ questEntries.results.length }}/{{ '&infin;' }}
         </template>
-        <BaseModalQuestSocialEntries
-            :id="`modalQuestSocialEntries${quest._id}`"
-            :entries="questEntries"
-            :pool="pool"
-            :quest="quest"
-        />
+        <BaseModalQuestSocialEntries :id="`modalQuestSocialEntries${quest._id}`" :quest="quest" />
     </b-link>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
-import type { TPointReward, TPool } from '@thxnetwork/common/lib/types';
+import type { TPointReward } from '@thxnetwork/common/lib/types';
 import { mapGetters } from 'vuex';
 import { TQuestEntryState } from '../../store/modules/pools';
 import BaseModalQuestSocialEntries from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialEntries.vue';
@@ -26,14 +21,13 @@ import BaseModalQuestSocialEntries from '@thxnetwork/dashboard/components/modals
         BaseModalQuestSocialEntries,
     },
     computed: mapGetters({
-        entries: 'pools/entries',
+        entriesList: 'pools/entries',
     }),
 })
 export default class BaseBtnQuestEntries extends Vue {
     isLoading = false;
-    entries!: TQuestEntryState;
+    entriesList!: TQuestEntryState;
 
-    @Prop() pool!: TPool;
     @Prop() quest!: TPointReward;
 
     @Watch('quest')
@@ -45,14 +39,16 @@ export default class BaseBtnQuestEntries extends Vue {
         this.getEntries(this.quest);
     }
 
-    getEntries(quest: TPointReward) {
+    async getEntries(quest: TPointReward) {
         this.isLoading = true;
-        this.$store.dispatch('pools/listEntries', quest).then(() => (this.isLoading = false));
+        await this.$store.dispatch('pools/listEntries', { quest, page: 1, limit: 25 });
+        this.isLoading = false;
     }
 
     get questEntries() {
-        if (!this.entries || !this.entries[this.pool._id] || !this.entries[this.pool._id][this.quest._id]) return [];
-        return this.entries[this.pool._id][this.quest._id];
+        if (!this.entriesList[this.quest.poolId]) return { results: [] };
+        if (!this.entriesList[this.quest.poolId][this.quest._id]) return { results: [] };
+        return this.entriesList[this.quest.poolId][this.quest._id];
     }
 }
 </script>

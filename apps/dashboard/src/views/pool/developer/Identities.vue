@@ -120,6 +120,7 @@ export default class IdentitiesView extends Vue {
     async onClickCreate() {
         this.isLoadingCreate = true;
         await this.$store.dispatch('pools/createIdentity', this.pool);
+        this.listIdentities();
         this.isLoadingCreate = false;
     }
 

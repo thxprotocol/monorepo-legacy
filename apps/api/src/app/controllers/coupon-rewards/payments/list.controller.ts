@@ -15,15 +15,15 @@ const controller = async (req: Request, res: Response) => {
     if (!wallet) throw new NotFoundError('Could not find the wallet for the user');
 
     const couponRewardPayments = await CouponRewardPayment.find({ walletId: wallet._id });
-    const couponCodes = await Promise.all(
-        couponRewardPayments.map(async (p) => {
-            const couponCode = await CouponCode.findById(p.couponCodeId);
-            if (!couponCode) return;
-
-            const reward = await CouponReward.findById(couponCode.couponRewardId);
-            return { ...p.toJSON(), code: couponCode.code, webshopURL: reward.webshopURL };
-        }),
-    );
+    const promises = couponRewardPayments.map(async (p) => {
+        const couponCode = await CouponCode.findById(p.couponCodeId);
+        const reward = couponCode ? await CouponReward.findById(couponCode.couponRewardId) : null;
+        return { ...p.toJSON(), code: couponCode.code, webshopURL: reward && reward.webshopURL };
+    });
+    const results = await Promise.allSettled(promises);
+    const couponCodes = results
+        .filter((result) => result.status === 'fulfilled')
+        .map((result: any & { value: boolean }) => result.value);
 
     res.json(couponCodes);
 };

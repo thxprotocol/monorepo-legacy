@@ -99,8 +99,10 @@ function findByPool(pool: AssetPoolDocument, page = 1, limit = 5) {
     return paginatedResults(PointReward, page, limit, { poolId: pool._id });
 }
 
-async function findEntries(quest: PointRewardDocument) {
-    const entries = await PointRewardClaim.find({ questId: quest._id });
+async function findEntries(quest: PointRewardDocument, page = 1, limit = 25) {
+    const skip = (page - 1) * limit;
+    const total = await PointRewardClaim.countDocuments({ questId: quest._id });
+    const entries = await PointRewardClaim.find({ questId: quest._id }).limit(limit).skip(skip);
     const subs = entries.map((entry) => entry.sub);
     const accounts = await AccountProxy.getMany(subs);
     const pointBalances = await PointBalance.find({
@@ -114,7 +116,12 @@ async function findEntries(quest: PointRewardDocument) {
         return { ...entry.toJSON(), account, wallet, pointBalance: pointBalance ? pointBalance.balance : 0 };
     });
     const results = await Promise.allSettled(promises);
-    return results.filter((result) => result.status === 'fulfilled').map((result: any) => result.value);
+    return {
+        total,
+        limit,
+        page,
+        results: results.filter((result) => result.status === 'fulfilled').map((result: any) => result.value),
+    };
 }
 
 async function isAvailable(quest: PointRewardDocument, account: TAccount, wallet?: WalletDocument) {

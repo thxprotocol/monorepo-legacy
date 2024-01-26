@@ -1,15 +1,17 @@
 <template>
-    <base-modal
-        hide-footer
-        size="xl"
-        :title="`Quest Entries: ${entriesByPage.length} `"
-        :id="id"
-        @show="onShow"
-        v-if="pool"
-    >
+    <base-modal hide-footer size="xl" :title="`Quest Entries: ${questEntries.total} `" :id="id" @show="onShow">
         <template #modal-body>
+            <BaseCardTableHeader
+                :page="page"
+                :limit="limit"
+                :total-rows="questEntries.total"
+                :selectedItems="selectedItems"
+                :actions="[]"
+                @change-page="page = $event"
+                @change-limit="limit = $event"
+            />
             <BCard variant="white" body-class="p-0 shadow-sm" class="mb-3">
-                <BTable hover :items="entriesByPage" responsive="xl" show-empty sort-by="isApproved" :sort-desc="false">
+                <BTable hover :items="entries" responsive="xl" show-empty sort-by="isApproved" :sort-desc="false">
                     <!-- Head formatting -->
                     <template #head(account)> Username </template>
                     <template #head(email)> E-mail</template>
@@ -59,12 +61,12 @@ import { format, differenceInMilliseconds } from 'date-fns';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModal from './BaseModal.vue';
 import { getAddressURL } from '../../utils/chains';
-import { platformList } from '@thxnetwork/dashboard/types/rewards';
 import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
 import BaseParticipantWallet, { parseWallet } from '@thxnetwork/dashboard/components/BaseParticipantWallet.vue';
 import BaseParticipantConnectedAccount, {
     parseConnectedAccounts,
 } from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
+import { TQuestEntryState } from '@thxnetwork/dashboard/store/modules/pools';
 
 // Function to format the duration into a user-friendly string
 function formatDuration(durationInMilliseconds) {
@@ -99,33 +101,29 @@ function formatDuration(durationInMilliseconds) {
         BaseParticipantConnectedAccount,
     },
     computed: mapGetters({
-        totals: 'referralRewardClaims/totals',
-        referralRewardClaims: 'referralRewardClaims/all',
+        entriesList: 'pools/entries',
     }),
 })
 export default class BaseModalQuestSocialEntries extends Vue {
     getAddressURL = getAddressURL;
-    platformList = platformList;
     format = format;
     isLoading = true;
-    limit = 5;
-    page = 1;
     selectedItems: string[] = [];
-
-    totals!: { [poolId: string]: number };
+    entriesList!: TQuestEntryState;
+    limit = 25;
+    page = 1;
 
     @Prop() id!: string;
-    @Prop() pool!: TPool;
     @Prop() quest!: TPointReward;
-    @Prop() entries!: TQuestEntry[];
 
-    get total() {
-        return this.totals[this.pool._id];
+    get questEntries() {
+        if (!this.entriesList[this.quest.poolId]) return { total: 0, results: [] };
+        if (!this.entriesList[this.quest.poolId][this.quest._id]) return { total: 0, results: [] };
+        return this.entriesList[this.quest.poolId][this.quest._id];
     }
 
-    get entriesByPage() {
-        if (!this.entries) return [];
-        return this.entries
+    get entries() {
+        return this.questEntries.results
             .sort((a: TQuestEntry, b: TQuestEntry) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((entry: any) => ({
                 account: parseAccount({ id: entry._id, account: entry.account }),
