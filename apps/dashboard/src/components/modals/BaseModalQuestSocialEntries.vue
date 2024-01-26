@@ -7,10 +7,18 @@
                 :total-rows="questEntries.total"
                 :selectedItems="selectedItems"
                 :actions="[]"
-                @change-page="page = $event"
-                @change-limit="limit = $event"
+                @change-page="onChangePage"
+                @change-limit="onChangeLimit"
             />
-            <BCard variant="white" body-class="p-0 shadow-sm" class="mb-3">
+            <BCard
+                hover
+                variant="white"
+                body-class="p-0 shadow-sm"
+                class="mb-3"
+                :busy="isLoading"
+                responsive="lg"
+                show-empty
+            >
                 <BTable hover :items="entries" responsive="xl" show-empty sort-by="isApproved" :sort-desc="false">
                     <!-- Head formatting -->
                     <template #head(account)> Username </template>
@@ -143,8 +151,24 @@ export default class BaseModalQuestSocialEntries extends Vue {
         return formatDuration(durationInMilliseconds);
     }
 
+    async getEntries() {
+        this.isLoading = true;
+        await this.$store.dispatch('pools/getQuestEntries', { quest: this.quest, page: this.page, limit: this.limit });
+        this.isLoading = false;
+    }
+
     onShow() {
         // debugger;
+    }
+
+    onChangePage(page: number) {
+        this.page = page;
+        this.getEntries();
+    }
+
+    onChangeLimit(limit: number) {
+        this.limit = limit;
+        this.getEntries();
     }
 }
 </script>
