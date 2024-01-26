@@ -1,5 +1,5 @@
 <template>
-    <base-modal hide-footer size="xl" :title="`Quest Entries: ${questEntries.total} `" :id="id" @show="onShow">
+    <base-modal hide-footer size="xl" :title="`Quest Entries: ${questEntries.total} `" :id="id">
         <template #modal-body>
             <BaseCardTableHeader
                 :page="page"
@@ -10,16 +10,17 @@
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
-            <BCard
-                hover
-                variant="white"
-                body-class="p-0 shadow-sm"
-                class="mb-3"
-                :busy="isLoading"
-                responsive="lg"
-                show-empty
-            >
-                <BTable hover :items="entries" responsive="xl" show-empty sort-by="isApproved" :sort-desc="false">
+            {{ isLoading }} {{ page }}
+            <b-card variant="white" body-class="p-0 shadow-sm" class="mb-3">
+                <b-table
+                    hover
+                    :busy="isLoading"
+                    :items="entries"
+                    responsive="xl"
+                    show-empty
+                    sort-by="isApproved"
+                    :sort-desc="false"
+                >
                     <!-- Head formatting -->
                     <template #head(account)> Username </template>
                     <template #head(email)> E-mail</template>
@@ -55,8 +56,8 @@
                     <template #cell(createdAt)="{ item }">
                         <small class="text-muted">{{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}</small>
                     </template>
-                </BTable>
-            </BCard>
+                </b-table>
+            </b-card>
         </template>
     </base-modal>
 </template>
@@ -115,7 +116,7 @@ function formatDuration(durationInMilliseconds) {
 export default class BaseModalQuestSocialEntries extends Vue {
     getAddressURL = getAddressURL;
     format = format;
-    isLoading = true;
+    isLoading = false;
     selectedItems: string[] = [];
     entriesList!: TQuestEntryState;
     limit = 25;
@@ -153,12 +154,8 @@ export default class BaseModalQuestSocialEntries extends Vue {
 
     async getEntries() {
         this.isLoading = true;
-        await this.$store.dispatch('pools/getQuestEntries', { quest: this.quest, page: this.page, limit: this.limit });
+        await this.$store.dispatch('pools/listEntries', { quest: this.quest, page: this.page, limit: this.limit });
         this.isLoading = false;
-    }
-
-    onShow() {
-        // debugger;
     }
 
     onChangePage(page: number) {
@@ -167,6 +164,7 @@ export default class BaseModalQuestSocialEntries extends Vue {
     }
 
     onChangeLimit(limit: number) {
+        this.page = 1;
         this.limit = limit;
         this.getEntries();
     }

@@ -65,7 +65,7 @@
                 size="sm"
                 class="my-0"
                 @change="$emit('change-page', $event)"
-                v-model="page"
+                v-model="pageModel"
                 :per-page="limit"
                 :total-rows="totalRows"
                 align="center"
@@ -76,7 +76,7 @@
 
 <script lang="ts">
 import { type TPool } from '@thxnetwork/types/interfaces';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
 export type TTableBulkAction = { variant: number; label: string };
 
@@ -94,10 +94,16 @@ export default class BaseCardTableHeader extends Vue {
     @Prop() toggleLabel!: string;
     @Prop() published!: boolean;
 
+    pageModel = 1;
     selectedBulkAction: TTableBulkAction | null = null;
 
     get isPublishFilterShown() {
         return typeof this.published !== 'undefined';
+    }
+
+    @Watch('page')
+    onChangePage(page: number) {
+        this.pageModel = page;
     }
 
     mounted() {
