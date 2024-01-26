@@ -11,7 +11,15 @@ export async function controller(req: Request, res: Response) {
 
     // if there is a session we need to check for dups before we store the token
     if (interaction.session) {
-        const isConnected = await AccountService.isConnected(interaction, tokenInfo.userId, AccessTokenKind.Google);
+        const kinds = [AccessTokenKind.YoutubeManage, AccessTokenKind.YoutubeView, AccessTokenKind.Google];
+        const results = await Promise.all(
+            kinds.map(async (kind: AccessTokenKind) => ({
+                kind,
+                result: await YouTubeService.hasYoutubeScopes(tokenInfo.accessToken, kind),
+            })),
+        );
+        const { kind } = results.find((r) => !!r.result);
+        const isConnected = await AccountService.isConnected(interaction, tokenInfo.userId, kind);
         if (isConnected) {
             return res.render('error', {
                 returnUrl: interaction.params.return_url,
