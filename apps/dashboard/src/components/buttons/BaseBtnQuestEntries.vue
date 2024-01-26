@@ -3,7 +3,7 @@
         <b-spinner v-if="isLoading" small variant="primary" />
         <template v-else>
             <small><i class="fas text-muted fa-users mr-1" /></small>
-            {{ questEntries.results.length }}/{{ '&infin;' }}
+            {{ questEntries.total }}/{{ '&infin;' }}
         </template>
         <BaseModalQuestSocialEntries :id="`modalQuestSocialEntries${quest._id}`" :quest="quest" />
     </b-link>
@@ -46,8 +46,8 @@ export default class BaseBtnQuestEntries extends Vue {
     }
 
     get questEntries() {
-        if (!this.entriesList[this.quest.poolId]) return { results: [] };
-        if (!this.entriesList[this.quest.poolId][this.quest._id]) return { results: [] };
+        if (!this.entriesList[this.quest.poolId]) return { total: 0, results: [] };
+        if (!this.entriesList[this.quest.poolId][this.quest._id]) return { total: 0, results: [] };
         return this.entriesList[this.quest.poolId][this.quest._id];
     }
 }
