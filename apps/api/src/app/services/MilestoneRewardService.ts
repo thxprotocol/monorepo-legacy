@@ -42,7 +42,7 @@ async function validate(quest: MilestoneRewardDocument, wallet: WalletDocument) 
         // See if there are identities
         const identities = await Identity.find({ poolId: quest.poolId, sub: wallet.sub });
         if (!identities.length) {
-            throw new Error('No identity connected to this account');
+            throw new Error('No identity connected to this account. Please ask for this in your community!');
         }
 
         const entries = await MilestoneRewardClaim.find({
