@@ -10,7 +10,6 @@
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
-            {{ isLoading }} {{ page }}
             <b-card variant="white" body-class="p-0 shadow-sm" class="mb-3">
                 <b-table
                     hover

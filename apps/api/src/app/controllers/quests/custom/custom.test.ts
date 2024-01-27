@@ -10,7 +10,7 @@ import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 
 const user = request.agent(app);
 
-describe('Milestone Rewards', () => {
+describe('Quests Custom ', () => {
     let pool: AssetPoolDocument, milestoneReward: any, claim: any;
     const eventName = v4();
 
@@ -28,7 +28,7 @@ describe('Milestone Rewards', () => {
             .expect(201, done);
     });
 
-    it('POST /milestone-rewards', (done) => {
+    it('POST /pools/:id/quests', (done) => {
         user.post(`/v1/pools/${pool._id}/quests`)
             .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
             .send({
@@ -49,7 +49,7 @@ describe('Milestone Rewards', () => {
             .expect(201, done);
     });
 
-    describe('Qualify and Claim', () => {
+    describe('Qualify (to be deprecated)', () => {
         it('POST /webhook/milestone/:token/claim', (done) => {
             user.post(`/v1/webhook/milestone/${milestoneReward.uuid}/claim`)
                 .send({
@@ -65,7 +65,9 @@ describe('Milestone Rewards', () => {
                 })
                 .expect(201, done);
         });
+    });
 
+    describe('Collect', () => {
         it('GET /account to update identity', (done) => {
             user.get(`/v1/account`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken2 })
