@@ -1,17 +1,6 @@
 import rateLimit from 'express-rate-limit';
-import {
-    RATE_LIMIT_REWARD_GIVE,
-    RATE_LIMIT_REWARD_CLAIM,
-    RATE_LIMIT_REWARD_CLAIM_WINDOW,
-    RATE_LIMIT_REWARD_GIVE_WINDOW,
-} from '@thxnetwork/api/config/secrets';
+import { NODE_ENV } from '../config/secrets';
 
-export const rateLimitRewardGive = rateLimit({
-    windowMs: RATE_LIMIT_REWARD_GIVE_WINDOW * 1000, // in seconds * 1000ms
-    max: RATE_LIMIT_REWARD_GIVE, // limit each IP to n requests per windowMs
-});
+const limitInSeconds = (seconds: number) => rateLimit(NODE_ENV !== 'test' && { windowMs: seconds * 1000, max: 1 });
 
-export const rateLimitRewardClaim = rateLimit({
-    windowMs: RATE_LIMIT_REWARD_CLAIM_WINDOW * 1000, // in seconds * 1000ms
-    max: RATE_LIMIT_REWARD_CLAIM, // limit each IP to n requests per windowMs
-});
+export { limitInSeconds };

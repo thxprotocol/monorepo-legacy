@@ -1,37 +1,22 @@
-import { assertRequestInput, checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
+import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 import express from 'express';
 import ListQuests from './list.controller';
 import ListQuestsPublic from './public/list.controller';
-import CreateQuestDailyClaim from './daily/claim/post.controller';
-import CreateQuestInviteClaim from './invite/claim/post.controller';
-
-import routerQuestSocial from './social/social.router';
-
-import CreateQuestCustomClaim from './custom/claim/post.controller';
-import CreateQuestWeb3Claim from './web3/complete/post.controller';
-import CreateQuestGitcoinEntry from './gitcoin/entry/post.controller';
-import rateLimit from 'express-rate-limit';
-import { NODE_ENV } from '@thxnetwork/api/config/secrets';
+import RouterQuestSocial from './social/social.router';
+import RouterQuestWeb3 from './web3/web3.router';
+import RouterQuestGitcoin from './gitcoin/gitcoin.router';
+import RouterQuestDaily from './daily/daily.router';
+import RouterQuestCustom from './custom/custom.router';
 
 const router = express.Router();
 
 router.get('/', ListQuests.controller);
 router.get('/public', ListQuestsPublic.controller);
-
-router.post(
-    '/invite/:uuid/claim',
-    rateLimit((() => (NODE_ENV !== 'test' ? { windowMs: 1 * 1000, max: 1 } : {}))()),
-    assertRequestInput(CreateQuestInviteClaim.validation),
-    CreateQuestInviteClaim.controller,
-);
-
 router.use(checkJwt).use(corsHandler);
-router.use('/social', routerQuestSocial);
-
-// TODO Refactor other quest endpoints as social router
-router.post('/daily/:id/claim', CreateQuestDailyClaim.controller);
-router.post('/custom/claims/:uuid/collect', CreateQuestCustomClaim.controller);
-router.post('/web3/:uuid/claim', CreateQuestWeb3Claim.controller);
-router.post('/gitcoin/:uuid/entry', CreateQuestGitcoinEntry.controller);
+router.use('/social', RouterQuestSocial);
+router.use('/web3', RouterQuestWeb3);
+router.use('/gitcoin', RouterQuestGitcoin);
+router.use('/daily', RouterQuestDaily);
+router.use('/custom', RouterQuestCustom);
 
 export default router;
