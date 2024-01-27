@@ -1,7 +1,7 @@
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 import express from 'express';
 import ListQuests from './list.controller';
-import ListQuestsPublic from './public/list.controller';
+import ListQuestsPublic from './recent/list.controller';
 import RouterQuestSocial from './social/social.router';
 import RouterQuestWeb3 from './web3/web3.router';
 import RouterQuestGitcoin from './gitcoin/gitcoin.router';
