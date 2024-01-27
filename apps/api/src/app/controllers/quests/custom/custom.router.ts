@@ -5,6 +5,6 @@ import { limitInSeconds } from '@thxnetwork/api/util/ratelimiter';
 
 export const router = express.Router({ mergeParams: true });
 
-router.post('/claims/:uuid/collect', limitInSeconds, assertRequestInput(Create.validation), Create.controller);
+router.post('/claims/:uuid/collect', limitInSeconds(3), assertRequestInput(Create.validation), Create.controller);
 
 export default router;

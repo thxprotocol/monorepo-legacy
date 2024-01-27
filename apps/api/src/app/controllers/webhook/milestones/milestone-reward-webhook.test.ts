@@ -72,11 +72,12 @@ describe('Milestone Rewards', () => {
                 .expect(200, done);
         });
 
-        it('POST /quests/custom/claims/:uuid/collect', (done) => {
-            user.post(`/v1/quests/custom/claims/${milestoneReward.uuid}/collect`)
+        it('POST /quests/custom/claims/:uuid/collect', async () => {
+            const { status } = await user
+                .post(`/v1/quests/custom/claims/${milestoneReward.uuid}/collect`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken2 })
-                .send()
-                .expect(201, done);
+                .send();
+            expect(status).toBe(201);
         });
     });
 });
