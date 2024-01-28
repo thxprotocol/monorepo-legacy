@@ -10,6 +10,7 @@ import { logger } from './logger';
 import { MONGODB_URI } from '../config/secrets';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import WebhookService from '../services/WebhookService';
+import QuestService from '../services/QuestService';
 
 const agenda = new Agenda({
     db: {
@@ -25,8 +26,9 @@ agenda.define(JobType.UpdateCampaignRanks, updateCampaignRanks);
 agenda.define(JobType.UpdateParticipantRanks, (job: Job) => updateParticipantRanks(job));
 agenda.define(JobType.UpdatePendingTransactions, updatePendingTransactions);
 agenda.define(JobType.CreateTwitterQuests, createTwitterQuests);
-agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
+agenda.define(JobType.CreateQuestEntry, (job: Job) => QuestService.createEntryJob(job));
 agenda.define(JobType.DeploySafe, (job: Job) => SafeService.createJob(job));
+agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
 agenda.define(JobType.MigrateWallets, (job: Job) => SafeService.migrateJob(job));
 agenda.define(JobType.RequestAttemp, (job: Job) => WebhookService.requestAttemptJob(job));
 
@@ -34,7 +36,6 @@ db.connection.once('open', async () => {
     await agenda.start();
 
     await agenda.every('5 minutes', JobType.UpdateCampaignRanks);
-    // await agenda.every('5 minutes', JobType.UpdateParticipantRanks);
     await agenda.every('10 seconds', JobType.UpdatePendingTransactions);
     await agenda.every('15 minutes', JobType.CreateTwitterQuests);
     await agenda.every('0 9 * * MON', JobType.SendCampaignReport);

@@ -79,15 +79,19 @@ const platformInteractionMap = {
     [RewardConditionInteraction.DiscordMessageReaction]: RewardConditionPlatform.Discord,
 };
 
-const getPlatformUserId = async (reward: TPointReward, account: TAccount) => {
+const getPlatformUserId = async (quest: TPointReward, account: TAccount) => {
     try {
-        switch (reward.platform) {
+        const getUserId = (account: TAccount, kind: AccessTokenKind) => {
+            const token = account.connectedAccounts.find((a) => a.kind === kind);
+            return token && token.userId;
+        };
+        switch (quest.platform) {
             case RewardConditionPlatform.Google:
-                return await YouTubeDataProxy.getUserId(account, AccessTokenKind.YoutubeManage);
+                return getUserId(account, AccessTokenKind.YoutubeManage);
             case RewardConditionPlatform.Twitter:
-                return await TwitterDataProxy.getUserId(account);
+                return getUserId(account, AccessTokenKind.Twitter);
             case RewardConditionPlatform.Discord: {
-                return await DiscordDataProxy.getUserId(account);
+                return getUserId(account, AccessTokenKind.Discord);
             }
         }
     } catch (error) {
@@ -127,7 +131,7 @@ async function findEntries(quest: PointRewardDocument, page = 1, limit = 25) {
 async function isAvailable(quest: PointRewardDocument, account: TAccount, wallet?: WalletDocument) {
     if (!account || !wallet) return true;
 
-    // We validate for both here since there are claims that only contain a sub
+    // We validate for both here since there are entries that only contain a sub
     // and should not be claimed again.
     const ids: any[] = [{ sub: account.sub }, { walletId: wallet._id }];
     const platformUserId = await getPlatformUserId(quest, account);
@@ -137,7 +141,7 @@ async function isAvailable(quest: PointRewardDocument, account: TAccount, wallet
         return true;
     }
 
-    // If none exsist the quest is available
+    // If no entry exist the quest is available
     return !(await PointRewardClaim.exists({
         questId: quest._id,
         $or: ids,

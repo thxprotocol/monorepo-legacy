@@ -1,4 +1,4 @@
-import { JobType, QuestVariant } from '@thxnetwork/types/enums';
+import { AccountPlanType, JobType, QuestVariant } from '@thxnetwork/types/enums';
 import { TAccount, TBrand, TPointReward, TQuest, TQuestEntry, TWallet, TWidget } from '@thxnetwork/types/interfaces';
 import DailyRewardService, { DailyReward } from './DailyRewardService';
 import { ReferralReward, ReferralRewardDocument } from '../models/ReferralReward';
@@ -34,8 +34,11 @@ import LockService from './LockService';
 import { logger } from '../util/logger';
 import { GitcoinQuest } from '../models/GitcoinQuest';
 import { GitcoinQuestEntry } from '../models/GitcoinQuestEntry';
+import { Job } from '@hokify/agenda';
 import QuestGitcoinService from './QuestGitcoinService';
 import ImageService from './ImageService';
+import SafeService from './SafeService';
+import AccountProxy from '../proxies/AccountProxy';
 
 type TValidationResult = {
     result: boolean;
@@ -337,11 +340,11 @@ async function complete(
 
     await PointBalanceService.add(pool, wallet._id, amount);
     await DiscordDataProxy.sendChannelMessage(pool, content, [], [button]);
+
     await agenda.now(JobType.UpdateParticipantRanks, { poolId: pool._id });
 
     return entry;
 }
-
 function findById(variant: QuestVariant, questId: string) {
     const model = questMap[variant].models.quest;
     return model.findById(questId);
@@ -352,6 +355,24 @@ async function findOne(variant: QuestVariant, questId: string, wallet: WalletDoc
     const q = await questMap[variant].service.findOne(quest, wallet);
     const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : false;
     return { ...q, isLocked };
+}
+
+async function createEntryJob(job: Job) {
+    const { variant, questId, sub, platformUserId } = job.attrs.data as any;
+    const quest = await findById(variant, questId);
+    const account = await AccountProxy.getById(sub);
+    const wallet = await SafeService.findPrimary(sub);
+
+    const isAvailable = await QuestSocialService.isAvailable(quest, account, wallet);
+    if (!isAvailable) throw new Error(`Quest entry exists already.`);
+
+    const pool = await PoolService.getById(quest.poolId);
+    const amount = await getAmount(variant, quest, account, wallet);
+
+    await complete(variant, amount, pool, quest, account, wallet, {
+        questId: quest._id,
+        platformUserId,
+    });
 }
 
 async function list(pool: AssetPoolDocument, wallet?: WalletDocument) {
@@ -385,4 +406,4 @@ async function list(pool: AssetPoolDocument, wallet?: WalletDocument) {
 }
 
 export { questMap };
-export default { findOne, list, getAmount, isAvailable, create, update, complete, validate, findById };
+export default { createEntryJob, findOne, list, getAmount, isAvailable, create, update, complete, validate, findById };

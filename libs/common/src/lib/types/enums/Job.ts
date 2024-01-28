@@ -6,5 +6,6 @@ export enum JobType {
     SendCampaignReport = 'sendPoolAnalyticsReport',
     MigrateWallets = 'migrateWallets',
     DeploySafe = 'deploySafe',
+    CreateQuestEntry = 'createQuestEntry',
     RequestAttemp = 'requestAttempt',
 }
