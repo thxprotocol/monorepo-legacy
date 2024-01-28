@@ -9,11 +9,14 @@ import SafeService from '@thxnetwork/api/services/SafeService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import PointRewardService from '@thxnetwork/api/services/PointRewardService';
 import LockService from '@thxnetwork/api/services/LockService';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
 
 const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     const quest = await PointReward.findById(req.params.id);
+    if (!quest) throw new NotFoundError('Quest not found.');
+
     const account = await AccountProxy.getById(req.auth.sub);
     const wallet = await SafeService.findPrimary(req.auth.sub, getChainId());
     const isLocked = await LockService.getIsLocked(quest.locks, wallet);
