@@ -10,7 +10,11 @@ import { AxiosResponse } from 'axios';
 
 const ERROR_TOKEN_REQUEST_FAILED = 'Failed to request access token';
 
-export class TwitterService {
+class BaseOAuthService {
+    //
+}
+
+export class TwitterService inherits BaseOAuthService {
     static async isAuthorized(account: AccountDocument) {
         const token = account.getToken(AccessTokenKind.Twitter);
         if (!token || !token.accessToken) return false;
@@ -25,6 +29,7 @@ export class TwitterService {
                     accessToken: tokens.access_token,
                     refreshToken: tokens.refresh_token,
                     expiry,
+                    userId: user.id,
                     metadata: {
                         name: user.name,
                         username: user.username,
