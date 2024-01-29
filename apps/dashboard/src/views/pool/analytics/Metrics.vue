@@ -226,7 +226,7 @@ export default class ViewAnalyticsMetrics extends Vue {
     }
 
     async getLeaderboard() {
-        this.leaderboard = await this.$store.dispatch('pools/participants', {
+        this.leaderboard = await this.$store.dispatch('pools/listParticipants', {
             pool: this.pool,
             page: 1,
             limit: 10,

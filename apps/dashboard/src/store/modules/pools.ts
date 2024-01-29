@@ -3,6 +3,7 @@ import type {
     TDiscordGuild,
     TEvent,
     TPaginationResult,
+    TParticipant,
     TPool,
     TPoolSettings,
     TPoolTransferResponse,
@@ -156,6 +157,9 @@ export type TGuildState = {
 export type TIdentityState = {
     [poolId: string]: TPaginationResult & { results: TIdentity[] };
 };
+export type TParticipantState = {
+    [poolId: string]: TPaginationResult & { results: TParticipant[] };
+};
 
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
@@ -165,6 +169,7 @@ class PoolModule extends VuexModule {
     _guilds: TGuildState = {};
     _events: TEventState = {};
     _identities: TIdentityState = {};
+    _participants: TParticipantState = {};
     _analytics: IPoolAnalytics = {};
     _analyticsLeaderBoard: IPoolAnalyticsLeaderBoard = {};
     _analyticsMetrics: IPoolAnalyticsLeaderBoard = {};
@@ -191,6 +196,10 @@ class PoolModule extends VuexModule {
 
     get entries() {
         return this._entries;
+    }
+
+    get participants() {
+        return this._participants;
     }
 
     get analytics() {
@@ -311,6 +320,17 @@ class PoolModule extends VuexModule {
     @Mutation
     unsetGuild(guild: TDiscordGuild) {
         Vue.delete(this._guilds[guild.poolId], guild.guildId);
+    }
+
+    @Mutation
+    setParticipants(data: { poolId: string; result: { results: TParticipant[] } & TPaginationResult }) {
+        Vue.set(this._participants, data.poolId, data.result);
+    }
+
+    @Mutation
+    setParticipant(data: TParticipant) {
+        const index = this._participants[data.poolId].results.findIndex((p) => p._id === data._id);
+        Vue.set(this._participants[data.poolId].results, index, data);
     }
 
     @Action({ rawError: true })
@@ -557,7 +577,7 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async participants({ pool, page, limit, sort }: { pool: TPool; page: string; limit: string; sort: string }) {
+    async listParticipants({ pool, page, limit, sort }: { pool: TPool; page: string; limit: string; sort: string }) {
         const { data } = await axios({
             method: 'GET',
             url: `/pools/${pool._id}/participants`,
@@ -568,7 +588,21 @@ class PoolModule extends VuexModule {
                 sort,
             },
         });
+        this.context.commit('setParticipants', { poolId: pool._id, result: data });
+
+        // Can not remove yet as it breaks leaderboards
         return data;
+    }
+
+    @Action({ rawError: true })
+    async updateParticipant(data: TParticipant) {
+        await axios({
+            method: 'PATCH',
+            url: `/pools/${data.poolId}/participants/${String(data._id)}`,
+            headers: { 'X-PoolId': data.poolId },
+            data,
+        });
+        this.context.commit('setParticipant', data);
     }
 
     @Action({ rawError: true })

@@ -1,12 +1,12 @@
 <template>
     <div>
-        <h2 class="mb-3">Participants: {{ result.total }}</h2>
+        <h2 class="mb-3">Participants: {{ participants.total }}</h2>
         <BCard class="shadow-sm mb-5" no-body v-if="pool">
             <BaseCardTableHeader
                 :pool="pool"
                 :page="page"
                 :limit="limit"
-                :total-rows="result.total"
+                :total-rows="participants.total"
                 :selectedItems="[]"
                 :actions="[]"
                 @change-page="onChangePage"
@@ -78,22 +78,16 @@
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
                         <b-dropdown-item
-                            disabled
-                            v-b-modal="'modalSendPoints' + item.participant._id"
+                            v-b-modal="'BaseModalParticipant' + item.participant._id"
                             link-class="d-flex align-items-center justify-content-between"
                         >
-                            Point Balance
-                            <i class="fas fa-caret-right ml-3" />
-                        </b-dropdown-item>
-                        <b-dropdown-item
-                            disabled
-                            v-b-modal="'modalSendMessage' + item.participant._id"
-                            link-class="d-flex align-items-center justify-content-between"
-                        >
-                            Notification
-                            <i class="fas fa-caret-right ml-3" />
+                            Update
                         </b-dropdown-item>
                     </b-dropdown>
+                    <BaseModalParticipant
+                        :id="'BaseModalParticipant' + item.participant._id"
+                        :participant="item.participant"
+                    />
                 </template>
             </BTable>
         </BCard>
@@ -107,11 +101,12 @@ import BaseBtnSort from '@thxnetwork/dashboard/components/buttons/BaseBtnSort.vu
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
 import BaseParticipantWallet, { parseWallet } from '@thxnetwork/dashboard/components/BaseParticipantWallet.vue';
+import BaseModalParticipant from '@thxnetwork/dashboard/components/modals/BaseModalParticipant.vue';
 import BaseParticipantConnectedAccount, {
     parseConnectedAccounts,
 } from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
 import { format } from 'date-fns';
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { IPools, TParticipantState } from '@thxnetwork/dashboard/store/modules/pools';
 
 @Component({
     components: {
@@ -120,16 +115,19 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
         BaseParticipantAccount,
         BaseParticipantWallet,
         BaseParticipantConnectedAccount,
+        BaseModalParticipant,
     },
     computed: mapGetters({
         pools: 'pools/all',
         profile: 'account/profile',
+        participantList: 'pools/participants',
     }),
 })
 export default class ViewParticipants extends Vue {
     pools!: IPools;
     isLoading = false;
     format = format;
+    participantList!: TParticipantState;
     page = 1;
     limit = 10;
     sorts = {
@@ -173,17 +171,18 @@ export default class ViewParticipants extends Vue {
             return dateB - dateA;
         },
     };
-    result = {
-        results: [],
-        total: 0,
-    };
 
     get pool() {
         return this.pools[this.$route.params.id];
     }
 
+    get participants() {
+        if (!this.participantList[this.$route.params.id]) return { total: 0, results: [] };
+        return this.participantList[this.$route.params.id];
+    }
+
     get participantsByPage() {
-        return Object.values(this.result.results).map((p: any) => ({
+        return Object.values(this.participants.results).map((p: any) => ({
             rank: p.rank,
             account: parseAccount({ id: p._id, account: p.account }),
             email: p.account && p.account.email,
@@ -202,7 +201,7 @@ export default class ViewParticipants extends Vue {
 
     async getParticipants() {
         this.isLoading = true;
-        this.result = await this.$store.dispatch('pools/participants', {
+        await this.$store.dispatch('pools/listParticipants', {
             pool: this.pool,
             page: this.page,
             limit: this.limit,
@@ -211,7 +210,7 @@ export default class ViewParticipants extends Vue {
     }
 
     onClickSort(variant: string, direction: string) {
-        this.result.results.sort((a, b) => {
+        this.participants.results.sort((a, b) => {
             if (direction === 'asc') {
                 return this.sorts[variant](a, b);
             } else if (direction === 'desc') {

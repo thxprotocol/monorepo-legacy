@@ -58,7 +58,7 @@
                 style="max-width: 75px"
                 size="sm"
                 :value="limit"
-                :options="[10, 25, 50, 100]"
+                :options="[1, 10, 25, 50, 100]"
                 class="mr-5"
             />
             <b-pagination
