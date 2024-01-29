@@ -247,7 +247,6 @@ export class TwitterService {
     }
 
     static async searchTweets(token: IAccessToken, query: string) {
-        console.log(`from:${token.userId} ${query}`);
         const startTime = new Date(Date.now() - 60 * 60 * 24).toISOString(); // 24h ago
         const { data } = await twitterClient({
             url: '/tweets/search/recent',

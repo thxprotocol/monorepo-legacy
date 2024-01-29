@@ -358,10 +358,13 @@ async function findOne(variant: QuestVariant, questId: string, wallet: WalletDoc
 }
 
 async function createEntryJob(job: Job) {
-    const { variant, questId, sub, platformUserId } = job.attrs.data as any;
+    const { variant, questId, sub } = job.attrs.data as any;
     const quest = await findById(variant, questId);
     const account = await AccountProxy.getById(sub);
     const wallet = await SafeService.findPrimary(sub);
+
+    const platformUserId = await PointRewardService.getPlatformUserId(quest, account);
+    if (!platformUserId) throw new Error(`Platform user ID not found.`);
 
     const isAvailable = await QuestSocialService.isAvailable(quest, account, wallet);
     if (!isAvailable) throw new Error(`Quest entry exists already.`);

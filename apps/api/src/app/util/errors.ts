@@ -145,7 +145,17 @@ class NoFeeDataError extends THXError {
     message = 'Could not get fee data from oracle';
 }
 
+class DiscordDisconnected extends THXError {
+    message = 'Please sign in to your THX account and connect your Discord account.';
+}
+
+class DiscordSafeNotFound extends THXError {
+    message = 'Please sign in to your THX account so we can deploy your Safe multisig wallet.';
+}
+
 export {
+    DiscordSafeNotFound,
+    DiscordDisconnected,
     THXError,
     NoUserFound,
     THXHttpError,
