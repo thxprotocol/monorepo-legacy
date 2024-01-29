@@ -25,6 +25,7 @@ export class TwitterService {
                     accessToken: tokens.access_token,
                     refreshToken: tokens.refresh_token,
                     expiry,
+                    userId: user.id,
                     metadata: {
                         name: user.name,
                         username: user.username,
