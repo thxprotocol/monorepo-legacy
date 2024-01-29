@@ -225,6 +225,7 @@ export default class ViewParticipants extends Vue {
     }
 
     onChangeLimit(limit: number) {
+        this.page = 1;
         this.limit = limit;
         this.getParticipants();
     }
