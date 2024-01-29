@@ -23,4 +23,7 @@ export const eventRegister = (client: Client<true>, router: { [key: string]: any
         client.on(key, router[key]);
     });
     client.on(Events.InteractionCreate, onAutoComplete);
+    client.on('error', (error) => {
+        console.error('Discord.js error:', error);
+    });
 };
