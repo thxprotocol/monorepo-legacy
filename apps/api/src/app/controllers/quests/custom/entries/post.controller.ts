@@ -30,7 +30,7 @@ const controller = async (req: Request, res: Response) => {
     const validationResult = await QuestService.validate(QuestVariant.Custom, quest, account, wallet);
     if (!validationResult.result) return res.json({ error: validationResult.reason });
 
-    await agenda.now(JobType.CreateQuestEntry, {
+    const job = await agenda.now(JobType.CreateQuestEntry, {
         variant: QuestVariant.Custom,
         questId: quest._id,
         sub: account.sub,
@@ -39,7 +39,7 @@ const controller = async (req: Request, res: Response) => {
         },
     });
 
-    res.status(201).end();
+    res.json({ jobId: job.attrs._id });
 };
 
 export default { controller, validation };

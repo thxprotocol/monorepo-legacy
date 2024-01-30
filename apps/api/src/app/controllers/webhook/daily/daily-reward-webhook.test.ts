@@ -68,10 +68,12 @@ describe('Daily Rewards WebHooks', () => {
     });
 
     it('POST /quests/daily/:uuid/claim should throw an error', (done) => {
+        // wait for job to finish
         user.post(`/v1/quests/daily/${dailyReward._id}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
             .send()
-            .expect(({ body }: request.Response) => {
+            .expect(({ status, body }: request.Response) => {
+                console.log(status, body);
                 expect(body.error).toBe('Already completed within the last 24 hours.');
             })
             .expect(200, done);

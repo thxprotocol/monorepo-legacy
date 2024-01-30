@@ -52,8 +52,7 @@ const controller = async (req: Request, res: Response) => {
     // END;
 
     const account = await AccountProxy.getById(req.auth.sub);
-
-    await agenda.now(JobType.CreateQuestEntry, {
+    const job = await agenda.now(JobType.CreateQuestEntry, {
         variant: QuestVariant.Gitcoin,
         questId: quest._id,
         sub: account.sub,
@@ -62,7 +61,7 @@ const controller = async (req: Request, res: Response) => {
         },
     });
 
-    res.status(201).json();
+    res.json({ jobId: job.attrs._id });
 };
 
 export default { controller, validation };

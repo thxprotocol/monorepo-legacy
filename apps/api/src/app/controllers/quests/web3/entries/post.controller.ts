@@ -74,9 +74,8 @@ const controller = async (req: Request, res: Response) => {
     // END
 
     const account = await AccountProxy.getById(req.auth.sub);
-
-    await agenda.now(JobType.CreateQuestEntry, {
-        variant: QuestVariant.Daily,
+    const job = await agenda.now(JobType.CreateQuestEntry, {
+        variant: QuestVariant.Web3,
         questId: quest._id,
         sub: account.sub,
         data: {
@@ -85,7 +84,7 @@ const controller = async (req: Request, res: Response) => {
         },
     });
 
-    res.status(201).end();
+    res.json({ jobId: job.attrs._id });
 };
 
 export default { controller, validation };
