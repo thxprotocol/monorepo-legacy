@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { DailyReward } from '@thxnetwork/api/services/DailyRewardService';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { JobType, QuestVariant } from '@thxnetwork/common/lib/types';
 import { agenda } from '@thxnetwork/api/util/agenda';
 import PoolService from '@thxnetwork/api/services/PoolService';
@@ -9,6 +9,7 @@ import SafeService from '@thxnetwork/api/services/SafeService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import LockService from '@thxnetwork/api/services/LockService';
+import DailyRewardClaimService from '@thxnetwork/api/services/DailyRewardClaimService';
 
 const validation = [param('id').isMongoId()];
 
@@ -29,10 +30,10 @@ const controller = async (req: Request, res: Response) => {
     }
 
     const account = await AccountProxy.getById(req.auth.sub);
-    if (!wallet) throw new NotFoundError('Could not find account');
+    if (!account) throw new NotFoundError('Account not found.');
 
-    const amount = await QuestService.getAmount(QuestVariant.Daily, quest, account, wallet);
-    if (!amount) throw new Error('Could not figure out how much points you should get.');
+    const isAvailable = await DailyRewardClaimService.isAvailable(quest, account, wallet);
+    if (!isAvailable) return res.json({ error: 'Already completed within the last 24 hours.' });
 
     const validationResult = await QuestService.validate(QuestVariant.Daily, quest, account, wallet);
     if (!validationResult.result) return res.json({ error: validationResult.reason });
