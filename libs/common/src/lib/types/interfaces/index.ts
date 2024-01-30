@@ -41,3 +41,4 @@ export * from './DiscordRoleReward';
 export * from './Participant';
 export * from './Identity';
 export * from './Token';
+export * from './Job';

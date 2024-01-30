@@ -30,15 +30,16 @@ const controller = async (req: Request, res: Response) => {
 
     // Get quest variant for quest interaction variant
     const variant = questInteractionVariantMap[quest.interaction];
-
-    await agenda.now(JobType.CreateQuestEntry, {
+    const job = await agenda.now(JobType.CreateQuestEntry, {
         variant,
         questId: quest._id,
         sub: account.sub,
-        platformUserId,
+        data: {
+            platformUserId,
+        },
     });
 
-    res.status(201).json();
+    res.json({ jobId: job.attrs._id });
 };
 
 export default { controller, validation };

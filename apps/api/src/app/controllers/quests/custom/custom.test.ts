@@ -79,7 +79,7 @@ describe('Quests Custom ', () => {
                 .post(`/v1/quests/custom/claims/${milestoneReward.uuid}/collect`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken2 })
                 .send();
-            expect(status).toBe(201);
+            expect(status).toBe(200);
         });
     });
 });

@@ -2,9 +2,12 @@ import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { QuestVariant } from '@thxnetwork/types/enums';
 import { dashboardAccessToken, userWalletAddress2, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
-import { isAddress } from 'web3-utils';
+import { isAddress, toNumber } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { DailyReward, DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
+import { poll } from '@thxnetwork/api/util/polling';
+import { Job } from '@thxnetwork/api/models/Job';
+import { TJob } from '@thxnetwork/common/lib/types';
 
 const user = request.agent(app);
 
@@ -60,11 +63,22 @@ describe('Daily Rewards WebHooks', () => {
         user.get(`/v1/account`).set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 }).expect(200, done);
     });
 
-    it('POST /quests/daily/:uuid/claim', (done) => {
-        user.post(`/v1/quests/daily/${dailyReward._id}/claim`)
+    it('POST /quests/daily/:uuid/claim', async () => {
+        const { status, body } = await user
+            .post(`/v1/quests/daily/${dailyReward._id}/claim`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
-            .send()
-            .expect(201, done);
+            .send();
+        expect(body.jobId).toBeDefined();
+        expect(status).toBe(200);
+
+        await poll(
+            () => Job.findById(body.jobId),
+            (job: TJob) => !job.lastRunAt,
+            1000,
+        );
+
+        const job = await Job.findById(body.jobId);
+        expect(job.lastRunAt).toBeDefined();
     });
 
     it('POST /quests/daily/:uuid/claim should throw an error', (done) => {

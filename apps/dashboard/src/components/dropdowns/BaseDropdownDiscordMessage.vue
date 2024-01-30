@@ -1,19 +1,10 @@
 <template>
     <div>
-        <b-alert show variant="info" v-if="!guilds.length">
-            <p class="mb-2">
-                <i class="fas fa-exclamation-circle mr-1" />
-                Please invite
-                <b-link target="_blank" :href="discordBotInviteUrl">
-                    THX Bot
-                    <i class="fas fa-external-link-alt" />
-                </b-link>
-                and run <code>/thx connect</code>.
-            </p>
-            <b-button :disabled="isLoading" size="sm" variant="dark" class="rounded-pill" block @click="onClickRetry">
-                <b-spinner small variant="light" v-if="isLoading" />
-                <template v-else>Check again</template>
-            </b-button>
+        <b-alert show variant="primary" v-if="!guilds.length">
+            <i class="fas fa-exclamation-circle mr-1" />
+            Please
+            <b-link :to="`/pool/${pool._id}/integrations`"> invite THX Bot </b-link>
+            to your server.
         </b-alert>
         <template v-else>
             <b-form-group label="Server">
@@ -40,14 +31,16 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { IPools, TGuildState } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { DISCORD_BOT_INVITE_URL } from '@thxnetwork/dashboard/config/constants';
+import { TDiscordGuild } from '@thxnetwork/common/lib/types';
 
 @Component({
     computed: mapGetters({
         pools: 'pools/all',
+        guildList: 'pools/guilds',
     }),
 })
 export default class BaseDropdownDiscordMessage extends Vue {
@@ -58,6 +51,7 @@ export default class BaseDropdownDiscordMessage extends Vue {
     guild = null;
     discordBotInviteUrl = DISCORD_BOT_INVITE_URL;
     channels: string[] = [];
+    guildList!: TGuildState;
 
     @Prop({ required: false }) content!: string;
     @Prop({ required: false }) contentMetadata!: any;
@@ -66,7 +60,7 @@ export default class BaseDropdownDiscordMessage extends Vue {
     pools!: IPools;
 
     get channelOptions() {
-        const guild = this.pool.guilds.find((g) => g.guildId === this.serverId);
+        const guild = this.guilds.find((g) => g.guildId === this.serverId);
         if (!guild) return [];
         return guild.channels.map((c) => ({ value: c.channelId, text: c.name }));
     }
@@ -76,17 +70,14 @@ export default class BaseDropdownDiscordMessage extends Vue {
     }
 
     get guilds() {
-        if (!this.pool) return [];
-        return this.pool.guilds;
+        if (!this.guildList[this.$route.params.id]) return [];
+        return Object.values(this.guildList[this.$route.params.id]).filter((guild: TDiscordGuild) => guild.isConnected);
     }
 
-    mounted() {
-        this.serverId = this.content
-            ? this.content
-            : this.pool.guilds.length
-            ? this.pool.guilds[0].guildId
-            : this.serverId;
+    async mounted() {
+        await this.$store.dispatch('pools/listGuilds', this.pool);
 
+        this.serverId = this.content ? this.content : this.guilds.length ? this.guilds[0].guildId : this.serverId;
         this.limit = this.contentMetadata.length ? JSON.parse(this.contentMetadata).limit : this.limit;
         this.days = this.contentMetadata.length ? JSON.parse(this.contentMetadata).days : this.days;
         this.channels = this.contentMetadata.length ? JSON.parse(this.contentMetadata).channels : this.channels;
@@ -108,6 +99,7 @@ export default class BaseDropdownDiscordMessage extends Vue {
     }
 
     update() {
+        debugger;
         this.$emit('selected', {
             content: this.serverId,
             contentMetadata: {

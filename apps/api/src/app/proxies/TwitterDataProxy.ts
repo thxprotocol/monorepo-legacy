@@ -250,7 +250,10 @@ export default class TwitterDataProxy {
         const followersCount = user.public_metrics.followers_count;
         if (followersCount >= minFollowersCount) return { result: true, reason: '' };
 
-        return { result: false, reason: 'X: Your account has insufficient followers.' };
+        return {
+            result: false,
+            reason: `X: Your account does not meet the threshold of ${minFollowersCount} followers.`,
+        };
     }
 
     static async validateMessage(account: TAccount, message: string) {

@@ -9,9 +9,9 @@ import { Web3QuestClaim } from '@thxnetwork/api/models/Web3QuestClaim';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 import { chainList } from '@thxnetwork/common';
 import { logger } from '@thxnetwork/api/util/logger';
-import { QuestVariant } from '@thxnetwork/common/lib/types';
+import { JobType, QuestVariant } from '@thxnetwork/common/lib/types';
+import { agenda } from '@thxnetwork/api/util/agenda';
 import SafeService from '@thxnetwork/api/services/SafeService';
-import QuestService from '@thxnetwork/api/services/QuestService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import LockService from '@thxnetwork/api/services/LockService';
 
@@ -74,13 +74,17 @@ const controller = async (req: Request, res: Response) => {
     // END
 
     const account = await AccountProxy.findById(req.auth.sub);
-    const entry = await QuestService.complete(QuestVariant.Web3, quest.amount, pool, quest, account, wallet, {
+    const job = await agenda.now(JobType.CreateQuestEntry, {
+        variant: QuestVariant.Web3,
         questId: quest._id,
-        chainId: req.body.chainId,
-        address,
+        sub: account.sub,
+        data: {
+            chainId: req.body.chainId,
+            address,
+        },
     });
 
-    res.json(entry);
+    res.json({ jobId: job.attrs._id });
 };
 
 export default { controller, validation };

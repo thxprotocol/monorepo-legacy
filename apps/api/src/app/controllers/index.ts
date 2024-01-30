@@ -30,6 +30,7 @@ import eventsRouter from './events/events.router';
 import dataRouter from './data/data.router';
 import RouterVoteEscrow from './ve/ve.router';
 import RouterBPT from './bpt/router';
+import RouterJobs from './jobs/jobs.router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 
 const router = express.Router({ mergeParams: true });
@@ -50,6 +51,7 @@ router.use('/rewards', rewardsRouter); // TODO Refactor
 router.use('/webhook', webhookRouter); // TODO Deprecate or refactor
 
 router.use(checkJwt, corsHandler);
+router.use('/jobs', RouterJobs);
 router.use('/upload', uploadRouter);
 router.use('/identity', identityRouter);
 router.use('/events', eventsRouter);

@@ -5,13 +5,14 @@ import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { recoverSigner } from '@thxnetwork/api/util/network';
 import { Web3QuestClaim } from '@thxnetwork/api/models/Web3QuestClaim';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
-import { QuestVariant } from '@thxnetwork/common/lib/types';
+import { JobType, QuestVariant } from '@thxnetwork/common/lib/types';
 import { GitcoinQuest } from '@thxnetwork/api/models/GitcoinQuest';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import GitcoinService from '@thxnetwork/api/services/GitcoinService';
 import LockService from '@thxnetwork/api/services/LockService';
+import { agenda } from '@thxnetwork/api/util/agenda';
 
 const validation = [
     param('uuid').custom((uuid) => validate(uuid)),
@@ -51,12 +52,16 @@ const controller = async (req: Request, res: Response) => {
     // END;
 
     const account = await AccountProxy.findById(req.auth.sub);
-    const entry = await QuestService.complete(QuestVariant.Gitcoin, quest.amount, pool, quest, account, wallet, {
+    const job = await agenda.now(JobType.CreateQuestEntry, {
+        variant: QuestVariant.Gitcoin,
         questId: quest._id,
-        address,
+        sub: account.sub,
+        data: {
+            address,
+        },
     });
 
-    res.json(entry);
+    res.json({ jobId: job.attrs._id });
 };
 
 export default { controller, validation };

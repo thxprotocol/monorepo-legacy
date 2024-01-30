@@ -197,11 +197,11 @@ async function notify(variant: QuestVariant, quest: TQuest) {
         Widget.findOne({ poolId: quest.poolId }),
     ]);
 
-    notifyEmail(pool, variant, quest as TQuest, widget);
-    notifyDiscord(pool, variant, quest as TQuest, widget, brand);
+    sendQuestPublishEmail(pool, variant, quest as TQuest, widget);
+    sendQuestPublishNotification(pool, variant, quest as TQuest, widget, brand);
 }
 
-async function notifyEmail(pool: AssetPoolDocument, variant: QuestVariant, quest: TQuest, widget: TWidget) {
+async function sendQuestPublishEmail(pool: AssetPoolDocument, variant: QuestVariant, quest: TQuest, widget: TWidget) {
     const { amount, amounts } = quest as any;
     const subject = `🎁 New ${QuestVariant[variant]} Quest: Earn ${amount || amounts[0]} pts!"`;
     const message = `<p style="font-size: 18px">Earn ${amount || amounts[0]} points!🔔</p>
@@ -216,7 +216,7 @@ async function notifyEmail(pool: AssetPoolDocument, variant: QuestVariant, quest
     });
 }
 
-async function notifyDiscord(
+async function sendQuestPublishNotification(
     pool: AssetPoolDocument,
     variant: QuestVariant,
     quest: TQuest,
@@ -310,14 +310,12 @@ function validate(variant: QuestVariant, quest: TQuest, account: TAccount, walle
     return questMap[variant].methods.getValidationResult(quest, account, wallet);
 }
 
-async function complete(
-    variant: QuestVariant,
-    amount: number,
+async function sendQuestEntryNotification(
     pool: AssetPoolDocument,
     quest: TQuest,
     account: TAccount,
     wallet: TWallet,
-    data: Partial<TQuestEntry>,
+    amount: number,
 ) {
     const index = Math.floor(Math.random() * celebratoryWords.length);
     const discord = account.tokens && account.tokens.find((a) => a.kind === AccessTokenKind.Discord);
@@ -331,8 +329,21 @@ async function complete(
         style: ButtonStyle.Primary,
     };
     const content = `${celebratoryWords[index]} ${user} completed the **${quest.title}** quest and earned **${amount} points.**`;
-    const ModelQuestEntry = questMap[variant].models.entry;
-    const entry = await ModelQuestEntry.create({
+
+    await DiscordDataProxy.sendChannelMessage(pool, content, [], [button]);
+}
+
+async function complete(
+    variant: QuestVariant,
+    amount: number,
+    pool: AssetPoolDocument,
+    quest: TQuest,
+    account: TAccount,
+    wallet: TWallet,
+    data: Partial<TQuestEntry>,
+) {
+    const { models } = questMap[variant];
+    const entry = await models.entry.create({
         sub: account.sub,
         walletId: wallet._id,
         amount,
@@ -343,12 +354,10 @@ async function complete(
     });
 
     await PointBalanceService.add(pool, wallet._id, amount);
-    await DiscordDataProxy.sendChannelMessage(pool, content, [], [button]);
-
+    await sendQuestEntryNotification(pool, quest, account, wallet, amount);
     await agenda.now(JobType.UpdateParticipantRanks, { poolId: pool._id });
-
-    return entry;
 }
+
 function findById(variant: QuestVariant, questId: string) {
     const model = questMap[variant].models.quest;
     return model.findById(questId);
@@ -362,13 +371,10 @@ async function findOne(variant: QuestVariant, questId: string, wallet: WalletDoc
 }
 
 async function createEntryJob(job: Job) {
-    const { variant, questId, sub } = job.attrs.data as any;
+    const { variant, questId, sub, data } = job.attrs.data as any;
     const quest = await findById(variant, questId);
     const account = await AccountProxy.findById(sub);
     const wallet = await SafeService.findPrimary(sub);
-
-    const platformUserId = await PointRewardService.getPlatformUserId(quest, account);
-    if (!platformUserId) throw new Error(`Platform user ID not found.`);
 
     const isAvailable = await QuestSocialService.isAvailable(quest, account, wallet);
     if (!isAvailable) throw new Error(`Quest entry exists already.`);
@@ -378,7 +384,7 @@ async function createEntryJob(job: Job) {
 
     await complete(variant, amount, pool, quest, account, wallet, {
         questId: quest._id,
-        platformUserId,
+        ...data,
     });
 }
 
@@ -409,8 +415,9 @@ async function list(pool: AssetPoolDocument, wallet?: WalletDocument) {
             }),
         );
     };
+
     return await Promise.all(questVariants.map(callback));
 }
 
 export { questMap };
-export default { createEntryJob, findOne, list, getAmount, isAvailable, create, update, complete, validate, findById };
+export default { createEntryJob, findOne, list, getAmount, isAvailable, create, update, validate, findById };
