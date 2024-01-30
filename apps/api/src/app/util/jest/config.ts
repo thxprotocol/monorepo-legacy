@@ -10,7 +10,6 @@ import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { poll } from '../polling';
 
 export async function beforeAllCallback(options = { skipWalletCreation: false }) {
-    await db.truncate();
     mockStart();
 
     const { web3, defaultAccount, ethAdapter } = getProvider(ChainId.Hardhat);
@@ -61,5 +60,5 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
 }
 
 export async function afterAllCallback() {
-    // await db.connection.collection('jobs').deleteMany({});
+    await db.truncate();
 }
