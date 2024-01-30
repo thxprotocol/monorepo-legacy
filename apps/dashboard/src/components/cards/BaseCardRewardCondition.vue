@@ -19,13 +19,15 @@
                     show
                     variant="warning"
                     class="d-flex align-items-center justify-content-between"
-                    v-if="platform.kind && !pool.owner.tokens.find((token) => token.kind === 'discord')"
+                    v-if="!isPlatformAvailable"
                 >
                     <div>
                         <i class="fas fa-exclamation-circle mr-1" />
                         Please connect your {{ platform.name }} account!
                     </div>
-                    <b-button @click="onClickConnect(platform.kind)" variant="primary" size="sm"> Connect </b-button>
+                    <b-button v-if="platform.kind" @click="onClickConnect(platform.kind)" variant="primary" size="sm">
+                        Connect
+                    </b-button>
                 </b-alert>
                 <template v-if="platform && platform.type !== RewardConditionPlatform.None">
                     <b-form-group label="Interaction">
@@ -90,7 +92,7 @@ import BaseDropdownTwitterMessage from '../dropdowns/BaseDropdownTwitterMessage.
         profile: 'account/profile',
     }),
 })
-export default class BaseCardRewardCondition extends Vue {
+export default class BaseCardQuestRequirement extends Vue {
     AccessTokenKind = AccessTokenKind;
     RewardConditionInteraction = RewardConditionInteraction;
     RewardConditionPlatform = RewardConditionPlatform;
@@ -116,6 +118,11 @@ export default class BaseCardRewardCondition extends Vue {
 
     get actions() {
         return platformInteractionList.filter((a) => this.platform.actions.includes(a.type));
+    }
+
+    get isPlatformAvailable() {
+        if (!this.platform || !this.platform.kind) return false;
+        return this.pool.owner.tokens.find(({ kind }) => kind === this.platform.kind);
     }
 
     async mounted() {

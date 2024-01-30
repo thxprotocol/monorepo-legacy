@@ -25,8 +25,9 @@
             </b-form-group>
         </template>
         <template #col-right>
-            <BaseCardRewardCondition
+            <BaseCardQuestRequirement
                 class="mb-3"
+                :pool="pool"
                 :rewardCondition="rewardCondition"
                 @change="rewardCondition = $event"
             />
@@ -44,7 +45,7 @@ import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModal from './BaseModal.vue';
 import BaseModalQuestCreate from './BaseModalQuestCreate.vue';
-import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
+import BaseCardQuestRequirement from '../cards/BaseCardRewardCondition.vue';
 import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
 import { questInteractionVariantMap } from '@thxnetwork/common/lib/types';
 
@@ -52,7 +53,7 @@ import { questInteractionVariantMap } from '@thxnetwork/common/lib/types';
     components: {
         BaseModal,
         BaseModalQuestCreate,
-        BaseCardRewardCondition,
+        BaseCardQuestRequirement,
         BaseCardInfoLinks,
     },
     computed: mapGetters({
