@@ -1,14 +1,13 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import type { TAccount, TDiscordButton, TDiscordEmbed } from '@thxnetwork/types/interfaces';
-import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { client, PermissionFlagsBits } from '../../discord';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { ActionRowBuilder, ButtonBuilder, Guild } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
 import { logger } from '../util/logger';
-import DiscordGuild, { DiscordGuildDocument } from '../models/DiscordGuild';
 import { AccessTokenKind } from '@thxnetwork/common/lib/types/enums';
 import { DISCORD_API_ENDPOINT } from '@thxnetwork/common/lib/types/contants';
+import DiscordGuild, { DiscordGuildDocument } from '../models/DiscordGuild';
 
 export enum NotificationVariant {
     QuestDaily = 0,
@@ -87,34 +86,22 @@ export default class DiscordDataProxy {
         return data.user.id;
     }
 
-    static async getGuilds(accessToken: string) {
+    static async getGuilds(account: TAccount) {
+        const token = account.tokens.find((token) => token.kind === AccessTokenKind.Discord);
         const r = await discordClient({
             method: 'GET',
             url: '/users/@me/guilds',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
+                'Authorization': `Bearer ${token.accessToken}`,
             },
         });
         return r.data;
     }
 
-    static async get(sub: string) {
-        const r = await authClient({
-            method: 'GET',
-            url: `/account/${sub}/discord`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
-        });
-
-        return { isAuthorized: r.data.isAuthorized, guilds: r.data.guilds };
-    }
-
     static async validateGuildJoined(account: TAccount, guildId: string) {
-        const token = account.tokens.find(({ kind }) => kind === AccessTokenKind.Discord);
-        const guilds = await this.getGuilds(token.accessToken);
+        const guilds = await this.getGuilds(account);
         const isUserJoinedGuild = guilds.find((guild) => guild.id === guildId);
         if (isUserJoinedGuild) return { result: true };
         return { result: false, reason: 'Discord: Your Discord account is not a member of this server.' };

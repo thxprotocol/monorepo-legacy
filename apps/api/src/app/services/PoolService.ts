@@ -296,19 +296,18 @@ async function inviteCollaborator(pool: AssetPoolDocument, email: string) {
     return collaborator;
 }
 
-async function getAccountGuilds(sub: string) {
+function getAccountGuilds(account: TAccount) {
     // Try as this is potentially rate limited due to subsequent GET pool for id requests
     try {
-        return await DiscordDataProxy.get(sub);
+        return DiscordDataProxy.getGuilds(account);
     } catch (error) {
-        return { isAuthorized: false, guilds: [] };
+        return [];
     }
 }
 
 async function findGuilds(pool: AssetPoolDocument) {
-    const { isAuthorized, guilds: userGuilds } = await getAccountGuilds(pool.sub);
-    if (!isAuthorized) return [];
-
+    const account = await AccountProxy.findById(pool.sub);
+    const userGuilds = await getAccountGuilds(account);
     const guilds = await DiscordGuild.find({ poolId: pool._id });
     const promises = userGuilds.map(async (userGuild: { id: string; name: string }) => {
         const guild = guilds.find(({ guildId }) => guildId === userGuild.id);

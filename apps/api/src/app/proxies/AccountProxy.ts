@@ -10,6 +10,7 @@ async function authAccountRequest(url: string) {
             Authorization: await getAuthAccessToken(),
         },
     });
+    console.log(data.tokens);
     return data;
 }
 

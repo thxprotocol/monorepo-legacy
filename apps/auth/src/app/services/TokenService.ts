@@ -4,6 +4,8 @@ import { AccountDocument } from '../models/Account';
 import { TwitterService } from './TwitterService';
 import { YouTubeService } from './YouTubeService';
 import { DiscordService } from './DiscordService';
+import { decryptString } from '../util/decrypt';
+import { SECURE_KEY } from '../config/secrets';
 
 const serviceMap = {
     [AccessTokenKind.Twitter]: TwitterService,
@@ -34,7 +36,14 @@ async function unsetToken(account: AccountDocument, kind: AccessTokenKind) {
 }
 
 async function list(account: AccountDocument) {
-    return await Token.find({ sub: account._id });
+    const tokens = await Token.find({ sub: account._id });
+
+    return tokens.map((token: TokenDocument) => {
+        const { accessTokenEncrypted, refreshTokenEncrypted } = token;
+        const accessToken = accessTokenEncrypted && decryptString(accessTokenEncrypted, SECURE_KEY);
+        const refreshToken = refreshTokenEncrypted && decryptString(refreshTokenEncrypted, SECURE_KEY);
+        return { ...token.toJSON(), accessToken, refreshToken };
+    });
 }
 
 async function findTokenForUserId(userId: string, kind: AccessTokenKind) {
