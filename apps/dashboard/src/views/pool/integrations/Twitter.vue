@@ -29,9 +29,7 @@
                         <template v-if="pool.owner && pool.owner.twitterAccess && pool.owner.twitterUsername">
                             for
                             <code>
-                                @{{
-                                    pool.owner.connectedAccounts.find(({ kind }) => kind == 'twitter').metadata.username
-                                }}
+                                @{{ pool.owner.tokens.find(({ kind }) => kind == 'twitter').metadata.username }}
                             </code>
                         </template>
                     </b-form-checkbox>

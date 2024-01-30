@@ -1,5 +1,5 @@
-import { AccountPlanType, AccessTokenKind, Role, Goal } from '@thxnetwork/types/enums';
-import { AccountVariant, TToken } from '@thxnetwork/types/interfaces';
+import { AccountPlanType, Role, Goal } from '@thxnetwork/types/enums';
+import { TToken, AccountVariant } from '@thxnetwork/types/interfaces';
 
 export type TAccount = {
     _id: string;
@@ -24,5 +24,4 @@ export type TAccount = {
     tokens: TToken[];
     createdAt: Date;
     updatedAt: Date;
-    getToken: (token: AccessTokenKind) => TToken;
 };

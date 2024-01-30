@@ -1,7 +1,11 @@
 <template>
     <div>
         <b-alert
-            v-if="pool.owner && !pool.owner.discordAccess && pool.owner.sub === account.sub"
+            v-if="
+                pool.owner &&
+                pool.owner.sub === account.sub &&
+                !pool.owner.tokens.find(({ kind }) => kind === 'discord')
+            "
             show
             variant="warning"
             class="d-flex align-items-center"

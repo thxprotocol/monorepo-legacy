@@ -144,15 +144,6 @@ export const platformIconMap: any = {
     [RewardConditionPlatform.Github]: 'fab fa-github',
 };
 
-export const platformAccessKeyMap: any = {
-    [RewardConditionPlatform.None]: '',
-    [RewardConditionPlatform.Google]: 'youtubeManageAccess',
-    [RewardConditionPlatform.Twitter]: 'twitterAccess',
-    [RewardConditionPlatform.Discord]: 'discordAccess',
-    [RewardConditionPlatform.Github]: 'githubAccess',
-    [RewardConditionPlatform.Twitch]: 'twitchAccess',
-};
-
 export const accountVariantPlatformMap: any = {
     [AccountVariant.SSOTwitter]: RewardConditionPlatform.Twitter,
     [AccountVariant.SSODiscord]: RewardConditionPlatform.Discord,

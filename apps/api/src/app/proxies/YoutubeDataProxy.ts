@@ -17,7 +17,7 @@ export default class YoutubeDataProxy {
             },
         });
 
-        const token = data.connectedAccounts.find((token) => token.kind === kind);
+        const token = data.tokens.find((token) => token.kind === kind);
         if (!token) return;
         return token.userId;
     }

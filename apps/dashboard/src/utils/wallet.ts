@@ -12,15 +12,6 @@ const platformIconMap: any = {
     [RewardConditionPlatform.Discord]: 'fab fa-discord',
 };
 
-const platformAccessKeyMap: any = {
-    [RewardConditionPlatform.None]: '',
-    [RewardConditionPlatform.Google]: 'youtubeManageAccess',
-    [RewardConditionPlatform.Twitter]: 'twitterAccess',
-    [RewardConditionPlatform.Discord]: 'discordAccess',
-    [RewardConditionPlatform.Github]: 'githubAccess',
-    [RewardConditionPlatform.Twitch]: 'twitchAccess',
-};
-
 const platformAccountVariantMap: any = {
     [RewardConditionPlatform.Twitter]: AccountVariant.SSOTwitter,
     [RewardConditionPlatform.Discord]: AccountVariant.SSODiscord,
@@ -28,4 +19,4 @@ const platformAccountVariantMap: any = {
     [RewardConditionPlatform.Twitch]: AccountVariant.SSOTwitch,
 };
 
-export { shortenAddress, platformAccessKeyMap, platformAccountVariantMap, platformIconMap };
+export { shortenAddress, platformAccountVariantMap, platformIconMap };

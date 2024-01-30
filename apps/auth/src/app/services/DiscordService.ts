@@ -1,10 +1,8 @@
-import { AUTH_URL, BOT_TOKEN, DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET } from '../config/secrets';
+import { AUTH_URL, DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET } from '../config/secrets';
 import { AccountDocument } from '../models/Account';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { discordClient } from '../util/axios';
-import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import TokenService from './TokenService';
-import { TToken } from '@thxnetwork/common/lib/types';
 
 export const scopes = ['identify', 'email', 'guilds'];
 
@@ -30,10 +28,7 @@ class DiscordService {
         return true;
     }
 
-    static getLoginURL(
-        uid: string,
-        { scope = scopes, redirectUrl = AUTH_URL + '/oidc/callback/discord' }: CommonOauthLoginOptions,
-    ) {
+    static getLoginURL(uid: string, { scope = scopes, redirectUrl = AUTH_URL + '/oidc/callback/discord' }) {
         const state = Buffer.from(JSON.stringify({ uid })).toString('base64');
         const body = new URLSearchParams();
 
@@ -104,61 +99,6 @@ class DiscordService {
             },
         });
         return data.user;
-    }
-
-    static async addToGuild(accessToken: string, userId: string, guildId: string) {
-        const { data } = await discordClient({
-            method: 'PUT',
-            url: `/guilds/${guildId}/members/${userId}`,
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bot ${BOT_TOKEN}`,
-            },
-            data: {
-                access_token: accessToken,
-            },
-        });
-        return data;
-    }
-
-    static async sendMessage(accessToken: string, channelId: string, content: string) {
-        const { data } = await discordClient({
-            method: 'POST',
-            url: `/channels/${channelId}/messages`,
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bot ${BOT_TOKEN}`,
-            },
-            data: {
-                access_token: accessToken,
-                content,
-            },
-        });
-        return data;
-    }
-
-    static async getGuilds(accessToken: string) {
-        const r = await discordClient({
-            method: 'GET',
-            url: '/users/@me/guilds',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
-            },
-        });
-
-        return r.data;
-    }
-
-    static async validateUserJoined(account: AccountDocument, guildId: string) {
-        const token = await TokenService.getToken(account, AccessTokenKind.Discord);
-        const guilds = await this.getGuilds(token.accessToken);
-        const isUserJoinedGuild = guilds.find((guild) => guild.id === guildId);
-        if (isUserJoinedGuild) return { result: true };
-        return { result: false, reason: 'Discord: Your Discord account is not a member of this server.' };
     }
 }
 

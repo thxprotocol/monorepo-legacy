@@ -52,11 +52,7 @@
                 <template #cell(account)="{ item }"> <BaseParticipantAccount :account="item.account" /> </template>
                 <template #cell(email)="{ item }"> {{ item.email }} </template>
                 <template #cell(connectedAccounts)="{ item }">
-                    <BaseParticipantConnectedAccount
-                        :account="a"
-                        :key="key"
-                        v-for="(a, key) in item.connectedAccounts"
-                    />
+                    <BaseParticipantConnectedAccount :account="a" :key="key" v-for="(a, key) in item.tokens" />
                 </template>
                 <template #cell(wallet)="{ item }">
                     <BaseParticipantWallet :wallet="item.wallet" />
@@ -186,7 +182,7 @@ export default class ViewParticipants extends Vue {
             rank: p.rank,
             account: parseAccount({ id: p._id, account: p.account }),
             email: p.account && p.account.email,
-            connectedAccounts: p.account && parseConnectedAccounts(p.account.connectedAccounts),
+            connectedAccounts: p.account && parseConnectedAccounts(p.account.tokens),
             wallet: parseWallet(p.wallet),
             pointBalance: p.pointBalance,
             subscription: p.subscription,

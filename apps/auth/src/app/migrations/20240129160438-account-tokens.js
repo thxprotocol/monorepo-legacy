@@ -35,6 +35,7 @@ module.exports = {
         const operations = [];
 
         for (const account of accounts) {
+            if (!account.tokens) continue;
             for (const token of account.tokens) {
                 if (!token.accessToken || !token.refreshToken || !token.userId) continue;
                 const operation = {

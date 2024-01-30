@@ -19,7 +19,7 @@
                     show
                     variant="warning"
                     class="d-flex align-items-center justify-content-between"
-                    v-if="platform.kind && !profile[`${platform.name.toLowerCase()}Access`]"
+                    v-if="platform.kind && !pool.owner.tokens.find((token) => token.kind === 'discord')"
                 >
                     <div>
                         <i class="fas fa-exclamation-circle mr-1" />
@@ -61,7 +61,7 @@ import {
     getInteractionComponent,
 } from '@thxnetwork/dashboard/types/rewards';
 import { AccessTokenKind, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
-import { TAccount } from '@thxnetwork/types/interfaces';
+import { TAccount, TPool } from '@thxnetwork/types/interfaces';
 import BaseDropdownChannelTypes from '../dropdowns/BaseDropdownChannelTypes.vue';
 import BaseDropdownChannelActions from '../dropdowns/BaseDropdownChannelActions.vue';
 import BaseDropdownYoutubeChannels from '../dropdowns/BaseDropdownYoutubeChannels.vue';
@@ -106,6 +106,7 @@ export default class BaseCardRewardCondition extends Vue {
     isVisible = false;
     profile!: TAccount;
 
+    @Prop() pool!: TPool;
     @Prop({ required: false }) rewardCondition!: {
         platform: RewardConditionPlatform;
         interaction: RewardConditionInteraction;
