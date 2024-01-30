@@ -27,7 +27,7 @@ const controller = async (req: Request, res: Response) => {
         return res.json({ error: 'Quest is locked' });
     }
 
-    const account = await AccountProxy.getById(req.auth.sub);
+    const account = await AccountProxy.findById(req.auth.sub);
     if (!wallet) throw new NotFoundError('Could not find account');
 
     const amount = await QuestService.getAmount(QuestVariant.Daily, quest, account, wallet);

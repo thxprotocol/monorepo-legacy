@@ -42,8 +42,8 @@ module.exports = {
                         document: {
                             sub: String(account._id),
                             kind: token.kind,
-                            accessToken: encryptString(token.accessToken, process.env.SECURE_KEY),
-                            refreshToken: encryptString(token.refreshToken, process.env.SECURE_KEY),
+                            accessTokenEncrypted: encryptString(token.accessToken, process.env.SECURE_KEY),
+                            refreshTokenEncrypted: encryptString(token.refreshToken, process.env.SECURE_KEY),
                             expiry: token.expiry,
                             userId: token.userId,
                             createdAt: new Date(),

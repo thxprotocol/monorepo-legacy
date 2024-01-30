@@ -24,7 +24,7 @@ const controller = async (req: Request, res: Response) => {
 
     const logoImgUrl = req.file && (await ImageService.upload(req.file));
     const forceSync = req.query.forceSync !== undefined ? req.query.forceSync === 'true' : false;
-    const account = await AccountProxy.getById(req.auth.sub);
+    const account = await AccountProxy.findById(req.auth.sub);
     const baseURL = account.plan === AccountPlanType.Premium ? IPFS_BASE_URL : `${API_URL}/${VERSION}/metadata/`;
     const erc721 = await ERC721Service.deploy(
         {

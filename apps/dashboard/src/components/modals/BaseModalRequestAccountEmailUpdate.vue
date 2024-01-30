@@ -10,6 +10,10 @@
         :hide-footer="true"
         id="modalRequestAccountEmailUpdate"
     >
+        <b-alert variant="danger" v-if="error" show>
+            <i class="fas fa-exclamation-circle mr-2" />
+            {{ error }}
+        </b-alert>
         <b-row>
             <b-col md="6">
                 <p class="text-muted">
@@ -48,34 +52,12 @@
                 </b-form-group>
             </b-col>
             <b-col md="6">
-                <b-card bg-variant="darker">
-                    <b-alert variant="info" show v-if="deploying">
-                        <i class="fas fa-hourglass-half mr-2"></i>
-                        <strong>Preparing your campaign takes ~20 seconds..</strong>
-                        <p>
-                            Campaign Contracts hold your <strong>Coin</strong> and <strong>NFT Rewards</strong> that are
-                            redeemable for points earned with Quests.
-                        </p>
-                        <b-progress class="mt-2">
-                            <b-progress-bar
-                                :animated="progress < 100"
-                                :style="`width: ${progress}%`"
-                                :variant="progress < 100 ? 'gray' : 'primary'"
-                            ></b-progress-bar>
-                        </b-progress>
-                    </b-alert>
+                <b-card variant="primary" show class="mb-3">
+                    <p>Please add this script to load the campaign widget for your users.</p>
+                    <BaseCodeExample v-if="pool" :pool="pool" />
+                </b-card>
 
-                    <b-alert variant="success" show v-if="pool && pool.widget && !pool.widget.active">
-                        <i class="fas fa-check mr-2"></i> <strong>Your campaign has been created!</strong><br />
-                        <p>
-                            Now please add this script to your website and view your
-                            <strong>Quest &amp; Reward</strong> campaign.
-                        </p>
-                        <BaseCodeExample v-if="pool" :pool="pool" />
-                    </b-alert>
-
-                    <hr class="border-dark" />
-
+                <b-card>
                     <ul class="text-muted list-unstyled">
                         <li class="my-1">
                             <i class="fas fa-check-circle text-success mr-2"></i>
@@ -113,6 +95,7 @@
                 <i class="fas fa-chevron-right ml-2"></i>
             </template>
         </b-button>
+        <b-button block variant="link" to="/signout">Sign out</b-button>
     </b-modal>
 </template>
 
@@ -146,6 +129,7 @@ export default class BaseModalRequestAccountEmailUpdate extends Vue {
     Goals = Goal;
     roleLabelMap = roleLabelMap;
     goalLabelMap = goalLabelMap;
+    error = '';
     email = '';
     website = '';
     role: Role = Role.None;
@@ -188,15 +172,22 @@ export default class BaseModalRequestAccountEmailUpdate extends Vue {
 
     async onClickSubmit() {
         if (this.isSubmitDisabled || this.isLoadingSubmit || !this.isValidWebsite) return;
-        this.isLoadingSubmit = true;
-        await this.$store.dispatch('account/update', {
-            website: 'https://' + this.website,
-            role: this.role,
-            goal: this.goal,
-            email: this.email,
-        });
-        this.isLoadingSubmit = false;
-        this.$bvModal.hide('modalRequestAccountEmailUpdate');
+        try {
+            this.isLoadingSubmit = true;
+            await this.$store.dispatch('account/update', {
+                website: 'https://' + this.website,
+                role: this.role,
+                goal: this.goal,
+                email: this.email,
+            });
+            this.$bvModal.hide('modalRequestAccountEmailUpdate');
+        } catch (error) {
+            const { response } = error as any;
+            console.log(response.data);
+            this.error = response && response.data.error.message;
+        } finally {
+            this.isLoadingSubmit = false;
+        }
     }
 
     reset() {

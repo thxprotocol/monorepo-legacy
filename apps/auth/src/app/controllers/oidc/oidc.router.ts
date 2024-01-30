@@ -15,8 +15,6 @@ import ReadCallbackGithub from './callback/github/get.controller';
 import ReadCallbackTwitch from './callback/twitch/get.controller';
 import ReadAccount from './account/get';
 import UpdateAccount from './account/post';
-import UpdateAccountTOTP from './account/totp/post';
-import ReadAccountTOTP from './account/totp/get';
 import PostGoogleDisconnect from './account/google/disconnect/post.controller';
 import PostTwitterDisconnect from './account/twitter/disconnect/post.controller';
 import PostTwitchDisconnect from './account/twitch/disconnect/post.controller';
@@ -86,15 +84,6 @@ router.post(
     UpdateAccount.controller,
 );
 
-router.get('/:uid/account/totp', assertInteraction, assertAuthorization, ReadAccountTOTP.controller);
-router.post(
-    '/:uid/account/totp',
-    urlencoded({ extended: false }),
-    assertInteraction,
-    assertAuthorization,
-    assertInput(UpdateAccountTOTP.validation),
-    UpdateAccountTOTP.controller,
-);
 router.get('/:uid/account/email/verify', assertInteraction, assertAuthorization, ReadAccountEmailVerify.controller);
 
 export default router;

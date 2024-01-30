@@ -17,7 +17,7 @@ const controller = async (req: Request, res: Response) => {
     const quest = await PointReward.findById(req.params.id);
     if (!quest) throw new NotFoundError('Quest not found.');
 
-    const account = await AccountProxy.getById(req.auth.sub);
+    const account = await AccountProxy.findById(req.auth.sub);
     const wallet = await SafeService.findPrimary(req.auth.sub, getChainId());
     const isLocked = await LockService.getIsLocked(quest.locks, wallet);
     if (isLocked) return res.json({ error: 'Quest is locked' });

@@ -56,7 +56,7 @@ const controller = async (req: Request, res: Response) => {
     if (authHeader && authHeader.startsWith('Bearer ')) {
         const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
         sub = token.sub;
-        account = await AccountProxy.getById(sub);
+        account = await AccountProxy.findById(sub);
         wallet = await SafeService.findPrimary(sub, pool.chainId);
     }
 
@@ -140,10 +140,9 @@ const controller = async (req: Request, res: Response) => {
             discordRoleRewards.map(async (r) => {
                 const { isError, errorMessage } = await PerkService.validate({ perk: r, sub, pool });
                 const defaults = await getRewardDefaults(r, DiscordRoleRewardPayment);
-                const connectedAccount =
-                    account && account.connectedAccounts.find(({ kind }) => kind === AccessTokenKind.Discord);
+                const token = account && account.tokens.find(({ kind }) => kind === AccessTokenKind.Discord);
 
-                return { ...defaults, isDisabled: !connectedAccount || isError, errorMessage, isOwned: false };
+                return { ...defaults, isDisabled: !token || isError, errorMessage, isOwned: false };
             }),
         ),
     });

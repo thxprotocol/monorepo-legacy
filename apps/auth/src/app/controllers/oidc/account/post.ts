@@ -7,10 +7,10 @@ import { AccountService } from '../../../services/AccountService';
 import { ERROR_NO_ACCOUNT } from '../../../util/messages';
 import { createRandomToken } from '../../../util/tokens';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { IAccessToken } from '@thxnetwork/types/interfaces';
 import { get24HoursExpiryTimestamp } from '@thxnetwork/auth/util/time';
-import { AccountDocument } from '@thxnetwork/auth/models/Account';
+import { Account, AccountDocument } from '@thxnetwork/auth/models/Account';
 import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
+import TokenService from '@thxnetwork/auth/services/TokenService';
 
 export const validation = [
     body('email').exists().isEmail(),
@@ -50,18 +50,18 @@ export async function controller(req: Request, res: Response) {
         profileImg = await UploadProxy.post(file);
     }
 
-    account = await AccountService.update(account, { ...req.body, profileImg });
+    account = await Account.findByIdAndUpdate(account._id, { ...req.body, profileImg }, { new: true });
 
     if (isEmailChanged && account.email) {
         account.isEmailVerified = false;
-        account.setToken({
+
+        await TokenService.setToken(account, {
             kind: AccessTokenKind.VerifyEmail,
             accessToken: createRandomToken(),
             expiry: get24HoursExpiryTimestamp(),
-        } as IAccessToken);
-
+        });
         await account.save();
-        await MailService.sendVerificationEmail(account, req.body.return_url);
+        await MailService.sendVerificationEmail(account, account.email, req.body.return_url);
     }
 
     if (req.body.return_url.startsWith(DASHBOARD_URL)) {

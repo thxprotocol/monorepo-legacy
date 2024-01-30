@@ -33,7 +33,7 @@ const controller = async (req: Request, res: Response) => {
     const erc20 = await ERC20Service.getById(erc20Perk.erc20Id);
     if (!erc20) throw new NotFoundError('Could not find the erc20 for this perk');
 
-    const account = await AccountProxy.getById(req.auth.sub);
+    const account = await AccountProxy.findById(req.auth.sub);
     const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
     const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
 
@@ -53,7 +53,7 @@ const controller = async (req: Request, res: Response) => {
         [ERC20Type.Unknown, ERC20Type.Limited].includes(erc20.type) &&
         BigNumber.from(balanceOfPool).lt(BigNumber.from(amount))
     ) {
-        const owner = await AccountProxy.getById(pool.sub);
+        const owner = await AccountProxy.findById(pool.sub);
         await MailService.send(
             owner.email,
             `⚠️ Out of ${erc20.symbol}!"`,

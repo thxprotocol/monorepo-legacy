@@ -73,7 +73,7 @@ const controller = async (req: Request, res: Response) => {
     }
     // END
 
-    const account = await AccountProxy.getById(req.auth.sub);
+    const account = await AccountProxy.findById(req.auth.sub);
     const entry = await QuestService.complete(QuestVariant.Web3, quest.amount, pool, quest, account, wallet, {
         questId: quest._id,
         chainId: req.body.chainId,

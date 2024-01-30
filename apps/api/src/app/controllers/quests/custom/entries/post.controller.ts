@@ -15,7 +15,7 @@ const controller = async (req: Request, res: Response) => {
     if (!quest) return res.json({ error: 'This quest is no longer available.' });
 
     const pool = await PoolService.getById(quest.poolId);
-    const account = await AccountProxy.getById(req.auth.sub);
+    const account = await AccountProxy.findById(req.auth.sub);
     const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
     if (!wallet) {
         return res.json({ error: 'No wallet found for this account' });

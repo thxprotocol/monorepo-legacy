@@ -40,3 +40,4 @@ export * from './DiscordBot';
 export * from './DiscordRoleReward';
 export * from './Participant';
 export * from './Identity';
+export * from './Token';

@@ -61,7 +61,7 @@ async function controller(req: Request, res: Response) {
             break;
         }
     }
-
+    console.log({ redirect });
     if (!redirect) {
         await oidc.interactionResult(req, res, {}, { mergeWithLastSubmission: true });
         redirect = params.return_url;

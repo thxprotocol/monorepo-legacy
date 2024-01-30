@@ -4,7 +4,7 @@ import { paginatedResults } from '../util/pagination';
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { PointBalance } from './PointBalanceService';
-import { TPointReward, TAccount } from '@thxnetwork/types/interfaces';
+import { TPointReward, TAccount, TValidationResult } from '@thxnetwork/types/interfaces';
 import { RewardConditionPlatform, RewardConditionInteraction, AccessTokenKind } from '@thxnetwork/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import TwitterDataProxy from '@thxnetwork/api/proxies/TwitterDataProxy';
@@ -14,7 +14,7 @@ import DiscordMessage from '../models/DiscordMessage';
 import { logger } from '../util/logger';
 
 const questConditionMap: {
-    [interaction: number]: (account: TAccount, quest) => Promise<void | { result: boolean; reason: string }>;
+    [interaction: number]: (account: TAccount, quest) => Promise<void | { result: boolean; reason?: string }>;
 } = {
     [RewardConditionInteraction.YouTubeLike]: async (account, quest) => {
         const result = await YouTubeDataProxy.validateLike(account, quest.content);
@@ -82,7 +82,7 @@ const platformInteractionMap = {
 const getPlatformUserId = async (quest: TPointReward, account: TAccount) => {
     try {
         const getUserId = (account: TAccount, kind: AccessTokenKind) => {
-            const token = account.connectedAccounts.find((a) => a.kind === kind);
+            const token = account.tokens.find((a) => a.kind === kind);
             return token && token.userId;
         };
         switch (quest.platform) {
@@ -108,7 +108,7 @@ async function findEntries(quest: PointRewardDocument, page = 1, limit = 25) {
     const total = await PointRewardClaim.countDocuments({ questId: quest._id });
     const entries = await PointRewardClaim.find({ questId: quest._id }).limit(limit).skip(skip);
     const subs = entries.map((entry) => entry.sub);
-    const accounts = await AccountProxy.getMany(subs);
+    const accounts = await AccountProxy.find({ subs });
     const pointBalances = await PointBalance.find({
         poolId: quest.poolId,
     });
@@ -152,7 +152,7 @@ export async function validate(
     quest: PointRewardDocument,
     account: TAccount,
     wallet: WalletDocument,
-): Promise<{ result: boolean; reason: string }> {
+): Promise<TValidationResult> {
     // Check if completed already
     const available = await isAvailable(quest, account, wallet);
     if (!available) return { result: false, reason: 'You have completed this quest already.' };
@@ -160,7 +160,7 @@ export async function validate(
     // Check quest requirements
     try {
         const validationResult = await questConditionMap[quest.interaction](account, quest);
-        return validationResult || { result: true, reason: '' };
+        return validationResult || { result: true };
     } catch (error) {
         return { result: false, reason: 'We were unable to confirm the requirements for this quest.' };
     }
@@ -170,7 +170,7 @@ async function getPointsAvailable(quest: TPointReward, account: TAccount) {
     if (!account || quest.interaction !== RewardConditionInteraction.DiscordMessage)
         return { pointsAvailable: quest.amount };
 
-    const connectedAccount = account.connectedAccounts.find(({ kind }) => kind === AccessTokenKind.Discord);
+    const connectedAccount = account.tokens.find(({ kind }) => kind === AccessTokenKind.Discord);
     if (!connectedAccount) return { pointsAvailable: 0, pointsClaimed: 0 };
 
     const { days, limit } = JSON.parse(quest.contentMetadata);
@@ -230,7 +230,7 @@ function getRestartDates(quest: TPointReward) {
 
 const getDiscordMessageData = async (quest: PointRewardDocument, wallet: WalletDocument) => {
     if (!wallet || quest.interaction !== RewardConditionInteraction.DiscordMessage) return;
-    const account = await AccountProxy.getById(wallet.sub);
+    const account = await AccountProxy.findById(wallet.sub);
     return await getPointsAvailable(quest, account);
 };
 

@@ -161,7 +161,7 @@ async function findIdentities(pool: AssetPoolDocument, page: number, limit: numb
     };
 
     const subs = identities.results.filter(({ sub }) => !!sub).map(({ sub }) => sub);
-    const accounts = await AccountProxy.getMany(subs);
+    const accounts = await AccountProxy.find({ subs });
 
     identities.results = identities.results.map((identity: TIdentity) => ({
         ...identity,
@@ -203,7 +203,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
     };
 
     const subs = participants.results.map((p) => p.sub);
-    const accounts = await AccountProxy.getMany(subs);
+    const accounts = await AccountProxy.find({ subs });
 
     participants.results = await Promise.all(
         participants.results.map(async (participant) => {
@@ -245,7 +245,12 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                     username: account.username,
                     profileImg: account.profileImg,
                     variant: account.variant,
-                    connectedAccounts: account.connectedAccounts,
+                    connectedAccounts: account.tokens.map((token) => ({
+                        ...token,
+                        accessToken: undefined,
+                        refreshToken: undefined,
+                        expiry: undefined,
+                    })),
                 },
                 wallet,
                 subscription,
@@ -323,7 +328,7 @@ async function findCollaborators(pool: AssetPoolDocument) {
     const collabs = await Collaborator.find({ poolId: pool._id });
     const promises = collabs.map(async (collaborator: CollaboratorDocument) => {
         if (collaborator.sub) {
-            const account = await AccountProxy.getById(collaborator.sub);
+            const account = await AccountProxy.findById(collaborator.sub);
             return { ...collaborator.toJSON(), account };
         }
         return collaborator;

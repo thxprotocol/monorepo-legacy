@@ -15,7 +15,7 @@ async function send(
 ) {
     const poolSubs = await PoolSubscription.find({ poolId: pool._id });
     const subs = poolSubs.map((x) => x.sub);
-    const accounts = (await AccountProxy.getMany(subs)).filter((a) => a.email);
+    const accounts = (await AccountProxy.find({ subs })).filter((a) => a.email);
 
     // Create chunks for bulk email sending to avoid hitting rate limits
     for (let i = 0; i < subs.length; i += MAIL_CHUNK_SIZE) {

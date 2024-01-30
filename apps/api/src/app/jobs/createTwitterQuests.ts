@@ -24,8 +24,12 @@ export async function createTwitterQuests() {
             }
             const { hashtag, title, description, amount, locks, isPublished } =
                 pool.settings.defaults.conditionalRewards;
-
-            const tweets = await TwitterDataProxy.searchTweets(pool.sub, `#${hashtag}`);
+            const account = await AccountProxy.findById(pool.sub);
+            if (!account) {
+                logger.error(`Account not found for ${pool.sub}.`);
+                continue;
+            }
+            const tweets = await TwitterDataProxy.searchTweets(account, `#${hashtag}`);
             if (!tweets.length) continue;
             logger.info(`Found tweets matching the hashtag in the last 7 days!`);
             logger.info(JSON.stringify(tweets));
@@ -49,9 +53,8 @@ export async function createTwitterQuests() {
             }
             logger.info(`Found ${newTweets.length} new autoquest for ${pool.sub} in ${pool.settings.title}`);
 
-            const account: TAccount = await AccountProxy.getById(pool.sub);
-            const twitterAccount = account.connectedAccounts.find((token) => token.kind === AccessTokenKind.Twitter);
-            if (!twitterAccount) {
+            const token = account.tokens.find(({ kind }) => kind === AccessTokenKind.Twitter);
+            if (!token) {
                 logger.error(`Could not find Twitter accounts for ${pool.sub} in ${pool.settings.title}`);
                 continue;
             }
@@ -60,8 +63,8 @@ export async function createTwitterQuests() {
                 newTweets.map(async (tweet) => {
                     try {
                         const contentMetadata = JSON.stringify({
-                            url: `https://twitter.com/${twitterAccount.metadata.username}/status/${tweet.id}`,
-                            username: twitterAccount.metadata.username,
+                            url: `https://twitter.com/${token.metadata.username}/status/${tweet.id}`,
+                            username: token.metadata.username,
                             text: tweet.text,
                             minFollowersCount: 0,
                         });
@@ -86,8 +89,8 @@ export async function createTwitterQuests() {
             const subject = `Created ${quests.length} Twitter Quest${quests.length && 's'}!`;
             const message = `We have detected ${quests.length} new tweet${
                 quests.length && 's'
-            } in <a href="https://www.twitter.com/${twitterAccount.metadata.username}">@${
-                twitterAccount.metadata.username
+            } in <a href="https://www.twitter.com/${token.metadata.username}">@${
+                token.metadata.username
             }</a>. A Twitter Quest ${quests.length && 'for each'} has been ${
                 isPublished ? 'published' : 'prepared'
             } for you in <a href="${DASHBOARD_URL}/pool/${pool._id}/quests">${pool.settings.title}</a>.`;

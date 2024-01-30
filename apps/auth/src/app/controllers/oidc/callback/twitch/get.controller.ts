@@ -1,27 +1,13 @@
 import { Request, Response } from 'express';
-import { AccountService } from '../../../../services/AccountService';
-import { callbackPostSSOCallback, callbackPreAuth } from '../../get';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
-import { AccessTokenKind } from '@thxnetwork/types/enums';
+import AuthService from '@thxnetwork/auth/services/AuthService';
 
 export async function controller(req: Request, res: Response) {
-    const { code, interaction } = await callbackPreAuth(req, res);
-    const { tokenInfo, email } = await TwitchService.getTokens(code);
-
-    // if there is a session we need to check for dups before we store the token
-    if (interaction.session) {
-        const isConnected = await AccountService.isConnected(interaction, tokenInfo.userId, AccessTokenKind.Twitch);
-        if (isConnected) {
-            return res.render('error', {
-                returnUrl: interaction.params.return_url,
-                alert: { variant: 'danger', message: 'This account is already connected to another account.' },
-            });
-        }
-    }
-
-    const account = await AccountService.findOrCreate(interaction, tokenInfo, AccountVariant.SSOTwitch, email);
-    const returnUrl = await callbackPostSSOCallback(interaction, account);
+    const { code, interaction } = await AuthService.redirectCallback(req);
+    const tokens = await TwitchService.getTokens(code);
+    const account = await AuthService.signin(interaction, tokens, AccountVariant.SSOTwitch);
+    const returnUrl = await AuthService.getReturn(interaction, account);
 
     return res.redirect(returnUrl);
 }

@@ -185,7 +185,7 @@ function findOneByAddress(address: string) {
 
 async function findPrimary(sub: string, chainId?: ChainId) {
     if (!chainId) chainId = getChainId();
-    const account = await AccountProxy.getById(sub);
+    const account = await AccountProxy.findById(sub);
     const isMetamask = account.variant === AccountVariant.Metamask;
     return await Wallet.findOne({
         sub,

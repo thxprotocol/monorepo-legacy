@@ -1,13 +1,12 @@
-import { AccountPlanType, AccessTokenKind, Role, Goal, ChainId } from '@thxnetwork/types/enums';
-import { AccountVariant } from '@thxnetwork/types/interfaces';
+import { AccountPlanType, AccessTokenKind, Role, Goal } from '@thxnetwork/types/enums';
+import { AccountVariant, TToken } from '@thxnetwork/types/interfaces';
 
 export type TAccount = {
     _id: string;
-    username: string;
     sub: string;
+    username: string;
     firstName: string;
     lastName: string;
-    referralCode: string;
     profileImg: string;
     plan: AccountPlanType;
     website: string;
@@ -18,38 +17,12 @@ export type TAccount = {
     address: string;
     variant: AccountVariant;
     otpSecret: string;
-    twitterUsername?: string;
-    lastLoginAt: number;
     acceptTermsPrivacy: boolean;
     acceptUpdates: boolean;
-    comparePassword: any;
-    tokens: IAccessToken[];
     role: Role;
     goal: Goal[];
-    connectedAccounts: any[];
-    googleAccess?: boolean;
-    youtubeViewAccess?: boolean;
-    youtubeManageAccess?: boolean;
-    twitterAccess?: boolean;
-    githubAccess?: boolean;
-    twitchAccess?: boolean;
-    discordAccess?: boolean;
-    shopifyAccess?: boolean;
-    authenticationToken?: string;
-    authenticationTokenExpires?: number;
-    getAddress: (chainId: ChainId) => Promise<string>;
-    getToken: (token: AccessTokenKind) => IAccessToken;
-    setToken: (token: IAccessToken) => IAccessToken;
-    unsetToken: (token: AccessTokenKind) => void;
+    tokens: TToken[];
     createdAt: Date;
     updatedAt: Date;
+    getToken: (token: AccessTokenKind) => TToken;
 };
-
-export interface IAccessToken {
-    kind: AccessTokenKind;
-    accessToken?: string;
-    refreshToken?: string;
-    expiry?: number;
-    userId?: string;
-    metadata?: any;
-}

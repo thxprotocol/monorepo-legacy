@@ -3,9 +3,10 @@ import { google, youtube_v3 } from 'googleapis';
 import { AccountDocument } from '../models/Account';
 import { AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config/secrets';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { IAccessToken } from '@thxnetwork/types/interfaces';
 import { parseJwt } from '../util/jwt';
 import { logger } from '../util/logger';
+import TokenService from './TokenService';
+import { TokenDocument } from '../models/Token';
 
 const client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, AUTH_URL + '/oidc/callback/google');
 
@@ -14,9 +15,10 @@ google.options({ auth: client });
 const ERROR_NO_DATA = 'Could not find an youtube data for this accesstoken';
 
 export class YouTubeService {
-    static async isAuthorized(account: AccountDocument, accessTokenKind: AccessTokenKind) {
-        const token = account.getToken(accessTokenKind);
+    static async isAuthorized(account: AccountDocument, kind: AccessTokenKind) {
+        const token = await TokenService.getToken(account, kind);
         if (!token || !token.accessToken) return false;
+
         const isExpired = Date.now() > token.expiry;
         if (isExpired) {
             try {
@@ -30,19 +32,19 @@ export class YouTubeService {
                 const res = await client.getAccessToken();
                 const { expiry_date } = await client.getTokenInfo(res.token);
 
-                account.setToken({
-                    kind: accessTokenKind,
+                await TokenService.setToken(account, {
+                    kind,
                     accessToken: res.token,
-                    expiry: expiry_date,
                     refreshToken: refreshToken,
+                    expiry: expiry_date,
+                    userId: token.userId,
                 });
-                await account.save();
             } catch {
                 return false;
             }
         }
 
-        const hasYoutubeScopes = await this.hasYoutubeScopes(token.accessToken, accessTokenKind);
+        const hasYoutubeScopes = await this.hasYoutubeScopes(token.accessToken, kind);
         if (!hasYoutubeScopes) return false;
         return true;
     }
@@ -56,23 +58,23 @@ export class YouTubeService {
         return token && token.refreshToken;
     }
 
-    static async getYoutubeClient(account: AccountDocument, accessTokenKind: AccessTokenKind) {
-        const googleToken: IAccessToken = account.getToken(accessTokenKind);
+    static async getYoutubeClient(account: AccountDocument, kind: AccessTokenKind) {
+        const { accessToken } = await TokenService.getToken(account, kind);
         const refreshToken = this.getRefreshToken(account);
 
         client.setCredentials({
             refresh_token: refreshToken,
-            access_token: googleToken.accessToken,
+            access_token: accessToken,
         });
 
         const { token } = await client.getAccessToken();
         const { expiry_date } = await client.getTokenInfo(token);
 
-        account.setToken({
+        await TokenService.setToken(account, {
             kind: AccessTokenKind.YoutubeView,
             accessToken: token,
-            expiry: expiry_date,
             refreshToken: refreshToken,
+            expiry: expiry_date,
         });
         await account.save();
 
@@ -215,7 +217,7 @@ export class YouTubeService {
             });
     }
 
-    static async revokeAccess(account: AccountDocument, token: IAccessToken) {
+    static async revokeAccess(account: AccountDocument, token: TokenDocument) {
         try {
             return await axios({
                 url: `https://oauth2.googleapis.com/revoke?token=${token.accessToken}`,
@@ -235,7 +237,7 @@ export class YouTubeService {
         });
     }
 
-    static async getTokens(code: string): Promise<{ tokenInfo: IAccessToken; email: string }> {
+    static async getTokens(code: string) {
         const { tokens } = await client.getToken(code);
         const expiry = tokens.expiry_date ? Date.now() + Number(tokens.expiry_date) * 1000 : undefined;
 
@@ -244,14 +246,11 @@ export class YouTubeService {
 
         const claims = await parseJwt(tokens.id_token);
         return {
-            email: claims.email,
-            tokenInfo: {
-                kind,
-                expiry,
-                accessToken: tokens.access_token,
-                refreshToken: tokens.refresh_token,
-                userId: claims.sub,
-            },
+            kind,
+            expiry,
+            accessToken: tokens.access_token,
+            refreshToken: tokens.refresh_token,
+            userId: claims.sub,
         };
     }
 

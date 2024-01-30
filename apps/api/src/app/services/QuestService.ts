@@ -1,5 +1,14 @@
-import { AccountPlanType, JobType, QuestVariant } from '@thxnetwork/types/enums';
-import { TAccount, TBrand, TPointReward, TQuest, TQuestEntry, TWallet, TWidget } from '@thxnetwork/types/interfaces';
+import { AccessTokenKind, AccountPlanType, JobType, QuestVariant } from '@thxnetwork/types/enums';
+import {
+    TAccount,
+    TBrand,
+    TPointReward,
+    TQuest,
+    TQuestEntry,
+    TValidationResult,
+    TWallet,
+    TWidget,
+} from '@thxnetwork/types/interfaces';
 import DailyRewardService, { DailyReward } from './DailyRewardService';
 import { ReferralReward, ReferralRewardDocument } from '../models/ReferralReward';
 import QuestSocialService, { PointReward, platformInteractionMap } from './PointRewardService';
@@ -39,11 +48,6 @@ import QuestGitcoinService from './QuestGitcoinService';
 import ImageService from './ImageService';
 import SafeService from './SafeService';
 import AccountProxy from '../proxies/AccountProxy';
-
-type TValidationResult = {
-    result: boolean;
-    reason: string;
-};
 
 function formatAddress(address: string) {
     return `${address.slice(0, 5)}...${address.slice(-3)}`;
@@ -316,7 +320,7 @@ async function complete(
     data: Partial<TQuestEntry>,
 ) {
     const index = Math.floor(Math.random() * celebratoryWords.length);
-    const discord = account.connectedAccounts && account.connectedAccounts.find((a) => a.kind === 'discord');
+    const discord = account.tokens && account.tokens.find((a) => a.kind === AccessTokenKind.Discord);
     const user =
         discord && discord.userId
             ? `<@${discord.userId}>`
@@ -360,7 +364,7 @@ async function findOne(variant: QuestVariant, questId: string, wallet: WalletDoc
 async function createEntryJob(job: Job) {
     const { variant, questId, sub } = job.attrs.data as any;
     const quest = await findById(variant, questId);
-    const account = await AccountProxy.getById(sub);
+    const account = await AccountProxy.findById(sub);
     const wallet = await SafeService.findPrimary(sub);
 
     const platformUserId = await PointRewardService.getPlatformUserId(quest, account);

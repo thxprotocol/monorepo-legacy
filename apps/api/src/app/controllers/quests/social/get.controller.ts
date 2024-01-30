@@ -17,7 +17,7 @@ const controller = async (req: Request, res: Response) => {
     const quest = await PointReward.findById(req.params.id);
     if (!quest) throw new NotFoundError('Could not find quest');
 
-    const account = await AccountProxy.getById(req.auth.sub);
+    const account = await AccountProxy.findById(req.auth.sub);
     const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
 
     const isAvailable = wallet ? await PointRewardService.isAvailable(quest, account, wallet) : false;

@@ -1,9 +1,10 @@
 import { AUTH_URL, TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET } from '@thxnetwork/auth/config/secrets';
 import { AccountDocument } from '../models/Account';
-import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
 import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { twitchClient } from '../util/axios';
-import { IAccessToken } from '@thxnetwork/types/interfaces';
+import TokenService from './TokenService';
+import CommonOauthLoginOptions from '../types/CommonOauthLoginOptions';
+import { TToken } from '@thxnetwork/common/lib/types';
 
 export const TWITCH_API_SCOPE = ['user:read:follows', 'user:read:email', 'user:read:broadcast'];
 
@@ -13,18 +14,18 @@ const ERROR_TOKEN_REQUEST_FAILED = 'Failed to request access token';
 
 class TwitchService {
     static async isAuthorized(account: AccountDocument) {
-        const token = account.getToken(AccessTokenKind.Twitch);
+        const token = await TokenService.getToken(account, AccessTokenKind.Twitch);
         if (!token || !token.accessToken) return false;
+
         const isExpired = Date.now() > token.expiry;
         if (isExpired) {
             try {
                 const accessToken = await this.refreshTokens(token.refreshToken);
-                account.setToken({
+                await TokenService.setToken(account, {
                     kind: AccessTokenKind.Twitch,
                     accessToken,
                     expiry: Date.now() + Number(3600) * 1000,
                 });
-                await account.save();
             } catch {
                 return false;
             }
@@ -48,7 +49,7 @@ class TwitchService {
         return `https://id.twitch.tv/oauth2/authorize?${body.toString()}`;
     }
 
-    static async getTokens(code: string): Promise<{ tokenInfo: IAccessToken; email: string }> {
+    static async getTokens(code: string): Promise<Partial<TToken>> {
         const body = new URLSearchParams();
 
         body.append('code', code);
@@ -70,14 +71,11 @@ class TwitchService {
         const expiry = data.expires_in ? Date.now() + Number(data.expires_in) * 1000 : undefined;
 
         return {
-            email: user.data[0].email,
-            tokenInfo: {
-                kind: AccessTokenKind.Twitch,
-                accessToken: data.access_token,
-                refreshToken: data.refresh_token,
-                expiry,
-                userId: user.id,
-            },
+            kind: AccessTokenKind.Twitch,
+            accessToken: data.access_token,
+            refreshToken: data.refresh_token,
+            expiry,
+            userId: user.id,
         };
     }
 

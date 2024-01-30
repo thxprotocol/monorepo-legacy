@@ -50,7 +50,7 @@ const controller = async (req: Request, res: Response) => {
         return res.json({ error: `Your score ${score || 0}/100 does not meet the minimum of ${quest.score}/100.` });
     // END;
 
-    const account = await AccountProxy.getById(req.auth.sub);
+    const account = await AccountProxy.findById(req.auth.sub);
     const entry = await QuestService.complete(QuestVariant.Gitcoin, quest.amount, pool, quest, account, wallet, {
         questId: quest._id,
         address,
