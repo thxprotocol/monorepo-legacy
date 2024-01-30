@@ -2,7 +2,8 @@ import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { DailyReward } from '@thxnetwork/api/services/DailyRewardService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { QuestVariant } from '@thxnetwork/common/lib/types';
+import { JobType, QuestVariant } from '@thxnetwork/common/lib/types';
+import { agenda } from '@thxnetwork/api/util/agenda';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import QuestService from '@thxnetwork/api/services/QuestService';
@@ -36,11 +37,14 @@ const controller = async (req: Request, res: Response) => {
     const validationResult = await QuestService.validate(QuestVariant.Daily, quest, account, wallet);
     if (!validationResult.result) return res.json({ error: validationResult.reason });
 
-    const entry = await QuestService.complete(QuestVariant.Daily, amount, pool, quest, account, wallet, {
+    await agenda.now(JobType.CreateQuestEntry, {
+        variant: QuestVariant.Daily,
         questId: quest._id,
+        sub: account.sub,
+        data: {},
     });
 
-    return res.status(201).json(entry);
+    return res.status(201).end();
 };
 
 export default { controller, validation };

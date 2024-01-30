@@ -35,7 +35,9 @@ const controller = async (req: Request, res: Response) => {
         variant,
         questId: quest._id,
         sub: account.sub,
-        platformUserId,
+        data: {
+            platformUserId,
+        },
     });
 
     res.status(201).json();

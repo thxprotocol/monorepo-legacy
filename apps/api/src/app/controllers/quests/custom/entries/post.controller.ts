@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { param } from 'express-validator';
-import { QuestVariant } from '@thxnetwork/common/lib/types';
+import { JobType, QuestVariant } from '@thxnetwork/common/lib/types';
+import { agenda } from '@thxnetwork/api/util/agenda';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
@@ -29,12 +30,16 @@ const controller = async (req: Request, res: Response) => {
     const validationResult = await QuestService.validate(QuestVariant.Custom, quest, account, wallet);
     if (!validationResult.result) return res.json({ error: validationResult.reason });
 
-    const entry = await QuestService.complete(QuestVariant.Custom, quest.amount, pool, quest, account, wallet, {
+    await agenda.now(JobType.CreateQuestEntry, {
+        variant: QuestVariant.Custom,
         questId: quest._id,
-        isClaimed: true,
+        sub: account.sub,
+        data: {
+            isClaimed: true,
+        },
     });
 
-    res.status(201).json(entry);
+    res.status(201).end();
 };
 
 export default { controller, validation };
