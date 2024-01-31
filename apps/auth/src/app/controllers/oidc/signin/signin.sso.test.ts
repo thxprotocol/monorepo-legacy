@@ -35,11 +35,10 @@ describe('SSO Sign In', () => {
 
         CLIENT_ID = res.body.client_id;
 
-        const account = await AccountService.signup({
+        const account = await AccountService.create({
             plan: AccountPlanType.Free,
             email: accountEmail,
             variant: AccountVariant.EmailPassword,
-            active: true,
         });
         const params = new URLSearchParams({
             client_id: CLIENT_ID,

@@ -245,7 +245,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                     username: account.username,
                     profileImg: account.profileImg,
                     variant: account.variant,
-                    connectedAccounts: account.tokens.map((token) => ({
+                    tokens: account.tokens.map((token) => ({
                         ...token,
                         accessToken: undefined,
                         refreshToken: undefined,

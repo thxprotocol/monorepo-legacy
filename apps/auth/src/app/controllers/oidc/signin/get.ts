@@ -5,12 +5,11 @@ import { TwitterService } from '../../../services/TwitterService';
 import { YouTubeService } from '../../../services/YouTubeService';
 import { AUTH_REQUEST_TYPED_MESSAGE, createTypedMessage } from '../../../util/typedMessage';
 import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
 import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
 import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
-import WalletProxy from '@thxnetwork/auth/proxies/WalletProxy';
-import { AccountVariant } from '@thxnetwork/types/interfaces';
 
 async function controller(req: Request, res: Response) {
     const { uid, params } = req.interaction;
@@ -48,14 +47,6 @@ async function controller(req: Request, res: Response) {
         alert[
             'message'
         ] = `<i class="fas fa-info-circle mr-2" aria-hidden="true"></i> Accept invite for <strong>${pool.settings.title}</strong>!`;
-    }
-
-    if (params.wallet_transfer_token) {
-        const { pointBalance } = await WalletProxy.getWalletTransfer(params.wallet_transfer_token);
-        alert['variant'] = 'success';
-        alert[
-            'message'
-        ] = `<i class="fas fa-gift mr-2" aria-hidden="true"></i>Sign in to claim <strong>${pointBalance}</strong> points!`;
     }
 
     if (params.pool_transfer_token) {

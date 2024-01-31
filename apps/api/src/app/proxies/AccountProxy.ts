@@ -10,7 +10,6 @@ async function authAccountRequest(url: string) {
             Authorization: await getAuthAccessToken(),
         },
     });
-    console.log(data.tokens);
     return data;
 }
 
@@ -47,17 +46,15 @@ export default class AccountProxy {
     }
 
     static async find({ subs }: { subs: string[] }): Promise<TAccount[]> {
-        if (!subs.length) return [];
-
-        const params = new URLSearchParams();
-        params.append('subs', subs.join(','));
         const { data } = await authClient({
             method: 'GET',
             url: '/account',
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
-            params,
+            params: {
+                subs,
+            },
         });
 
         return data;
