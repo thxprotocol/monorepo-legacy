@@ -12,6 +12,7 @@ import { Widget } from '@thxnetwork/api/models/Widget';
 import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import { agenda } from '@thxnetwork/api/util/agenda';
 import { DiscordDisconnected, DiscordSafeNotFound } from '@thxnetwork/api/util/errors';
+import PointRewardService from '@thxnetwork/api/services/PointRewardService';
 
 export async function completeQuest(
     interaction: ButtonInteraction | StringSelectMenuInteraction,
@@ -31,15 +32,15 @@ export async function completeQuest(
     if (!pool) throw new Error('Could not find this campaign.');
 
     const isAvailable = await QuestService.isAvailable(variant, quest, account, wallet);
-    if (!isAvailable) throw new Error('Quest is not available at the moment!');
+    if (!isAvailable) throw new Error('Quest is not available for commands at the moment!');
 
-    const validationResult = await QuestService.validate(variant, quest, account, wallet);
+    const validationResult = await QuestService.getValidationResult(variant, quest, account, wallet);
     if (!validationResult.result) throw new Error(validationResult.reason);
 
     const amount = await QuestService.getAmount(variant, quest, account, wallet);
     if (!amount) throw new Error('Could not figure out how much points you should get.');
 
-    // TODO Should support transfer of addition data per quest type
+    const platformUserId = PointRewardService.getPlatformUserId(quest, account);
 
     await agenda.now(JobType.CreateQuestEntry, {
         variant,
@@ -47,6 +48,7 @@ export async function completeQuest(
         sub: account.sub,
         data: {
             isClaimed: true,
+            platformUserId,
         },
     });
 

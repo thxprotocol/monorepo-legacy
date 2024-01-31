@@ -35,7 +35,7 @@ const controller = async (req: Request, res: Response) => {
     const isAvailable = await DailyRewardClaimService.isAvailable(quest, account, wallet);
     if (!isAvailable) return res.json({ error: 'Already completed within the last 24 hours.' });
 
-    const validationResult = await QuestService.validate(QuestVariant.Daily, quest, account, wallet);
+    const validationResult = await QuestService.getValidationResult(QuestVariant.Daily, quest, account, wallet);
     if (!validationResult.result) return res.json({ error: validationResult.reason });
 
     const job = await agenda.now(JobType.CreateQuestEntry, {

@@ -32,4 +32,27 @@ async function findOne(quest: ReferralRewardDocument, wallet?: WalletDocument) {
     };
 }
 
-export default { findOne, findByPool, removeAllForPool, remove };
+function getAmount(quest: ReferralRewardDocument) {
+    return quest.amount;
+}
+
+function getValidationResult(quest, account, wallet) {
+    return {
+        result: false,
+        reason: 'Sorry, support not yet implemented...',
+    };
+}
+
+function isAvailable() {
+    return true;
+}
+
+export default {
+    findOne,
+    findByPool,
+    removeAllForPool,
+    remove,
+    getAmount,
+    getValidationResult,
+    isAvailable,
+};

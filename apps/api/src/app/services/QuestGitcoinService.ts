@@ -19,24 +19,27 @@ async function getScore(scorerId: number, address: string) {
     }
 }
 
-async function validate(quest: GitcoinQuestDocument, account: TAccount, wallet: WalletDocument) {
-    return { result: false, reason: 'Sorry! Not yet implemented for Discord slash commands.' };
-}
-
 async function findOne(quest: GitcoinQuestDocument, wallet?: WalletDocument) {
-    const isClaimed = wallet
-        ? await GitcoinQuestEntry.exists({
-              questId: quest._id,
-              $or: [{ sub: wallet.sub }, { walletId: wallet._id }],
-          })
-        : false;
-
     return {
         ...quest.toJSON(),
         amount: quest.amount,
-        isClaimed,
         pointsAvailable: quest.amount,
     };
 }
 
-export default { findOne, getScore, validate };
+function getAmount(quest: GitcoinQuestDocument) {
+    return quest.amount;
+}
+
+function getValidationResult(quest, account, wallet) {
+    return { result: false, reason: 'Sorry! Not yet implemented for Discord slash commands.' };
+}
+
+function isAvailable(quest: GitcoinQuestDocument, account: TAccount, wallet: WalletDocument) {
+    return !!GitcoinQuestEntry.exists({
+        questId: quest._id,
+        $or: [{ sub: wallet.sub }, { walletId: wallet._id }],
+    });
+}
+
+export default { findOne, getScore, getAmount, getValidationResult, isAvailable };

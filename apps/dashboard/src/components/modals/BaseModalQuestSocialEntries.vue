@@ -26,6 +26,7 @@
                     <template #head(connectedAccounts)> Connected </template>
                     <template #head(walletAddress)> Wallet </template>
                     <template #head(pointBalance)> Point Balance </template>
+                    <template #head(amount)> Amount </template>
                     <template #head(duration)> Duration </template>
                     <template #head(createdAt)> Created </template>
 
@@ -48,6 +49,9 @@
                     </template>
                     <template #cell(pointBalance)="{ item }">
                         <strong class="text-primary">{{ item.pointBalance }}</strong>
+                    </template>
+                    <template #cell(amount)="{ item }">
+                        <strong>{{ item.amount }}</strong>
                     </template>
                     <template #cell(duration)="{ item }">
                         <code>{{ item.duration }}</code>
@@ -139,6 +143,7 @@ export default class BaseModalQuestSocialEntries extends Vue {
                 connectedAccounts: entry.account && parseConnectedAccounts(entry.account.connectedAccounts),
                 wallet: parseWallet(entry.wallet),
                 pointBalance: entry.pointBalance,
+                amount: entry.amount,
                 duration: this.getDuration(this.quest, entry),
                 createdAt: entry.createdAt,
             }));

@@ -27,7 +27,7 @@ const controller = async (req: Request, res: Response) => {
         return res.json({ error: 'Quest is locked' });
     }
 
-    const validationResult = await QuestService.validate(QuestVariant.Custom, quest, account, wallet);
+    const validationResult = await QuestService.getValidationResult(QuestVariant.Custom, quest, account, wallet);
     if (!validationResult.result) return res.json({ error: validationResult.reason });
 
     const job = await agenda.now(JobType.CreateQuestEntry, {

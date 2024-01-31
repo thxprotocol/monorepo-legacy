@@ -44,5 +44,29 @@ async function getPointsAvailable(quest: TDailyReward, validClaims: DailyRewardC
     return quest.amounts[amountIndex];
 }
 
+async function getAmount(quest, account, wallet) {
+    const claims = await DailyRewardClaimService.findByWallet(quest, wallet);
+    const amountIndex = claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;
+
+    return quest.amounts[amountIndex];
+}
+
+function getValidationResult(quest, wallet) {
+    return DailyRewardClaimService.validate(quest, wallet);
+}
+
+function isAvailable(quest, account, wallet) {
+    return DailyRewardClaimService.isAvailable(quest, account, wallet);
+}
+
 export { DailyReward };
-export default { findOne, findByPool, findByUUID, create, getPointsAvailable };
+export default {
+    findOne,
+    findByPool,
+    findByUUID,
+    create,
+    getPointsAvailable,
+    getAmount,
+    getValidationResult,
+    isAvailable,
+};

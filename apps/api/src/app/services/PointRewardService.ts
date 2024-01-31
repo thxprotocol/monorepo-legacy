@@ -80,6 +80,8 @@ const platformInteractionMap = {
 };
 
 const getPlatformUserId = async (quest: TPointReward, account: TAccount) => {
+    if (!quest.platform) return;
+
     try {
         const getUserId = (account: TAccount, kind: AccessTokenKind) => {
             const token = account.connectedAccounts.find((a) => a.kind === kind);
@@ -137,15 +139,19 @@ async function isAvailable(quest: PointRewardDocument, account: TAccount, wallet
     const platformUserId = await getPlatformUserId(quest, account);
     if (platformUserId) ids.push({ platformUserId });
 
-    if (quest.interaction === RewardConditionInteraction.DiscordMessage) {
-        return true;
+    if (quest.interaction !== RewardConditionInteraction.DiscordMessage) {
+        // If no entry exist the quest is available
+        return !(await PointRewardClaim.exists({
+            questId: quest._id,
+            $or: ids,
+        }));
     }
 
-    // If no entry exist the quest is available
-    return !(await PointRewardClaim.exists({
-        questId: quest._id,
-        $or: ids,
-    }));
+    // Specific to Discord Message quest
+    const { start, end } = getRestartDates(quest);
+    const { pointsAvailable } = await getDiscordMessagePoints(quest, platformUserId, start, end);
+
+    return pointsAvailable > 0;
 }
 
 export async function validate(
@@ -166,18 +172,10 @@ export async function validate(
     }
 }
 
-async function getPointsAvailable(quest: TPointReward, account: TAccount) {
-    if (!account || quest.interaction !== RewardConditionInteraction.DiscordMessage)
-        return { pointsAvailable: quest.amount };
-
-    const connectedAccount = account.connectedAccounts.find(({ kind }) => kind === AccessTokenKind.Discord);
-    if (!connectedAccount) return { pointsAvailable: 0, pointsClaimed: 0 };
-
-    const { days, limit } = JSON.parse(quest.contentMetadata);
-    const { start, end } = getRestartDates(quest);
+async function getDiscordMessagePoints(quest, platformUserId, start, end) {
     const claims = await PointRewardClaim.find({
         questId: String(quest._id),
-        platformUserId: connectedAccount.userId,
+        platformUserId,
         createdAt: {
             $gte: start,
             $lt: end,
@@ -189,11 +187,34 @@ async function getPointsAvailable(quest: TPointReward, account: TAccount) {
     // Only find messages created after the last claim if one exists
     const messages = await DiscordMessage.find({
         guildId: quest.content,
-        memberId: connectedAccount.userId,
+        memberId: platformUserId,
         createdAt: { $gte: claim ? claim.createdAt : start, $lt: end },
     });
 
     const pointsAvailable = messages.length * quest.amount;
+
+    console.log(pointsAvailable, pointsClaimed, messages.length, platformUserId);
+
+    return { pointsClaimed, pointsAvailable };
+}
+
+async function getPointsAvailable(quest: TPointReward, account: TAccount) {
+    if (!account || quest.interaction !== RewardConditionInteraction.DiscordMessage) {
+        return { pointsAvailable: quest.amount };
+    }
+
+    // Specific to Discord Message quest
+    const connectedAccount = account.connectedAccounts.find(({ kind }) => kind === AccessTokenKind.Discord);
+    if (!connectedAccount) return { pointsAvailable: 0, pointsClaimed: 0 };
+
+    const { days, limit } = JSON.parse(quest.contentMetadata);
+    const { start, end } = getRestartDates(quest);
+    const { pointsClaimed, pointsAvailable } = await getDiscordMessagePoints(
+        quest,
+        connectedAccount.userId,
+        start,
+        end,
+    );
 
     return {
         messages: await DiscordMessage.find({
@@ -246,6 +267,15 @@ async function findOne(quest: PointRewardDocument, wallet?: WalletDocument) {
     };
 }
 
+async function getAmount(quest, account, wallet) {
+    const { pointsAvailable } = await getPointsAvailable(quest, account);
+    return pointsAvailable;
+}
+
+function getValidationResult(quest, account, wallet) {
+    return validate(quest, account, wallet);
+}
+
 export { PointReward, platformInteractionMap };
 export default {
     findOne,
@@ -253,7 +283,9 @@ export default {
     getPointsAvailable,
     findByPool,
     findEntries,
-    isAvailable,
     getPlatformUserId,
     getRestartDates,
+    getAmount,
+    getValidationResult,
+    isAvailable,
 };

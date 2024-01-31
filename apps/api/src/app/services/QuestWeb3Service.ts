@@ -21,4 +21,15 @@ async function findOne(quest: Web3QuestDocument, wallet?: WalletDocument) {
     };
 }
 
-export default { findOne };
+function getAmount(quest: Web3QuestDocument) {
+    return quest.amount;
+}
+
+function getValidationResult() {
+    //
+}
+function isAvailable() {
+    //
+}
+
+export default { findOne, getAmount, getValidationResult, isAvailable };

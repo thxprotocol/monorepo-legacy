@@ -91,5 +91,17 @@ async function findOne(quest: MilestoneRewardDocument, wallet?: WalletDocument) 
         events,
     };
 }
+function isAvailable() {
+    //
+}
+
+async function getAmount(quest, account, wallet) {
+    // Include the amount of events found
+    return quest.amount;
+}
+
+function getValidationResult(quest, account, wallet) {
+    return validate(quest, wallet);
+}
 
 export default { findOne, validate, create, edit, findByPool };

@@ -17,19 +17,23 @@ const controller = async (req: Request, res: Response) => {
     const quest = await PointReward.findById(req.params.id);
     if (!quest) throw new NotFoundError('Quest not found.');
 
+    // Get quest variant for quest interaction variant
+    const variant = questInteractionVariantMap[quest.interaction];
+
     const account = await AccountProxy.getById(req.auth.sub);
     const wallet = await SafeService.findPrimary(req.auth.sub, getChainId());
     const isLocked = await LockService.getIsLocked(quest.locks, wallet);
     if (isLocked) return res.json({ error: 'Quest is locked' });
 
-    const validationResult = await QuestService.validate(quest.variant, quest, account, wallet);
+    const isAvailable = await QuestService.isAvailable(variant, quest, account, wallet);
+    if (!isAvailable) throw new Error('Quest is not available at the moment!');
+
+    const validationResult = await QuestService.getValidationResult(variant, quest, account, wallet);
     if (!validationResult.result) return res.json({ error: validationResult.reason });
 
     const platformUserId = await PointRewardService.getPlatformUserId(quest, account);
     if (!platformUserId) return res.json({ error: 'Could not find platform user id.' });
 
-    // Get quest variant for quest interaction variant
-    const variant = questInteractionVariantMap[quest.interaction];
     const job = await agenda.now(JobType.CreateQuestEntry, {
         variant,
         questId: quest._id,
