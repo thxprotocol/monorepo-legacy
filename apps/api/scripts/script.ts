@@ -33,24 +33,24 @@ const RELAYER = '0x08302CF8648A961c607e3e7Bd7B7Ec3230c2A6c5';
 // VE Whitelist
 async function main() {
     const hardhatProvider = new ethers.providers.JsonRpcProvider(HARDHAT_RPC);
-    // const signer = new ethers.Wallet(PRIVATE_KEY, hardhatProvider) as unknown as ethers.Signer;
-    // const rfthx = new ethers.Contract(RF_ADDRESS, contractArtifacts['RewardFaucet'].abi, signer);
-    // const rdthx = new ethers.Contract(RD_ADDRESS, contractArtifacts['RewardDistributor'].abi, signer);
-    // const bpt = new ethers.Contract(BPT_ADDRESS, contractArtifacts['BPTToken'].abi, signer);
-    // const bal = new ethers.Contract(BAL_ADDRESS, contractArtifacts['BalToken'].abi, signer);
-    // const thx = new ethers.Contract(THX_ADDRESS, contractArtifacts['THXToken'].abi, signer);
-    // const usdc = new ethers.Contract(USDC_ADDRESS, contractArtifacts['USDCToken'].abi, signer);
+    const signer = new ethers.Wallet(PRIVATE_KEY, hardhatProvider) as unknown as ethers.Signer;
+    const rfthx = new ethers.Contract(RF_ADDRESS, contractArtifacts['RewardFaucet'].abi, signer);
+    const rdthx = new ethers.Contract(RD_ADDRESS, contractArtifacts['RewardDistributor'].abi, signer);
+    const bpt = new ethers.Contract(BPT_ADDRESS, contractArtifacts['BPTToken'].abi, signer);
+    const bal = new ethers.Contract(BAL_ADDRESS, contractArtifacts['BalToken'].abi, signer);
+    const thx = new ethers.Contract(THX_ADDRESS, contractArtifacts['THXToken'].abi, signer);
+    const usdc = new ethers.Contract(USDC_ADDRESS, contractArtifacts['USDCToken'].abi, signer);
 
-    // // Whitelist and fill user wallet
-    // await bpt.mint(MINT_TO, MINT_AMOUNT);
-    // await thx.mint(MINT_TO, String(ethers.utils.parseUnits('5000', 'ether')));
-    // await usdc.mint(MINT_TO, String(ethers.utils.parseUnits('50', 'ether')));
-    // const whitelist = new ethers.Contract(SC_ADDRESS, contractArtifacts['SmartWalletWhitelist'].abi, signer);
-    // await whitelist.approveWallet(MINT_TO);
+    // Whitelist and fill user wallet
+    await bpt.mint(MINT_TO, MINT_AMOUNT);
+    await thx.mint(MINT_TO, String(ethers.utils.parseUnits('5000', 'ether')));
+    await usdc.mint(MINT_TO, String(ethers.utils.parseUnits('50', 'ether')));
+    const whitelist = new ethers.Contract(SC_ADDRESS, contractArtifacts['SmartWalletWhitelist'].abi, signer);
+    await whitelist.approveWallet(MINT_TO);
 
-    // // Deploy rewards
-    // const amountBPT = String(ethers.utils.parseUnits('100000', 'ether'));
-    // const amountBAL = String(ethers.utils.parseUnits('1000', 'ether'));
+    // Deploy rewards
+    const amountBPT = String(ethers.utils.parseUnits('100000', 'ether'));
+    const amountBAL = String(ethers.utils.parseUnits('1000', 'ether'));
 
     // Travel past first week else this throws "Reward distribution has not started yet"
     await increaseBlockTime(hardhatProvider, 60 * 60 * 24 * 7);

@@ -5,6 +5,7 @@ import { contractArtifacts } from '@thxnetwork/contracts/exports';
 import { getProvider } from '@thxnetwork/api/util/network';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { BAL_ADDRESS, BPT_ADDRESS, LR_ADDRESS, RD_ADDRESS, VE_ADDRESS } from '@thxnetwork/api/config/secrets';
+import { toChecksumAddress } from 'web3-utils';
 
 export const validation = [];
 
@@ -26,13 +27,13 @@ export const controller = async (req: Request, res: Response) => {
         const result = await web3.eth.call({
             to: LR_ADDRESS,
             data: fn.encodeABI(),
-            from: wallet.address,
+            from: toChecksumAddress(wallet.address),
         });
         return web3.eth.abi.decodeParameters(['address', 'uint256'], result);
     };
     const calls = await Promise.all([
-        callStatic(lr.methods.getUserClaimableReward(RD_ADDRESS, wallet.address, BAL_ADDRESS)),
-        callStatic(lr.methods.getUserClaimableReward(RD_ADDRESS, wallet.address, BPT_ADDRESS)),
+        callStatic(lr.methods.getUserClaimableReward(RD_ADDRESS, toChecksumAddress(wallet.address), BAL_ADDRESS)),
+        callStatic(lr.methods.getUserClaimableReward(RD_ADDRESS, toChecksumAddress(wallet.address), BPT_ADDRESS)),
     ]);
     const rewards = calls.map((call) => ({ tokenAddress: call[0], amount: call[1] }));
     const veTHX = await ve.methods.balanceOf(wallet.address).call();

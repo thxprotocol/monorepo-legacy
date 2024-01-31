@@ -28,16 +28,16 @@ async function getNetworkDetails(chainId: ChainId) {
         const rfthx = new ethers.Contract(RF_ADDRESS, contractArtifacts['RewardFaucet'].abi, signer);
         const bpt = new ethers.Contract(BPT_ADDRESS, contractArtifacts['BPTToken'].abi, signer);
         const bal = new ethers.Contract(BAL_ADDRESS, contractArtifacts['BalToken'].abi, signer);
-        const thx = new ethers.Contract(THX_ADDRESS, contractArtifacts['THXToken'].abi, signer);
-        const usdc = new ethers.Contract(USDC_ADDRESS, contractArtifacts['USDCToken'].abi, signer);
         const balances = await Promise.all([
             {
                 matic: fromWei(String(await web3.eth.getBalance(defaultAccount)), 'ether'),
                 bpt: fromWei(String(await bpt.balanceOf(rfthx.address)), 'ether'),
                 bal: fromWei(String(await bal.balanceOf(rfthx.address)), 'ether'),
-                thx: fromWei(String(await thx.balanceOf(rfthx.address)), 'ether'),
-                usdc: fromWei(String(await usdc.balanceOf(rfthx.address)), 'ether'),
             },
+        ]);
+        const supply = await Promise.all([
+            fromWei(String(await rfthx.totalTokenRewards(bpt.address)), 'ether'),
+            fromWei(String(await rfthx.totalTokenRewards(bal.address)), 'ether'),
         ]);
         const rewards = await Promise.all([
             {
@@ -55,10 +55,11 @@ async function getNetworkDetails(chainId: ChainId) {
                 relayer: defaultAccount,
                 bpt: bpt.address,
                 bal: bal.address,
-                thx: thx.address,
-                usdc: usdc.address,
+                thx: THX_ADDRESS,
+                usdc: USDC_ADDRESS,
             },
             balances,
+            supply,
             rewards,
         };
     } catch (error) {
