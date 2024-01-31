@@ -1,12 +1,13 @@
 import { PointReward } from '@thxnetwork/api/models/PointReward';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
-import PointRewardService from '@thxnetwork/api/services/PointRewardService';
+import { param } from 'express-validator';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import QuestSocialService from '@thxnetwork/api/services/QuestSocialService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { param } from 'express-validator';
 import LockService from '@thxnetwork/api/services/LockService';
+import QuestService from '@thxnetwork/api/services/QuestService';
 
 const validation = [param('id').isMongoId()];
 
@@ -20,9 +21,9 @@ const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.getById(req.auth.sub);
     const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
 
-    const isAvailable = wallet ? await PointRewardService.isAvailable(quest, account, wallet) : false;
+    const isAvailable = wallet ? await QuestService.isAvailable(quest.variant, { quest, account, wallet }) : false;
     const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : true;
-    const socialQuest = await PointRewardService.findOne(quest, wallet);
+    const socialQuest = await QuestService.decorate(quest.variant, quest._id, wallet);
 
     res.json({
         ...socialQuest,

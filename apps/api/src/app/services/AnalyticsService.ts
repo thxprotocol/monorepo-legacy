@@ -6,9 +6,8 @@ import { ERC721PerkDocument, ERC721Perk } from '@thxnetwork/api/models/ERC721Per
 import { MilestoneRewardDocument, MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import { PointRewardDocument } from '@thxnetwork/api/models/PointReward';
 import { ReferralRewardDocument, ReferralReward } from '@thxnetwork/api/models/ReferralReward';
-import { DailyReward } from './DailyRewardService';
-import { PointReward } from './PointRewardService';
-import AccountProxy from '../proxies/AccountProxy';
+import { DailyReward } from '@thxnetwork/api/models/DailyReward';
+import { PointReward } from '@thxnetwork/api/models/PointReward';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 import { DailyRewardClaim } from '@thxnetwork/api/models/DailyRewardClaims';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
@@ -16,7 +15,6 @@ import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClai
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
 import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { TAccount } from '@thxnetwork/types/interfaces';
 import { CustomReward, CustomRewardDocument } from '../models/CustomReward';
 import { Web3Quest, Web3QuestDocument } from '../models/Web3Quest';
 import { Web3QuestClaim } from '../models/Web3QuestClaim';

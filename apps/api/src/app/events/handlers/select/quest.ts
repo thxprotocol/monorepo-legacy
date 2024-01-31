@@ -2,7 +2,7 @@ import { ButtonInteraction, ButtonStyle, StringSelectMenuInteraction } from 'dis
 import { JobType, QuestVariant } from '@thxnetwork/common/lib/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import QuestService from '@thxnetwork/api/services/QuestService';
+import QuestService, { serviceMap } from '@thxnetwork/api/services/QuestService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { handleError } from '../../commands/error';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
@@ -12,7 +12,8 @@ import { Widget } from '@thxnetwork/api/models/Widget';
 import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import { agenda } from '@thxnetwork/api/util/agenda';
 import { DiscordDisconnected, DiscordSafeNotFound } from '@thxnetwork/api/util/errors';
-import PointRewardService from '@thxnetwork/api/services/PointRewardService';
+import { getPlatformUserId } from '@thxnetwork/api/services/QuestSocialService';
+import { TPointReward } from '@thxnetwork/common/lib/types';
 
 export async function completeQuest(
     interaction: ButtonInteraction | StringSelectMenuInteraction,
@@ -22,7 +23,8 @@ export async function completeQuest(
     const account = await AccountProxy.getByDiscordId(interaction.user.id);
     if (!account) throw new DiscordDisconnected();
 
-    const quest = await QuestService.findById(variant, questId);
+    const Quest = serviceMap[variant].models.quest;
+    const quest = await Quest.findById(questId);
     if (!quest) throw new Error('Could not find this quest.');
 
     const wallet = await SafeService.findPrimary(account.sub);
@@ -31,16 +33,17 @@ export async function completeQuest(
     const pool = await PoolService.getById(quest.poolId);
     if (!pool) throw new Error('Could not find this campaign.');
 
-    const isAvailable = await QuestService.isAvailable(variant, quest, account, wallet);
+    const isAvailable = await QuestService.isAvailable(variant, { quest, account, wallet });
     if (!isAvailable) throw new Error('Quest is not available for commands at the moment!');
 
-    const validationResult = await QuestService.getValidationResult(variant, quest, account, wallet);
-    if (!validationResult.result) throw new Error(validationResult.reason);
+    const { result, reason } = await QuestService.getValidationResult(variant, quest, account, wallet, {});
+    if (!result) throw new Error(reason);
 
     const amount = await QuestService.getAmount(variant, quest, account, wallet);
     if (!amount) throw new Error('Could not figure out how much points you should get.');
 
-    const platformUserId = PointRewardService.getPlatformUserId(quest, account);
+    const { platform } = quest as TPointReward;
+    const platformUserId = platform && getPlatformUserId(account, platform);
 
     await agenda.now(JobType.CreateQuestEntry, {
         variant,
@@ -74,7 +77,7 @@ export async function onSelectQuestComplete(interaction: StringSelectMenuInterac
         const pool = await PoolService.getById(quest.poolId);
         if (!pool) throw new Error('Could not find this campaign.');
 
-        const isAvailable = await QuestService.isAvailable(variant, quest, account, wallet);
+        const isAvailable = await QuestService.isAvailable(variant, { quest, account, wallet });
         const brand = await Brand.findOne({ poolId: pool._id });
         const widget = await Widget.findOne({ poolId: pool._id });
         const theme = JSON.parse(widget.theme);

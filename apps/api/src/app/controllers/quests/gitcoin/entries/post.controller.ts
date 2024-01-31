@@ -13,6 +13,7 @@ import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import GitcoinService from '@thxnetwork/api/services/GitcoinService';
 import LockService from '@thxnetwork/api/services/LockService';
 import { agenda } from '@thxnetwork/api/util/agenda';
+import QuestGitcoinService from '@thxnetwork/api/services/QuestGitcoinService';
 
 const validation = [
     param('uuid').custom((uuid) => validate(uuid)),
@@ -34,24 +35,23 @@ const controller = async (req: Request, res: Response) => {
     const isLocked = await LockService.getIsLocked(quest.locks, wallet);
     if (isLocked) throw new ForbiddenError('Quest is locked!');
 
-    // START validation
+    const account = await AccountProxy.getById(req.auth.sub);
+    if (!account) throw new NotFoundError('Account not found');
+
     const address = recoverSigner(req.body.message, req.body.signature);
-    // TODO Maybe store address as wallet in case of future reward usage?
-    const isClaimed = await Web3QuestClaim.exists({
-        questId: quest._id,
-        $or: [{ sub: req.auth.sub }, { walletId: wallet._id }, { address }],
-    });
-    if (isClaimed) {
+
+    const isAvailable = await QuestService.isAvailable(quest.variant, { quest, account, wallet, address });
+    if (!isAvailable) {
         return res.json({ error: 'You have claimed this quest already.' });
     }
 
-    const { score, error } = await GitcoinService.getScoreUniqueHumanity(quest.scorerId, address.toLowerCase());
-    if (error) return res.json({ error });
-    if (score < quest.score)
-        return res.json({ error: `Your score ${score || 0}/100 does not meet the minimum of ${quest.score}/100.` });
-    // END;
+    const { result, reason } = await QuestService.getValidationResult(quest.variant, quest, account, wallet, {
+        address,
+    });
+    if (!result) {
+        return res.json({ error: reason });
+    }
 
-    const account = await AccountProxy.getById(req.auth.sub);
     const job = await agenda.now(JobType.CreateQuestEntry, {
         variant: QuestVariant.Gitcoin,
         questId: quest._id,

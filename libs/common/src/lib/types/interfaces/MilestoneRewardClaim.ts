@@ -7,4 +7,5 @@ export type TMilestoneRewardClaim = {
     isClaimed: boolean;
     poolId: string;
     createdAt: Date;
+    eventName: string;
 };

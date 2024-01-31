@@ -1,45 +1,101 @@
 import axios from 'axios';
 import { WalletDocument } from '../models/Wallet';
-import { GitcoinQuestDocument } from '../models/GitcoinQuest';
 import { GitcoinQuestEntry } from '../models/GitcoinQuestEntry';
 import { GITCOIN_API_KEY } from '../config/secrets';
 import { logger } from '../util/logger';
-import { TAccount } from '@thxnetwork/common/lib/types/interfaces';
+import { TAccount, TGitcoinQuestEntry, TGitcoinQuest } from '@thxnetwork/common/lib/types/interfaces';
+import { IQuestService, TValidationResult } from './QuestService';
+import { AssetPoolDocument } from '../models/AssetPool';
+import GitcoinService from './GitcoinService';
+import { GitcoinQuest } from '../models/GitcoinQuest';
 
-async function getScore(scorerId: number, address: string) {
-    try {
-        const response = await axios({
-            url: `https://api.scorer.gitcoin.co/registry/score/${scorerId}/${address}`,
-            headers: { 'X-API-KEY': GITCOIN_API_KEY },
-        });
-        return { score: response.data.score };
-    } catch (error) {
-        logger.error(error.message);
-        return { error: `Could not get a score for ${address}.` };
+export default class QuestGitcoinService implements IQuestService {
+    models = {
+        quest: GitcoinQuest,
+        entry: GitcoinQuestEntry,
+    };
+
+    list(options: { pool: AssetPoolDocument }): Promise<TGitcoinQuest[]> {
+        throw new Error('Method not implemented.');
+    }
+
+    async decorate({ quest }: { quest: TGitcoinQuest; wallet?: WalletDocument }): Promise<TGitcoinQuest> {
+        return quest;
+    }
+
+    async isAvailable({
+        quest,
+        wallet,
+        address,
+    }: {
+        quest: TGitcoinQuest;
+        wallet: WalletDocument;
+        account: TAccount;
+        address: string;
+    }): Promise<boolean> {
+        return !(await GitcoinQuestEntry.exists({
+            questId: quest._id,
+            $or: [{ sub: wallet.sub }, { walletId: wallet._id }, { address }],
+        }));
+    }
+
+    async getAmount({
+        quest,
+    }: {
+        quest: TGitcoinQuest;
+        wallet: WalletDocument;
+        account: TAccount;
+    }): Promise<{ pointsAvailable: number; pointsClaimed?: number }> {
+        return { pointsAvailable: quest.amount };
+    }
+
+    findById(id: string): Promise<TGitcoinQuest> {
+        throw new Error('Method not implemented.');
+    }
+
+    updateById(id: string, options: Partial<TGitcoinQuest>): Promise<TGitcoinQuest> {
+        throw new Error('Method not implemented.');
+    }
+
+    create(options: Partial<TGitcoinQuest>): Promise<TGitcoinQuest> {
+        throw new Error('Method not implemented.');
+    }
+
+    createEntry(options: Partial<TGitcoinQuestEntry>): Promise<TGitcoinQuestEntry> {
+        throw new Error('Method not implemented.');
+    }
+
+    async getValidationResult({
+        quest,
+        data,
+    }: {
+        quest: TGitcoinQuest;
+        account: TAccount;
+        wallet: WalletDocument;
+        data: Partial<TGitcoinQuestEntry>;
+    }): Promise<TValidationResult> {
+        const { address } = data;
+        const { score, error } = await GitcoinService.getScoreUniqueHumanity(quest.scorerId, address.toLowerCase());
+        if (error) return { result: false, reason: error };
+        if (score < quest.score) {
+            return {
+                result: false,
+                reason: `Your score ${score || 0}/100 does not meet the minimum of ${quest.score}/100.`,
+            };
+        }
+        if (score >= quest.score) return { result: true, reason: '' };
+    }
+
+    async getScore(scorerId: number, address: string) {
+        try {
+            const response = await axios({
+                url: `https://api.scorer.gitcoin.co/registry/score/${scorerId}/${address}`,
+                headers: { 'X-API-KEY': GITCOIN_API_KEY },
+            });
+            return { score: response.data.score };
+        } catch (error) {
+            logger.error(error.message);
+            return { error: `Could not get a score for ${address}.` };
+        }
     }
 }
-
-async function findOne(quest: GitcoinQuestDocument, wallet?: WalletDocument) {
-    return {
-        ...quest.toJSON(),
-        amount: quest.amount,
-        pointsAvailable: quest.amount,
-    };
-}
-
-function getAmount(quest: GitcoinQuestDocument) {
-    return quest.amount;
-}
-
-function getValidationResult(quest, account, wallet) {
-    return { result: false, reason: 'Sorry! Not yet implemented for Discord slash commands.' };
-}
-
-function isAvailable(quest: GitcoinQuestDocument, account: TAccount, wallet: WalletDocument) {
-    return !!GitcoinQuestEntry.exists({
-        questId: quest._id,
-        $or: [{ sub: wallet.sub }, { walletId: wallet._id }],
-    });
-}
-
-export default { findOne, getScore, getAmount, getValidationResult, isAvailable };

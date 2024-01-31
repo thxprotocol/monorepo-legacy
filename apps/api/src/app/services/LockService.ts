@@ -1,10 +1,10 @@
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { TQuestLock } from '@thxnetwork/common/lib/types';
-import { questMap } from './QuestService';
+import { serviceMap } from './QuestService';
 
 async function getIsUnlocked(lock: TQuestLock, wallet: WalletDocument): Promise<boolean> {
-    const ModelQuestEntry = questMap[lock.variant].models.entry;
-    return !!(await ModelQuestEntry.exists({ questId: lock.questId, walletId: String(wallet._id) }));
+    const Quest = serviceMap[lock.variant].models.quest;
+    return !!(await Quest.exists({ questId: lock.questId, walletId: wallet._id }));
 }
 
 async function getIsLocked(locks: TQuestLock[], wallet: WalletDocument) {
@@ -21,9 +21,10 @@ async function getIsLocked(locks: TQuestLock[], wallet: WalletDocument) {
 }
 
 async function removeAllLocks(questId: string) {
-    for (const variant in questMap) {
-        const { models } = questMap[variant];
-        const lockedQuests = await models.quest.find({ 'locks.questId': questId });
+    for (const variant in Object.keys(serviceMap)) {
+        const Quest = serviceMap[variant].models.quest;
+        const lockedQuests = await Quest.find({ 'locks.questId': questId });
+
         for (const lockedQuest of lockedQuests) {
             const index = lockedQuest.locks.findIndex((lock: TQuestLock) => lock.questId === questId);
             const locks = lockedQuest.locks.splice(index, 1);

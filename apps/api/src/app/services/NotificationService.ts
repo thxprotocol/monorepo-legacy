@@ -2,7 +2,7 @@ import { AssetPoolDocument } from '../models/AssetPool';
 import { PoolSubscription } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
 import { sleep } from '../util';
-import { QuestVariant, TBrand, TNotification, TQuest, TWidget } from '@thxnetwork/common/lib/types';
+import { QuestVariant, TAccount, TBrand, TNotification, TQuest, TWallet, TWidget } from '@thxnetwork/common/lib/types';
 import { Notification } from '@thxnetwork/api/models/Notification';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from './MailService';
@@ -13,6 +13,7 @@ import DiscordDataProxy from '../proxies/DiscordDataProxy';
 import { DiscordButtonVariant } from '../events/InteractionCreated';
 import { ButtonStyle } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
+import { celebratoryWords } from '../util/dictionaries';
 
 const MAIL_CHUNK_SIZE = 600;
 
@@ -125,4 +126,31 @@ async function sendQuestPublishNotification(
     );
 }
 
-export default { send, notify };
+function formatAddress(address: string) {
+    return `${address.slice(0, 5)}...${address.slice(-3)}`;
+}
+
+async function sendQuestEntryNotification(
+    pool: AssetPoolDocument,
+    quest: TQuest,
+    account: TAccount,
+    wallet: TWallet,
+    amount: number,
+) {
+    const index = Math.floor(Math.random() * celebratoryWords.length);
+    const discord = account.connectedAccounts && account.connectedAccounts.find((a) => a.kind === 'discord');
+    const user =
+        discord && discord.userId
+            ? `<@${discord.userId}>`
+            : `**${account.username ? account.username : formatAddress(wallet.address)}**`;
+    const button = {
+        customId: `${DiscordButtonVariant.QuestComplete}:${quest.variant}:${quest._id}`,
+        label: 'Complete Quest',
+        style: ButtonStyle.Primary,
+    };
+    const content = `${celebratoryWords[index]} ${user} completed the **${quest.title}** quest and earned **${amount} points.**`;
+
+    await DiscordDataProxy.sendChannelMessage(pool, content, [], [button]);
+}
+
+export default { send, notify, sendQuestEntryNotification };
