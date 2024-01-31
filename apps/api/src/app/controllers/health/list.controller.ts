@@ -1,11 +1,20 @@
 import { Request, Response } from 'express';
 import newrelic from 'newrelic';
 import { fromWei } from 'web3-utils';
-import { BPT_ADDRESS, NODE_ENV } from '@thxnetwork/api/config/secrets';
+import {
+    BAL_ADDRESS,
+    BPT_ADDRESS,
+    NODE_ENV,
+    RF_ADDRESS,
+    THX_ADDRESS,
+    USDC_ADDRESS,
+} from '@thxnetwork/api/config/secrets';
 import { ChainId } from '@thxnetwork/types/enums';
 import { logger } from '@thxnetwork/api/util/logger';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { license, name, version } from '../../../../package.json';
+import { BigNumber, ethers } from 'ethers';
+import { contractArtifacts } from '@thxnetwork/api/services/ContractService';
 
 function handleError(error: Error) {
     newrelic.noticeError(error);
@@ -15,15 +24,42 @@ function handleError(error: Error) {
 
 async function getNetworkDetails(chainId: ChainId) {
     try {
-        const { defaultAccount, web3 } = getProvider(chainId);
-        const balance = await web3.eth.getBalance(defaultAccount);
+        const { defaultAccount, web3, signer } = getProvider(chainId);
+        const rfthx = new ethers.Contract(RF_ADDRESS, contractArtifacts['RewardFaucet'].abi, signer);
+        const bpt = new ethers.Contract(BPT_ADDRESS, contractArtifacts['BPTToken'].abi, signer);
+        const bal = new ethers.Contract(BAL_ADDRESS, contractArtifacts['BalToken'].abi, signer);
+        const thx = new ethers.Contract(THX_ADDRESS, contractArtifacts['THXToken'].abi, signer);
+        const usdc = new ethers.Contract(USDC_ADDRESS, contractArtifacts['USDCToken'].abi, signer);
+        const balances = await Promise.all([
+            {
+                matic: fromWei(String(await web3.eth.getBalance(defaultAccount)), 'ether'),
+                bpt: fromWei(String(await bpt.balanceOf(rfthx.address)), 'ether'),
+                bal: fromWei(String(await bal.balanceOf(rfthx.address)), 'ether'),
+                thx: fromWei(String(await thx.balanceOf(rfthx.address)), 'ether'),
+                usdc: fromWei(String(await usdc.balanceOf(rfthx.address)), 'ether'),
+            },
+        ]);
+        const rewards = await Promise.all([
+            {
+                bpt: (
+                    await rfthx.getUpcomingRewardsForNWeeks(bpt.address, 4)
+                ).map((amount: BigNumber) => fromWei(String(amount))),
+                bal: (
+                    await rfthx.getUpcomingRewardsForNWeeks(bal.address, 4)
+                ).map((amount: BigNumber) => fromWei(String(amount))),
+            },
+        ]);
 
         return {
-            btp: BPT_ADDRESS,
-            admin: {
-                address: defaultAccount,
-                balance: fromWei(balance, 'ether'),
+            addresses: {
+                relayer: defaultAccount,
+                bpt: bpt.address,
+                bal: bal.address,
+                thx: thx.address,
+                usdc: usdc.address,
             },
+            balances,
+            rewards,
         };
     } catch (error) {
         return handleError(error);

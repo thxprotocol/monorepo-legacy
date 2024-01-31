@@ -1,14 +1,16 @@
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { ContractFactory, Signer } from 'ethers';
-import { contractArtifacts, contractNetworks } from '../exports';
+import { contractArtifacts } from '../exports';
 import { getChainId } from 'hardhat';
 
-const deploy = (contractName: string, args: string[], signer: Signer) => {
+const deploy = async (contractName: string, args: string[], signer: Signer) => {
     const artifact = contractArtifacts[contractName];
     if (!artifact) throw new Error(`Could not find artifact for ${contractName}`);
     const factory = new ContractFactory(artifact.abi, artifact.bytecode, signer);
-    return factory.deploy(...args);
+    const tx = await factory.deploy(...args);
+    console.log(`deploying "${contractName}" (tx: "")...: deployed at ${tx.address}`);
+    return tx;
 };
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -16,10 +18,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { owner, balReceiver } = await getNamedAccounts();
     const chainId = await getChainId();
     const signer = await ethers.getSigner(owner);
-    const BPT_ADDRESS = contractNetworks[chainId].BPT;
     const votingEscrowImpl = await deploy('VotingEscrow', [], signer);
     const rewardDistributorImpl = await deploy('RewardDistributor', [], signer);
     const rewardFaucetImpl = await deploy('RewardFaucet', [], signer);
+
+    const thxToken = await deploy('THXToken', [], signer);
+    const usdcToken = await deploy('USDCToken', [], signer);
+    const bptToken = await deploy('BPTToken', [], signer);
     const balToken = await deploy('BalToken', [], signer);
     const balMinter = await deploy('BalMinter', [balToken.address], signer);
     const launchpad = await deploy(
@@ -47,7 +52,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     @param rewardReceiver The receiver address of claimed BAL-token rewards
     */
     let tx = await launchpad.deploy(
-        BPT_ADDRESS,
+        bptToken.address,
         'Voted Escrow THX',
         'VeTHX',
         7776000, // 90 days

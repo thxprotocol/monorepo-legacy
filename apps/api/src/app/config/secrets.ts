@@ -108,13 +108,19 @@ export const SAFE_TXS_SERVICE = process.env.SAFE_TXS_SERVICE || 'https://safe-tr
 export const BOT_TOKEN = process.env.BOT_TOKEN;
 export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 export const GITCOIN_API_KEY = process.env.GITCOIN_API_KEY;
-export const BPT_ADDRESS = process.env.BPT_ADDRESS || '0xe1c01805a21ee0DC535afa93172a5F21CE160649';
-export const VE_ADDRESS = process.env.VE_ADDRESS || '0x1280809d06C42E68063305235813e52c8Bb03a58';
-export const RD_ADDRESS = process.env.RD_ADDRESS || '0xd0507c5363AeCfe8231FF4110e05AFf611d7F7B6';
-export const RF_ADDRESS = process.env.RF_ADDRESS || '0x33599eaec2752DB3242323483A7313bA3b1111cd';
-export const SC_ADDRESS = process.env.SC_ADDRESS || '0xb3B2b0fc5ce12aE58EEb13E19547Eb2Dd61A79D5';
-export const LR_ADDRESS = process.env.LR_ADDRESS || '0x774442713f32fa98bf27bEc78c96fb7186f7C223';
+
+export const VE_ADDRESS = process.env.VE_ADDRESS || '0xB9FB14bfdA8C77979a2b1897eF520B1A99C39E08';
+export const RD_ADDRESS = process.env.RD_ADDRESS || '0x7638feeD2335a3DfD16a8B99D191ce374B1c4062';
+export const RF_ADDRESS = process.env.RF_ADDRESS || '0xdD5060e15EF857b7cdaB45eDC33DfbffAC5F7A39';
+export const SC_ADDRESS = process.env.SC_ADDRESS || '0xb2Bea6009625407C3c3cF7158185125Ed2C7f101';
+export const LR_ADDRESS = process.env.LR_ADDRESS || '0x5E0A87862f9175493Cc1d02199ad18Eff87Eb400';
+
+export const THX_ADDRESS = process.env.THX_ADDRESS || '0xc368fA6A4057BcFD9E49221d8354d5fA6B88945a';
+export const USDC_ADDRESS = process.env.USDC_ADDRESS || '0x439F0128d07f005e0703602f366599ACaaBfEA18';
+export const BPT_ADDRESS = process.env.BPT_ADDRESS || '0x24E91C3a2822bDc4bc73512872ab07fD93c8101b';
+export const BAL_ADDRESS = process.env.BAL_ADDRESS || '0x76aBe9ec9b15947ba1Ca910695B8b6CffeD8E6CA';
+
+export const BALANCER_POOL_ID =
+    process.env.BALANCER_POOL_ID || '0xb204bf10bc3a5435017d3db247f56da601dfe08a0002000000000000000000fe';
 export const PINATA_API_JWT = process.env.PINATA_API_JWT || '';
 export const ALLOWED_API_CLIENT_ID = process.env.ALLOWED_API_CLIENT_ID || '';
-export const BALANCER_POOL_ID = '0xb204bf10bc3a5435017d3db247f56da601dfe08a0002000000000000000000fe';
-export const BAL_ADDRESS = '0xba100000625a3754423978a60c9317c58a424e3d';

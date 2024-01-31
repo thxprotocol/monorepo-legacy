@@ -23,6 +23,7 @@ describe('VESytem', () => {
 
     let safeWallet!: WalletDocument,
         testBPT!: Contract,
+        testBAL!: Contract,
         vethx!: Contract,
         rdthx!: Contract,
         rfthx!: Contract,
@@ -32,6 +33,7 @@ describe('VESytem', () => {
         safeWallet = await SafeService.findPrimary(sub);
         expect(safeWallet.address).toBeDefined();
 
+        testBAL = new ethers.Contract(BPT_ADDRESS, contractArtifacts['BalToken'].abi, signer);
         testBPT = new ethers.Contract(BPT_ADDRESS, contractArtifacts['BPTToken'].abi, signer);
         expect(testBPT.address).toBe(BPT_ADDRESS);
 
@@ -134,20 +136,25 @@ describe('VESytem', () => {
 
     describe('Claim THX incentives', () => {
         it('Create Reward Distribution after first week', async () => {
-            const distributionAmount = String(ethers.utils.parseUnits('100000', 'ether'));
+            const amountBPT = String(ethers.utils.parseUnits('100000', 'ether'));
+            const amountBAL = String(ethers.utils.parseUnits('1000', 'ether'));
 
             // Travel past first week else this throws "Reward distribution has not started yet"
             await timeTravel(60 * 60 * 24 * 7);
 
             // Add test THX as allowed reward token (incentive)
-            await rdthx.addAllowedRewardTokens([testBPT.address]);
+            await rdthx.addAllowedRewardTokens([testBPT.address, testBAL.address]);
 
             // Mint 10000 tokens for relayer to deposit into reward distributor
-            await testBPT.mint(defaultAccount, distributionAmount);
+            await testBPT.mint(defaultAccount, amountBPT);
+            // Mint 100 BAL for relayer to deposit into reward distributor
+            await testBAL.mint(defaultAccount, amountBAL);
 
             // Deposit 10000 tokens into rdthx
-            await testBPT.approve(rfthx.address, distributionAmount);
-            await rfthx.depositEqualWeeksPeriod(testBPT.address, distributionAmount, '4');
+            await testBPT.approve(rfthx.address, amountBPT);
+            await testBAL.approve(rfthx.address, amountBAL);
+            await rfthx.depositEqualWeeksPeriod(testBPT.address, amountBPT, '4');
+            await rfthx.depositEqualWeeksPeriod(testBAL.address, amountBAL, '4');
 
             // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 0)));
             // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 1)));

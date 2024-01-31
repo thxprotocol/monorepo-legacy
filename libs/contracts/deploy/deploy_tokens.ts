@@ -8,14 +8,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const { owner } = await getNamedAccounts();
 
-    await deploy('BPT', {
-        from: owner,
-        args: [],
-        log: true,
-        autoMine: true, // speed up deployment on local network (ganache, hardhat), no effect on live networks
-        waitConfirmations: network.live ? 3 : 0,
-    });
-
     await deploy('LimitedSupplyToken', {
         from: owner,
         args: ['THX Limited Supply Token', 'LIM-THX', owner, parseUnits('100000000', 'ether')],

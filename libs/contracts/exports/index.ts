@@ -32,7 +32,6 @@ export const contractNetworks = {
         VotingEscrow: '',
         Launchpad: '',
         // Tokens
-        BPT: '0xe1c01805a21ee0DC535afa93172a5F21CE160649',
         LimitedSupplyToken: '0xf228ADAa4c3D07C8285C1025421afe2c4F320C59',
         UnlimitedSupplyToken: '0x8613B8E442219e4349fa5602C69431131a7ED114',
         NonFungibleToken: '0x8B219D3d1FC64e03F6cF3491E7C7A732bF253EC8',
@@ -41,8 +40,6 @@ export const contractNetworks = {
 } as ContractNetworksConfig & any;
 
 export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: string } } = {
-    BPTToken,
-    BPT: BPTToken,
     TestToken,
     RewardFaucet,
     RewardDistributor,
@@ -50,6 +47,10 @@ export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: 
     VotingEscrow,
     Launchpad,
     LensReward,
+    // Tokens
+    BPTToken,
+    USDCToken: BPTToken,
+    THXToken: BPTToken,
     BalToken,
     BalMinter,
 };
