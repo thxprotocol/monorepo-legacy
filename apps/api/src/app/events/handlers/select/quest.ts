@@ -30,16 +30,24 @@ export async function completeQuest(
     const pool = await PoolService.getById(quest.poolId);
     if (!pool) throw new Error('Could not find this campaign.');
 
+    const isAvailable = await QuestService.isAvailable(variant, quest, account, wallet);
+    if (!isAvailable) throw new Error('Quest is not available at the moment!');
+
     const validationResult = await QuestService.validate(variant, quest, account, wallet);
     if (!validationResult.result) throw new Error(validationResult.reason);
 
     const amount = await QuestService.getAmount(variant, quest, account, wallet);
     if (!amount) throw new Error('Could not figure out how much points you should get.');
 
+    // TODO Should support transfer of addition data per quest type
+
     await agenda.now(JobType.CreateQuestEntry, {
         variant,
         questId: quest._id,
         sub: account.sub,
+        data: {
+            isClaimed: true,
+        },
     });
 
     interaction.reply({
@@ -117,6 +125,6 @@ export async function onSelectQuestComplete(interaction: StringSelectMenuInterac
             components,
         });
     } catch (error) {
-        handleError(error);
+        handleError(error, interaction);
     }
 }

@@ -13,7 +13,7 @@ export async function onClickQuestComplete(interaction: ButtonInteraction) {
 
         await completeQuest(interaction, variant, questId);
     } catch (error) {
-        handleError(error);
+        handleError(error, interaction);
     }
 }
 
@@ -23,6 +23,6 @@ export async function onClickQuestList(interaction: ButtonInteraction) {
 
         interaction.reply({ components: [row as any], ephemeral: true });
     } catch (error) {
-        handleError(error);
+        handleError(error, interaction);
     }
 }
