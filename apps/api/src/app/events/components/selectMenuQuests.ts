@@ -49,6 +49,8 @@ async function createSelectMenuQuests(interaction: CommandInteraction | ButtonIn
     if (!wallet) throw new Error('No wallet found for this account.');
 
     const quests = (await findQuests(campaigns)).flat();
+    if (!quests.length) throw new Error('No quests found for this campaign.');
+
     for (const index in quests) {
         const quest: any = quests[index];
 

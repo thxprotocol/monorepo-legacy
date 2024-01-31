@@ -9,8 +9,11 @@ export const onSubcommandComplete = async (interaction: CommandInteraction) => {
         if (!account) throw new Error('Please, connect your THX Account with Discord first.');
 
         const row = await createSelectMenuQuests(interaction);
-
-        interaction.reply({ components: [row as any], ephemeral: true });
+        if (!row) {
+            interaction.reply({ content: 'No quests found for this campaign.', ephemeral: true });
+        } else {
+            interaction.reply({ components: [row as any], ephemeral: true });
+        }
     } catch (error) {
         handleError(error, interaction);
     }

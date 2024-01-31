@@ -6,9 +6,9 @@ export const handleError = async (
     interaction?: ButtonInteraction | CommandInteraction | StringSelectMenuInteraction,
 ) => {
     logger.error(error);
-    if (interaction) {
+    if (interaction && interaction.isRepliable() && error.message) {
         interaction.reply({
-            content: `\`\`\`${error.message}\`\`\``,
+            content: error.message,
             ephemeral: true,
         });
     }
