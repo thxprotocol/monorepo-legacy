@@ -26,7 +26,7 @@ const csvFilePath = path.join(__dirname, '../../../', 'quests.csv');
 // const sub = '60a38b36bf804b033c5e3faa'; // Local
 const sub = '6074cbdd1459355fae4b6a14'; // Peter
 const sub2 = '655d0c5dde9eca4f50999423'; // Prasanth
-const sub3 = '61c1ecf5022a070470fb3272'; // Mieszko
+const sub3 = '627d06fbb0d159d419292240'; // Mieszko
 const collaborators = [
     {
         sub,
