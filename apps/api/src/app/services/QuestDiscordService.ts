@@ -7,15 +7,16 @@ import {
     RewardConditionInteraction,
     TPointRewardClaim,
     TDiscordMessage,
+    TValidationResult,
 } from '@thxnetwork/common/lib/types';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { WalletDocument } from '../models/Wallet';
-import { IQuestService, TValidationResult } from './QuestService';
 import { PointRewardClaim } from '../models/PointRewardClaim';
 import { getPlatformUserId } from './QuestSocialService';
 import DiscordMessage from '../models/DiscordMessage';
 import DiscordDataProxy from '../proxies/DiscordDataProxy';
 import { PointReward } from '../models/PointReward';
+import { IQuestService } from './interfaces/IQuestService';
 
 const requirementMap: {
     [interaction: number]: (account: TAccount, quest: TPointReward) => Promise<TValidationResult>;

@@ -1,6 +1,6 @@
 import { body, param } from 'express-validator';
 import { Request, Response } from 'express';
-import { serviceMap } from '@thxnetwork/api/services/QuestService';
+import { serviceMap } from '@thxnetwork/api/services/interfaces/IQuestService';
 import LockService from '@thxnetwork/api/services/LockService';
 
 const validation = [param('id').isMongoId(), body('variant').isInt()];

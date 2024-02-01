@@ -20,3 +20,8 @@ export type TQuestEntry =
     | TMilestoneRewardClaim
     | TWeb3QuestClaim
     | TGitcoinQuestEntry;
+
+export type TValidationResult = {
+    reason: string;
+    result: boolean;
+};

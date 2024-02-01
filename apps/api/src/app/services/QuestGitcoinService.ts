@@ -3,11 +3,16 @@ import { WalletDocument } from '../models/Wallet';
 import { GitcoinQuestEntry } from '../models/GitcoinQuestEntry';
 import { GITCOIN_API_KEY } from '../config/secrets';
 import { logger } from '../util/logger';
-import { TAccount, TGitcoinQuestEntry, TGitcoinQuest } from '@thxnetwork/common/lib/types/interfaces';
-import { IQuestService, TValidationResult } from './QuestService';
+import {
+    TAccount,
+    TGitcoinQuestEntry,
+    TGitcoinQuest,
+    TValidationResult,
+} from '@thxnetwork/common/lib/types/interfaces';
 import { AssetPoolDocument } from '../models/AssetPool';
-import GitcoinService from './GitcoinService';
 import { GitcoinQuest } from '../models/GitcoinQuest';
+import { IQuestService } from './interfaces/IQuestService';
+import GitcoinService from './GitcoinService';
 
 export default class QuestGitcoinService implements IQuestService {
     models = {

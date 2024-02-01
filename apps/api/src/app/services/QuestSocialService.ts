@@ -3,13 +3,12 @@ import { PointReward, PointRewardDocument } from '@thxnetwork/api/models/PointRe
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
 import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { PointBalance } from './PointBalanceService';
-import { TPointReward, TAccount, TQuest, TQuestEntry } from '@thxnetwork/types/interfaces';
+import { TPointReward, TAccount, TQuest, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
 import { RewardConditionPlatform, RewardConditionInteraction, AccessTokenKind } from '@thxnetwork/types/enums';
-import { logger } from '../util/logger';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import TwitterDataProxy from '@thxnetwork/api/proxies/TwitterDataProxy';
 import YouTubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
-import { IQuestService, TValidationResult } from './QuestService';
+import { IQuestService } from './interfaces/IQuestService';
 
 const questConditionMap: {
     [interaction: number]: (account: TAccount, quest) => Promise<void | { result: boolean; reason: string }>;

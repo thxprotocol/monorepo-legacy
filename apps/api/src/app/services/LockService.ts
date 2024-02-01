@@ -1,6 +1,6 @@
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { TQuestLock } from '@thxnetwork/common/lib/types';
-import { serviceMap } from './QuestService';
+import { serviceMap } from './interfaces/IQuestService';
 
 async function getIsUnlocked(lock: TQuestLock, wallet: WalletDocument): Promise<boolean> {
     const Quest = serviceMap[lock.variant].models.quest;

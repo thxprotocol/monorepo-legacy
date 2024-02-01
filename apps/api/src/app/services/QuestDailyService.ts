@@ -3,9 +3,9 @@ import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { DailyRewardClaim } from '../models/DailyRewardClaims';
 import { WalletDocument } from '../models/Wallet';
 import { Event } from '../models/Event';
-import { IQuestService, TValidationResult } from './QuestService';
-import { TDailyReward, TAccount, TDailyRewardClaim } from '@thxnetwork/common/lib/types';
+import { TDailyReward, TAccount, TDailyRewardClaim, TValidationResult } from '@thxnetwork/common/lib/types';
 import { Identity } from '../models/Identity';
+import { IQuestService } from './interfaces/IQuestService';
 
 const ONE_DAY_MS = 86400 * 1000; // 24 hours in milliseconds
 

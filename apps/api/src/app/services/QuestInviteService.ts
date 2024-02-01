@@ -1,9 +1,9 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { WalletDocument } from '../models/Wallet';
-import { IQuestService, TValidationResult } from './QuestService';
-import { TAccount, TReferralReward, TReferralRewardClaim } from '@thxnetwork/common/lib/types';
+import { TAccount, TReferralReward, TReferralRewardClaim, TValidationResult } from '@thxnetwork/common/lib/types';
 import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
 import { ReferralReward } from '../models/ReferralReward';
+import { IQuestService } from './interfaces/IQuestService';
 
 export default class QuestInviteService implements IQuestService {
     models = {

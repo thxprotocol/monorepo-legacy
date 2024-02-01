@@ -2,7 +2,7 @@ import { ButtonInteraction, ButtonStyle, StringSelectMenuInteraction } from 'dis
 import { JobType, QuestVariant } from '@thxnetwork/common/lib/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import QuestService, { serviceMap } from '@thxnetwork/api/services/QuestService';
+import QuestService from '@thxnetwork/api/services/QuestService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { handleError } from '../../commands/error';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
@@ -14,6 +14,7 @@ import { agenda } from '@thxnetwork/api/util/agenda';
 import { DiscordDisconnected, DiscordSafeNotFound } from '@thxnetwork/api/util/errors';
 import { getPlatformUserId } from '@thxnetwork/api/services/QuestSocialService';
 import { TPointReward } from '@thxnetwork/common/lib/types';
+import { serviceMap } from '@thxnetwork/api/services/interfaces/IQuestService';
 
 export async function completeQuest(
     interaction: ButtonInteraction | StringSelectMenuInteraction,

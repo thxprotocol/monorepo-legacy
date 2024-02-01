@@ -2,8 +2,15 @@ import { WalletDocument } from '../models/Wallet';
 import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import { BigNumber, ethers } from 'ethers';
 import { logger } from '@thxnetwork/api/util/logger';
-import { IQuestService, TValidationResult } from './QuestService';
-import { TQuest, TAccount, TWeb3QuestClaim, TWeb3Quest, ChainId } from '@thxnetwork/common/lib/types';
+import { IQuestService } from './interfaces/IQuestService';
+import {
+    TQuest,
+    TAccount,
+    TWeb3QuestClaim,
+    TWeb3Quest,
+    ChainId,
+    TValidationResult,
+} from '@thxnetwork/common/lib/types';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { Web3Quest } from '../models/Web3Quest';
 

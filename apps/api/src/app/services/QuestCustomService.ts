@@ -5,9 +5,8 @@ import { Identity } from '../models/Identity';
 import { Event } from '../models/Event';
 import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
 import { WalletDocument } from '../models/Wallet';
-import { IQuestService } from './QuestService';
 import { v4 } from 'uuid';
-import { DailyRewardClaim } from '../models/DailyRewardClaims';
+import { IQuestService } from './interfaces/IQuestService';
 
 export default class QuestCustomService implements IQuestService {
     models = {

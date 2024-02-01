@@ -1,7 +1,7 @@
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import { QuestVariant } from '@thxnetwork/common/lib/types';
 import { Response, Request, NextFunction } from 'express';
-import { serviceMap } from '@thxnetwork/api/services/QuestService';
+import { serviceMap } from '../services/interfaces/IQuestService';
 
 // @dev For all social quests use QuestVariant.Twitter by default as we can not access the
 // quest interaction type yet but have to assign the db collection
