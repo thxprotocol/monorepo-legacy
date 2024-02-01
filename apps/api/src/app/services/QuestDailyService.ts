@@ -17,17 +17,30 @@ export default class QuestDailyService implements IQuestService {
     async decorate({
         quest,
         wallet,
+        account,
     }: {
         quest: TDailyReward;
         wallet?: WalletDocument;
-    }): Promise<TDailyReward & { claims: TDailyRewardClaim[]; claimAgainDuration: number }> {
+        account?: TAccount;
+    }): Promise<
+        TDailyReward & {
+            isAvailable: boolean;
+            amount: number;
+            entries: TDailyRewardClaim[];
+            claimAgainDuration: number;
+        }
+    > {
+        const amount = wallet && (await this.getAmount({ quest, wallet, account }));
         const entries = wallet ? await this.findEntries({ quest, wallet }) : [];
         const claimAgainTime = entries.length ? new Date(entries[0].createdAt).getTime() + ONE_DAY_MS : null;
         const now = Date.now();
+        const isAvailable = await this.isAvailable({ quest, wallet, account });
 
         return {
             ...quest,
-            claims: entries,
+            isAvailable,
+            amount,
+            entries,
             claimAgainDuration:
                 claimAgainTime && claimAgainTime - now > 0 ? Math.floor((claimAgainTime - now) / 1000) : null, // Convert and floor to S,
         };
@@ -41,6 +54,8 @@ export default class QuestDailyService implements IQuestService {
         wallet: WalletDocument;
         account: TAccount;
     }): Promise<boolean> {
+        if (!wallet) return true;
+
         const now = Date.now(),
             start = now - ONE_DAY_MS,
             end = now;
@@ -61,16 +76,11 @@ export default class QuestDailyService implements IQuestService {
         quest: TDailyReward;
         wallet: WalletDocument;
         account: TAccount;
-    }): Promise<{ pointsAvailable: number; pointsClaimed?: number }> {
+    }): Promise<number> {
         const claims = await this.findEntries({ quest, wallet });
         const amountIndex =
             claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;
-
-        return { pointsAvailable: quest.amounts[amountIndex] };
-    }
-
-    createEntry(options: Partial<TDailyRewardClaim>): Promise<TDailyRewardClaim> {
-        throw new Error('Method not implemented.');
+        return quest.amounts[amountIndex];
     }
 
     async getValidationResult({
@@ -123,7 +133,7 @@ export default class QuestDailyService implements IQuestService {
         }
     }
 
-    async findEntries({ wallet, quest }: { wallet: WalletDocument; quest: TDailyReward }) {
+    private async findEntries({ wallet, quest }: { wallet: WalletDocument; quest: TDailyReward }) {
         const claims = [];
         const now = Date.now(),
             start = now - ONE_DAY_MS,
@@ -150,7 +160,7 @@ export default class QuestDailyService implements IQuestService {
         return claims;
     }
 
-    async getLastEntry(wallet: WalletDocument, quest: TDailyReward, start: number, end: number) {
+    private async getLastEntry(wallet: WalletDocument, quest: TDailyReward, start: number, end: number) {
         let lastEntry = await DailyRewardClaim.findOne({
             questId: quest._id,
             walletId: wallet._id,

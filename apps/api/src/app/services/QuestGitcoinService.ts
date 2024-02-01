@@ -39,22 +39,8 @@ export default class QuestGitcoinService implements IQuestService {
         }));
     }
 
-    async getAmount({
-        quest,
-    }: {
-        quest: TGitcoinQuest;
-        wallet: WalletDocument;
-        account: TAccount;
-    }): Promise<{ pointsAvailable: number; pointsClaimed?: number }> {
-        return { pointsAvailable: quest.amount };
-    }
-
-    create(options: Partial<TGitcoinQuest>): Promise<TGitcoinQuest> {
-        throw new Error('Method not implemented.');
-    }
-
-    createEntry(options: Partial<TGitcoinQuestEntry>): Promise<TGitcoinQuestEntry> {
-        throw new Error('Method not implemented.');
+    async getAmount({ quest }: { quest: TGitcoinQuest; wallet: WalletDocument; account: TAccount }): Promise<number> {
+        return quest.amount;
     }
 
     async getValidationResult({

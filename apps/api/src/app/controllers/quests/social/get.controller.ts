@@ -3,7 +3,6 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import QuestSocialService from '@thxnetwork/api/services/QuestSocialService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import LockService from '@thxnetwork/api/services/LockService';

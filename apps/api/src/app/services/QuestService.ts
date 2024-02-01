@@ -17,7 +17,7 @@ import SafeService from './SafeService';
 import AccountProxy from '../proxies/AccountProxy';
 
 export default class QuestService {
-    static async list(pool: AssetPoolDocument, wallet?: WalletDocument) {
+    static async list(pool: AssetPoolDocument, wallet?: WalletDocument, account?: TAccount) {
         const questVariants = Object.keys(QuestVariant).filter((v) => !isNaN(Number(v)));
         const callback: any = async (variant: QuestVariant) => {
             const service = serviceMap[variant];
@@ -37,7 +37,7 @@ export default class QuestService {
                 quests.map((q) => {
                     try {
                         const quest = q.toJSON() as TQuest;
-                        return service.decorate({ quest, wallet });
+                        return service.decorate({ quest, wallet, account });
                     } catch (error) {
                         logger.error(error);
                     }
@@ -123,47 +123,41 @@ export default class QuestService {
         return await serviceMap[variant].getValidationResult({ quest, account, wallet, data });
     }
 
-    static async complete(
-        variant: QuestVariant,
-        amount: number,
-        pool: AssetPoolDocument,
-        quest: TQuest,
-        account: TAccount,
-        wallet: WalletDocument,
-        data: Partial<TQuestEntry>,
-    ) {
-        const service = serviceMap[variant];
-        const available = await this.isAvailable(variant, { quest, account, wallet });
-        if (!available) throw new Error(`Quest entry exists already.`);
-
-        const entry = {
-            sub: account.sub,
-            walletId: wallet._id,
-            amount,
-            ...data,
-            questId: String(quest._id),
-            poolId: pool._id,
-            uuid: v4(),
-        } as TQuestEntry;
-        await service.createEntry(entry);
-
-        await PointBalanceService.add(pool, wallet._id, amount);
-        await NotificationService.sendQuestEntryNotification(pool, quest, account, wallet, amount);
-
-        await agenda.now(JobType.UpdateParticipantRanks, { poolId: pool._id });
-    }
-
     static async createEntryJob(job: Job) {
-        const { variant, questId, sub, data } = job.attrs.data as any;
-        const quest = await this.findById(variant, questId);
-        const account = await AccountProxy.getById(sub);
-        const wallet = await SafeService.findPrimary(sub);
-        const pool = await PoolService.getById(quest.poolId);
-        const { pointsAvailable } = await this.getAmount(variant, quest, account, wallet);
+        try {
+            const { variant, questId, sub, data } = job.attrs.data as any;
+            const Entry = serviceMap[Number(variant)].models.entry;
+            const account = await AccountProxy.getById(sub);
+            const wallet = await SafeService.findPrimary(sub);
+            const quest = await this.findById(variant, questId);
+            const pool = await PoolService.getById(quest.poolId);
+            const amount = await this.getAmount(variant, quest, account, wallet);
 
-        await this.complete(variant, pointsAvailable, pool, quest, account, wallet, {
-            questId: quest._id,
-            ...data,
-        });
+            // Test availabily of quest once more as it could be completed by a job that was scheduled already
+            // if the jobs were created in parallel.
+            const available = await this.isAvailable(variant, { quest, account, wallet });
+            if (!available) throw new Error(`Quest entry exists already.`);
+
+            // Create the quest entry
+            const entry = await Entry.create({
+                ...data,
+                sub: account.sub,
+                amount,
+                walletId: wallet._id,
+                questId: String(quest._id),
+                poolId: pool._id,
+                uuid: v4(),
+            } as TQuestEntry);
+            if (!entry) throw new Error('Entry creation failed.');
+
+            // Should make sure quest entry is properly created
+            await PointBalanceService.add(pool, wallet._id, amount);
+            await NotificationService.sendQuestEntryNotification(pool, quest, account, wallet, amount);
+
+            // Update participant ranks async
+            agenda.now(JobType.UpdateParticipantRanks, { poolId: pool._id });
+        } catch (error) {
+            logger.error(error);
+        }
     }
 }

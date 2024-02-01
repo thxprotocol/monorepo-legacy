@@ -9,6 +9,10 @@ async function getIsUnlocked(lock: TQuestLock, wallet: WalletDocument): Promise<
 
 async function getIsLocked(locks: TQuestLock[], wallet: WalletDocument) {
     if (!locks.length) return false;
+    // Check if all quests still exist
+    // TODO
+
+    // Check if there are entries for the remaining quests
     const promises = locks.map((lock) => getIsUnlocked(lock, wallet));
     const results = await Promise.allSettled(promises);
     const anyRejected = results.some((result) => result.status === 'rejected');

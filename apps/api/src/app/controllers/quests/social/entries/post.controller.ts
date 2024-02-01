@@ -14,7 +14,7 @@ const controller = async (req: Request, res: Response) => {
     const quest = await PointReward.findById(req.params.id);
     if (!quest) throw new NotFoundError('Quest not found.');
 
-    // Get quest variant for quest interaction variant
+    // Get quest variant based on quest interaction variant
     const variant = questInteractionVariantMap[quest.interaction];
 
     // Get platform user id for account
@@ -29,7 +29,7 @@ const controller = async (req: Request, res: Response) => {
 
     const job = await agenda.now(JobType.CreateQuestEntry, {
         variant,
-        questId: quest._id,
+        questId: String(quest._id),
         sub: req.account.sub,
         data: { platformUserId },
     });

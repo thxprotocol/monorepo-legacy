@@ -13,7 +13,7 @@ export default class QuestCustomService implements IQuestService {
         entry: MilestoneRewardClaim,
     };
 
-    public async isAvailable({
+    async isAvailable({
         quest,
         wallet,
     }: {
@@ -28,11 +28,11 @@ export default class QuestCustomService implements IQuestService {
         }));
     }
 
-    public async getAmount({ quest }: { quest: MilestoneRewardDocument; wallet: WalletDocument; account: TAccount }) {
-        return { pointsAvailable: quest.amount };
+    async getAmount({ quest }: { quest: MilestoneRewardDocument; wallet: WalletDocument; account: TAccount }) {
+        return quest.amount;
     }
 
-    public async decorate({ quest, wallet }: { quest: TMilestoneReward; wallet?: WalletDocument }) {
+    async decorate({ quest, wallet }: { quest: TMilestoneReward; wallet?: WalletDocument }) {
         const entries = wallet
             ? await MilestoneRewardClaim.find({
                   walletId: String(wallet._id),
@@ -55,21 +55,7 @@ export default class QuestCustomService implements IQuestService {
         };
     }
 
-    public async create(options: Partial<TMilestoneReward>) {
-        return await MilestoneReward.create({
-            uuid: v4(),
-            ...options,
-        });
-    }
-
-    public async createEntry(options: Partial<TMilestoneRewardClaim>) {
-        return await MilestoneRewardClaim.create({
-            uuid: v4(),
-            ...options,
-        });
-    }
-
-    public async getValidationResult(options: {
+    async getValidationResult(options: {
         quest: TMilestoneReward;
         account: TAccount;
         wallet: WalletDocument;

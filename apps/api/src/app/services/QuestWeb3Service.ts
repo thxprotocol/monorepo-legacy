@@ -3,7 +3,7 @@ import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import { BigNumber, ethers } from 'ethers';
 import { logger } from '@thxnetwork/api/util/logger';
 import { IQuestService } from './interfaces/IQuestService';
-import { TAccount, TWeb3QuestClaim, TWeb3Quest, ChainId, TValidationResult } from '@thxnetwork/common/lib/types';
+import { TAccount, TWeb3Quest, ChainId, TValidationResult } from '@thxnetwork/common/lib/types';
 import { Web3Quest } from '../models/Web3Quest';
 
 export default class QuestWeb3Service implements IQuestService {
@@ -15,24 +15,23 @@ export default class QuestWeb3Service implements IQuestService {
     async decorate({
         quest,
         wallet,
+        account,
+        address,
     }: {
         quest: TWeb3Quest;
+        account?: TAccount;
         wallet?: WalletDocument;
-    }): Promise<TWeb3Quest & { isClaimed: boolean }> {
-        const isClaimed = wallet
-            ? !!(await Web3QuestClaim.exists({
-                  questId: quest._id,
-                  $or: [{ sub: wallet.sub }, { walletId: wallet._id }],
-              }))
-            : false;
+        address?: string;
+    }): Promise<TWeb3Quest & { isAvailable: boolean }> {
+        const isAvailable = await this.isAvailable({ quest, wallet, account, address });
 
         return {
             ...quest,
+            isAvailable,
             amount: quest.amount,
             contracts: quest.contracts,
             methodName: quest.methodName,
             threshold: quest.threshold,
-            isClaimed,
         };
     }
 
@@ -44,38 +43,23 @@ export default class QuestWeb3Service implements IQuestService {
         quest: TWeb3Quest;
         wallet: WalletDocument;
         account: TAccount;
-        address: string;
+        address?: string;
     }): Promise<boolean> {
-        return !!(await Web3QuestClaim.exists({
-            questId: quest._id,
-            $or: [{ sub: wallet.sub }, { walletId: wallet._id }, { address }],
-        }));
+        const ids = [];
+        if (wallet) ids.push({ sub: wallet.sub });
+        if (wallet) ids.push({ walletId: wallet._id });
+        if (address) ids.push({ address });
+
+        return wallet
+            ? !(await Web3QuestClaim.exists({
+                  questId: quest._id,
+                  $or: ids,
+              }))
+            : true;
     }
 
-    async getAmount({
-        quest,
-    }: {
-        quest: TWeb3Quest;
-        wallet: WalletDocument;
-        account: TAccount;
-    }): Promise<{ pointsAvailable: number; pointsClaimed?: number }> {
-        return { pointsAvailable: quest.amount };
-    }
-
-    findById(id: string): Promise<TWeb3Quest> {
-        throw new Error('Method not implemented.');
-    }
-
-    updateById(id: string, options: Partial<TWeb3Quest>): Promise<TWeb3Quest> {
-        throw new Error('Method not implemented.');
-    }
-
-    create(options: Partial<TWeb3Quest>): Promise<TWeb3Quest> {
-        throw new Error('Method not implemented.');
-    }
-
-    createEntry(options: Partial<TWeb3QuestClaim>): Promise<TWeb3QuestClaim> {
-        throw new Error('Method not implemented.');
+    async getAmount({ quest }: { quest: TWeb3Quest; wallet: WalletDocument; account: TAccount }): Promise<number> {
+        return quest.amount;
     }
 
     async getValidationResult({

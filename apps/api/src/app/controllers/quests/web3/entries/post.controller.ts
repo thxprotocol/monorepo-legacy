@@ -20,19 +20,11 @@ const controller = async ({ account, wallet, body, params }: Request, res: Respo
     const quest = await Web3Quest.findOne({ uuid: params.uuid });
     if (!quest) throw new NotFoundError('Could not find Web3 Quest');
 
-    const isLocked = await LockService.getIsLocked(quest.locks, wallet);
-    if (isLocked) {
-        return res.json({ error: 'Quest is locked' });
-    }
-
     const address = recoverSigner(body.message, body.signature);
     if (!address) throw new NotFoundError(`Could not recover address from signature.`);
 
     const { rpc, name } = chainList[body.chainId];
     if (!rpc) throw new NotFoundError(`Could not find RPC for ${name}`);
-
-    const isAvailable = await QuestService.isAvailable(quest.variant, { quest, account, wallet, address });
-    if (!isAvailable) throw new Error('Quest is not available at the moment!');
 
     const { result, reason } = await QuestService.getValidationResult(quest.variant, quest, account, wallet, {
         address,
@@ -43,11 +35,12 @@ const controller = async ({ account, wallet, body, params }: Request, res: Respo
 
     const job = await agenda.now(JobType.CreateQuestEntry, {
         variant: QuestVariant.Web3,
-        questId: quest._id,
+        questId: String(quest._id),
         sub: account.sub,
         data: {
-            chainId: body.chainId,
             address,
+            rpc,
+            chainId: body.chainId,
         },
     });
 

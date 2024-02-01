@@ -4,7 +4,7 @@ import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { PointBalance } from './PointBalanceService';
 import { TPointReward, TAccount, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
 import { IQuestService } from './interfaces/IQuestService';
-import { getPlatformUserId, requirementMap, platformInteractionMap } from './maps/quests';
+import { getPlatformUserId, requirementMap } from './maps/quests';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 export default class QuestSocialService implements IQuestService {
@@ -15,13 +15,18 @@ export default class QuestSocialService implements IQuestService {
 
     async decorate({
         quest,
+        wallet,
+        account,
     }: {
         quest: TPointReward;
+        account?: TAccount;
         wallet?: WalletDocument;
-    }): Promise<TPointReward & { pointsAvailable }> {
+    }): Promise<TPointReward & { isAvailable: boolean }> {
+        const isAvailable = await this.isAvailable({ quest, wallet, account });
+
         return {
             ...quest,
-            pointsAvailable: quest.amount,
+            isAvailable,
             contentMetadata: quest.contentMetadata && JSON.parse(quest.contentMetadata),
         };
     }
@@ -35,11 +40,11 @@ export default class QuestSocialService implements IQuestService {
         wallet: WalletDocument;
         account: TAccount;
     }): Promise<boolean> {
-        if (!account || !wallet) return true;
+        if (!wallet || !account) return true;
 
         // We validate for both here since there are entries that only contain a sub
         // and should not be claimed again.
-        const ids: any[] = [{ sub: account.sub }, { walletId: wallet._id }];
+        const ids: any[] = [{ sub: wallet.sub }, { walletId: wallet._id }];
         const platformUserId = await getPlatformUserId(account, quest.platform);
         if (platformUserId) ids.push({ platformUserId });
 
@@ -50,18 +55,8 @@ export default class QuestSocialService implements IQuestService {
         }));
     }
 
-    async getAmount({
-        quest,
-    }: {
-        quest: TPointReward;
-        wallet: WalletDocument;
-        account: TAccount;
-    }): Promise<{ pointsAvailable: number; pointsClaimed?: number }> {
-        return { pointsAvailable: quest.amount };
-    }
-
-    createEntry(options: Partial<TQuestEntry>): Promise<TQuestEntry> {
-        throw new Error('Method not implemented.');
+    async getAmount({ quest }: { quest: TPointReward; wallet: WalletDocument; account: TAccount }): Promise<number> {
+        return quest.amount;
     }
 
     async getValidationResult({

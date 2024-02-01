@@ -26,14 +26,8 @@ export default class QuestInviteService implements IQuestService {
         return true;
     }
 
-    async getAmount({
-        quest,
-    }: {
-        quest: TReferralReward;
-        wallet: WalletDocument;
-        account: TAccount;
-    }): Promise<{ pointsAvailable: number; pointsClaimed?: number }> {
-        return { pointsAvailable: quest.amount };
+    async getAmount({ quest }: { quest: TReferralReward; wallet: WalletDocument; account: TAccount }): Promise<number> {
+        return quest.amount;
     }
 
     createEntry(options: Partial<TReferralRewardClaim>): Promise<TReferralRewardClaim> {

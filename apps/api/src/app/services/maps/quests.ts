@@ -71,7 +71,7 @@ export const platformInteractionMap = {
     [RewardConditionInteraction.DiscordMessageReaction]: RewardConditionPlatform.Discord,
 };
 
-export const getPlatformUserId = async (account: TAccount, platform: RewardConditionPlatform) => {
+export const getPlatformUserId = (account: TAccount, platform: RewardConditionPlatform) => {
     if (!platform) return;
 
     const getUserId = (account: TAccount, kind: AccessTokenKind) => {
