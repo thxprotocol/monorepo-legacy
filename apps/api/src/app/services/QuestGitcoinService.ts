@@ -19,8 +19,17 @@ export default class QuestGitcoinService implements IQuestService {
         entry: GitcoinQuestEntry,
     };
 
-    async decorate({ quest }: { quest: TGitcoinQuest; wallet?: WalletDocument }): Promise<TGitcoinQuest> {
-        return quest;
+    async decorate({
+        quest,
+        wallet,
+        account,
+    }: {
+        quest: TGitcoinQuest;
+        account?: TAccount;
+        wallet?: WalletDocument;
+    }): Promise<TGitcoinQuest & { isAvailable: boolean }> {
+        const isAvailable = await this.isAvailable({ quest, wallet, account });
+        return { ...quest, isAvailable };
     }
 
     async isAvailable({
@@ -31,12 +40,19 @@ export default class QuestGitcoinService implements IQuestService {
         quest: TGitcoinQuest;
         wallet: WalletDocument;
         account: TAccount;
-        address: string;
+        address?: string;
     }): Promise<boolean> {
-        return !(await GitcoinQuestEntry.exists({
-            questId: quest._id,
-            $or: [{ sub: wallet.sub }, { walletId: wallet._id }, { address }],
-        }));
+        const ids = [];
+        if (wallet) ids.push({ sub: wallet.sub });
+        if (wallet) ids.push({ walletId: wallet._id });
+        if (address) ids.push({ address });
+
+        return wallet
+            ? !(await GitcoinQuestEntry.exists({
+                  questId: quest._id,
+                  $or: ids,
+              }))
+            : false;
     }
 
     async getAmount({ quest }: { quest: TGitcoinQuest; wallet: WalletDocument; account: TAccount }): Promise<number> {
