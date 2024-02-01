@@ -1,5 +1,4 @@
-import { QuestVariant, TAccount, TMilestoneReward, TMilestoneRewardClaim, TQuest } from '@thxnetwork/types/index';
-import { AssetPoolDocument } from '../models/AssetPool';
+import { TAccount, TMilestoneReward, TMilestoneRewardClaim } from '@thxnetwork/types/index';
 import { MilestoneReward, MilestoneRewardDocument } from '../models/MilestoneReward';
 import { Identity } from '../models/Identity';
 import { Event } from '../models/Event';
@@ -13,20 +12,6 @@ export default class QuestCustomService implements IQuestService {
         quest: MilestoneReward,
         entry: MilestoneRewardClaim,
     };
-
-    public async list(options: { pool: AssetPoolDocument }) {
-        return await MilestoneReward.find({
-            poolId: options.pool._id,
-            isPublished: true,
-            variant: QuestVariant.Custom,
-            $or: [
-                // Include quests with expiryDate less than or equal to now
-                { expiryDate: { $exists: true, $gte: new Date() } },
-                // Include quests with no expiryDate
-                { expiryDate: { $exists: false } },
-            ],
-        });
-    }
 
     public async isAvailable({
         quest,
@@ -45,10 +30,6 @@ export default class QuestCustomService implements IQuestService {
 
     public async getAmount({ quest }: { quest: MilestoneRewardDocument; wallet: WalletDocument; account: TAccount }) {
         return { pointsAvailable: quest.amount };
-    }
-
-    public async findById(id: string) {
-        return await MilestoneReward.findById(id);
     }
 
     public async decorate({ quest, wallet }: { quest: MilestoneRewardDocument; wallet?: WalletDocument }) {
@@ -72,10 +53,6 @@ export default class QuestCustomService implements IQuestService {
             claims: entries,
             events,
         };
-    }
-
-    public async updateById(id: string, options: Partial<TQuest>): Promise<TMilestoneReward> {
-        return await MilestoneReward.findByIdAndUpdate(id, options, { new: true });
     }
 
     public async create(options: Partial<TMilestoneReward>) {

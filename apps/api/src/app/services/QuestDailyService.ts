@@ -1,5 +1,4 @@
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { DailyRewardClaim } from '../models/DailyRewardClaims';
 import { WalletDocument } from '../models/Wallet';
 import { Event } from '../models/Event';
@@ -14,10 +13,6 @@ export default class QuestDailyService implements IQuestService {
         quest: DailyReward,
         entry: DailyRewardClaim,
     };
-
-    list(options: { pool: AssetPoolDocument }): Promise<TDailyReward[]> {
-        throw new Error('Method not implemented.');
-    }
 
     async decorate({
         quest,
@@ -72,14 +67,6 @@ export default class QuestDailyService implements IQuestService {
             claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;
 
         return { pointsAvailable: quest.amounts[amountIndex] };
-    }
-
-    findById(id: string): Promise<TDailyReward> {
-        return DailyReward.findById(id);
-    }
-
-    updateById(id: string, options: Partial<TDailyReward>): Promise<TDailyReward> {
-        return DailyReward.findByIdAndUpdate(id, options, { new: true });
     }
 
     create(options: Partial<TDailyReward>): Promise<TDailyReward> {

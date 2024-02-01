@@ -4,8 +4,8 @@ import { param } from 'express-validator';
 import { JobType, questInteractionVariantMap } from '@thxnetwork/common/lib/types';
 import { agenda } from '@thxnetwork/api/util/agenda';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { getPlatformUserId } from '@thxnetwork/api/services/QuestSocialService';
 import QuestService from '@thxnetwork/api/services/QuestService';
+import { getPlatformUserId } from '@thxnetwork/api/services/maps/quests';
 
 const validation = [param('id').isMongoId()];
 

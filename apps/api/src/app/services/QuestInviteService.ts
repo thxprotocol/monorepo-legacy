@@ -1,4 +1,3 @@
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { WalletDocument } from '../models/Wallet';
 import { TAccount, TReferralReward, TReferralRewardClaim, TValidationResult } from '@thxnetwork/common/lib/types';
 import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
@@ -10,10 +9,6 @@ export default class QuestInviteService implements IQuestService {
         quest: ReferralReward,
         entry: ReferralRewardClaim,
     };
-
-    list(options: { pool: AssetPoolDocument }): Promise<TReferralReward[]> {
-        throw new Error('Method not implemented.');
-    }
 
     async decorate({ quest }: { quest: TReferralReward; wallet?: WalletDocument }): Promise<TReferralReward> {
         return {
@@ -39,14 +34,6 @@ export default class QuestInviteService implements IQuestService {
         account: TAccount;
     }): Promise<{ pointsAvailable: number; pointsClaimed?: number }> {
         return { pointsAvailable: quest.amount };
-    }
-
-    findById(id: string): Promise<TReferralReward> {
-        throw new Error('Method not implemented.');
-    }
-
-    updateById(id: string, options: Partial<TReferralReward>): Promise<TReferralReward> {
-        throw new Error('Method not implemented.');
     }
 
     create(options: Partial<TReferralReward>): Promise<TReferralReward> {

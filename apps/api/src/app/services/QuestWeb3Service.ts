@@ -3,15 +3,7 @@ import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import { BigNumber, ethers } from 'ethers';
 import { logger } from '@thxnetwork/api/util/logger';
 import { IQuestService } from './interfaces/IQuestService';
-import {
-    TQuest,
-    TAccount,
-    TWeb3QuestClaim,
-    TWeb3Quest,
-    ChainId,
-    TValidationResult,
-} from '@thxnetwork/common/lib/types';
-import { AssetPoolDocument } from '../models/AssetPool';
+import { TAccount, TWeb3QuestClaim, TWeb3Quest, ChainId, TValidationResult } from '@thxnetwork/common/lib/types';
 import { Web3Quest } from '../models/Web3Quest';
 
 export default class QuestWeb3Service implements IQuestService {
@@ -19,10 +11,6 @@ export default class QuestWeb3Service implements IQuestService {
         quest: Web3Quest,
         entry: Web3QuestClaim,
     };
-
-    list(options: { pool: AssetPoolDocument }): Promise<TQuest[]> {
-        throw new Error('Method not implemented.');
-    }
 
     async decorate({
         quest,

@@ -4,44 +4,23 @@ import {
     TQuestEntry,
     TPointReward,
     AccessTokenKind,
-    RewardConditionInteraction,
     TPointRewardClaim,
     TDiscordMessage,
     TValidationResult,
 } from '@thxnetwork/common/lib/types';
-import { AssetPoolDocument } from '../models/AssetPool';
 import { WalletDocument } from '../models/Wallet';
 import { PointRewardClaim } from '../models/PointRewardClaim';
-import { getPlatformUserId } from './QuestSocialService';
 import DiscordMessage from '../models/DiscordMessage';
-import DiscordDataProxy from '../proxies/DiscordDataProxy';
+
 import { PointReward } from '../models/PointReward';
 import { IQuestService } from './interfaces/IQuestService';
-
-const requirementMap: {
-    [interaction: number]: (account: TAccount, quest: TPointReward) => Promise<TValidationResult>;
-} = {
-    [RewardConditionInteraction.DiscordGuildJoined]: async (account, quest) => {
-        const validationResultMember = await DiscordDataProxy.validateGuildJoined(account, quest.content);
-        if (!validationResultMember.result) return validationResultMember;
-    },
-    [RewardConditionInteraction.DiscordMessage]: async (account, quest) => {
-        return { result: true, reason: '' };
-    },
-    [RewardConditionInteraction.DiscordMessageReaction]: async (account, quest) => {
-        return { result: true, reason: '' };
-    },
-};
+import { getPlatformUserId, requirementMap } from './maps/quests';
 
 export default class QuestDiscordService implements IQuestService {
     models = {
         quest: PointReward,
         entry: PointRewardClaim,
     };
-
-    list(options: { pool: AssetPoolDocument }): Promise<TQuest[]> {
-        throw new Error('Method not implemented.');
-    }
 
     async decorate({
         quest,
@@ -81,8 +60,8 @@ export default class QuestDiscordService implements IQuestService {
         wallet: WalletDocument;
         account: TAccount;
     }): Promise<{ pointsAvailable: number; pointsClaimed?: number; amount?: number; messages?: TDiscordMessage[] }> {
-        // Specific to Discord Message quest
-        const connectedAccount = account.connectedAccounts.find(({ kind }) => kind === AccessTokenKind.Discord);
+        const connectedAccount =
+            account && account.connectedAccounts.find(({ kind }) => kind === AccessTokenKind.Discord);
         if (!connectedAccount) return { pointsAvailable: 0, pointsClaimed: 0 };
 
         const { days, limit } = JSON.parse(quest.contentMetadata);
@@ -105,18 +84,15 @@ export default class QuestDiscordService implements IQuestService {
             pointsAvailable,
         };
     }
-    async findById(id: string): Promise<TPointReward> {
-        return await PointReward.findById(id);
-    }
-    async updateById(id: string, options: Partial<TPointReward>): Promise<TPointReward> {
-        return await PointReward.findByIdAndUpdate(id, options, { new: true });
-    }
+
     async create(options: Partial<TPointReward>): Promise<TPointReward> {
         return await PointReward.create(options);
     }
+
     createEntry(options: Partial<TPointRewardClaim>): Promise<TPointRewardClaim> {
         throw new Error('Method not implemented.');
     }
+
     async getValidationResult(options: {
         quest: TPointReward;
         account: TAccount;
@@ -165,10 +141,7 @@ export default class QuestDiscordService implements IQuestService {
             memberId: platformUserId,
             createdAt: { $gte: claim ? claim.createdAt : start, $lt: end },
         });
-
         const pointsAvailable = messages.length * quest.amount;
-
-        console.log(pointsAvailable, pointsClaimed, messages.length, platformUserId);
 
         return { pointsClaimed, pointsAvailable };
     }

@@ -21,13 +21,22 @@ export default class QuestService {
         const questVariants = Object.keys(QuestVariant).filter((v) => !isNaN(Number(v)));
         const callback: any = async (variant: QuestVariant) => {
             const service = serviceMap[variant];
-            const quests = await service.list({ pool });
+            const quests = await serviceMap[variant].models.quest.find({
+                poolId: pool._id,
+                isPublished: true,
+                variant,
+                $or: [
+                    // Include quests with expiryDate less than or equal to now
+                    { expiryDate: { $exists: true, $gte: new Date() } },
+                    // Include quests with no expiryDate
+                    { expiryDate: { $exists: false } },
+                ],
+            });
+
             return await Promise.all(
-                quests.map(async (quest: TQuest) => {
+                quests.map((quest: TQuest) => {
                     try {
-                        const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : true;
-                        const q = await service.decorate({ quest, wallet });
-                        return { ...q, isLocked };
+                        return service.decorate({ quest, wallet });
                     } catch (error) {
                         logger.error(error);
                     }
@@ -51,7 +60,7 @@ export default class QuestService {
             await NotificationService.notify(variant, { ...quest, ...data, image: data.image || quest.image });
         }
 
-        return await serviceMap[variant].updateById(questId, data);
+        return await this.updateById(variant, questId, data);
     }
 
     static async create(variant: QuestVariant, poolId: string, data: Partial<TQuest>, file?: Express.Multer.File) {
@@ -70,7 +79,13 @@ export default class QuestService {
     }
 
     static findById(variant: QuestVariant, questId: string) {
-        return serviceMap[variant].findById(questId);
+        const Quest = serviceMap[variant].models.quest;
+        return Quest.findById(questId);
+    }
+
+    static updateById(variant: QuestVariant, questId: string, options: Partial<TQuest>) {
+        const Quest = serviceMap[variant].models.quest;
+        return Quest.findByIdAndUpdate(questId, options, { new: true });
     }
 
     static async decorate(variant: QuestVariant, questId: string, wallet: WalletDocument) {

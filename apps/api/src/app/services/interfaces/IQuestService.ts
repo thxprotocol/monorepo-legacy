@@ -1,7 +1,6 @@
 import { Model } from 'mongoose';
 import { QuestVariant } from '@thxnetwork/types/enums';
 import { TAccount, TQuest, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
-import { AssetPoolDocument } from '../../models/AssetPool';
 import { WalletDocument } from '../../models/Wallet';
 
 import QuestInviteService from '../QuestInviteService';
@@ -14,7 +13,6 @@ import QuestGitcoinService from '../QuestGitcoinService';
 import QuestWeb3Service from '../QuestWeb3Service';
 
 export interface IQuestService {
-    list(options: { pool: AssetPoolDocument }): Promise<TQuest[]>;
     decorate(options: { quest: TQuest; wallet?: WalletDocument }): Promise<TQuest>;
     isAvailable(options: { quest: TQuest; wallet: WalletDocument; account: TAccount }): Promise<boolean>;
     getAmount(options: {
@@ -22,8 +20,6 @@ export interface IQuestService {
         wallet: WalletDocument;
         account: TAccount;
     }): Promise<{ pointsAvailable: number; pointsClaimed?: number }>;
-    findById(id: string): Promise<TQuest>;
-    updateById(id: string, options: Partial<TQuest>): Promise<TQuest>;
     create(options: Partial<TQuest>): Promise<TQuest>;
     createEntry(options: Partial<TQuestEntry>): Promise<TQuestEntry>;
     getValidationResult(options: {

@@ -9,7 +9,6 @@ import {
     TGitcoinQuest,
     TValidationResult,
 } from '@thxnetwork/common/lib/types/interfaces';
-import { AssetPoolDocument } from '../models/AssetPool';
 import { GitcoinQuest } from '../models/GitcoinQuest';
 import { IQuestService } from './interfaces/IQuestService';
 import GitcoinService from './GitcoinService';
@@ -19,10 +18,6 @@ export default class QuestGitcoinService implements IQuestService {
         quest: GitcoinQuest,
         entry: GitcoinQuestEntry,
     };
-
-    list(options: { pool: AssetPoolDocument }): Promise<TGitcoinQuest[]> {
-        throw new Error('Method not implemented.');
-    }
 
     async decorate({ quest }: { quest: TGitcoinQuest; wallet?: WalletDocument }): Promise<TGitcoinQuest> {
         return quest;
@@ -52,14 +47,6 @@ export default class QuestGitcoinService implements IQuestService {
         account: TAccount;
     }): Promise<{ pointsAvailable: number; pointsClaimed?: number }> {
         return { pointsAvailable: quest.amount };
-    }
-
-    findById(id: string): Promise<TGitcoinQuest> {
-        throw new Error('Method not implemented.');
-    }
-
-    updateById(id: string, options: Partial<TGitcoinQuest>): Promise<TGitcoinQuest> {
-        throw new Error('Method not implemented.');
     }
 
     create(options: Partial<TGitcoinQuest>): Promise<TGitcoinQuest> {

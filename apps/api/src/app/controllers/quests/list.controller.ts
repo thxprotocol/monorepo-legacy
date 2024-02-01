@@ -19,7 +19,7 @@ const controller = async (req: Request, res: Response) => {
     // so we need to decode the auth header manually when it is present
     const token = getToken(req.header('authorization'));
     const sub = token && token.sub;
-    const wallet = sub && (await SafeService.findPrimary(sub, pool.chainId));
+    const wallet = sub && (await SafeService.findPrimary(sub));
     const [daily, invite, twitter, discord, youtube, custom, web3, gitcoin] = await QuestService.list(pool, wallet);
 
     res.json({
