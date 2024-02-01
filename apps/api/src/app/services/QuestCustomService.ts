@@ -48,7 +48,7 @@ export default class QuestCustomService implements IQuestService {
     }
 
     public async findById(id: string) {
-        return (await MilestoneReward.findById(id)).toJSON();
+        return await MilestoneReward.findById(id);
     }
 
     public async decorate({ quest, wallet }: { quest: MilestoneRewardDocument; wallet?: WalletDocument }) {

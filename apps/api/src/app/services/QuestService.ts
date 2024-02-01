@@ -43,6 +43,7 @@ export default class QuestService {
 
         if (file) {
             data.image = await ImageService.upload(file);
+            data.image = await ImageService.upload(file);
         }
 
         // We only want to notify when the quest is set to published (and not updated while published already)

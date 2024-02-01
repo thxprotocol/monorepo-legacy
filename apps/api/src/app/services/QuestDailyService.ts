@@ -74,12 +74,12 @@ export default class QuestDailyService implements IQuestService {
         return { pointsAvailable: quest.amounts[amountIndex] };
     }
 
-    findById(uuid: string): Promise<TDailyReward> {
-        return DailyReward.findOne({ uuid: uuid });
+    findById(id: string): Promise<TDailyReward> {
+        return DailyReward.findById(id);
     }
 
     updateById(id: string, options: Partial<TDailyReward>): Promise<TDailyReward> {
-        throw new Error('Method not implemented.');
+        return DailyReward.findByIdAndUpdate(id, options, { new: true });
     }
 
     create(options: Partial<TDailyReward>): Promise<TDailyReward> {

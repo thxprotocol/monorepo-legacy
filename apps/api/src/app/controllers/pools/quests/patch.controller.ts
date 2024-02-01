@@ -6,6 +6,7 @@ import CreateController from '@thxnetwork/api/controllers/pools/quests/post.cont
 const validation = [param('questId').isMongoId(), ...CreateController.validation];
 
 const controller = async (req: Request, res: Response) => {
+    console.log(req.body);
     const quest = await QuestService.update(req.body.variant, req.params.questId, req.body, req.file);
     res.json(quest);
 };
