@@ -1,5 +1,5 @@
 import { JobType, QuestVariant } from '@thxnetwork/types/enums';
-import { TAccount, TQuest, TQuestEntry } from '@thxnetwork/types/interfaces';
+import { TAccount, TQuest, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { agenda } from '../util/agenda';
@@ -93,18 +93,37 @@ export default class QuestService {
         const quest = await QuestService.findById(variant, questId);
         const q = await serviceMap[variant].decorate({ quest, wallet });
         const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : false;
-        return { ...q, isLocked };
+        const isExpired = this.isExpired(quest);
+        return { ...q, isExpired, isLocked };
     }
 
     static getAmount(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
         return serviceMap[variant].getAmount({ quest, account, wallet });
     }
 
-    static isAvailable(
+    static isExpired(quest: TQuest) {
+        return quest.expiryDate ? new Date(quest.expiryDate).getTime() < Date.now() : false;
+    }
+
+    static async isAvailable(
         variant: QuestVariant,
         options: { quest: TQuest; account: TAccount; wallet: WalletDocument; address?: string },
-    ) {
-        return serviceMap[variant].isAvailable(options);
+    ): Promise<TValidationResult> {
+        if (!options.quest.isPublished) {
+            return { result: false, reason: 'Quest has not been published.' };
+        }
+
+        const isExpired = this.isExpired(options.quest);
+        if (!isExpired) return { result: false, reason: 'Quest has expired.' };
+
+        const isLocked = await LockService.getIsLocked(options.quest.locks, options.wallet);
+        if (isLocked) return { result: false, reason: 'Quest is locked.' };
+
+        const isAvailable = !!(await serviceMap[variant].isAvailable(options));
+        return {
+            result: isAvailable,
+            reason: !isAvailable ? 'Quest is not available.' : '',
+        };
     }
 
     static async getValidationResult(
@@ -114,11 +133,8 @@ export default class QuestService {
         wallet: WalletDocument,
         data: Partial<TQuestEntry & { rpc: string }>,
     ) {
-        const isLocked = await LockService.getIsLocked(quest.locks, wallet);
-        if (isLocked) return { result: false, reason: 'Quest is locked' };
-
         const isAvailable = await serviceMap[variant].isAvailable({ quest, account, wallet });
-        if (!isAvailable) return { result: false, reason: 'Quest not available.' };
+        if (!isAvailable) return { result: false, reason: 'Quest is not available.' };
 
         return await serviceMap[variant].getValidationResult({ quest, account, wallet, data });
     }

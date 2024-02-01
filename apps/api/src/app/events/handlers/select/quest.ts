@@ -34,11 +34,11 @@ export async function completeQuest(
     const pool = await PoolService.getById(quest.poolId);
     if (!pool) throw new Error('Could not find this campaign.');
 
-    const isAvailable = await QuestService.isAvailable(variant, { quest, account, wallet });
-    if (!isAvailable) throw new Error('Quest is not available for commands at the moment!');
+    const availabilityValidation = await QuestService.isAvailable(variant, { quest, account, wallet });
+    if (!availabilityValidation.result) throw new Error(availabilityValidation.reason);
 
-    const { result, reason } = await QuestService.getValidationResult(variant, quest, account, wallet, {});
-    if (!result) throw new Error(reason);
+    const requirementValidation = await QuestService.getValidationResult(variant, quest, account, wallet, {});
+    if (!requirementValidation.result) throw new Error(requirementValidation.reason);
 
     const amount = await QuestService.getAmount(variant, quest, account, wallet);
     if (!amount) throw new Error('Could not figure out how much points you should get.');

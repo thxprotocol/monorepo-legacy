@@ -30,7 +30,14 @@ export default class QuestDiscordService implements IQuestService {
         quest: TPointReward;
         account: TAccount;
         wallet?: WalletDocument;
-    }): Promise<TPointReward & TRestartDates & { isAvailable: boolean; amount: number; messages: TDiscordMessage[] }> {
+    }): Promise<
+        TPointReward & {
+            messages: TDiscordMessage[];
+            restartDates: TRestartDates;
+            amount: number;
+            isAvailable: boolean;
+        }
+    > {
         const restartDates = this.getRestartDates(quest);
         const amount = await this.getAmount({ quest, account, wallet });
         const messages = await this.getMessages({ account, quest, start: restartDates.start });
@@ -44,7 +51,7 @@ export default class QuestDiscordService implements IQuestService {
 
         return {
             ...quest,
-            ...restartDates,
+            restartDates,
             isAvailable,
             contentMetadata: quest.contentMetadata && JSON.parse(quest.contentMetadata),
             amount,

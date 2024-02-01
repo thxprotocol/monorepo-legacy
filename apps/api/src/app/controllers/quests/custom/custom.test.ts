@@ -11,7 +11,7 @@ import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 const user = request.agent(app);
 
 describe('Quests Custom ', () => {
-    let pool: AssetPoolDocument, milestoneReward: any, claim: any;
+    let pool: AssetPoolDocument, milestoneReward: any;
     const eventName = v4();
 
     beforeAll(beforeAllCallback);

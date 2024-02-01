@@ -1,25 +1,19 @@
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
-import { validate } from 'uuid';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { recoverSigner } from '@thxnetwork/api/util/network';
 import { JobType, QuestVariant } from '@thxnetwork/common/lib/types';
 import { GitcoinQuest } from '@thxnetwork/api/models/GitcoinQuest';
-import QuestService from '@thxnetwork/api/services/QuestService';
 import { agenda } from '@thxnetwork/api/util/agenda';
+import QuestService from '@thxnetwork/api/services/QuestService';
 
-const validation = [
-    param('uuid').custom((uuid) => validate(uuid)),
-    body('signature').isString(),
-    body('chainId').isInt(),
-];
+const validation = [param('id').isMongoId(), body('signature').isString(), body('chainId').isInt()];
 
 const controller = async ({ account, wallet, body, params }: Request, res: Response) => {
-    const quest = await GitcoinQuest.findOne({ uuid: params.uuid });
-    if (!quest) throw new NotFoundError('Could not find Web3 Quest');
+    const quest = await GitcoinQuest.findById(params.id);
+    if (!quest) throw new NotFoundError('Quest not found');
 
     const address = recoverSigner(body.message, body.signature);
-
     const { result, reason } = await QuestService.getValidationResult(quest.variant, quest, account, wallet, {
         address,
     });

@@ -1,24 +1,18 @@
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
-import { validate } from 'uuid';
 import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { JobType, QuestVariant } from '@thxnetwork/common/lib/types';
 import { agenda } from '@thxnetwork/api/util/agenda';
 import { recoverSigner } from '@thxnetwork/api/util/network';
 import { chainList } from '@thxnetwork/common';
-import LockService from '@thxnetwork/api/services/LockService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 
-const validation = [
-    param('uuid').custom((uuid) => validate(uuid)),
-    body('signature').isString(),
-    body('chainId').isInt(),
-];
+const validation = [param('id').isMongoId(), body('signature').isString(), body('chainId').isInt()];
 
 const controller = async ({ account, wallet, body, params }: Request, res: Response) => {
-    const quest = await Web3Quest.findOne({ uuid: params.uuid });
-    if (!quest) throw new NotFoundError('Could not find Web3 Quest');
+    const quest = await Web3Quest.findById(params.id);
+    if (!quest) throw new NotFoundError('Quest not found');
 
     const address = recoverSigner(body.message, body.signature);
     if (!address) throw new NotFoundError(`Could not recover address from signature.`);

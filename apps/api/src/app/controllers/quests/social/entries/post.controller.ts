@@ -9,20 +9,20 @@ import { getPlatformUserId } from '@thxnetwork/api/services/maps/quests';
 
 const validation = [param('id').isMongoId()];
 
-const controller = async (req: Request, res: Response) => {
+const controller = async ({ params, account, wallet }: Request, res: Response) => {
     // Get the quest document
-    const quest = await PointReward.findById(req.params.id);
-    if (!quest) throw new NotFoundError('Quest not found.');
+    const quest = await PointReward.findById(params.id);
+    if (!quest) throw new NotFoundError('Quest not found');
 
     // Get quest variant based on quest interaction variant
     const variant = questInteractionVariantMap[quest.interaction];
 
     // Get platform user id for account
-    const platformUserId = await getPlatformUserId(req.account, quest.platform);
+    const platformUserId = await getPlatformUserId(account, quest.platform);
     if (!platformUserId) return res.json({ error: 'Could not find platform user id.' });
 
     // Get validation result for this quest entry
-    const { result, reason } = await QuestService.getValidationResult(variant, quest, req.account, req.wallet, {
+    const { result, reason } = await QuestService.getValidationResult(variant, quest, account, wallet, {
         platformUserId,
     });
     if (!result) return res.json({ error: reason });
@@ -30,7 +30,7 @@ const controller = async (req: Request, res: Response) => {
     const job = await agenda.now(JobType.CreateQuestEntry, {
         variant,
         questId: String(quest._id),
-        sub: req.account.sub,
+        sub: account.sub,
         data: { platformUserId },
     });
 

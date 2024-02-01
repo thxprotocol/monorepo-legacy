@@ -13,15 +13,15 @@ class QuestManager extends BaseManager {
     daily = {
         entry: {
             create: async (id: string) => {
-                return await this.client.request.post(`/v1/quests/daily/${id}/claim`);
+                return await this.client.request.post(`/v1/quests/daily/${id}/entries`);
             },
         },
     };
 
     invite = {
         entry: {
-            create: async (uuid: string, payload: { sub: string }) => {
-                return await this.client.request.post(`/v1/quests/invite/${uuid}/claim`, {
+            create: async (id: string, payload: { sub: string }) => {
+                return await this.client.request.post(`/v1/quests/invite/${id}/entries`, {
                     data: JSON.stringify(payload),
                 });
             },
@@ -31,7 +31,7 @@ class QuestManager extends BaseManager {
     social = {
         entry: {
             create: async (id: string) => {
-                return await this.client.request.post(`/v1/quests/social/${id}/claim`);
+                return await this.client.request.post(`/v1/quests/social/${id}/entries`);
             },
         },
     };
@@ -39,15 +39,15 @@ class QuestManager extends BaseManager {
     custom = {
         entry: {
             create: async (id: string) => {
-                return await this.client.request.post(`/v1/quests/custom/claims/${id}/collect`);
+                return await this.client.request.post(`/v1/quests/custom/${id}/entries`);
             },
         },
     };
 
     web3 = {
         entry: {
-            create: async (uuid: string, payload: { signature: string; message: string }) => {
-                return await this.client.request.post(`/v1/quests/web3/${uuid}/claim`, {
+            create: async (id: string, payload: { signature: string; message: string }) => {
+                return await this.client.request.post(`/v1/quests/web3/${id}/entries`, {
                     data: JSON.stringify(payload),
                 });
             },
@@ -56,8 +56,8 @@ class QuestManager extends BaseManager {
 
     gitcoin = {
         entry: {
-            create: async (uuid: string, payload: { signature: string; message: string }) => {
-                return await this.client.request.post(`/v1/quests/gitcoin/${uuid}/entry`, {
+            create: async (id: string, payload: { signature: string; message: string }) => {
+                return await this.client.request.post(`/v1/quests/gitcoin/${id}/entries`, {
                     data: JSON.stringify(payload),
                 });
             },
