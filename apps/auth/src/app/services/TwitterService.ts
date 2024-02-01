@@ -7,8 +7,7 @@ import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IAccessToken } from '@thxnetwork/types/interfaces';
 import { formatDistance } from 'date-fns';
 import { AxiosResponse } from 'axios';
-
-const ERROR_TOKEN_REQUEST_FAILED = 'Failed to request access token';
+import { logger } from '../util/logger';
 
 export class TwitterService {
     static async isAuthorized(account: AccountDocument) {
@@ -142,6 +141,7 @@ export class TwitterService {
                 // Update params for the next iteration
                 params = { max_results: maxResults, pagination_token: data.meta.next_token };
             } catch (res) {
+                logger.error(res);
                 // Indicates rate limit has been hit
                 if (res.status === 401) {
                     await this.isAuthorized(account);
@@ -192,6 +192,7 @@ export class TwitterService {
                 // Update params for the next iteration
                 params = { max_results: maxResults, pagination_token: data.meta.next_token };
             } catch (res) {
+                logger.error(res);
                 // Indicates rate limit has been hit
                 if (res.status === 401) {
                     await this.isAuthorized(account);
@@ -224,6 +225,7 @@ export class TwitterService {
             if (!isFollowing) return { result: false, reason: 'X: Account is not found as a follower.' };
             return { result: true };
         } catch (res) {
+            logger.error(res);
             // Indicates rate limit has been hit
             if (res.status === 401) {
                 await this.isAuthorized(account);
@@ -279,8 +281,6 @@ export class TwitterService {
             },
             data,
         });
-
-        if (r.status !== 200) throw new Error(ERROR_TOKEN_REQUEST_FAILED);
 
         return r.data;
     }

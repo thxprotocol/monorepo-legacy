@@ -62,22 +62,19 @@ export default class QuestSocialService implements IQuestService {
     async getValidationResult({
         quest,
         account,
-        wallet,
     }: {
         quest: TPointReward;
         account: TAccount;
         wallet: WalletDocument;
         data: Partial<TQuestEntry>;
     }): Promise<TValidationResult> {
-        // Check if completed already
-        const available = await this.isAvailable({ quest, account, wallet });
-        if (!available) return { result: false, reason: 'You have completed this quest already.' };
-
-        // Check quest requirements
         try {
+            // Check quest requirements
             const validationResult = await requirementMap[quest.interaction](account, quest);
+            console.log(validationResult);
             return validationResult || { result: true, reason: '' };
         } catch (error) {
+            console.log(error);
             return { result: false, reason: 'We were unable to confirm the requirements for this quest.' };
         }
     }

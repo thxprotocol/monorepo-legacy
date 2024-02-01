@@ -61,34 +61,32 @@ export default class QuestCustomService implements IQuestService {
         wallet: WalletDocument;
         data: Partial<TMilestoneRewardClaim>;
     }): Promise<{ reason: string; result: boolean }> {
-        try {
-            // See if there are identities
-            const identities = await Identity.find({ poolId: options.quest.poolId, sub: options.wallet.sub });
-            if (!identities.length) {
-                throw new Error('No identity connected to this account. Please ask for this in your community!');
-            }
-
-            const entries = await MilestoneRewardClaim.find({
-                questId: options.quest._id,
-                walletId: options.wallet._id,
-                isClaimed: true,
-            });
-            if (entries.length >= options.quest.limit) {
-                throw new Error('Quest entry limit has been reached');
-            }
-
-            const events = await Event.find({
-                identityId: { $in: identities.map(({ _id }) => String(_id)) },
-                poolId: options.quest.poolId,
-                name: options.quest.eventName,
-            });
-            if (entries.length >= events.length) {
-                throw new Error('Insufficient custom events found for this quest');
-            }
-
-            return { result: true, reason: '' };
-        } catch (error) {
-            return { result: false, reason: error.message };
+        // See if there are identities
+        const identities = await Identity.find({ poolId: options.quest.poolId, sub: options.wallet.sub });
+        if (!identities.length) {
+            return {
+                result: false,
+                reason: 'No identity connected to this account. Please ask for this in your community!',
+            };
         }
+
+        const entries = await MilestoneRewardClaim.find({
+            questId: options.quest._id,
+            walletId: options.wallet._id,
+            isClaimed: true,
+        });
+        if (entries.length >= options.quest.limit) {
+            return { result: false, reason: 'Quest entry limit has been reached' };
+        }
+
+        const events = await Event.find({
+            identityId: { $in: identities.map(({ _id }) => String(_id)) },
+            poolId: options.quest.poolId,
+            name: options.quest.eventName,
+        });
+        if (entries.length >= events.length) {
+            return { result: false, reason: 'Insufficient custom events found for this quest' };
+        }
+        if (entries.length < events.length) return { result: true, reason: '' };
     }
 }

@@ -52,8 +52,12 @@ export default class QuestGitcoinService implements IQuestService {
         wallet: WalletDocument;
         data: Partial<TGitcoinQuestEntry>;
     }): Promise<TValidationResult> {
-        const { address } = data;
-        const { score, error } = await GitcoinService.getScoreUniqueHumanity(quest.scorerId, address.toLowerCase());
+        if (!data.address) return { result: false, reason: 'Could not find an address during validation.' };
+
+        const { score, error } = await GitcoinService.getScoreUniqueHumanity(
+            quest.scorerId,
+            data.address.toLowerCase(),
+        );
         if (error) return { result: false, reason: error };
         if (score < quest.score) {
             return {

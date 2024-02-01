@@ -20,11 +20,11 @@ export default class QuestService {
     static async list(pool: AssetPoolDocument, wallet?: WalletDocument, account?: TAccount) {
         const questVariants = Object.keys(QuestVariant).filter((v) => !isNaN(Number(v)));
         const callback: any = async (variant: QuestVariant) => {
-            const service = serviceMap[variant];
-            const quests = await serviceMap[variant].models.quest.find({
+            const Quest = serviceMap[variant].models.quest;
+            const quests = await Quest.find({
                 poolId: pool._id,
-                isPublished: true,
                 variant,
+                isPublished: true,
                 $or: [
                     // Include quests with expiryDate less than or equal to now
                     { expiryDate: { $exists: true, $gte: new Date() } },
@@ -37,7 +37,7 @@ export default class QuestService {
                 quests.map((q) => {
                     try {
                         const quest = q.toJSON() as TQuest;
-                        return service.decorate({ quest, wallet, account });
+                        return serviceMap[variant].decorate({ quest, wallet, account });
                     } catch (error) {
                         logger.error(error);
                     }
@@ -114,7 +114,7 @@ export default class QuestService {
         }
 
         const isExpired = this.isExpired(options.quest);
-        if (!isExpired) return { result: false, reason: 'Quest has expired.' };
+        if (isExpired) return { result: false, reason: 'Quest has expired.' };
 
         const isLocked = await LockService.getIsLocked(options.quest.locks, options.wallet);
         if (isLocked) return { result: false, reason: 'Quest is locked.' };

@@ -30,7 +30,7 @@ export default class QuestDailyService implements IQuestService {
             claimAgainDuration: number;
         }
     > {
-        const amount = wallet && (await this.getAmount({ quest, wallet, account }));
+        const amount = await this.getAmount({ quest, wallet, account });
         const entries = wallet ? await this.findEntries({ quest, wallet }) : [];
         const claimAgainTime = entries.length ? new Date(entries[0].createdAt).getTime() + ONE_DAY_MS : null;
         const now = Date.now();
@@ -77,6 +77,8 @@ export default class QuestDailyService implements IQuestService {
         wallet: WalletDocument;
         account: TAccount;
     }): Promise<number> {
+        if (!wallet) return quest.amounts[0];
+
         const claims = await this.findEntries({ quest, wallet });
         const amountIndex =
             claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;

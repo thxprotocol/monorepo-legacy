@@ -21,45 +21,48 @@ export async function completeQuest(
     variant: QuestVariant,
     questId: string,
 ) {
-    const account = await AccountProxy.getByDiscordId(interaction.user.id);
-    if (!account) throw new DiscordDisconnected();
+    try {
+        const account = await AccountProxy.getByDiscordId(interaction.user.id);
+        if (!account) throw new DiscordDisconnected();
 
-    const Quest = serviceMap[variant].models.quest;
-    const quest = await Quest.findById(questId);
-    if (!quest) throw new Error('Could not find this quest.');
+        const Quest = serviceMap[variant].models.quest;
+        const quest = await Quest.findById(questId);
+        if (!quest) throw new Error('Could not find this quest.');
 
-    const wallet = await SafeService.findPrimary(account.sub);
-    if (!wallet) throw new DiscordSafeNotFound();
+        const wallet = await SafeService.findPrimary(account.sub);
+        if (!wallet) throw new DiscordSafeNotFound();
 
-    const pool = await PoolService.getById(quest.poolId);
-    if (!pool) throw new Error('Could not find this campaign.');
+        const pool = await PoolService.getById(quest.poolId);
+        if (!pool) throw new Error('Could not find this campaign.');
 
-    const availabilityValidation = await QuestService.isAvailable(variant, { quest, account, wallet });
-    if (!availabilityValidation.result) throw new Error(availabilityValidation.reason);
+        const { platform } = quest as TPointReward;
+        const platformUserId = platform && getPlatformUserId(account, platform);
 
-    const requirementValidation = await QuestService.getValidationResult(variant, quest, account, wallet, {});
-    if (!requirementValidation.result) throw new Error(requirementValidation.reason);
+        const availabilityValidation = await QuestService.isAvailable(variant, { quest, account, wallet });
+        if (!availabilityValidation.result) throw new Error(availabilityValidation.reason);
 
-    const amount = await QuestService.getAmount(variant, quest, account, wallet);
-    if (!amount) throw new Error('Could not figure out how much points you should get.');
+        const requirementValidation = await QuestService.getValidationResult(variant, quest, account, wallet, {});
+        if (!requirementValidation.result) throw new Error(requirementValidation.reason);
 
-    const { platform } = quest as TPointReward;
-    const platformUserId = platform && getPlatformUserId(account, platform);
+        const amount = await QuestService.getAmount(variant, quest, account, wallet);
 
-    await agenda.now(JobType.CreateQuestEntry, {
-        variant,
-        questId: quest._id,
-        sub: account.sub,
-        data: {
-            isClaimed: true,
-            platformUserId,
-        },
-    });
+        await agenda.now(JobType.CreateQuestEntry, {
+            variant,
+            questId: quest._id,
+            sub: account.sub,
+            data: {
+                isClaimed: true,
+                platformUserId,
+            },
+        });
 
-    interaction.reply({
-        content: `Completed **${quest.title}** and earned **${amount} points**.`,
-        ephemeral: true,
-    });
+        interaction.reply({
+            content: `Completed **${quest.title}** and earned **${amount} points**.`,
+            ephemeral: true,
+        });
+    } catch (error) {
+        handleError(error, interaction);
+    }
 }
 
 export async function onSelectQuestComplete(interaction: StringSelectMenuInteraction) {

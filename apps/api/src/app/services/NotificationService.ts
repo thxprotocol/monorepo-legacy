@@ -117,11 +117,12 @@ async function sendQuestPublishNotification(
         [embed],
         [
             {
+                disabled: true,
                 customId: `${DiscordButtonVariant.QuestComplete}:${quest.variant}:${quest._id}`,
                 label: 'Complete Quest!',
                 style: ButtonStyle.Success,
             },
-            { label: 'More Info', style: ButtonStyle.Link, url: WIDGET_URL + `/c/${pool._id}/quests` },
+            { label: 'More Info', style: ButtonStyle.Link, url: WIDGET_URL + `/c/${pool.settings.slug}` },
         ],
     );
 }

@@ -1,18 +1,10 @@
-import {
-    TAccount,
-    TQuestEntry,
-    TPointReward,
-    AccessTokenKind,
-    TDiscordMessage,
-    TValidationResult,
-} from '@thxnetwork/common/lib/types';
+import { TAccount, TQuestEntry, TPointReward, TDiscordMessage, TValidationResult } from '@thxnetwork/common/lib/types';
 import { WalletDocument } from '../models/Wallet';
 import { PointRewardClaim } from '../models/PointRewardClaim';
-import DiscordMessage from '../models/DiscordMessage';
-
 import { PointReward } from '../models/PointReward';
 import { IQuestService } from './interfaces/IQuestService';
 import { getPlatformUserId, requirementMap } from './maps/quests';
+import DiscordMessage from '../models/DiscordMessage';
 
 type TRestartDates = { now: Date; start: Date; endDay: Date; end: Date };
 
@@ -73,7 +65,8 @@ export default class QuestDiscordService implements IQuestService {
 
     // Specific to Discord Message quest
     async isAvailable(options: { quest: TPointReward; wallet: WalletDocument; account: TAccount }): Promise<boolean> {
-        return true;
+        const amount = await this.getAmount(options);
+        return amount > 0;
     }
 
     async getAmount({

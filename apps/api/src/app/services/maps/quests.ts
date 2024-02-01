@@ -20,6 +20,7 @@ export const requirementMap: {
         const validationResultUser = await TwitterDataProxy.validateUser(account, quest);
         if (!validationResultUser.result) return validationResultUser;
         const validationResultLike = await TwitterDataProxy.validateLike(account, quest.content);
+        console.log(validationResultLike);
         if (!validationResultLike.result) return validationResultLike;
     },
     [RewardConditionInteraction.TwitterRetweet]: async (account, quest) => {
