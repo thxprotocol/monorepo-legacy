@@ -34,8 +34,9 @@ export default class QuestService {
             });
 
             return await Promise.all(
-                quests.map((quest: TQuest) => {
+                quests.map((q) => {
                     try {
+                        const quest = q.toJSON() as TQuest;
                         return service.decorate({ quest, wallet });
                     } catch (error) {
                         logger.error(error);
@@ -64,12 +65,12 @@ export default class QuestService {
     }
 
     static async create(variant: QuestVariant, poolId: string, data: Partial<TQuest>, file?: Express.Multer.File) {
-        const service = serviceMap[variant];
-        const quest = await service.create({ ...data, poolId, variant, uuid: v4() });
-
         if (file) {
             data.image = await ImageService.upload(file);
         }
+
+        const Quest = serviceMap[variant].models.quest;
+        const quest = await Quest.create({ ...data, poolId, variant, uuid: v4() });
 
         if (data.isPublished) {
             await NotificationService.notify(variant, quest);

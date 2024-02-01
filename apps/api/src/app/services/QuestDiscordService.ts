@@ -85,10 +85,6 @@ export default class QuestDiscordService implements IQuestService {
         };
     }
 
-    async create(options: Partial<TPointReward>): Promise<TPointReward> {
-        return await PointReward.create(options);
-    }
-
     createEntry(options: Partial<TPointRewardClaim>): Promise<TPointRewardClaim> {
         throw new Error('Method not implemented.');
     }

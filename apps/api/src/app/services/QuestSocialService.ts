@@ -60,13 +60,6 @@ export default class QuestSocialService implements IQuestService {
         return { pointsAvailable: quest.amount };
     }
 
-    create(options: Partial<TPointReward>): Promise<TPointReward> {
-        const { interaction } = options;
-        const platform = interaction && platformInteractionMap[interaction];
-
-        throw new Error('Method not implemented.');
-    }
-
     createEntry(options: Partial<TQuestEntry>): Promise<TQuestEntry> {
         throw new Error('Method not implemented.');
     }

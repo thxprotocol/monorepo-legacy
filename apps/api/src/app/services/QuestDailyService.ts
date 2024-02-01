@@ -69,10 +69,6 @@ export default class QuestDailyService implements IQuestService {
         return { pointsAvailable: quest.amounts[amountIndex] };
     }
 
-    create(options: Partial<TDailyReward>): Promise<TDailyReward> {
-        return DailyReward.create(options);
-    }
-
     createEntry(options: Partial<TDailyRewardClaim>): Promise<TDailyRewardClaim> {
         throw new Error('Method not implemented.');
     }

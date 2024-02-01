@@ -32,7 +32,7 @@ export default class QuestCustomService implements IQuestService {
         return { pointsAvailable: quest.amount };
     }
 
-    public async decorate({ quest, wallet }: { quest: MilestoneRewardDocument; wallet?: WalletDocument }) {
+    public async decorate({ quest, wallet }: { quest: TMilestoneReward; wallet?: WalletDocument }) {
         const entries = wallet
             ? await MilestoneRewardClaim.find({
                   walletId: String(wallet._id),

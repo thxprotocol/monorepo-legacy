@@ -20,7 +20,6 @@ export interface IQuestService {
         wallet: WalletDocument;
         account: TAccount;
     }): Promise<{ pointsAvailable: number; pointsClaimed?: number }>;
-    create(options: Partial<TQuest>): Promise<TQuest>;
     createEntry(options: Partial<TQuestEntry>): Promise<TQuestEntry>;
     getValidationResult(options: {
         quest: TQuest;

@@ -36,10 +36,6 @@ export default class QuestInviteService implements IQuestService {
         return { pointsAvailable: quest.amount };
     }
 
-    create(options: Partial<TReferralReward>): Promise<TReferralReward> {
-        throw new Error('Method not implemented.');
-    }
-
     createEntry(options: Partial<TReferralRewardClaim>): Promise<TReferralRewardClaim> {
         throw new Error('Method not implemented.');
     }
