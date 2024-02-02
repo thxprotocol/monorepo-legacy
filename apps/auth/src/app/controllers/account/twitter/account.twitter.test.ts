@@ -74,7 +74,7 @@ describe('Account Controller', () => {
             account = await AccountService.get(sub);
         });
 
-        it('Return isAuthorized = false when account has no Youtube access', async () => {
+        it('Return isAuthorized = false when account has no Twitter access', async () => {
             const res = await http
                 .get(`/account/${sub}/twitter`)
                 .set({
@@ -84,7 +84,7 @@ describe('Account Controller', () => {
             expect(res.body.isAuthorized).toEqual(false);
         });
 
-        it('Return isAuthorized = false when Youtube access is expired', async () => {
+        it('Return isAuthorized = true with updated access token', async () => {
             account.setToken({
                 kind: AccessTokenKind.Twitter,
                 accessToken: 'TOKEN',
@@ -99,10 +99,10 @@ describe('Account Controller', () => {
                     Authorization: authHeader,
                 })
                 .send();
-            expect(res.body.isAuthorized).toEqual(false);
+            expect(res.body.isAuthorized).toEqual(true);
         });
 
-        it('Return isAuthorized = true when account has Youtube access', async () => {
+        it('Return isAuthorized = true when account has Twitter access', async () => {
             account.setToken({
                 kind: AccessTokenKind.Twitter,
                 accessToken: 'NEWTOKEN',
