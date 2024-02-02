@@ -34,12 +34,14 @@ export const account = {
     plan: AccountPlanType.Basic,
     email: CYPRESS_EMAIL,
     address: userWalletAddress,
+    tokens: [],
 };
 export const account2 = {
     sub: sub2,
     plan: AccountPlanType.Basic,
     email: CYPRESS_EMAIL,
     address: userWalletAddress2,
+    tokens: [],
 };
 
 export const account3 = {
@@ -47,6 +49,7 @@ export const account3 = {
     plan: AccountPlanType.Basic,
     variant: AccountVariant.EmailPassword,
     address: userWalletAddress3,
+    tokens: [],
 };
 
 export const rewardId = 1;
