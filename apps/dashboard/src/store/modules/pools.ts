@@ -337,6 +337,7 @@ class PoolModule extends VuexModule {
             headers: { 'X-PoolId': pool._id },
         });
         for (const guild of data) {
+            console.log(guild);
             this.context.commit('setGuild', guild);
         }
     }

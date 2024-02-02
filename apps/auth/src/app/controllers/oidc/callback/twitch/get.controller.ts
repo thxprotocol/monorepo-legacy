@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
-import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
+import { OAuthVariant } from '@thxnetwork/common/lib/types';
 import AuthService from '@thxnetwork/auth/services/AuthService';
+import TokenService from '@thxnetwork/auth/services/TokenService';
 
 export async function controller(req: Request, res: Response) {
     const { code, interaction } = await AuthService.redirectCallback(req);
-    const tokens = await TwitchService.getTokens(code);
-    const account = await AuthService.signin(interaction, tokens, AccountVariant.SSOTwitch);
+    const token = await TokenService.requestToken({ variant: OAuthVariant.Twitch, code });
+    const account = await AuthService.signin(interaction, token, AccountVariant.SSOTwitch);
     const returnUrl = await AuthService.getReturn(interaction, account);
 
     return res.redirect(returnUrl);

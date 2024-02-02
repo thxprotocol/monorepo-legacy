@@ -67,8 +67,4 @@ export class AccountService {
     static async remove(id: string) {
         await Account.deleteOne({ _id: id });
     }
-
-    static isConnected(interaction: any, userId: string, kind: AccessTokenKind) {
-        return TokenService.isConnected(interaction.session.accountId, userId, kind);
-    }
 }

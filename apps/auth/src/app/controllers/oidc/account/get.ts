@@ -1,21 +1,37 @@
 import { Request, Response } from 'express';
-import { DiscordService } from '../../../services/DiscordService';
-import { TwitterService } from '../../../services/TwitterService';
-import { YouTubeService } from '../../../services/YouTubeService';
 import { AccountService } from '../../../services/AccountService';
-import { GithubService } from '../../../services/GithubServices';
-import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
-import { AccountPlanType, AccessTokenKind } from '@thxnetwork/types/enums';
+import { AccountPlanType, OAuthVariant, OAuthScope } from '@thxnetwork/types/enums';
+import TokenService from '@thxnetwork/auth/services/TokenService';
 
 async function controller(req: Request, res: Response) {
     const { uid, params, alert, session } = req.interaction;
     const account = await AccountService.get(session.accountId);
 
-    params.githubLoginUrl = GithubService.getLoginURL(uid, {});
-    params.googleLoginUrl = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
-    params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
-    params.discordLoginUrl = DiscordService.getLoginURL(uid, {});
-    params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
+    params.githubLoginUrl = TokenService.getLoginURL({
+        uid,
+        variant: OAuthVariant.Github,
+        scope: OAuthScope.GithubAuth,
+    });
+    params.googleLoginUrl = TokenService.getLoginURL({
+        uid,
+        variant: OAuthVariant.Google,
+        scope: OAuthScope.GoogleAuth,
+    });
+    params.twitterLoginUrl = TokenService.getLoginURL({
+        uid,
+        variant: OAuthVariant.Twitter,
+        scope: OAuthScope.TwitterAuth,
+    });
+    params.discordLoginUrl = TokenService.getLoginURL({
+        uid,
+        variant: OAuthVariant.Discord,
+        scope: OAuthScope.DiscordAuth,
+    });
+    params.twitchLoginUrl = TokenService.getLoginURL({
+        uid,
+        variant: OAuthVariant.Twitch,
+        scope: OAuthScope.TwitchAuth,
+    });
 
     return res.render('account', {
         uid,
@@ -33,13 +49,13 @@ async function controller(req: Request, res: Response) {
             plan: account.plan,
             planType: AccountPlanType[account.plan],
             variant: account.variant,
-            googleAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.Google),
-            youtubeViewAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeView),
-            youtubeManageAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeManage),
-            twitterAccess: await TwitterService.isAuthorized(account),
-            githubAccess: await GithubService.isAuthorized(account),
-            discordAccess: await DiscordService.isAuthorized(account),
-            twitchAccess: await TwitchService.isAuthorized(account),
+            googleAccess: await TokenService.refreshToken(account, OAuthScope.GoogleAuth),
+            youtubeViewAccess: await TokenService.refreshToken(account, OAuthScope.GoogleYoutubeLike),
+            youtubeManageAccess: await TokenService.refreshToken(account, OAuthScope.GoogleYoutubeSubscribe),
+            twitterAccess: await TokenService.refreshToken(account, OAuthScope.TwitterAuth),
+            githubAccess: await TokenService.refreshToken(account, OAuthScope.GithubAuth),
+            discordAccess: await TokenService.refreshToken(account, OAuthScope.DiscordAuth),
+            twitchAccess: await TokenService.refreshToken(account, OAuthScope.TwitchAuth),
         },
     });
 }

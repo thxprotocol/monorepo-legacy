@@ -11,7 +11,7 @@ import morgan from './middlewares/morgan';
 import morganBody from 'morgan-body';
 import { xssProtection } from 'lusca';
 import { DASHBOARD_URL, GTM, MONGODB_URI, NODE_ENV, PORT, PUBLIC_URL, WALLET_URL } from './config/secrets';
-import { mainRouter } from './controllers';
+import RouterRoot from './controllers';
 import { corsHandler, errorLogger, errorNormalizer, errorOutput, notFoundHandler } from './middlewares';
 import { helmetInstance } from './util/helmet';
 import { assetsPath } from './util/path';
@@ -41,7 +41,7 @@ morganBody(app, {
 app.use(expressEJSLayouts);
 app.use(xssProtection(true));
 app.use(express.static(assetsPath));
-app.use('/', mainRouter);
+app.use('/', RouterRoot);
 app.use(notFoundHandler);
 app.use(errorLogger);
 app.use(errorNormalizer);

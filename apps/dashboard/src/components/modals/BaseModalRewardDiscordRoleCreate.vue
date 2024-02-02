@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { IPools, TGuildState } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
@@ -91,6 +91,7 @@ import type { TAccount, TPool, TDiscordRoleReward } from '@thxnetwork/types/inte
     computed: mapGetters({
         pools: 'pools/all',
         profile: 'account/profile',
+        guildsList: 'pools/guilds',
     }),
 })
 export default class ModalRewardCustomCreate extends Vue {
@@ -98,6 +99,7 @@ export default class ModalRewardCustomCreate extends Vue {
 
     pools!: IPools;
     profile!: TAccount;
+    guildsList!: TGuildState;
 
     fileCoupons: File | null = null;
     error = '';
@@ -112,6 +114,7 @@ export default class ModalRewardCustomCreate extends Vue {
     webshopURL = '';
     isPromoted = false;
     discordRoleId = '';
+    isLoadingGuilds = false;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
@@ -122,11 +125,12 @@ export default class ModalRewardCustomCreate extends Vue {
     }
 
     get guilds() {
-        if (!this.pool.guilds) return [];
-        return this.pool.guilds.filter((g) => g.isConnected);
+        if (!this.guildsList[this.pool._id]) return [];
+        return Object.values(this.guildsList[this.pool._id]).filter((g) => g.isConnected);
     }
 
-    onShow() {
+    async onShow() {
+        await this.getGuilds();
         this.title = this.reward ? this.reward.title : this.title;
         this.description = this.reward ? this.reward.description : this.description;
         this.pointPrice = this.reward ? this.reward.pointPrice : this.pointPrice;
@@ -135,6 +139,12 @@ export default class ModalRewardCustomCreate extends Vue {
         this.image = this.reward ? this.reward.image : this.image;
         this.isPromoted = this.reward ? this.reward.isPromoted : this.isPromoted;
         this.discordRoleId = this.reward ? this.reward.discordRoleId : this.discordRoleId;
+    }
+
+    async getGuilds() {
+        this.isLoadingGuilds = true;
+        await this.$store.dispatch('pools/listGuilds', this.pool);
+        this.isLoadingGuilds = true;
     }
 
     onChangePointPrice(price: number) {

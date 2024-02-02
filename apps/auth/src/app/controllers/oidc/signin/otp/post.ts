@@ -29,7 +29,7 @@ async function controller(req: Request, res: Response) {
         const isValid = await AuthService.isOTPValid(account, req.body.otp);
         if (!isValid) throw new Error('Your one-time password is incorrect.');
 
-        const token = await TokenService.getToken(account, AccessTokenKind.Auth);
+        const token = await TokenService.getToken(account, { kind: AccessTokenKind.Auth });
         if (token.expiry < Date.now()) throw new Error('One-time password expired');
 
         await account.updateOne({

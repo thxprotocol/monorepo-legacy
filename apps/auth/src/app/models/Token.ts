@@ -14,6 +14,7 @@ const tokenSchema = new mongoose.Schema(
         refreshTokenEncrypted: String,
         expiry: Number,
         userId: String,
+        scope: String,
         metadata: Object,
     },
     { timestamps: true },

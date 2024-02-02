@@ -7,6 +7,7 @@ export type TToken = {
     refreshToken: string;
     accessTokenEncrypted: string;
     refreshTokenEncrypted: string;
+    scope: string;
     expiry: number;
     userId: string;
     metadata: any;

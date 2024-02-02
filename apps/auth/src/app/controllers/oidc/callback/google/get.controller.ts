@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
-import { YouTubeService } from '@thxnetwork/auth/services/YouTubeService';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
+import { OAuthVariant } from '@thxnetwork/common/lib/types';
 import AuthService from '@thxnetwork/auth/services/AuthService';
+import TokenService from '@thxnetwork/auth/services/TokenService';
 
 export async function controller(req: Request, res: Response) {
     const { code, interaction } = await AuthService.redirectCallback(req);
-    const tokens = await YouTubeService.getTokens(code);
-    const account = await AuthService.signin(interaction, tokens, AccountVariant.SSOGoogle);
+    const token = await TokenService.requestToken({ variant: OAuthVariant.Google, code });
+    const account = await AuthService.signin(interaction, token, AccountVariant.SSOGoogle);
     const returnUrl = await AuthService.getReturn(interaction, account);
 
     res.redirect(returnUrl);

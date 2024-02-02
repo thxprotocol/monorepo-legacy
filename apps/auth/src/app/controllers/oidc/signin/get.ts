@@ -1,15 +1,12 @@
-import { GithubService } from './../../../services/GithubServices';
 import { Request, Response } from 'express';
 import { AUTH_URL, DASHBOARD_URL, WIDGET_URL } from '../../../config/secrets';
-import { TwitterService } from '../../../services/TwitterService';
-import { YouTubeService } from '../../../services/YouTubeService';
 import { AUTH_REQUEST_TYPED_MESSAGE, createTypedMessage } from '../../../util/typedMessage';
-import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
-import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
+import { OAuthScope, OAuthVariant } from '@thxnetwork/common/lib/types';
 import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
 import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
+import TokenService from '@thxnetwork/auth/services/TokenService';
 
 async function controller(req: Request, res: Response) {
     const { uid, params } = req.interaction;
@@ -81,20 +78,21 @@ async function controller(req: Request, res: Response) {
             AccountVariant.SSODiscord,
         ].includes(method),
     );
+
     params.googleLoginUrl = authenticationMethods.includes(AccountVariant.SSOGoogle)
-        ? YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes())
+        ? TokenService.getLoginURL({ variant: OAuthVariant.Google, uid, scope: OAuthScope.GoogleAuth })
         : null;
     params.githubLoginUrl = authenticationMethods.includes(AccountVariant.SSOGithub)
-        ? GithubService.getLoginURL(uid, {})
+        ? TokenService.getLoginURL({ variant: OAuthVariant.Github, uid, scope: OAuthScope.GithubAuth })
         : null;
     params.discordLoginUrl = authenticationMethods.includes(AccountVariant.SSODiscord)
-        ? DiscordService.getLoginURL(uid, {})
+        ? TokenService.getLoginURL({ variant: OAuthVariant.Discord, uid, scope: OAuthScope.DiscordAuth })
         : null;
     params.twitchLoginUrl = authenticationMethods.includes(AccountVariant.SSOTwitch)
-        ? TwitchService.getLoginURL(uid, {})
+        ? TokenService.getLoginURL({ variant: OAuthVariant.Twitch, uid, scope: OAuthScope.TwitchAuth })
         : null;
     params.twitterLoginUrl = authenticationMethods.includes(AccountVariant.SSOTwitter)
-        ? TwitterService.getLoginURL(uid, {})
+        ? TokenService.getLoginURL({ variant: OAuthVariant.Twitter, uid, scope: OAuthScope.TwitterAuth })
         : null;
     params.authRequestMessage = createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
 
