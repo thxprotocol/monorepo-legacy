@@ -96,7 +96,7 @@ describe('Account Controller', () => {
                 .send({
                     address: accountAddress,
                 });
-            expect(res.status).toBe(204);
+            expect(res.status).toBe(200);
         });
 
         it('HTTP 200', async () => {
