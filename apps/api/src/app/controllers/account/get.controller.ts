@@ -12,7 +12,7 @@ const validation = [];
 
 const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.findById(req.auth.sub);
-    account.tokens = account.tokens.map(({ kind, userId }) => ({ kind, userId })) as any;
+    account.tokens = account.tokens.map(({ kind, userId, metadata }) => ({ kind, userId, metadata })) as any;
 
     // Set participant rank if poolId is provided
     const poolId = req.header('X-PoolId');

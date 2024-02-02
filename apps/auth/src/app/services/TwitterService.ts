@@ -16,12 +16,14 @@ export class TwitterService {
             try {
                 const tokens = await this.refreshTokens(token.refreshToken);
                 const expiry = tokens.expires_in ? Date.now() + Number(tokens.expires_in) * 1000 : undefined;
-
+                const user = await this.getMe(tokens.access_token);
                 await TokenService.setToken(account, {
                     kind: AccessTokenKind.Twitter,
                     accessToken: tokens.access_token,
                     refreshToken: tokens.refresh_token,
                     expiry,
+                    userId: user.id,
+                    metadata: { username: user.username, name: user.name },
                 });
             } catch (error) {
                 return false;
@@ -83,6 +85,7 @@ export class TwitterService {
         const user = await this.getMe(data.access_token);
 
         return {
+            kind: AccessTokenKind.Twitter,
             accessToken: data.access_token,
             refreshToken: data.refresh_token,
             expiry,

@@ -7,8 +7,10 @@ import UpdateAccount from './patch.controller';
 import DeleteAccount from './delete.controller';
 
 // Social OAuth
-import ReadAccountYoutube from './youtube/get.controller';
 import ReadAccountTwitter from './twitter/get.controller';
+import CreateAccountDisconnect from './disconnect/post.controller';
+
+import ReadAccountYoutube from './youtube/get.controller';
 import ReadAccountDiscord from './discord/get.controller';
 import GetAccountByDiscordId from './discord/get.by-discord-id.controller';
 import CreateTwitterTweet from './twitter/tweet/post.controller';
@@ -35,6 +37,12 @@ router.post(
     guard.check(['account:read', 'account:write']),
     assertRequestInput(CreateWalletConfirm.validation),
     CreateWalletConfirm.controller,
+);
+router.post(
+    '/disconnect',
+    guard.check(['account:read', 'account:write']),
+    assertRequestInput(CreateAccountDisconnect.validation),
+    CreateAccountDisconnect.controller,
 );
 
 // router.post('/youtube/video', guard.check(['account:read']), CreateTwitterTweet.controller);

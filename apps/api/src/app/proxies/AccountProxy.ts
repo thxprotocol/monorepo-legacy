@@ -1,6 +1,7 @@
 import { TAccount } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { BadRequestError } from '../util/errors';
+import { AccessTokenKind } from '@thxnetwork/common/lib/types/enums';
 
 async function authAccountRequest(url: string) {
     const { data } = await authClient({
@@ -14,6 +15,17 @@ async function authAccountRequest(url: string) {
 }
 
 export default class AccountProxy {
+    static async disconnect(account: TAccount, kind: AccessTokenKind) {
+        await authClient({
+            method: 'POST',
+            url: `/account/${account.sub}/disconnect`,
+            headers: {
+                Authorization: await getAuthAccessToken(),
+            },
+            data: { kind },
+        });
+    }
+
     static findById(sub: string): Promise<TAccount> {
         return authAccountRequest(`/account/${sub}`);
     }

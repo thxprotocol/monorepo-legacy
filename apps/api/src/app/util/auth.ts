@@ -1,7 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { THXError } from './errors';
 import { AUTH_CLIENT_ID, AUTH_CLIENT_SECRET, AUTH_URL } from '@thxnetwork/api/config/secrets';
-import { AxiosError } from 'axios';
 import { AxiosResponse } from 'axios';
 
 class AuthAccesTokenRequestError extends THXError {
@@ -15,9 +14,9 @@ export const authClient = async (options: AxiosRequestConfig) => {
     try {
         axios.defaults.baseURL = AUTH_URL;
         return await axios(options);
-    } catch ({ response }) {
-        if (response.status >= 400 && response.status <= 600) {
-            return response as AxiosResponse;
+    } catch (error) {
+        if (error && error.response.status >= 400 && error.response.status <= 600) {
+            return error.response as AxiosResponse;
         }
     }
 };

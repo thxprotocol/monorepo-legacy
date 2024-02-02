@@ -38,7 +38,14 @@ export default class TwitterDataProxy {
                 'user.fields': 'profile_image_url,public_metrics',
             },
         });
-        return data;
+
+        // TODO Store TwitterUser
+        // await TwitterUser.findOneAndUpdate(
+        //     { userId: data.data.id },
+        //     { userId: data.data.id, publicMetrics: data.data.public_metrics },
+        // );
+
+        return data.data;
     }
 
     static handleRateLimitError(res: AxiosResponse) {
@@ -60,7 +67,7 @@ export default class TwitterDataProxy {
         const { accessToken } = account.tokens.find(({ kind }) => kind === AccessTokenKind.Twitter);
 
         try {
-            const res = await twitterClient({
+            const { data } = await twitterClient({
                 method: 'GET',
                 url: `/tweets`,
                 headers: { Authorization: `Bearer ${accessToken}` },
@@ -69,7 +76,14 @@ export default class TwitterDataProxy {
                     expansions: 'author_id',
                 },
             });
-            return res.data;
+
+            // TODO Store TwitterUser
+            // await TwitterPost.findOneAndUpdate(
+            //     { userId: data.data.id },
+            //     { userId: data.data.id, publicMetrics: data.data.public_metrics },
+            // );
+
+            return data.data;
         } catch (res) {
             if (res.status === 429) {
                 return this.handleRateLimitError(res);
@@ -77,10 +91,15 @@ export default class TwitterDataProxy {
         }
     }
 
-    static async validateLike(account: TAccount, channelItem: string) {
+    static async validateLike(account: TAccount, tweetId: string) {
         const token = account.tokens.find(({ kind }) => kind === AccessTokenKind.Twitter);
         if (!token) return { result: false, reason: 'Could not find an X access_token for this account.' };
 
+        // TODO Query cached TwitterLikes for this tweetId and userId
+        // const like = await TwitterLike.findOne({ userId: token.userId, tweetId });
+        // if (like) return { result: true, reason: '' };
+
+        // Not found? Search for it and cache results along the way
         const maxResults = 100,
             isValidating = true;
         let isLiked = false,
@@ -89,11 +108,21 @@ export default class TwitterDataProxy {
         while (isValidating) {
             try {
                 const { data } = await twitterClient({
-                    url: `/tweets/${channelItem}/liking_users`,
+                    url: `/tweets/${tweetId}/liking_users`,
                     method: 'GET',
                     headers: { Authorization: `Bearer ${token.accessToken}` },
                     params,
                 });
+
+                // TODO Cache TwitterLike
+                // await Promise.all(
+                //     data.data.map(async (post) => {
+                //         return await TwitterLike.findOneAndUpdate(
+                //             { userId: post.userId, tweetId: post.id },
+                //             { userId: post.userId, tweetId: post.id },
+                //         );
+                //     }),
+                // );
 
                 // Determine if it should request again
                 isValidating == !!data.meta.next_token;

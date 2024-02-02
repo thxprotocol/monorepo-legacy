@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import { AccountService } from '../../services/AccountService';
-import { BadRequestError, NotFoundError } from '../../util/errors';
+import { NotFoundError } from '../../util/errors';
 import { hubspot } from '@thxnetwork/auth/util/hubspot';
-import { Account } from '@thxnetwork/auth/models/Account';
 import { body, param } from 'express-validator';
 
 const validation = [
@@ -16,7 +15,6 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     let account = await AccountService.get(req.params.sub);
     if (!account) throw new NotFoundError('Account not found.');
-    const { username } = req.body;
 
     account = await AccountService.update(account, req.body);
 

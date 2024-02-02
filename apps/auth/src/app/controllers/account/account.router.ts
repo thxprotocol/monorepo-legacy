@@ -9,6 +9,7 @@ import {
 } from './get.controller';
 import Patch from './patch.controller';
 import Delete from './delete.controller';
+import DisconnectPost from './disconnect/post.controller';
 import { validate } from '../../util/validate';
 import { guard, validateJwt } from '../../middlewares';
 
@@ -23,5 +24,11 @@ router.delete('/:sub', guard.check(['accounts:write']), validate(Delete.validati
 router.get('/discord/:discordId', guard.check(['accounts:read']), validate([]), getAccountByDiscord);
 router.get('/address/:address', guard.check(['accounts:read']), validate([]), getAccountByAddress);
 router.get('/email/:email', guard.check(['accounts:read']), validate([]), getAccountByEmail);
+router.post(
+    '/:sub/disconnect',
+    guard.check(['accounts:read', 'accounts:write']),
+    validate(DisconnectPost.validation),
+    DisconnectPost.controller,
+);
 
 export default router;

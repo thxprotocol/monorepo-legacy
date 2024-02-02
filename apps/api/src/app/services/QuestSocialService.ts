@@ -6,6 +6,7 @@ import { TPointReward, TAccount, TQuestEntry, TValidationResult } from '@thxnetw
 import { IQuestService } from './interfaces/IQuestService';
 import { getPlatformUserId, requirementMap } from './maps/quests';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import { logger } from '../util/logger';
 
 export default class QuestSocialService implements IQuestService {
     models = {
@@ -73,6 +74,7 @@ export default class QuestSocialService implements IQuestService {
             const validationResult = await requirementMap[quest.interaction](account, quest);
             return validationResult || { result: true, reason: '' };
         } catch (error) {
+            logger.error(error);
             return { result: false, reason: 'We were unable to confirm the requirements for this quest.' };
         }
     }

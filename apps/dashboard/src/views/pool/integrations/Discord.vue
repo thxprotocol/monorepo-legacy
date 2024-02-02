@@ -1,15 +1,6 @@
 <template>
-    <div>
-        <b-alert
-            v-if="
-                pool.owner &&
-                pool.owner.sub === account.sub &&
-                !pool.owner.tokens.find(({ kind }) => kind === 'discord')
-            "
-            show
-            variant="warning"
-            class="d-flex align-items-center"
-        >
+    <div v-if="pool">
+        <b-alert v-if="pool.owner && isOwner && !discordToken" show variant="primary" class="d-flex align-items-center">
             <i class="fab fa-discord mr-2" />
             Please connect your Discord account!
             <b-button size="sm" variant="primary" @click="onClickConnect" class="ml-auto">Connect Discord</b-button>
@@ -133,7 +124,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { DISCORD_BOT_INVITE_URL } from '@thxnetwork/dashboard/config/constants';
-import { RewardConditionPlatform } from '@thxnetwork/common/lib/types';
+import { AccessTokenKind, RewardConditionPlatform } from '@thxnetwork/common/lib/types';
 import type { TAccount, TDiscordGuild, TDiscordRole } from '@thxnetwork/types/interfaces';
 import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
 import BaseDropdownDiscordChannel from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownDiscordChannel.vue';
@@ -166,6 +157,14 @@ export default class IntegrationDiscordView extends Vue {
 
     get pool() {
         return this.pools[this.$route.params.id];
+    }
+
+    get isOwner() {
+        return this.pool.owner.sub === this.account.sub;
+    }
+
+    get discordToken() {
+        return this.pool.owner.tokens.find(({ kind }) => kind === AccessTokenKind.Discord);
     }
 
     get guilds() {

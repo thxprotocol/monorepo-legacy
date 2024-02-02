@@ -1,11 +1,7 @@
 import { Request } from 'express';
 import { Account, AccountDocument } from '../models/Account';
 import { toChecksumAddress } from 'web3-utils';
-import {
-    SUCCESS_SIGNUP_COMPLETED,
-    ERROR_VERIFY_EMAIL_TOKEN_INVALID,
-    ERROR_VERIFY_EMAIL_EXPIRED,
-} from '../util/messages';
+import { SUCCESS_SIGNUP_COMPLETED } from '../util/messages';
 import { TInteraction, AccountVariant, TToken } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
 import bcrypt from 'bcrypt';
@@ -14,9 +10,8 @@ import { Token } from '../models/Token';
 import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
 import { oidc } from '@thxnetwork/auth/util/oidc';
 import { hubspot } from '@thxnetwork/auth/util/hubspot';
-import { DASHBOARD_URL, SECURE_KEY } from '@thxnetwork/auth/config/secrets';
+import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
 import TokenService from './TokenService';
-import { encryptString } from '../util/encrypt';
 
 const accountVariantKindMap = {
     [AccountVariant.SSOGoogle]: AccessTokenKind.Google,
