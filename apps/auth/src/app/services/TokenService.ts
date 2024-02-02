@@ -19,7 +19,7 @@ const serviceMap: { [variant: string]: IOAuthService } = {
 };
 
 export default class TokenService {
-    static getLoginURL({ variant, uid, scope }: { variant: OAuthVariant; uid: string; scope: string }) {
+    static getLoginURL({ variant, uid, scope }: { variant: OAuthVariant; uid: string; scope: OAuthScope }) {
         return serviceMap[variant].getLoginURL({ uid, scope });
     }
 

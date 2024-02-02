@@ -69,6 +69,8 @@ const config: Configuration = {
         'wallet_transfer_token',
         'collaborator_request_token',
         'referral_code',
+        'oauth_scope',
+        'oauth_variant',
     ],
     scopes: [
         'openid',
