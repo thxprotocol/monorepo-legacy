@@ -1,11 +1,10 @@
 import { Request, Response } from 'express';
 import { NotFoundError } from '../../util/errors';
 import { AccountService } from '../../services/AccountService';
-import { logger } from '@thxnetwork/auth/util/logger';
-import TokenService from '@thxnetwork/auth/services/TokenService';
 import { AccessTokenKind } from '@thxnetwork/common/lib/types/enums';
+import TokenService from '@thxnetwork/auth/services/TokenService';
 
-async function formatAccountRes(account) {
+export async function formatAccountRes(account) {
     const sub = String(account._id);
     const tokens = await TokenService.list(account);
     const profileImg = account.profileImg || `https://api.dicebear.com/7.x/identicon/svg?seed=${sub}`;
@@ -63,23 +62,4 @@ export const getAccountByDiscord = async (req: Request, res: Response) => {
     if (!account) return res.end();
 
     res.send(await formatAccountRes(account));
-};
-
-export const getAccounts = async (req: Request, res: Response) => {
-    const subs = String(req.query.subs)
-        .split(',')
-        .filter((sub: string) => !!sub);
-
-    const manyAccounts = await AccountService.find({ _id: subs });
-    const accounts = await Promise.all(
-        manyAccounts.map(async (account) => {
-            try {
-                return await formatAccountRes(account);
-            } catch (error) {
-                logger.error(error);
-            }
-        }),
-    );
-
-    res.send(accounts);
 };

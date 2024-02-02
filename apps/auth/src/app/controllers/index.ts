@@ -14,6 +14,6 @@ mainRouter.post('/testhook', json(), urlencoded({ extended: true }), (req, res) 
     res.end();
 });
 mainRouter.use('/oidc', oidcRouter);
-mainRouter.use('/account', json(), urlencoded({ extended: true }), accountRouter);
+mainRouter.use('/accounts', json(), urlencoded({ extended: true }), accountRouter);
 mainRouter.use('/health', json(), urlencoded({ extended: true }), healthRouter);
 mainRouter.use('/', oidc.callback());

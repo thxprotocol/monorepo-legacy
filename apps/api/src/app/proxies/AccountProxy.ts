@@ -18,7 +18,7 @@ export default class AccountProxy {
     static async disconnect(account: TAccount, kind: AccessTokenKind) {
         await authClient({
             method: 'POST',
-            url: `/account/${account.sub}/disconnect`,
+            url: `/accounts/${account.sub}/disconnect`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
@@ -27,13 +27,13 @@ export default class AccountProxy {
     }
 
     static findById(sub: string): Promise<TAccount> {
-        return authAccountRequest(`/account/${sub}`);
+        return authAccountRequest(`/accounts/${sub}`);
     }
 
     static async update(sub: string, updates: TAccount): Promise<TAccount> {
         const { status, data } = await authClient({
             method: 'PATCH',
-            url: `/account/${sub}`,
+            url: `/accounts/${sub}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
@@ -50,7 +50,7 @@ export default class AccountProxy {
     static async remove(sub: string) {
         await authClient({
             method: 'DELETE',
-            url: `/account/${sub}`,
+            url: `/accounts/${sub}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
@@ -59,36 +59,33 @@ export default class AccountProxy {
 
     static async find({ subs }: { subs: string[] }): Promise<TAccount[]> {
         const { data } = await authClient({
-            method: 'GET',
-            url: '/account',
+            method: 'POST',
+            url: '/accounts',
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
-            params: {
-                subs,
-            },
+            data: { subs: JSON.stringify(subs) },
         });
-
         return data;
     }
 
     static getByDiscordId(discordId: string): Promise<TAccount> {
-        return authAccountRequest(`/account/discord/${discordId}`);
+        return authAccountRequest(`/accounts/discord/${discordId}`);
     }
 
     static getByEmail(email: string): Promise<TAccount> {
-        return authAccountRequest(`/account/email/${email}`);
+        return authAccountRequest(`/accounts/email/${email}`);
     }
 
     static getByAddress(address: string): Promise<TAccount> {
-        return authAccountRequest(`/account/address/${address}`);
+        return authAccountRequest(`/accounts/address/${address}`);
     }
 
     static async isEmailDuplicate(email: string) {
         try {
             await authClient({
                 method: 'GET',
-                url: `/account/email/${email}`,
+                url: `/accounts/email/${email}`,
                 headers: {
                     Authorization: await getAuthAccessToken(),
                 },
