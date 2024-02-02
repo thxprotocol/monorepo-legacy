@@ -1,423 +1,179 @@
-import { AccessTokenKind, AccountPlanType, JobType, QuestVariant } from '@thxnetwork/types/enums';
-import {
-    TAccount,
-    TBrand,
-    TPointReward,
-    TQuest,
-    TQuestEntry,
-    TValidationResult,
-    TWallet,
-    TWidget,
-} from '@thxnetwork/types/interfaces';
-import DailyRewardService, { DailyReward } from './DailyRewardService';
-import { ReferralReward, ReferralRewardDocument } from '../models/ReferralReward';
-import QuestSocialService, { PointReward, platformInteractionMap } from './PointRewardService';
-import { Web3Quest } from '../models/Web3Quest';
-import { MilestoneReward } from '../models/MilestoneReward';
+import { JobType, QuestVariant } from '@thxnetwork/types/enums';
+import { TAccount, TQuest, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
-import { Widget } from '../models/Widget';
-import DiscordDataProxy from '../proxies/DiscordDataProxy';
-import PoolService from './PoolService';
-import BrandService from './BrandService';
-import NotificationService from './NotificationService';
-import { DailyRewardClaim } from '../models/DailyRewardClaims';
-import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
-import { PointRewardClaim } from '../models/PointRewardClaim';
-import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
-import { Web3QuestClaim } from '../models/Web3QuestClaim';
-import PointBalanceService from './PointBalanceService';
 import { AssetPoolDocument } from '../models/AssetPool';
-import { celebratoryWords } from '../util/dictionaries';
 import { agenda } from '../util/agenda';
-import { ButtonStyle } from 'discord.js';
-import { WIDGET_URL } from '../config/secrets';
-import { DiscordButtonVariant } from '../events/InteractionCreated';
-import DailyRewardClaimService from './DailyRewardClaimService';
 import { WalletDocument } from '../models/Wallet';
-import { PointRewardDocument } from '../models/PointReward';
-import MilestoneRewardService from './MilestoneRewardService';
-import PointRewardService from './PointRewardService';
-import ReferralRewardService from './ReferralRewardService';
-import QuestWeb3Service from './QuestWeb3Service';
-import LockService from './LockService';
 import { logger } from '../util/logger';
-import { GitcoinQuest } from '../models/GitcoinQuest';
-import { GitcoinQuestEntry } from '../models/GitcoinQuestEntry';
 import { Job } from '@hokify/agenda';
-import QuestGitcoinService from './QuestGitcoinService';
+import { serviceMap } from './interfaces/IQuestService';
+
+import PoolService from './PoolService';
+import NotificationService from './NotificationService';
+import PointBalanceService from './PointBalanceService';
+import LockService from './LockService';
 import ImageService from './ImageService';
 import SafeService from './SafeService';
 import AccountProxy from '../proxies/AccountProxy';
 
-function formatAddress(address: string) {
-    return `${address.slice(0, 5)}...${address.slice(-3)}`;
-}
+export default class QuestService {
+    static async list(pool: AssetPoolDocument, wallet?: WalletDocument, account?: TAccount) {
+        const questVariants = Object.keys(QuestVariant).filter((v) => !isNaN(Number(v)));
+        const callback: any = async (variant: QuestVariant) => {
+            const Quest = serviceMap[variant].models.quest;
+            const quests = await Quest.find({
+                poolId: pool._id,
+                variant,
+                isPublished: true,
+                $or: [
+                    // Include quests with expiryDate less than or equal to now
+                    { expiryDate: { $exists: true, $gte: new Date() } },
+                    // Include quests with no expiryDate
+                    { expiryDate: { $exists: false } },
+                ],
+            });
 
-const getPointsQuest = async (quest: ReferralRewardDocument) => quest.amount;
-const getPointsSocialQuest = async (quest, account, wallet) => {
-    const { pointsAvailable } = await QuestSocialService.getPointsAvailable(quest, account);
-    return pointsAvailable;
-};
-const getPointsDailyQuest = async (quest, account, wallet) => {
-    const claims = await DailyRewardClaimService.findByWallet(quest, wallet);
-    const amountIndex = claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;
-    return quest.amounts[amountIndex];
-};
-const isValidGitcoinQuest = async (quest, account, wallet) =>
-    await QuestGitcoinService.validate(quest, account, wallet);
-const isValidSocialQuest = async (quest, account, wallet) => await QuestSocialService.validate(quest, account, wallet);
-const isValidCustomQuest = async (quest, account, wallet) => await MilestoneRewardService.validate(quest, wallet);
-const isValidDailyQuest = async (quest, account, wallet) => await DailyRewardClaimService.validate(quest, wallet);
-const isNotImplemented = async (quest, account, wallet) => ({
-    result: false,
-    reason: 'Sorry, support not yet implemented...',
-});
-
-const getData = (quest) => ({});
-const getDataQuestSocial = (quest: PointRewardDocument, platformUserId: string) => ({
-    platformUserId,
-});
-const getDataQuestCustom = (quest: PointRewardDocument) => ({
-    isClaimed: true,
-});
-
-const getDataQuestWeb3 = (quest, chainId, address) => ({
-    chainId,
-    address,
-});
-
-const getDataQuestGitcoin = (quest, chainId, address) => ({
-    chainId,
-    address,
-});
-
-const getAvailability = async (quest, account, wallet) => true;
-const getAvailabilityQuestSocial = (quest, account, wallet) => PointRewardService.isAvailable(quest, account, wallet);
-const getAvailabilityQuestDaily = (quest, account, wallet) =>
-    DailyRewardClaimService.isAvailable(quest, account, wallet);
-
-const questMap: {
-    [variant: number]: {
-        models: { quest: any; entry: any };
-        service: any;
-        methods: {
-            getData: (quest: TQuest, ...any) => Partial<TQuestEntry>;
-            getAmount: (quest, account, wallet) => Promise<number>;
-            getValidationResult: (quest, account, wallet) => Promise<TValidationResult>;
-            isAvailable: (quest, account, wallet) => Promise<boolean>;
+            return await Promise.all(
+                quests.map((q) => {
+                    try {
+                        const quest = q.toJSON() as TQuest;
+                        return serviceMap[variant].decorate({ quest, wallet, account });
+                    } catch (error) {
+                        logger.error(error);
+                    }
+                }),
+            );
         };
-    };
-} = {
-    [QuestVariant.Daily]: {
-        models: { quest: DailyReward, entry: DailyRewardClaim },
-        service: DailyRewardService,
-        methods: {
-            getData,
-            getAmount: getPointsDailyQuest,
-            getValidationResult: isValidDailyQuest,
-            isAvailable: getAvailabilityQuestDaily,
-        },
-    },
-    [QuestVariant.Invite]: {
-        models: { quest: ReferralReward, entry: ReferralRewardClaim },
-        service: ReferralRewardService,
-        methods: {
-            getAmount: getPointsQuest,
-            getValidationResult: isNotImplemented,
-            getData,
-            isAvailable: getAvailability,
-        },
-    },
-    [QuestVariant.Twitter]: {
-        models: { quest: PointReward, entry: PointRewardClaim },
-        service: PointRewardService,
-        methods: {
-            getAmount: getPointsSocialQuest,
-            getValidationResult: isValidSocialQuest,
-            getData: getDataQuestSocial,
-            isAvailable: getAvailabilityQuestSocial,
-        },
-    },
-    [QuestVariant.Discord]: {
-        models: { quest: PointReward, entry: PointRewardClaim },
-        service: PointRewardService,
-        methods: {
-            getAmount: getPointsSocialQuest,
-            getValidationResult: isValidSocialQuest,
-            getData: getDataQuestSocial,
-            isAvailable: getAvailabilityQuestSocial,
-        },
-    },
-    [QuestVariant.YouTube]: {
-        models: { quest: PointReward, entry: PointRewardClaim },
-        service: PointRewardService,
-        methods: {
-            getAmount: getPointsSocialQuest,
-            getValidationResult: isValidSocialQuest,
-            getData: getDataQuestSocial,
-            isAvailable: getAvailabilityQuestSocial,
-        },
-    },
-    [QuestVariant.Custom]: {
-        models: { quest: MilestoneReward, entry: MilestoneRewardClaim },
-        service: MilestoneRewardService,
-        methods: {
-            getAmount: getPointsQuest,
-            getValidationResult: isValidCustomQuest,
-            getData: getDataQuestCustom,
-            isAvailable: getAvailability,
-        },
-    },
-    [QuestVariant.Web3]: {
-        models: { quest: Web3Quest, entry: Web3QuestClaim },
-        service: QuestWeb3Service,
-        methods: {
-            getAmount: getPointsQuest,
-            getValidationResult: isValidCustomQuest,
-            getData: getDataQuestWeb3,
-            isAvailable: getAvailability,
-        },
-    },
-    [QuestVariant.Gitcoin]: {
-        models: { quest: GitcoinQuest, entry: GitcoinQuestEntry },
-        service: QuestGitcoinService,
-        methods: {
-            getAmount: getPointsQuest,
-            getValidationResult: isValidGitcoinQuest,
-            getData: getDataQuestGitcoin,
-            isAvailable: getAvailability,
-        },
-    },
-};
 
-async function notify(variant: QuestVariant, quest: TQuest) {
-    const [pool, brand, widget] = await Promise.all([
-        PoolService.getById(quest.poolId),
-        BrandService.get(quest.poolId),
-        Widget.findOne({ poolId: quest.poolId }),
-    ]);
-
-    sendQuestPublishEmail(pool, variant, quest as TQuest, widget);
-    sendQuestPublishNotification(pool, variant, quest as TQuest, widget, brand);
-}
-
-async function sendQuestPublishEmail(pool: AssetPoolDocument, variant: QuestVariant, quest: TQuest, widget: TWidget) {
-    const { amount, amounts } = quest as any;
-    const subject = `🎁 New ${QuestVariant[variant]} Quest: Earn ${amount || amounts[0]} pts!"`;
-    const message = `<p style="font-size: 18px">Earn ${amount || amounts[0]} points!🔔</p>
-    <p>Hi! <strong>${pool.settings.title}</strong> just published a new ${QuestVariant[variant]} Quest.
-    <p><strong>${quest.title}</strong><br />${quest.description}.</p>`;
-
-    NotificationService.send(pool, {
-        subjectId: quest.uuid,
-        subject,
-        message,
-        link: { text: `Complete ${QuestVariant[variant]} Quest`, src: widget.domain },
-    });
-}
-
-async function sendQuestPublishNotification(
-    pool: AssetPoolDocument,
-    variant: QuestVariant,
-    quest: TQuest,
-    widget: TWidget,
-    brand?: TBrand,
-) {
-    const theme = JSON.parse(widget.theme);
-    const { amount, amounts } = quest as any;
-
-    const embed = {
-        title: quest.title,
-        description: quest.description,
-        author: {
-            name: pool.settings.title,
-            icon_url: brand ? brand.logoImgUrl : '',
-            url: widget.domain,
-        },
-        image: { url: quest.image },
-        color: parseInt(theme.elements.btnBg.color.replace(/^#/, ''), 16),
-        fields: [
-            {
-                name: 'Points',
-                value: `${amount || amounts[0]}`,
-                inline: true,
-            },
-            {
-                name: 'Type',
-                value: `${QuestVariant[quest.variant]}`,
-                inline: true,
-            },
-        ],
-    };
-
-    await DiscordDataProxy.sendChannelMessage(
-        pool,
-        `Hi @everyone! We published a **${QuestVariant[variant]} Quest**.`,
-        [embed],
-        [
-            {
-                customId: `${DiscordButtonVariant.QuestComplete}:${quest.variant}:${quest._id}`,
-                label: 'Complete Quest!',
-                style: ButtonStyle.Success,
-            },
-            { label: 'More Info', style: ButtonStyle.Link, url: WIDGET_URL + `/c/${pool._id}/quests` },
-        ],
-    );
-}
-
-async function update(variant: QuestVariant, questId: string, data: Partial<TQuest>, file?: Express.Multer.File) {
-    const model = questMap[variant].models.quest;
-    const quest = await model.findById(questId);
-
-    if (file) {
-        data.image = await ImageService.upload(file);
+        return await Promise.all(questVariants.map(callback));
     }
 
-    // We only want to notify when the quest is set to published (and not updated while published already)
-    if (data.isPublished && Boolean(data.isPublished) !== quest.isPublished) {
-        await notify(variant, { ...quest.toJSON(), ...data, image: data.image || quest.image });
+    static async update(variant: QuestVariant, questId: string, data: Partial<TQuest>, file?: Express.Multer.File) {
+        const quest = await this.findById(variant, questId);
+
+        if (file) {
+            data.image = await ImageService.upload(file);
+            data.image = await ImageService.upload(file);
+        }
+
+        // We only want to notify when the quest is set to published (and not updated while published already)
+        if (data.isPublished && Boolean(data.isPublished) !== quest.isPublished) {
+            await NotificationService.notify(variant, { ...quest, ...data, image: data.image || quest.image });
+        }
+
+        return await this.updateById(variant, questId, data);
     }
 
-    return await model.findByIdAndUpdate(questId, data, { new: true });
-}
+    static async create(variant: QuestVariant, poolId: string, data: Partial<TQuest>, file?: Express.Multer.File) {
+        if (file) {
+            data.image = await ImageService.upload(file);
+        }
 
-async function create(variant: QuestVariant, poolId: string, data: Partial<TQuest>, file?: Express.Multer.File) {
-    const model = questMap[variant].models.quest;
-    const { interaction } = data as TPointReward;
-    const platform = interaction && platformInteractionMap[interaction];
-    const quest = await model.create({ ...data, platform, poolId, variant, uuid: v4() });
+        const Quest = serviceMap[variant].models.quest;
+        const quest = await Quest.create({ ...data, poolId, variant, uuid: v4() });
 
-    if (file) {
-        data.image = await ImageService.upload(file);
+        if (data.isPublished) {
+            await NotificationService.notify(variant, quest);
+        }
+
+        return quest;
     }
 
-    if (data.isPublished) {
-        await notify(variant, quest);
+    static findById(variant: QuestVariant, questId: string) {
+        const Quest = serviceMap[variant].models.quest;
+        return Quest.findById(questId);
     }
 
-    return quest;
+    static updateById(variant: QuestVariant, questId: string, options: Partial<TQuest>) {
+        const Quest = serviceMap[variant].models.quest;
+        return Quest.findByIdAndUpdate(questId, options, { new: true });
+    }
+
+    static async decorate(variant: QuestVariant, questId: string, wallet: WalletDocument) {
+        const quest = await QuestService.findById(variant, questId);
+        const q = await serviceMap[variant].decorate({ quest, wallet });
+        const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : false;
+        const isExpired = this.isExpired(quest);
+        return { ...q, isExpired, isLocked };
+    }
+
+    static getAmount(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
+        return serviceMap[variant].getAmount({ quest, account, wallet });
+    }
+
+    static isExpired(quest: TQuest) {
+        return quest.expiryDate ? new Date(quest.expiryDate).getTime() < Date.now() : false;
+    }
+
+    static async isAvailable(
+        variant: QuestVariant,
+        options: { quest: TQuest; account: TAccount; wallet: WalletDocument; address?: string },
+    ): Promise<TValidationResult> {
+        if (!options.quest.isPublished) {
+            return { result: false, reason: 'Quest has not been published.' };
+        }
+
+        const isExpired = this.isExpired(options.quest);
+        if (isExpired) return { result: false, reason: 'Quest has expired.' };
+
+        const isLocked = await LockService.getIsLocked(options.quest.locks, options.wallet);
+        if (isLocked) return { result: false, reason: 'Quest is locked.' };
+
+        const isAvailable = !!(await serviceMap[variant].isAvailable(options));
+        return {
+            result: isAvailable,
+            reason: !isAvailable ? 'Quest is not available.' : '',
+        };
+    }
+
+    static async getValidationResult(
+        variant: QuestVariant,
+        quest: TQuest,
+        account: TAccount,
+        wallet: WalletDocument,
+        data: Partial<TQuestEntry & { rpc: string }>,
+    ) {
+        const isAvailable = await serviceMap[variant].isAvailable({ quest, account, wallet });
+        if (!isAvailable) return { result: false, reason: 'Quest is not available.' };
+
+        return await serviceMap[variant].getValidationResult({ quest, account, wallet, data });
+    }
+
+    static async createEntryJob(job: Job) {
+        try {
+            const { variant, questId, sub, data } = job.attrs.data as any;
+            const Entry = serviceMap[Number(variant)].models.entry;
+            const account = await AccountProxy.findById(sub);
+            const wallet = await SafeService.findPrimary(sub);
+            const quest = await this.findById(variant, questId);
+            const pool = await PoolService.getById(quest.poolId);
+            const amount = await this.getAmount(variant, quest, account, wallet);
+
+            // Test availabily of quest once more as it could be completed by a job that was scheduled already
+            // if the jobs were created in parallel.
+            const available = await this.isAvailable(variant, { quest, account, wallet });
+            if (!available) throw new Error(`Quest entry exists already.`);
+
+            // Create the quest entry
+            const entry = await Entry.create({
+                ...data,
+                sub: account.sub,
+                amount,
+                walletId: wallet._id,
+                questId: String(quest._id),
+                poolId: pool._id,
+                uuid: v4(),
+            } as TQuestEntry);
+            if (!entry) throw new Error('Entry creation failed.');
+
+            // Should make sure quest entry is properly created
+            await PointBalanceService.add(pool, wallet._id, amount);
+            await NotificationService.sendQuestEntryNotification(pool, quest, account, wallet, amount);
+
+            // Update participant ranks async
+            agenda.now(JobType.UpdateParticipantRanks, { poolId: pool._id });
+        } catch (error) {
+            logger.error(error);
+        }
+    }
 }
-
-function getAmount(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
-    return questMap[variant].methods.getAmount(quest, account, wallet);
-}
-
-function isAvailable(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
-    return questMap[variant].methods.isAvailable(quest, account, wallet);
-}
-
-function validate(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
-    return questMap[variant].methods.getValidationResult(quest, account, wallet);
-}
-
-async function sendQuestEntryNotification(
-    pool: AssetPoolDocument,
-    quest: TQuest,
-    account: TAccount,
-    wallet: TWallet,
-    amount: number,
-) {
-    const index = Math.floor(Math.random() * celebratoryWords.length);
-    const discord = account.tokens && account.tokens.find((a) => a.kind === AccessTokenKind.Discord);
-    const user =
-        discord && discord.userId
-            ? `<@${discord.userId}>`
-            : `**${account.username ? account.username : formatAddress(wallet.address)}**`;
-    const button = {
-        customId: `${DiscordButtonVariant.QuestComplete}:${quest.variant}:${quest._id}`,
-        label: 'Complete Quest',
-        style: ButtonStyle.Primary,
-    };
-    const content = `${celebratoryWords[index]} ${user} completed the **${quest.title}** quest and earned **${amount} points.**`;
-
-    await DiscordDataProxy.sendChannelMessage(pool, content, [], [button]);
-}
-
-async function complete(
-    variant: QuestVariant,
-    amount: number,
-    pool: AssetPoolDocument,
-    quest: TQuest,
-    account: TAccount,
-    wallet: TWallet,
-    data: Partial<TQuestEntry>,
-) {
-    const { models } = questMap[variant];
-    const entry = await models.entry.create({
-        sub: account.sub,
-        walletId: wallet._id,
-        amount,
-        ...data,
-        questId: String(quest._id),
-        poolId: pool._id,
-        uuid: v4(),
-    });
-
-    await PointBalanceService.add(pool, wallet._id, amount);
-    await sendQuestEntryNotification(pool, quest, account, wallet, amount);
-    await agenda.now(JobType.UpdateParticipantRanks, { poolId: pool._id });
-}
-
-function findById(variant: QuestVariant, questId: string) {
-    const model = questMap[variant].models.quest;
-    return model.findById(questId);
-}
-
-async function findOne(variant: QuestVariant, questId: string, wallet: WalletDocument) {
-    const quest = findById(variant, questId);
-    const q = await questMap[variant].service.findOne(quest, wallet);
-    const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : false;
-    return { ...q, isLocked };
-}
-
-async function createEntryJob(job: Job) {
-    const { variant, questId, sub, data } = job.attrs.data as any;
-    const quest = await findById(variant, questId);
-    const account = await AccountProxy.findById(sub);
-    const wallet = await SafeService.findPrimary(sub);
-
-    const isAvailable = await QuestSocialService.isAvailable(quest, account, wallet);
-    if (!isAvailable) throw new Error(`Quest entry exists already.`);
-
-    const pool = await PoolService.getById(quest.poolId);
-    const amount = await getAmount(variant, quest, account, wallet);
-
-    await complete(variant, amount, pool, quest, account, wallet, {
-        questId: quest._id,
-        ...data,
-    });
-}
-
-async function list(pool: AssetPoolDocument, wallet?: WalletDocument) {
-    const questVariants = Object.keys(QuestVariant).filter((v) => !isNaN(Number(v)));
-    const callback: any = async (variant: QuestVariant) => {
-        const { service, models } = questMap[variant];
-        const quests = await models.quest.find({
-            poolId: pool._id,
-            isPublished: true,
-            variant,
-            $or: [
-                // Include quests with expiryDate less than or equal to now
-                { expiryDate: { $exists: true, $gte: new Date() } },
-                // Include quests with no expiryDate
-                { expiryDate: { $exists: false } },
-            ],
-        });
-        return await Promise.all(
-            quests.map(async (quest: TQuest) => {
-                try {
-                    const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : true;
-                    const q = await service.findOne(quest, wallet);
-                    return { ...q, isLocked };
-                } catch (error) {
-                    logger.error(error);
-                }
-            }),
-        );
-    };
-
-    return await Promise.all(questVariants.map(callback));
-}
-
-export { questMap };
-export default { createEntryJob, findOne, list, getAmount, isAvailable, create, update, validate, findById };

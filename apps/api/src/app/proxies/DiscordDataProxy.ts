@@ -103,7 +103,7 @@ export default class DiscordDataProxy {
     static async validateGuildJoined(account: TAccount, guildId: string) {
         const guilds = await this.getGuilds(account);
         const isUserJoinedGuild = guilds.find((guild) => guild.id === guildId);
-        if (isUserJoinedGuild) return { result: true };
+        if (isUserJoinedGuild) return { result: true, reason: '' };
         return { result: false, reason: 'Discord: Your Discord account is not a member of this server.' };
     }
 

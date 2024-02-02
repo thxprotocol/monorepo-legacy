@@ -17,13 +17,31 @@ import {
     getTwitterUser,
 } from './helpers/index';
 import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
+import { Collaborator } from '@thxnetwork/api/models/Collaborator';
 
 // db.connect(process.env.MONGODB_URI);
 db.connect(process.env.MONGODB_URI_PROD);
 
 const csvFilePath = path.join(__dirname, '../../../', 'quests.csv');
 // const sub = '60a38b36bf804b033c5e3faa'; // Local
-const sub = '6074cbdd1459355fae4b6a14'; // Prod
+const sub = '6074cbdd1459355fae4b6a14'; // Peter
+const sub2 = '655d0c5dde9eca4f50999423'; // Prasanth
+const sub3 = '627d06fbb0d159d419292240'; // Mieszko
+const collaborators = [
+    {
+        sub,
+        email: 'peter@thx.network',
+    },
+    {
+        sub: sub2,
+        email: 'mieszko@thx.network',
+    },
+    {
+        sub: sub3,
+        email: 'prasanth@thx.network',
+    },
+];
+
 // const chainId = ChainId.Hardhat;
 const chainId = ChainId.Polygon;
 // const erc20Id = '64d3a4149f7e6d78c9366982'; // Local
@@ -60,13 +78,14 @@ async function main() {
 
             const poolId = pool._id;
 
-            // Remove all existing quests
+            // Remove all existing data
             await Promise.all([
                 DailyReward.deleteMany({ poolId }),
                 ReferralReward.deleteMany({ poolId }),
                 PointReward.deleteMany({ poolId }),
                 MilestoneReward.deleteMany({ poolId }),
                 ERC20Perk.deleteMany({ poolId, erc20Id }),
+                Collaborator.deleteMany({ poolId }),
             ]);
 
             // Create social quest youtube like
@@ -160,7 +179,7 @@ async function main() {
                 poolId,
                 uuid: db.createUUID(),
                 title: `Small bag of $THX`,
-                description: 'A token of appreciation offered to you by THX Network.',
+                description: 'A token of appreciation offered to you by THX Network. Could also be your own token!',
                 image: 'https://thx-storage-bucket.s3.eu-west-3.amazonaws.com/widget-referral-xmzfznsqschvqxzvgn47qo-xtencq4fmgjg7qgwewmybj-(1)-8EHr7ckbrEZLqUyxqJK1LG.png',
                 pointPrice: 1000,
                 limit: 1000,
@@ -169,18 +188,17 @@ async function main() {
                 isPublished: true,
             });
 
-            await ERC20Perk.create({
-                poolId,
-                uuid: db.createUUID(),
-                title: `Large bag of $THX`,
-                description: 'A token of appreciation offered to you by THX Network.',
-                image: 'https://thx-storage-bucket.s3.eu-west-3.amazonaws.com/widget-referral-xmzfznsqschvqxzvgn47qo-xtencq4fmgjg7qgwewmybj-(1)-8EHr7ckbrEZLqUyxqJK1LG.png',
-                pointPrice: 5000,
-                limit: 100,
-                amount: 100,
-                erc20Id,
-                isPublished: true,
-            });
+            // Create colloborators
+            for (const c of collaborators) {
+                await Collaborator.create({
+                    poolId,
+                    sub: c.sub,
+                    state: 1,
+                    uuid: db.createUUID(),
+                    email: c.email,
+                });
+            }
+
             // Iterate over available quests and create
             for (let i = 1; i < 3; i++) {
                 const questType = sql[`Q${i} - Type`];
@@ -232,7 +250,7 @@ async function main() {
                     }
                 }
             }
-            results.push([sql['Game'], `https://dashboard.thx.network/preview/${pool._id}`]);
+            results.push([sql['Game'], `https://dashboard.thx.network/preview/${poolId}`]);
         }
     } catch (err) {
         console.error(err);

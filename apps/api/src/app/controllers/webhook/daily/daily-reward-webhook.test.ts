@@ -63,9 +63,9 @@ describe('Daily Rewards WebHooks', () => {
         user.get(`/v1/account`).set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 }).expect(200, done);
     });
 
-    it('POST /quests/daily/:uuid/claim', async () => {
+    it('POST /quests/daily/:id/entries', async () => {
         const { status, body } = await user
-            .post(`/v1/quests/daily/${dailyReward._id}/claim`)
+            .post(`/v1/quests/daily/${dailyReward._id}/entries`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
             .send();
         expect(body.jobId).toBeDefined();
@@ -81,12 +81,12 @@ describe('Daily Rewards WebHooks', () => {
         expect(job.lastRunAt).toBeDefined();
     });
 
-    it('POST /quests/daily/:uuid/claim should throw an error', (done) => {
-        user.post(`/v1/quests/daily/${dailyReward._id}/claim`)
+    it('POST /quests/daily/:id/entries should throw an error', (done) => {
+        user.post(`/v1/quests/daily/${dailyReward._id}/entries`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
             .send()
             .expect(({ body }: request.Response) => {
-                expect(body.error).toBe('Already completed within the last 24 hours.');
+                expect(body.error).toBe('Quest is not available.');
             })
             .expect(200, done);
     });

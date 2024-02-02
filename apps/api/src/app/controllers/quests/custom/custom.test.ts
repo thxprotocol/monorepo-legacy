@@ -11,7 +11,7 @@ import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 const user = request.agent(app);
 
 describe('Quests Custom ', () => {
-    let pool: AssetPoolDocument, milestoneReward: any, claim: any;
+    let pool: AssetPoolDocument, milestoneReward: any;
     const eventName = v4();
 
     beforeAll(beforeAllCallback);
@@ -74,9 +74,9 @@ describe('Quests Custom ', () => {
                 .expect(200, done);
         });
 
-        it('POST /quests/custom/claims/:uuid/collect', async () => {
+        it('POST /quests/custom/:id/entries', async () => {
             const { status } = await user
-                .post(`/v1/quests/custom/claims/${milestoneReward.uuid}/collect`)
+                .post(`/v1/quests/custom/${milestoneReward._id}/entries`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken2 })
                 .send();
             expect(status).toBe(200);

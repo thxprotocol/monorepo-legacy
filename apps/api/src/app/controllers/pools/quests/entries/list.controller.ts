@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { param, query } from 'express-validator';
 import { PointReward } from '@thxnetwork/api/models/PointReward';
-import PointRewardService from '@thxnetwork/api/services/PointRewardService';
+import QuestSocialService from '@thxnetwork/api/services/QuestSocialService';
 
 const validation = [
     param('id').isMongoId(),
@@ -12,7 +12,7 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     const quest = await PointReward.findById(req.params.questId);
-    const entries = await PointRewardService.findEntries(quest, Number(req.query.page), Number(req.query.limit));
+    const entries = await QuestSocialService.findEntries(quest, Number(req.query.page), Number(req.query.limit));
 
     res.json(entries);
 };

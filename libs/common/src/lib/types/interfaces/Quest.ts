@@ -22,6 +22,6 @@ export type TQuestEntry =
     | TGitcoinQuestEntry;
 
 export type TValidationResult = {
+    reason: string;
     result: boolean;
-    reason?: string;
 };

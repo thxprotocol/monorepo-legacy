@@ -103,7 +103,7 @@ export default class TwitterDataProxy {
 
                 // If user is liked or there is no next_token, break out of the loop
                 if (isLiked) {
-                    return { result: true };
+                    return { result: true, reason: '' };
                 }
 
                 if (!data.meta.next_token) {
@@ -120,7 +120,7 @@ export default class TwitterDataProxy {
             }
         }
 
-        return { result: true };
+        return { result: true, reason: '' };
     }
 
     static async validateRetweet(account: TAccount, channelItem: string) {
@@ -149,7 +149,7 @@ export default class TwitterDataProxy {
 
                 // If user has reposted or there is no next_token, break out of the loop
                 if (isReposted) {
-                    return { result: true };
+                    return { result: true, reason: '' };
                 }
 
                 if (!data.meta.next_token) {
@@ -166,7 +166,7 @@ export default class TwitterDataProxy {
             }
         }
 
-        return { result: true };
+        return { result: true, reason: '' };
     }
 
     static async validateFollow(account: TAccount, channelItem: string) {

@@ -18,6 +18,8 @@ async function createSelectMenuRewards(guild: Guild) {
         DiscordRoleReward.find({ poolId, pointPrice: { $gt: 0 } }),
     ]);
     const rewards = results.flat();
+    if (!rewards.length) throw new Error('No rewards found for this campaign.');
+
     const select = new StringSelectMenuBuilder();
     select.setCustomId(DiscordStringSelectMenuVariant.RewardBuy).setPlaceholder('Buy a reward');
 

@@ -56,7 +56,6 @@ export default class BaseDropdownDiscordGuilds extends Vue {
     }
 
     onChange(limit: number) {
-        console.log(this.pool);
         this.limit = limit;
         this.$emit('selected', {
             content: this.serverId,

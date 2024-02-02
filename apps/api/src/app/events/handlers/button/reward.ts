@@ -17,7 +17,7 @@ export async function onClickRewardRedeem(interaction: ButtonInteraction) {
 
         // await completeReward(interaction, variant, questId);
     } catch (error) {
-        handleError(error);
+        handleError(error, interaction);
     }
 }
 
@@ -35,6 +35,8 @@ export async function onClickRewardList(interaction: ButtonInteraction) {
             DiscordRoleReward.find({ poolId, pointPrice: { $gt: 0 } }),
         ]);
         const rewards = results.flat();
+        if (!rewards.length) throw new Error('No rewards found for this campaign.');
+
         const list = rewards.map(
             (reward: any) =>
                 `${String(reward.pointPrice).padStart(4)} pts. ${reward.title} (${RewardVariant[reward.variant]})`,
@@ -51,6 +53,6 @@ export async function onClickRewardList(interaction: ButtonInteraction) {
 
         interaction.reply({ embeds, ephemeral: true });
     } catch (error) {
-        handleError(error);
+        handleError(error, interaction);
     }
 }
