@@ -2,12 +2,12 @@ import { URLSearchParams } from 'url';
 import { TToken } from '@thxnetwork/common/lib/types';
 import { twitterClient } from '../util/axios';
 import { AUTH_URL, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET } from '../config/secrets';
-import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccessTokenKind, OAuthScope } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IOAuthService } from '../services/interfaces/IOAuthService';
 import { Token, TokenDocument } from '../models/Token';
 
 export default class TwitterService implements IOAuthService {
-    getLoginURL({ uid, scope }: { uid: string; scope: string }): string {
+    getLoginURL({ uid, scope }: { uid: string; scope: OAuthScope }): string {
         const state = Buffer.from(JSON.stringify({ uid })).toString('base64');
         const redirectURL = AUTH_URL + '/oidc/callback/twitter';
         const authorizeURL = new URL('https://twitter.com/i/oauth2/authorize');
@@ -15,7 +15,7 @@ export default class TwitterService implements IOAuthService {
         authorizeURL.searchParams.append('response_type', 'code');
         authorizeURL.searchParams.append('client_id', TWITTER_CLIENT_ID);
         authorizeURL.searchParams.append('redirect_uri', redirectURL);
-        authorizeURL.searchParams.append('scope', scope.split(' ').join('%20'));
+        authorizeURL.searchParams.append('scope', scope);
         authorizeURL.searchParams.append('state', state);
         authorizeURL.searchParams.append('code_challenge', 'challenge');
         authorizeURL.searchParams.append('code_challenge_method', 'plain');

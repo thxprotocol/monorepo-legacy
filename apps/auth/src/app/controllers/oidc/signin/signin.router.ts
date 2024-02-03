@@ -1,29 +1,23 @@
 import express, { urlencoded } from 'express';
 import { assertInput, assertInteraction } from '@thxnetwork/auth/middlewares';
-import CeateResendOtp from './resend-otp/post';
-import ReadOtp from './otp/get';
-import CreateOtp from './otp/post';
-import ReadSignin from './get';
-import CreateSignin from './post';
+import ReadOTP from './otp/get';
+import CreateOTP from './otp/post';
+import Read from './get';
+import Create from './post';
+import CreateORPRetry from './retry/post';
 
 const router = express.Router();
 
-router.get('/', assertInteraction, ReadSignin.controller);
-router.get('/otp', assertInteraction, ReadOtp.controller);
-router.post(
-    '/',
-    urlencoded({ extended: false }),
-    assertInteraction,
-    assertInput(CreateSignin.validation),
-    CreateSignin.controller,
-);
+router.get('/', assertInteraction, Read.controller);
+router.get('/otp', assertInteraction, ReadOTP.controller);
+router.post('/', urlencoded({ extended: false }), assertInteraction, assertInput(Create.validation), Create.controller);
 router.post(
     '/otp',
     urlencoded({ extended: false }),
     assertInteraction,
-    assertInput(CreateOtp.validation),
-    CreateOtp.controller,
+    assertInput(CreateOTP.validation),
+    CreateOTP.controller,
 );
-router.post('/resend-otp', urlencoded({ extended: false }), assertInteraction, CeateResendOtp.controller);
+router.post('/resend-otp', urlencoded({ extended: false }), assertInteraction, CreateORPRetry.controller);
 
 export default router;

@@ -11,6 +11,7 @@ import { UnauthorizedError } from '@thxnetwork/auth/util/errors';
 import { oidc } from '@thxnetwork/auth/util/oidc';
 import { hubspot } from '@thxnetwork/auth/util/hubspot';
 import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
+import { MailService } from './MailService';
 import TokenService from './TokenService';
 
 const accountVariantKindMap = {
@@ -106,6 +107,31 @@ export default class AuthService {
         account.plan = data.plan;
 
         return await account.save();
+    }
+
+    static async redirectOTP(req: Request, email: string) {
+        const { params } = req.interaction;
+        let account = await this.findAccountForEmail(email);
+
+        // Create and return account if none found the given email
+        if (!account) {
+            const variant = AccountVariant.EmailPassword;
+            const plan = params.signup_plan ? Number(params.signup_plan) : AccountPlanType.Free;
+
+            account = await AccountService.create({ email, plan, variant });
+        }
+
+        // Send email using SES
+        await MailService.sendOTPMail(account);
+
+        // Store the sub in the interaction so we can lookup the hashed OTP later
+        req.interaction.params.sub = String(account._id);
+        req.interaction.params.email = email;
+
+        // Interaction TTL is set to 10min and will expire after
+        await req.interaction.save(Date.now() + 10 * 60 * 1000);
+
+        return `/oidc/${params.uid}/signin/otp`;
     }
 
     static async isOTPValid(account: AccountDocument, otp: string): Promise<boolean> {
