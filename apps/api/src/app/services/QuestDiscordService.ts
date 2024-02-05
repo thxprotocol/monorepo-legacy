@@ -5,13 +5,16 @@ import {
     TDiscordMessage,
     TValidationResult,
     QuestSocialRequirement,
+    AccessTokenKind,
 } from '@thxnetwork/common/lib/types';
 import { WalletDocument } from '../models/Wallet';
 import { PointRewardClaim } from '../models/PointRewardClaim';
 import { PointReward } from '../models/PointReward';
 import { IQuestService } from './interfaces/IQuestService';
-import { getPlatformUserId, requirementMap } from './maps/quests';
+import { getPlatformUserId, getToken, requirementMap } from './maps/quests';
 import DiscordMessage from '../models/DiscordMessage';
+import { account } from '../util/jest/constants';
+import QuestSocialService from './QuestSocialService';
 
 type TRestartDates = { now: Date; start: Date; endDay: Date; end: Date };
 
@@ -54,7 +57,38 @@ export default class QuestDiscordService implements IQuestService {
         };
     }
 
-    async isAvailable(options: { quest: TPointReward; wallet: WalletDocument; account: TAccount }): Promise<boolean> {
+    async isAvailable({
+        quest,
+        wallet,
+        account,
+    }: {
+        quest: TPointReward;
+        wallet: WalletDocument;
+        account: TAccount;
+    }): Promise<boolean> {
+        const map = {
+            [QuestSocialRequirement.DiscordMessage]: this.isAvailableMessage.bind(this),
+            [QuestSocialRequirement.DiscordGuildJoined]: this.isAvailableDefault.bind(this),
+        };
+        return await map[quest.interaction]({ quest, wallet, account });
+    }
+
+    private async isAvailableDefault({
+        quest,
+        wallet,
+        account,
+    }: {
+        quest: TPointReward;
+        wallet: WalletDocument;
+        account: TAccount;
+    }) {
+        if (!wallet || !account) return true;
+        // We use the default more generic QuestSocialService here since we want to
+        // validate for provider userIds as well
+        return new QuestSocialService().isAvailable({ quest, wallet, account });
+    }
+
+    private async isAvailableMessage(options: { quest: TPointReward; wallet: WalletDocument; account: TAccount }) {
         const amount = await this.getAmount(options);
         return amount > 0;
     }

@@ -5,6 +5,7 @@ import { AUTH_URL, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET } from '../config/se
 import { AccessTokenKind, OAuthTwitterScope } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IOAuthService } from '../services/interfaces/IOAuthService';
 import { Token, TokenDocument } from '../models/Token';
+import { logger } from '../util/logger';
 
 export default class TwitterService implements IOAuthService {
     getLoginURL({ uid, scopes }: { uid: string; scopes: OAuthTwitterScope[] }): string {
@@ -91,15 +92,21 @@ export default class TwitterService implements IOAuthService {
         body.append('token', token.accessToken);
         body.append('token_type_hint', 'access_token');
         body.append('client_id', TWITTER_CLIENT_ID);
-
-        await twitterClient({
-            url: '/oauth2/revoke',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            data: body,
-        });
+        try {
+            await twitterClient({
+                url: '/oauth2/revoke',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                data: body,
+            });
+        } catch (error) {
+            // Revocation request is failing with a 401, insufficient docs make it hard to
+            // gues what the exact payload should be, so for now we fail silently so the
+            // token can be removed from storage.
+            logger.error(error);
+        }
     }
 
     private async getUser(accessToken: string) {
