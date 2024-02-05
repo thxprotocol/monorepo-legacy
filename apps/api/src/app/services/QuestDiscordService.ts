@@ -51,7 +51,7 @@ export default class QuestDiscordService implements IQuestService {
         return {
             ...quest,
             amount,
-            isAvailable,
+            isAvailable: isAvailable.result,
             contentMetadata: quest.contentMetadata && JSON.parse(quest.contentMetadata),
             ...extraParams,
         };
@@ -65,7 +65,7 @@ export default class QuestDiscordService implements IQuestService {
         quest: TPointReward;
         wallet: WalletDocument;
         account: TAccount;
-    }): Promise<boolean> {
+    }): Promise<TValidationResult> {
         const map = {
             [QuestSocialRequirement.DiscordMessage]: this.isAvailableMessage.bind(this),
             [QuestSocialRequirement.DiscordGuildJoined]: this.isAvailableDefault.bind(this),
@@ -82,15 +82,19 @@ export default class QuestDiscordService implements IQuestService {
         wallet: WalletDocument;
         account: TAccount;
     }) {
-        if (!wallet || !account) return true;
+        if (!wallet || !account) return { result: true, reason: '' };
+
         // We use the default more generic QuestSocialService here since we want to
         // validate for provider userIds as well
-        return new QuestSocialService().isAvailable({ quest, wallet, account });
+        return await new QuestSocialService().isAvailable({ quest, wallet, account });
     }
 
     private async isAvailableMessage(options: { quest: TPointReward; wallet: WalletDocument; account: TAccount }) {
         const amount = await this.getAmount(options);
-        return amount > 0;
+        const isAvailable = amount > 0;
+        if (isAvailable) return { result: true, reason: '' };
+
+        return { result: false, reason: 'You have not earned any points with messages yet.' };
     }
 
     async getAmount({

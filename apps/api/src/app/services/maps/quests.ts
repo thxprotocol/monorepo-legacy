@@ -41,6 +41,8 @@ export const requirementMap: {
         if (!validationResultFollow.result) return validationResultFollow;
     },
     [QuestSocialRequirement.TwitterMessage]: async (account, quest) => {
+        const resultUser = await TwitterDataProxy.validateUser(account, quest);
+        if (!resultUser.result) return resultUser;
         const validationResultMessage = await TwitterDataProxy.validateMessage(account, quest.content);
         if (!validationResultMessage.result) return validationResultMessage;
     },
@@ -83,11 +85,11 @@ const tokenInteractionMap: { [interaction: number]: { kind: AccessTokenKind; sco
     },
     [QuestSocialRequirement.DiscordGuildJoined]: {
         kind: AccessTokenKind.Discord,
-        scopes: OAuthRequiredScopes.DiscordAuth,
+        scopes: OAuthRequiredScopes.DiscordValidateGuild,
     },
     [QuestSocialRequirement.DiscordMessage]: {
         kind: AccessTokenKind.Discord,
-        scopes: OAuthRequiredScopes.DiscordValidateGuild,
+        scopes: OAuthRequiredScopes.DiscordAuth,
     },
     [QuestSocialRequirement.DiscordMessageReaction]: {
         kind: AccessTokenKind.Discord,
@@ -96,13 +98,15 @@ const tokenInteractionMap: { [interaction: number]: { kind: AccessTokenKind; sco
 };
 
 export function getToken(account: TAccount, kind: AccessTokenKind, requiredScopes: OAuthScope[] = []) {
-    return account.tokens.find((a) => a.kind === kind && requiredScopes.every((scope) => a.scopes.includes(scope)));
+    return account.tokens.find(
+        (token) => token.kind === kind && requiredScopes.every((scope) => token.scopes.includes(scope)),
+    );
 }
 
 export const getPlatformUserId = (account: TAccount, interaction: QuestSocialRequirement) => {
     if (typeof interaction === 'undefined') return;
-    const { kind, scopes } = tokenInteractionMap[interaction];
-    const token = getToken(account, kind, scopes);
+    const { kind } = tokenInteractionMap[interaction];
+    const token = getToken(account, kind);
 
     return token && token.userId;
 };

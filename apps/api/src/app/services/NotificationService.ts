@@ -117,7 +117,6 @@ async function sendQuestPublishNotification(
         [embed],
         [
             {
-                disabled: true,
                 customId: `${DiscordButtonVariant.QuestComplete}:${quest.variant}:${quest._id}`,
                 label: 'Complete Quest!',
                 style: ButtonStyle.Success,

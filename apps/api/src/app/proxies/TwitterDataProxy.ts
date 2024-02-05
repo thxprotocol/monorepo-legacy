@@ -124,10 +124,7 @@ export default class TwitterDataProxy {
 
             return { result: false, reason: 'X: Post has not been not liked.' };
         } catch (res) {
-            if (res.status === 429) {
-                return this.handleRateLimitError(res);
-            }
-            return { result: false, reason: 'X: An unexpected issue occured during your validation request.' };
+            return this.handleError(res);
         }
     }
 
@@ -160,10 +157,7 @@ export default class TwitterDataProxy {
 
             return { result: false, reason: 'X: Post has not been reposted.' };
         } catch (res) {
-            if (res.status === 429) {
-                return this.handleRateLimitError(res);
-            }
-            return { result: false, reason: 'X: An unexpected issue occured during your validation request.' };
+            return this.handleError(res);
         }
     }
 
@@ -190,10 +184,7 @@ export default class TwitterDataProxy {
 
             return { result: false, reason: 'X: Account is not found as a follower.' };
         } catch (res) {
-            if (res.status === 429) {
-                return this.handleRateLimitError(res);
-            }
-            return { result: false, reason: 'X: An unexpected issue occured during your validation request.' };
+            return this.handleError(res);
         }
     }
 
@@ -231,10 +222,9 @@ export default class TwitterDataProxy {
 
     static async validateUser(account: TAccount, reward: TPointReward) {
         try {
-            const token = getToken(account, AccessTokenKind.Twitter, [
-                OAuthTwitterScope.UsersRead,
-                OAuthTwitterScope.TweetRead,
-            ]);
+            const token = getToken(account, AccessTokenKind.Twitter, OAuthRequiredScopes.TwitterValidateUser);
+            if (!token) return { result: false, reason: 'Could not find an X access_token for this account.' };
+
             const metadata = JSON.parse(reward.contentMetadata);
             const minFollowersCount = metadata.minFollowersCount ? Number(metadata.minFollowersCount) : 0;
             const user = await this.getUser(account, token.userId);
@@ -247,10 +237,7 @@ export default class TwitterDataProxy {
                 reason: `X: Your account does not meet the threshold of ${minFollowersCount} followers.`,
             };
         } catch (res) {
-            if (res.status === 429) {
-                return this.handleRateLimitError(res);
-            }
-            return { result: false, reason: 'X: An unexpected issue occured during your validation request.' };
+            return this.handleError(res);
         }
     }
 
@@ -269,10 +256,7 @@ export default class TwitterDataProxy {
                 reason: '',
             };
         } catch (res) {
-            if (res.status === 429) {
-                return this.handleRateLimitError(res);
-            }
-            return { result: false, reason: 'X: An unexpected issue occured during your validation request.' };
+            return this.handleError(res);
         }
     }
 
@@ -283,6 +267,16 @@ export default class TwitterDataProxy {
             .filter((text) => text && text.length > 1 && !text.match(emojiRegex))
             .map((text) => `"${text}"`)
             .join(' ');
+    }
+
+    private static handleError(res: AxiosResponse) {
+        if (res.status === 429) {
+            return this.handleRateLimitError(res);
+        }
+        if (res.status === 401) {
+            return { result: false, reason: 'X: Your connection has been removed, please reconnect!' };
+        }
+        return { result: false, reason: 'X: An unexpected issue occured during your validation request.' };
     }
 
     private static handleRateLimitError(res: AxiosResponse) {

@@ -27,7 +27,7 @@ export default class QuestSocialService implements IQuestService {
 
         return {
             ...quest,
-            isAvailable,
+            isAvailable: isAvailable.result,
             contentMetadata: quest.contentMetadata && JSON.parse(quest.contentMetadata),
         };
     }
@@ -40,8 +40,8 @@ export default class QuestSocialService implements IQuestService {
         quest: TPointReward;
         wallet: WalletDocument;
         account: TAccount;
-    }): Promise<boolean> {
-        if (!wallet || !account) return true;
+    }): Promise<TValidationResult> {
+        if (!wallet || !account) return { result: true, reason: '' };
 
         // We validate for both here since there are entries that only contain a sub
         // and should not be claimed again.
@@ -50,10 +50,13 @@ export default class QuestSocialService implements IQuestService {
         if (platformUserId) ids.push({ platformUserId });
 
         // If no entry exist the quest is available
-        return !(await PointRewardClaim.exists({
+        const isCompleted = await PointRewardClaim.exists({
             questId: quest._id,
             $or: ids,
-        }));
+        });
+        if (!isCompleted) return { result: true, reason: '' };
+
+        return { result: false, reason: 'You have completed this quest with this (connected) account already.' };
     }
 
     async getAmount({ quest }: { quest: TPointReward; wallet: WalletDocument; account: TAccount }): Promise<number> {

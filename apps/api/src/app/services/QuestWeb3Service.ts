@@ -27,7 +27,7 @@ export default class QuestWeb3Service implements IQuestService {
 
         return {
             ...quest,
-            isAvailable,
+            isAvailable: isAvailable.result,
             amount: quest.amount,
             contracts: quest.contracts,
             methodName: quest.methodName,
@@ -44,18 +44,21 @@ export default class QuestWeb3Service implements IQuestService {
         wallet: WalletDocument;
         account: TAccount;
         address?: string;
-    }): Promise<boolean> {
+    }): Promise<TValidationResult> {
         const ids = [];
         if (wallet) ids.push({ sub: wallet.sub });
         if (wallet) ids.push({ walletId: wallet._id });
         if (address) ids.push({ address });
 
-        return wallet
-            ? !(await Web3QuestClaim.exists({
+        const isCompleted = wallet
+            ? await Web3QuestClaim.exists({
                   questId: quest._id,
                   $or: ids,
-              }))
-            : true;
+              })
+            : false;
+        if (!isCompleted) return { result: true, reason: '' };
+
+        return { result: false, reason: 'You have completed this quest with this account and/or address already.' };
     }
 
     async getAmount({ quest }: { quest: TWeb3Quest; wallet: WalletDocument; account: TAccount }): Promise<number> {

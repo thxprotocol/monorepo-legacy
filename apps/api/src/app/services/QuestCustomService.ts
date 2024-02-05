@@ -1,10 +1,9 @@
-import { TAccount, TMilestoneReward, TMilestoneRewardClaim } from '@thxnetwork/types/index';
+import { TAccount, TMilestoneReward, TMilestoneRewardClaim, TValidationResult } from '@thxnetwork/types/index';
 import { MilestoneReward, MilestoneRewardDocument } from '../models/MilestoneReward';
 import { Identity } from '../models/Identity';
 import { Event } from '../models/Event';
 import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
 import { WalletDocument } from '../models/Wallet';
-import { v4 } from 'uuid';
 import { IQuestService } from './interfaces/IQuestService';
 
 export default class QuestCustomService implements IQuestService {
@@ -20,19 +19,30 @@ export default class QuestCustomService implements IQuestService {
         quest: MilestoneRewardDocument;
         wallet: WalletDocument;
         account: TAccount;
-    }): Promise<boolean> {
-        return !!(await MilestoneRewardClaim.exists({
+    }): Promise<TValidationResult> {
+        const isCompleted = await MilestoneRewardClaim.exists({
             walletId: String(wallet._id),
             questId: String(quest._id),
             isClaimed: true,
-        }));
+        });
+        if (!isCompleted) return { result: true, reason: '' };
+
+        return { result: false, reason: 'You have completed this quest already.' };
     }
 
     async getAmount({ quest }: { quest: MilestoneRewardDocument; wallet: WalletDocument; account: TAccount }) {
         return quest.amount;
     }
 
-    async decorate({ quest, wallet }: { quest: TMilestoneReward; wallet?: WalletDocument }) {
+    async decorate({
+        quest,
+        account,
+        wallet,
+    }: {
+        quest: MilestoneRewardDocument;
+        account?: TAccount;
+        wallet?: WalletDocument;
+    }) {
         const entries = wallet
             ? await MilestoneRewardClaim.find({
                   walletId: String(wallet._id),
@@ -44,11 +54,13 @@ export default class QuestCustomService implements IQuestService {
         const identityIds = identities.map(({ _id }) => String(_id));
         const events = identityIds.length ? await Event.find({ name: quest.eventName, identityId: identityIds }) : [];
         const pointsAvailable = (quest.limit - entries.length) * quest.amount;
+        const isAvailable = await this.isAvailable({ quest, wallet, account });
 
         return {
             ...quest,
             limit: quest.limit,
             amount: quest.amount,
+            isAvailable: isAvailable.result,
             pointsAvailable,
             claims: entries,
             events,

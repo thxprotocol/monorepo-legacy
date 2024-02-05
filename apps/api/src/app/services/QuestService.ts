@@ -119,11 +119,7 @@ export default class QuestService {
         const isLocked = await LockService.getIsLocked(options.quest.locks, options.wallet);
         if (isLocked) return { result: false, reason: 'Quest is locked.' };
 
-        const isAvailable = !!(await serviceMap[variant].isAvailable(options));
-        return {
-            result: isAvailable,
-            reason: !isAvailable ? 'Quest is not available.' : '',
-        };
+        return await serviceMap[variant].isAvailable(options);
     }
 
     static async getValidationResult(
