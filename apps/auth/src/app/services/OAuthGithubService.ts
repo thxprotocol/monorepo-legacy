@@ -1,19 +1,19 @@
 import { URLSearchParams } from 'url';
 import { AUTH_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '@thxnetwork/auth/config/secrets';
 import { githubClient } from '../util/axios';
-import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccessTokenKind, OAuthGithubScope } from '@thxnetwork/types/enums/AccessTokenKind';
 import { IOAuthService } from './interfaces/IOAuthService';
 import { TokenDocument } from '../models/Token';
 
 export default class GithubService implements IOAuthService {
-    getLoginURL({ uid, scope }: { uid: string; scope: string }) {
+    getLoginURL({ uid, scopes }: { uid: string; scopes: OAuthGithubScope[] }) {
         const state = Buffer.from(JSON.stringify({ uid })).toString('base64');
         const url = new URL('https://github.com/login/oauth/authorize');
         url.searchParams.append('state', state);
         url.searchParams.append('allow_signup', 'true');
         url.searchParams.append('client_id', GITHUB_CLIENT_ID);
         url.searchParams.append('redirect_uri', AUTH_URL + '/oidc/callback/github');
-        url.searchParams.append('scope', scope);
+        url.searchParams.append('scope', scopes.join(' '));
 
         return url.toString();
     }

@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
 import { AUTH_URL, DASHBOARD_URL, WIDGET_URL } from '../../../config/secrets';
-import { AUTH_REQUEST_TYPED_MESSAGE, createTypedMessage } from '../../../util/typedMessage';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
-import { OAuthScope, OAuthVariant } from '@thxnetwork/common/lib/types';
+import { OAuthScope, AccessTokenKind, OAuthGoogleScope, OAuthRequiredScopes } from '@thxnetwork/common/lib/types';
 import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
 import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
 import TokenService from '@thxnetwork/auth/services/TokenService';
+import EthereumService, { AUTH_REQUEST_TYPED_MESSAGE } from '@thxnetwork/auth/services/EthereumService';
 
 async function controller(req: Request, res: Response) {
     const { uid, params } = req.interaction;
@@ -26,17 +26,6 @@ async function controller(req: Request, res: Response) {
         if (pool.settings && pool.settings.authenticationMethods) {
             authenticationMethods = pool.settings.authenticationMethods;
         }
-    }
-
-    if (isDashboard) {
-        authenticationMethods = [
-            AccountVariant.EmailPassword,
-            AccountVariant.SSOGoogle,
-            AccountVariant.SSOTwitter,
-            AccountVariant.SSODiscord,
-            AccountVariant.SSOTwitch,
-            AccountVariant.SSOGithub,
-        ];
     }
 
     if (pool && params.collaborator_request_token) {
@@ -80,21 +69,25 @@ async function controller(req: Request, res: Response) {
     );
 
     params.googleLoginUrl = authenticationMethods.includes(AccountVariant.SSOGoogle)
-        ? TokenService.getLoginURL({ variant: OAuthVariant.Google, uid, scope: OAuthScope.GoogleAuth })
+        ? TokenService.getLoginURL({
+              kind: AccessTokenKind.Google,
+              uid,
+              scopes: OAuthRequiredScopes.GoogleAuth,
+          })
         : null;
     params.githubLoginUrl = authenticationMethods.includes(AccountVariant.SSOGithub)
-        ? TokenService.getLoginURL({ variant: OAuthVariant.Github, uid, scope: OAuthScope.GithubAuth })
+        ? TokenService.getLoginURL({ kind: AccessTokenKind.Github, uid, scopes: OAuthRequiredScopes.GithubAuth })
         : null;
     params.discordLoginUrl = authenticationMethods.includes(AccountVariant.SSODiscord)
-        ? TokenService.getLoginURL({ variant: OAuthVariant.Discord, uid, scope: OAuthScope.DiscordAuth })
+        ? TokenService.getLoginURL({ kind: AccessTokenKind.Discord, uid, scopes: OAuthRequiredScopes.DiscordAuth })
         : null;
     params.twitchLoginUrl = authenticationMethods.includes(AccountVariant.SSOTwitch)
-        ? TokenService.getLoginURL({ variant: OAuthVariant.Twitch, uid, scope: OAuthScope.TwitchAuth })
+        ? TokenService.getLoginURL({ kind: AccessTokenKind.Twitch, uid, scopes: OAuthRequiredScopes.TwitchAuth })
         : null;
     params.twitterLoginUrl = authenticationMethods.includes(AccountVariant.SSOTwitter)
-        ? TokenService.getLoginURL({ variant: OAuthVariant.Twitter, uid, scope: OAuthScope.TwitterAuth })
+        ? TokenService.getLoginURL({ kind: AccessTokenKind.Twitter, uid, scopes: OAuthRequiredScopes.TwitterAuth })
         : null;
-    params.authRequestMessage = createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
+    params.authRequestMessage = EthereumService.createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
 
     res.render('signin', {
         uid,

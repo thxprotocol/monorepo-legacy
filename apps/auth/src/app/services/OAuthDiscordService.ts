@@ -1,18 +1,18 @@
 import { AUTH_URL, DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET } from '../config/secrets';
-import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccessTokenKind, OAuthDiscordScope } from '@thxnetwork/types/enums/AccessTokenKind';
 import { discordClient } from '../util/axios';
 import { Token, TokenDocument } from '../models/Token';
 import { IOAuthService } from './interfaces/IOAuthService';
 
 export default class DiscordService implements IOAuthService {
-    getLoginURL({ uid, scope }: { uid: string; scope: string }): string {
+    getLoginURL({ uid, scopes }: { uid: string; scopes: OAuthDiscordScope[] }): string {
         const state = Buffer.from(JSON.stringify({ uid })).toString('base64');
         const url = new URL('https://discord.com/oauth2/authorize');
         url.searchParams.append('state', state);
         url.searchParams.append('response_type', 'code');
         url.searchParams.append('client_id', DISCORD_CLIENT_ID);
         url.searchParams.append('redirect_uri', AUTH_URL + '/oidc/callback/discord');
-        url.searchParams.append('scope', scope);
+        url.searchParams.append('scope', scopes.join(' '));
 
         return url.toString();
     }
@@ -40,7 +40,7 @@ export default class DiscordService implements IOAuthService {
             accessToken: data.access_token,
             refreshToken: data.refresh_token,
             expiry: Date.now() + Number(data.expires_in) * 1000,
-            scope: data.scope,
+            scopes: data.scope.split(' '),
             userId: user.id,
         };
     }
@@ -72,8 +72,20 @@ export default class DiscordService implements IOAuthService {
         );
     }
 
-    revokeToken(token: TokenDocument): Promise<void> {
-        throw new Error('Method not implemented.');
+    async revokeToken(token: TokenDocument): Promise<void> {
+        const body = new URLSearchParams();
+        body.append('client_secret', DISCORD_CLIENT_SECRET);
+        body.append('client_id', DISCORD_CLIENT_ID);
+        body.append('token', token.accessToken);
+
+        await discordClient({
+            url: 'https://discord.com/api/oauth2/token/revoke',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            data: body,
+        });
     }
 
     private async getUser(accessToken: string) {

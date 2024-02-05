@@ -1,37 +1,11 @@
-import { AccessTokenKind, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
-import { AccountVariant } from '@thxnetwork/types/interfaces';
+import { AccessTokenKind, OAuthRequiredScopes, OAuthScope, QuestSocialRequirement } from '@thxnetwork/types/enums';
 
-export function getInteractionComponent(interactionType: RewardConditionInteraction) {
-    switch (interactionType) {
-        case RewardConditionInteraction.YouTubeSubscribe:
-            return 'BaseDropdownYoutubeChannels';
-        case RewardConditionInteraction.YouTubeLike:
-            return 'BaseDropdownYoutubeVideo';
-        case RewardConditionInteraction.TwitterLike:
-        case RewardConditionInteraction.TwitterRetweet:
-        case RewardConditionInteraction.TwitterLikeRetweet:
-            return 'BaseDropdownTwitterTweets';
-        case RewardConditionInteraction.TwitterFollow:
-            return 'BaseDropdownTwitterUsers';
-        case RewardConditionInteraction.TwitterMessage:
-            return 'BaseDropdownTwitterMessage';
-        case RewardConditionInteraction.DiscordGuildJoined:
-            return 'BaseDropdownDiscordGuilds';
-        case RewardConditionInteraction.DiscordMessage:
-            return 'BaseDropdownDiscordMessage';
-        case RewardConditionInteraction.DiscordMessageReaction:
-            return 'BaseDropdownDiscordMessageReaction';
-        default:
-            return '';
-    }
-}
-
-export const getInteraction = (interactionType: RewardConditionInteraction): IChannelAction => {
-    return platformInteractionList.find((a) => a.type === interactionType) as IChannelAction;
+export const getInteraction = (type: QuestSocialRequirement) => {
+    return providerInteractionList.find((a) => a.type === type);
 };
 
-export const getPlatform = (platformType: RewardConditionPlatform) => {
-    return platformList.find((c) => c.type === platformType) as IChannel;
+export const getPlatform = (kind: AccessTokenKind) => {
+    return providerList.find((c) => c.kind === kind);
 };
 
 export function getUserUrl(a) {
@@ -39,143 +13,108 @@ export function getUserUrl(a) {
     return `https://www.twitter.com/${a.metadata.username}`;
 }
 
-export const platformList: IChannel[] = [
+export type TQuestSocialProvider = {
+    kind: AccessTokenKind;
+    scopes: OAuthScope[];
+    name: string;
+    logoURI: string;
+    actions: QuestSocialRequirement[];
+};
+
+export type TQuestSocialInteraction = {
+    type: QuestSocialRequirement;
+    name: string;
+    items: [];
+};
+
+export const providerList: TQuestSocialProvider[] = [
     {
-        type: RewardConditionPlatform.None,
-        name: 'None',
-        logoURI: '',
-        actions: [],
-    },
-    {
-        type: RewardConditionPlatform.Google,
+        kind: AccessTokenKind.Google,
+        scopes: OAuthRequiredScopes.GoogleAuth,
         name: 'YouTube',
         logoURI: require('@thxnetwork/dashboard/../public/assets/logo-youtube.png'),
-        actions: [RewardConditionInteraction.YouTubeLike, RewardConditionInteraction.YouTubeSubscribe],
+        actions: [QuestSocialRequirement.YouTubeLike, QuestSocialRequirement.YouTubeSubscribe],
     },
     {
-        type: RewardConditionPlatform.Twitter,
+        kind: AccessTokenKind.Twitter,
+        scopes: OAuthRequiredScopes.TwitterAuth,
         name: 'Twitter',
         logoURI: require('@thxnetwork/dashboard/../public/assets/logo-twitter.png'),
         actions: [
-            RewardConditionInteraction.TwitterFollow,
-            RewardConditionInteraction.TwitterLikeRetweet,
-            RewardConditionInteraction.TwitterLike,
-            RewardConditionInteraction.TwitterRetweet,
-            RewardConditionInteraction.TwitterMessage,
+            QuestSocialRequirement.TwitterFollow,
+            QuestSocialRequirement.TwitterLikeRetweet,
+            QuestSocialRequirement.TwitterLike,
+            QuestSocialRequirement.TwitterRetweet,
+            QuestSocialRequirement.TwitterMessage,
         ],
-        kind: AccessTokenKind.Twitter,
     },
     {
-        type: RewardConditionPlatform.Discord,
+        kind: AccessTokenKind.Discord,
+        scopes: OAuthRequiredScopes.DiscordAuth,
         name: 'Discord',
         logoURI: require('@thxnetwork/dashboard/../public/assets/logo-discord.png'),
         actions: [
-            RewardConditionInteraction.DiscordGuildJoined,
-            RewardConditionInteraction.DiscordMessage,
-            RewardConditionInteraction.DiscordMessageReaction,
+            QuestSocialRequirement.DiscordGuildJoined,
+            QuestSocialRequirement.DiscordMessage,
+            QuestSocialRequirement.DiscordMessageReaction,
         ],
-        kind: AccessTokenKind.Discord,
     },
 ];
-export const platformInteractionList = [
+export const providerInteractionList: TQuestSocialInteraction[] = [
     {
-        type: RewardConditionInteraction.None,
-        name: 'None',
-        items: [],
-    },
-    {
-        type: RewardConditionInteraction.YouTubeLike,
+        type: QuestSocialRequirement.YouTubeLike,
         name: 'Like',
         items: [],
     },
     {
-        type: RewardConditionInteraction.YouTubeSubscribe,
+        type: QuestSocialRequirement.YouTubeSubscribe,
         name: 'Subscribe',
         items: [],
     },
     {
-        type: RewardConditionInteraction.TwitterLikeRetweet,
+        type: QuestSocialRequirement.TwitterLikeRetweet,
         name: 'Like & Repost',
         items: [],
     },
     {
-        type: RewardConditionInteraction.TwitterLike,
+        type: QuestSocialRequirement.TwitterLike,
         name: 'Like',
         items: [],
     },
     {
-        type: RewardConditionInteraction.TwitterRetweet,
+        type: QuestSocialRequirement.TwitterRetweet,
         name: 'Repost',
         items: [],
     },
     {
-        type: RewardConditionInteraction.TwitterMessage,
+        type: QuestSocialRequirement.TwitterMessage,
         name: 'Message',
         items: [],
     },
     {
-        type: RewardConditionInteraction.TwitterFollow,
+        type: QuestSocialRequirement.TwitterFollow,
         name: 'Follow',
         items: [],
     },
     {
-        type: RewardConditionInteraction.DiscordGuildJoined,
+        type: QuestSocialRequirement.DiscordGuildJoined,
         name: 'Server Joined',
         items: [],
     },
     {
-        type: RewardConditionInteraction.DiscordMessage,
+        type: QuestSocialRequirement.DiscordMessage,
         name: 'Message',
         items: [],
     },
     // {
-    //     type: RewardConditionInteraction.DiscordMessageReaction,
+    //     type: QuestSocialRequirement.DiscordMessageReaction,
     //     name: 'Message Reaction',
     //     items: [],
     // },
 ];
-
-export const platformIconMap: any = {
-    [RewardConditionPlatform.None]: '',
-    [RewardConditionPlatform.Google]: 'fab fa-youtube',
-    [RewardConditionPlatform.Twitter]: 'fab fa-twitter',
-    [RewardConditionPlatform.Discord]: 'fab fa-discord',
-    [RewardConditionPlatform.Twitch]: 'fab fa-twitch',
-    [RewardConditionPlatform.Github]: 'fab fa-github',
-};
-
-export const accountVariantPlatformMap: any = {
-    [AccountVariant.SSOTwitter]: RewardConditionPlatform.Twitter,
-    [AccountVariant.SSODiscord]: RewardConditionPlatform.Discord,
-    [AccountVariant.SSOGoogle]: RewardConditionPlatform.Google,
-    [AccountVariant.SSOTwitch]: RewardConditionPlatform.Twitch,
-    [AccountVariant.SSOGithub]: RewardConditionPlatform.Github,
-};
-
-export const tokenKindPlatformMap: any = {
-    [AccessTokenKind.Twitter]: RewardConditionPlatform.Twitter,
-    [AccessTokenKind.Discord]: RewardConditionPlatform.Discord,
-    [AccessTokenKind.YoutubeManage]: RewardConditionPlatform.Google,
-    [AccessTokenKind.Twitch]: RewardConditionPlatform.Twitch,
-    [AccessTokenKind.Github]: RewardConditionPlatform.Github,
-};
-
-export interface IRewardCondition {
-    platform: RewardConditionPlatform;
-    interaction: RewardConditionInteraction;
-    content: string;
-}
-
-export interface IChannel {
-    type: RewardConditionPlatform;
-    name: string;
-    logoURI: string;
-    actions: RewardConditionInteraction[];
-    kind?: AccessTokenKind;
-}
-
-export interface IChannelAction {
-    type: RewardConditionInteraction;
-    name: string;
-    items: unknown[];
-}
+// export interface IChannel {
+//     kind: AccessTokenKind;
+//     name: string;
+//     logoURI: string;
+//     actions: QuestSocialRequirement[];
+// }

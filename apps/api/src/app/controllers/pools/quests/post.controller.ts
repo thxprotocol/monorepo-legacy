@@ -29,7 +29,7 @@ const validationBaseQuest = [
         }),
     body('isMandatoryReview').optional().isBoolean(),
     // Social
-    body('platform').optional().isNumeric(),
+    body('kind').optional().isString(),
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
     body('contentMetadata').optional().isString(),

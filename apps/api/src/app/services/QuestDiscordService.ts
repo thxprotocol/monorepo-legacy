@@ -1,4 +1,11 @@
-import { TAccount, TQuestEntry, TPointReward, TDiscordMessage, TValidationResult } from '@thxnetwork/common/lib/types';
+import {
+    TAccount,
+    TQuestEntry,
+    TPointReward,
+    TDiscordMessage,
+    TValidationResult,
+    QuestSocialRequirement,
+} from '@thxnetwork/common/lib/types';
 import { WalletDocument } from '../models/Wallet';
 import { PointRewardClaim } from '../models/PointRewardClaim';
 import { PointReward } from '../models/PointReward';
@@ -30,40 +37,23 @@ export default class QuestDiscordService implements IQuestService {
             isAvailable: boolean;
         }
     > {
-        const restartDates = this.getRestartDates(quest);
         const amount = await this.getAmount({ quest, account, wallet });
-        const messages = await this.getMessages({ account, quest, start: restartDates.start });
         const isAvailable = await this.isAvailable({ quest, wallet, account });
-        const extraParams = await this.getDiscordMessagePoints({
-            quest,
-            account,
-            start: restartDates.start,
-            end: restartDates.end,
-        });
+        const interactionMap = {
+            [QuestSocialRequirement.DiscordMessage]: this.getDiscordMessageParams.bind(this),
+            [QuestSocialRequirement.DiscordGuildJoined]: this.getDiscordParams.bind(this),
+        };
+        const extraParams = await interactionMap[quest.interaction]({ quest, account });
 
         return {
             ...quest,
-            restartDates,
+            amount,
             isAvailable,
             contentMetadata: quest.contentMetadata && JSON.parse(quest.contentMetadata),
-            amount,
-            messages,
             ...extraParams,
         };
     }
 
-    private async getMessages({ quest, account, start }: { quest: TPointReward; account: TAccount; start: Date }) {
-        if (!account) return [];
-
-        const userId = getPlatformUserId(account, quest.platform);
-        return await DiscordMessage.find({
-            guildId: quest.content,
-            memberId: userId,
-            createdAt: { $gte: new Date(start).toISOString() },
-        });
-    }
-
-    // Specific to Discord Message quest
     async isAvailable(options: { quest: TPointReward; wallet: WalletDocument; account: TAccount }): Promise<boolean> {
         const amount = await this.getAmount(options);
         return amount > 0;
@@ -77,8 +67,12 @@ export default class QuestDiscordService implements IQuestService {
         wallet: WalletDocument;
         account: TAccount;
     }): Promise<number> {
-        const { start, end } = this.getRestartDates(quest);
-        const { pointsAvailable } = await this.getDiscordMessagePoints({ quest, account, start, end });
+        const interactionMap = {
+            [QuestSocialRequirement.DiscordMessage]: this.getMessagePoints.bind(this),
+            [QuestSocialRequirement.DiscordGuildJoined]: this.getPoints.bind(this),
+        };
+        const { pointsAvailable } = await interactionMap[quest.interaction]({ quest, account });
+
         return pointsAvailable;
     }
 
@@ -112,10 +106,45 @@ export default class QuestDiscordService implements IQuestService {
         return { now, start, endDay, end };
     }
 
-    async getDiscordMessagePoints({ quest, start, end, account }) {
+    private async getDiscordParams({ quest }: { quest: TPointReward; account: TAccount }) {
+        return { pointsAvailable: quest.amount };
+    }
+
+    private async getDiscordMessageParams({ quest, account }: { quest: TPointReward; account: TAccount }) {
+        const restartDates = this.getRestartDates(quest);
+        const messages = await this.getMessages({ account, quest, start: restartDates.start });
+        const points = await this.getMessagePoints({
+            quest,
+            account,
+        });
+
+        return {
+            restartDates,
+            messages,
+            ...points,
+        };
+    }
+
+    private async getMessages({ quest, account, start }: { quest: TPointReward; account: TAccount; start: Date }) {
+        if (!account) return [];
+
+        const userId = getPlatformUserId(account, quest.interaction);
+        return await DiscordMessage.find({
+            guildId: quest.content,
+            memberId: userId,
+            createdAt: { $gte: new Date(start).toISOString() },
+        });
+    }
+
+    private async getPoints({ quest }) {
+        return { pointsAvailable: quest.amount };
+    }
+
+    private async getMessagePoints({ quest, account }) {
         if (!account) return { pointsAvailable: 0, pointsClaimed: 0 };
 
-        const platformUserId = getPlatformUserId(account, quest.platform);
+        const { start, end } = this.getRestartDates(quest);
+        const platformUserId = getPlatformUserId(account, quest.interaction);
         const claims = await PointRewardClaim.find({
             questId: String(quest._id),
             platformUserId,

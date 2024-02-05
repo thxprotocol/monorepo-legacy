@@ -35,8 +35,8 @@ export async function completeQuest(
         const pool = await PoolService.getById(quest.poolId);
         if (!pool) throw new Error('Could not find this campaign.');
 
-        const { platform } = quest as TPointReward;
-        const platformUserId = platform && getPlatformUserId(account, platform);
+        const { interaction: questInteraction } = quest as TPointReward;
+        const platformUserId = questInteraction && getPlatformUserId(account, questInteraction);
 
         const availabilityValidation = await QuestService.isAvailable(variant, { quest, account, wallet });
         if (!availabilityValidation.result) throw new Error(availabilityValidation.reason);

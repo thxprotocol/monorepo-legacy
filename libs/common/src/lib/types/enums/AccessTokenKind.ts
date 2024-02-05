@@ -1,19 +1,7 @@
 export enum AccessTokenKind {
-    Signup = 'signup',
     Auth = 'authentication',
-    PasswordReset = 'password-reset',
-    Google = 'google',
-    Twitter = 'twitter',
-    Github = 'github',
-    Discord = 'discord',
-    Twitch = 'twitch',
+    Signup = 'signup',
     VerifyEmail = 'verify-email',
-    YoutubeView = 'youtube-view',
-    YoutubeManage = 'youtube-manage',
-    Youtube = 'youtube',
-}
-
-export enum OAuthVariant {
     Google = 'google',
     Twitter = 'twitter',
     Discord = 'discord',
@@ -21,15 +9,60 @@ export enum OAuthVariant {
     Github = 'github',
 }
 
-export enum OAuthScope {
-    GoogleAuth = 'https://www.googleapis.com/auth/userinfo.email openid',
-    GoogleYoutubeLike = 'https://www.googleapis.com/auth/youtube.readonly openid',
-    GoogleYoutubeSubscribe = 'https://www.googleapis.com/auth/youtube openid',
-    TwitterAuth = 'users.read',
-    TwitterValidateFollow = 'users.read tweet.read follows.read',
-    TwitterValidateLike = 'users.read tweet.read like.read',
-    TwitterValidateRepost = 'users.read tweet.read',
-    DiscordAuth = 'identify email guilds',
-    TwitchAuth = 'user:read:follows user:read:email user:read:broadcast',
-    GithubAuth = 'public_repo',
+export enum OAuthGoogleScope {
+    OpenID = 'openid',
+    Email = 'https://www.googleapis.com/auth/userinfo.email',
+    YoutubeReadOnly = 'https://www.googleapis.com/auth/youtube.readonly',
 }
+
+export enum OAuthTwitterScope {
+    OfflineAccess = 'offline.access',
+    UsersRead = 'users.read',
+    TweetRead = 'tweet.read',
+    FollowsWrite = 'follows.write',
+    LikeRead = 'like.read',
+}
+
+export enum OAuthDiscordScope {
+    Identify = 'identify',
+    Email = 'email',
+    Guilds = 'guilds',
+}
+
+export enum OAuthTwitchScope {
+    Email = 'user:read:email',
+    Follows = 'user:read:follows',
+    Broadcast = 'user:read:broadcast',
+}
+
+export enum OAuthGithubScope {
+    PublicRepo = 'public_repo',
+}
+
+// Different scope requirements should always be elevating based on the invasiveness of the required scope
+// This allows for better privacy by design
+export const OAuthRequiredScopes = {
+    GoogleAuth: [OAuthGoogleScope.OpenID, OAuthGoogleScope.Email],
+    GoogleYoutubeSubscribe: [OAuthGoogleScope.OpenID, OAuthGoogleScope.Email, OAuthGoogleScope.YoutubeReadOnly],
+    GoogleYoutubeLike: [OAuthGoogleScope.OpenID, OAuthGoogleScope.Email, OAuthGoogleScope.YoutubeReadOnly],
+    TwitterAuth: [OAuthTwitterScope.OfflineAccess, OAuthTwitterScope.UsersRead, OAuthTwitterScope.TweetRead],
+    TwitterValidateRepost: [OAuthTwitterScope.OfflineAccess, OAuthTwitterScope.UsersRead, OAuthTwitterScope.TweetRead],
+    TwitterValidateLike: [
+        OAuthTwitterScope.OfflineAccess,
+        OAuthTwitterScope.UsersRead,
+        OAuthTwitterScope.TweetRead,
+        OAuthTwitterScope.LikeRead,
+    ],
+    TwitterValidateFollow: [
+        OAuthTwitterScope.OfflineAccess,
+        OAuthTwitterScope.UsersRead,
+        OAuthTwitterScope.TweetRead,
+        OAuthTwitterScope.LikeRead,
+        OAuthTwitterScope.FollowsWrite,
+    ],
+    DiscordAuth: [OAuthDiscordScope.Identify, OAuthDiscordScope.Email],
+    DiscordValidateGuild: [OAuthDiscordScope.Identify, OAuthDiscordScope.Email, OAuthDiscordScope.Guilds],
+    TwitchAuth: [OAuthTwitchScope.Email, OAuthTwitchScope.Follows, OAuthTwitchScope.Broadcast],
+    GithubAuth: [OAuthGithubScope.PublicRepo],
+};
+export type OAuthScope = OAuthGoogleScope | OAuthTwitterScope | OAuthDiscordScope | OAuthTwitchScope | OAuthGithubScope;

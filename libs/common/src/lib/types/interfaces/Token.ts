@@ -1,4 +1,4 @@
-import { AccessTokenKind } from '../enums/AccessTokenKind';
+import { AccessTokenKind, OAuthScope } from '../enums/AccessTokenKind';
 
 export type TToken = {
     sub: string;
@@ -7,7 +7,7 @@ export type TToken = {
     refreshToken: string;
     accessTokenEncrypted: string;
     refreshTokenEncrypted: string;
-    scope: string;
+    scopes: OAuthScope[];
     expiry: number;
     userId: string;
     metadata: any;

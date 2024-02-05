@@ -6,14 +6,14 @@
         class="w-100"
     >
         <template #button-content>
-            <template v-if="platform">
+            <template v-if="provider">
                 <div class="d-flex align-items-center justify-content-start">
-                    <img :src="platform.logoURI" v-if="platform.logoURI" width="20" class="mr-2" :alt="platform.name" />
-                    {{ platform.name }}
+                    <img :src="provider.logoURI" v-if="provider.logoURI" width="20" class="mr-2" :alt="provider.name" />
+                    {{ provider.name }}
                 </div>
             </template>
         </template>
-        <b-dropdown-item-button :key="p.type" v-for="p of platformList" @click="$emit('selected', p)">
+        <b-dropdown-item-button :key="p.kind" v-for="p of providerList" @click="$emit('selected', p)">
             <img :src="p.logoURI" v-if="p.logoURI" width="20" class="mr-3" :alt="p.name" />
             {{ p.name }}
         </b-dropdown-item-button>
@@ -21,13 +21,13 @@
 </template>
 
 <script lang="ts">
-import { platformList, type IChannel } from '@thxnetwork/dashboard/types/rewards';
+import { TQuestSocialProvider, providerList } from '@thxnetwork/dashboard/types/rewards';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})
-export default class BaseDropdownChannelTypes extends Vue {
-    platformList = platformList;
+export default class BaseDropdownQuestProvider extends Vue {
+    providerList = providerList;
 
-    @Prop({ default: () => platformList[0] }) platform!: IChannel;
+    @Prop({ default: () => providerList[0] }) provider!: TQuestSocialProvider;
 }
 </script>

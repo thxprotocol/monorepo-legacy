@@ -1,4 +1,4 @@
-import { AccessTokenKind, OAuthScope, OAuthVariant } from '@thxnetwork/common/lib/types';
+import { AccessTokenKind, OAuthScope } from '@thxnetwork/common/lib/types';
 import { Token, TokenDocument } from '../models/Token';
 import { AccountDocument } from '../models/Account';
 import { decryptString } from '../util/decrypt';
@@ -11,20 +11,24 @@ import YouTubeService from './OAuthYouTubeService';
 import GithubService from './OAuthGithubService';
 
 const serviceMap: { [variant: string]: IOAuthService } = {
-    [OAuthVariant.Twitter]: new TwitterService(),
-    [OAuthVariant.Google]: new YouTubeService(),
-    [OAuthVariant.Discord]: new DiscordService(),
-    [OAuthVariant.Twitch]: new TwitchService(),
-    [OAuthVariant.Github]: new GithubService(),
+    [AccessTokenKind.Twitter]: new TwitterService(),
+    [AccessTokenKind.Google]: new YouTubeService(),
+    [AccessTokenKind.Discord]: new DiscordService(),
+    [AccessTokenKind.Twitch]: new TwitchService(),
+    [AccessTokenKind.Github]: new GithubService(),
 };
 
 export default class TokenService {
-    static getLoginURL({ variant, uid, scope }: { variant: OAuthVariant; uid: string; scope: OAuthScope }) {
-        return serviceMap[variant].getLoginURL({ uid, scope });
+    static getLoginURL({ kind, uid, scopes }: { kind: AccessTokenKind; uid: string; scopes: OAuthScope[] }) {
+        return serviceMap[kind].getLoginURL({ uid, scopes });
     }
 
-    static requestToken({ variant, code }: { variant: OAuthVariant; code: string }) {
-        return serviceMap[variant].requestToken(code);
+    static requestToken({ kind, code }: { kind: AccessTokenKind; code: string }) {
+        return serviceMap[kind].requestToken(code);
+    }
+
+    static revokeToken(token: TokenDocument) {
+        return serviceMap[token.kind].revokeToken(token);
     }
 
     static async refreshToken(account: AccountDocument, scope: OAuthScope) {
@@ -67,8 +71,14 @@ export default class TokenService {
         );
     }
 
-    static unsetToken(account: AccountDocument, kind: AccessTokenKind) {
-        return Token.findOneAndDelete({ sub: account._id, kind });
+    static async unsetToken(account: AccountDocument, kind: AccessTokenKind) {
+        const token = await this.getToken(account, { kind });
+
+        // Revoke access at token provider
+        await this.revokeToken(token);
+
+        // Remove from storage
+        return await Token.findOneAndDelete({ sub: account._id, kind });
     }
 
     static findTokenForUserId(userId: string, kind: AccessTokenKind) {

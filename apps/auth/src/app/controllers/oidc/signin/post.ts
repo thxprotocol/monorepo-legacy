@@ -17,14 +17,14 @@ async function controller(req: Request, res: Response) {
         const account = await AuthService.findAccountForAddress(address);
         if (!account) throw new UnauthorizedError('Could not find an account for this address.');
 
-        return await oidc.interactionFinished(req, res, { login: { accountId: String(account._id) } });
+        await oidc.interactionFinished(req, res, { login: { accountId: String(account._id) } });
     }
     // If no auth request message and signature are available use the email
     else if (email) {
-        const redirectURL = await AuthService.redirectOTP(req, email);
-        if (!redirectURL) throw new UnauthorizedError('Could not redirect your OTP request.');
+        const redirectURL = `/oidc/${req.interaction.jti}/signin/otp`;
+        await AuthService.redirectOTP(req, email);
 
-        return res.redirect(redirectURL);
+        res.redirect(redirectURL);
     }
 }
 

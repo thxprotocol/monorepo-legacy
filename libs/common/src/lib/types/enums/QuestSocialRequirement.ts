@@ -1,5 +1,4 @@
-export enum RewardConditionInteraction {
-    None = -1,
+export enum QuestSocialRequirement {
     YouTubeLike = 0,
     YouTubeSubscribe = 1,
     TwitterLike = 2,

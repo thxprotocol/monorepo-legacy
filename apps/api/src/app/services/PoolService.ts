@@ -1,4 +1,4 @@
-import { ChainId, CollaboratorInviteState } from '@thxnetwork/types/enums';
+import { AccessTokenKind, ChainId, CollaboratorInviteState, OAuthDiscordScope } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
@@ -32,6 +32,7 @@ import { getChainId } from './ContractService';
 import { Identity } from '../models/Identity';
 import { TIdentity } from '@thxnetwork/types/interfaces';
 import { Client } from '../models/Client';
+import { getToken } from './maps/quests';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -299,7 +300,11 @@ async function inviteCollaborator(pool: AssetPoolDocument, email: string) {
 function getAccountGuilds(account: TAccount) {
     // Try as this is potentially rate limited due to subsequent GET pool for id requests
     try {
-        return DiscordDataProxy.getGuilds(account);
+        const token = getToken(account, AccessTokenKind.Discord, [
+            OAuthDiscordScope.Identify,
+            OAuthDiscordScope.Guilds,
+        ]);
+        return DiscordDataProxy.getGuilds(token);
     } catch (error) {
         return [];
     }

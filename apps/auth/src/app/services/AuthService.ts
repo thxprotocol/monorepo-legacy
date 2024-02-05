@@ -12,15 +12,8 @@ import { oidc } from '@thxnetwork/auth/util/oidc';
 import { hubspot } from '@thxnetwork/auth/util/hubspot';
 import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
 import { MailService } from './MailService';
+import { accountVariantProviderMap } from '@thxnetwork/common/lib/types/maps/oauth';
 import TokenService from './TokenService';
-
-const accountVariantKindMap = {
-    [AccountVariant.SSOGoogle]: AccessTokenKind.Google,
-    [AccountVariant.SSODiscord]: AccessTokenKind.Discord,
-    [AccountVariant.SSOTwitter]: AccessTokenKind.Twitter,
-    [AccountVariant.SSOGithub]: AccessTokenKind.Github,
-    [AccountVariant.SSOTwitch]: AccessTokenKind.Twitch,
-};
 
 export default class AuthService {
     static findAccountForSession(session: { accountId: string }) {
@@ -32,7 +25,7 @@ export default class AuthService {
     }
 
     static async findAccountForToken(variant: AccountVariant, tokenInfo: Partial<{ userId: string }>) {
-        const kind = accountVariantKindMap[variant];
+        const kind = accountVariantProviderMap[variant];
         const token = await TokenService.findTokenForUserId(tokenInfo.userId, kind);
         if (!token) return;
 
@@ -131,7 +124,7 @@ export default class AuthService {
         // Interaction TTL is set to 10min and will expire after
         await req.interaction.save(Date.now() + 10 * 60 * 1000);
 
-        return `/oidc/${params.uid}/signin/otp`;
+        return req;
     }
 
     static async isOTPValid(account: AccountDocument, otp: string): Promise<boolean> {

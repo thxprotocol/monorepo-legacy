@@ -9,6 +9,7 @@ const schema = new mongoose.Schema(
         ...questBaseSchema,
         amount: Number,
         platform: Number,
+        kind: String,
         interaction: Number,
         content: String,
         contentMetadata: String,

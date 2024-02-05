@@ -123,13 +123,13 @@ import { mapGetters } from 'vuex';
 import { TERC20PerkState } from '@thxnetwork/dashboard/store/modules/erc20Perks';
 import { TERC721RewardState } from '@thxnetwork/dashboard/store/modules/erc721Perks';
 import {
-    RewardConditionPlatform,
-    RewardConditionInteraction,
+    QuestSocialRequirement,
     TERC20Perk,
     RewardVariant,
     TERC721Perk,
     TCustomReward,
     TBaseReward,
+    AccessTokenKind,
 } from '@thxnetwork/types/index';
 import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC20Create.vue';
@@ -137,7 +137,6 @@ import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals
 import BaseModalRewardCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCustomCreate.vue';
 import BaseModalRewardCouponCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCouponCreate.vue';
 import BaseModalRewardDiscordRoleCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardDiscordRoleCreate.vue';
-import BaseBadgeRewardConditionPreview from '@thxnetwork/dashboard/components/badges/BaseBadgeRewardConditionPreview.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalQRCodes from '@thxnetwork/dashboard/components/modals/BaseModalQRCodes.vue';
 import { hasPremiumAccess } from '@thxnetwork/common';
@@ -202,7 +201,6 @@ export const contentRewards = {
         BaseModalRewardCustomCreate,
         BaseModalRewardCouponCreate,
         BaseModalRewardDiscordRoleCreate,
-        BaseBadgeRewardConditionPreview,
         BaseCardTableHeader,
         BaseModalQRCodes,
     },
@@ -217,8 +215,8 @@ export const contentRewards = {
     }),
 })
 export default class RewardsView extends Vue {
-    RewardConditionPlatform = RewardConditionPlatform;
-    RewardConditionInteraction = RewardConditionInteraction;
+    AccessTokenKind = AccessTokenKind;
+    QuestSocialRequirement = QuestSocialRequirement;
     hasPremiumAccess = hasPremiumAccess;
     isLoading = true;
     limit = 10;

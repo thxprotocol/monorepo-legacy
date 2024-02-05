@@ -114,7 +114,7 @@
 import { IPools, TQuestState } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { AccessTokenKind, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/index';
+import { AccessTokenKind, QuestSocialRequirement, RewardConditionPlatform } from '@thxnetwork/types/index';
 import type { TAccount, TQuest, TQuestLock } from '@thxnetwork/types/interfaces';
 
 @Component({
@@ -131,9 +131,9 @@ export default class IntegrationTwitterView extends Vue {
     pools!: IPools;
     questList!: TQuestState;
     AccessTokenKind = AccessTokenKind;
-    RewardConditionInteraction = RewardConditionInteraction;
+    QuestSocialRequirement = QuestSocialRequirement;
     isTwitterSyncEnabled = false;
-    defaultConditionalRewardInteraction = RewardConditionInteraction.TwitterRetweet;
+    defaultConditionalRewardInteraction = QuestSocialRequirement.TwitterRetweet;
     defaultConditionalHashtag = '';
     defaultConditionalRewardTitle = '';
     defaultConditionalRewardDescription = '';

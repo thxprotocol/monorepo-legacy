@@ -21,14 +21,16 @@ import { mapGetters } from 'vuex';
 })
 export default class BaseDropdownYoutubeVideo extends Vue {
     videoId = '';
-    url = '';
     baseUrl = 'https://www.youtube.com/watch?v=';
 
     @Prop() content!: string;
 
     mounted() {
-        this.url = this.content ? this.baseUrl + this.content : '';
         this.onChange(this.url);
+    }
+
+    get url() {
+        return this.content ? this.baseUrl + this.content : '';
     }
 
     onChange(url: string) {

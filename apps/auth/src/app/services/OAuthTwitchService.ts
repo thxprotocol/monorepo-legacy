@@ -1,12 +1,12 @@
 import { AUTH_URL, TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET } from '@thxnetwork/auth/config/secrets';
-import { AccessTokenKind, OAuthScope } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccessTokenKind, OAuthTwitchScope } from '@thxnetwork/types/enums/AccessTokenKind';
 import { twitchClient } from '../util/axios';
 import { TToken } from '@thxnetwork/common/lib/types';
 import { IOAuthService } from './interfaces/IOAuthService';
 import { Token, TokenDocument } from '../models/Token';
 
 export default class TwitchService implements IOAuthService {
-    getLoginURL({ uid, scope }: { uid: string; scope: OAuthScope }) {
+    getLoginURL({ uid, scopes }: { uid: string; scopes: OAuthTwitchScope[] }) {
         const state = Buffer.from(JSON.stringify({ uid })).toString('base64');
         const url = new URL('https://id.twitch.tv/oauth2/authorize');
         url.searchParams.append('state', state);
@@ -14,7 +14,7 @@ export default class TwitchService implements IOAuthService {
         url.searchParams.append('force_verify', 'true');
         url.searchParams.append('client_id', TWITCH_CLIENT_ID);
         url.searchParams.append('redirect_uri', AUTH_URL + '/oidc/callback/twitch');
-        url.searchParams.append('scope', scope);
+        url.searchParams.append('scope', scopes.join(' '));
 
         return url.toString();
     }

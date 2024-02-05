@@ -18,7 +18,7 @@ const controller = async ({ params, account, wallet }: Request, res: Response) =
     const variant = questInteractionVariantMap[quest.interaction];
 
     // Get platform user id for account
-    const platformUserId = await getPlatformUserId(account, quest.platform);
+    const platformUserId = getPlatformUserId(account, quest.interaction);
     if (!platformUserId) return res.json({ error: 'Could not find platform user id.' });
 
     // Get validation result for this quest entry

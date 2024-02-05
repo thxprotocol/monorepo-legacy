@@ -2,7 +2,6 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
-import { IRewardCondition } from '@thxnetwork/dashboard/types/rewards';
 
 export type TClaim = {
     _id: string;
@@ -22,7 +21,6 @@ export type TClaimURLData = TClaim & {
     poolAddress: string;
     tokenSymbol: string;
     withdrawAmount: number;
-    withdrawCondition?: IRewardCondition;
     clientId: string;
 };
 

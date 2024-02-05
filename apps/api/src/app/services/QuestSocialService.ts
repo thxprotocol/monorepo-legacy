@@ -46,7 +46,7 @@ export default class QuestSocialService implements IQuestService {
         // We validate for both here since there are entries that only contain a sub
         // and should not be claimed again.
         const ids: any[] = [{ sub: wallet.sub }, { walletId: wallet._id }];
-        const platformUserId = await getPlatformUserId(account, quest.platform);
+        const platformUserId = getPlatformUserId(account, quest.interaction);
         if (platformUserId) ids.push({ platformUserId });
 
         // If no entry exist the quest is available

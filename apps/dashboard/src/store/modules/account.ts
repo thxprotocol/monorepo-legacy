@@ -1,5 +1,5 @@
 import type { TAccount } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind, RewardConditionPlatform, AccountPlanType } from '@thxnetwork/types/enums';
+import { AccessTokenKind, AccountPlanType, OAuthScope } from '@thxnetwork/types/enums';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { SigninRedirectArgs, User, UserManager } from 'oidc-client-ts';
@@ -84,28 +84,14 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async connectRedirect(payload: { platform: RewardConditionPlatform; returnUrl: string }) {
-        let access_token_kind = '';
-        switch (payload.platform) {
-            case RewardConditionPlatform.Google: {
-                access_token_kind = AccessTokenKind.YoutubeView;
-                break;
-            }
-            case RewardConditionPlatform.Twitter: {
-                access_token_kind = AccessTokenKind.Twitter;
-                break;
-            }
-            case RewardConditionPlatform.Discord: {
-                access_token_kind = AccessTokenKind.Discord;
-                break;
-            }
-        }
+    async connectRedirect(payload: { kind: AccessTokenKind; returnUrl: string; scope }) {
+        debugger;
         await this.userManager.signinRedirect({
             extraQueryParams: {
                 prompt: 'connect',
-                channel: payload.platform,
+                access_token_kind: payload.kind,
+                provider_scope: payload.scope,
                 return_url: payload.returnUrl,
-                access_token_kind,
             },
         });
     }

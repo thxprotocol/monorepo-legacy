@@ -1,13 +1,14 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import type { TAccount, TDiscordButton, TDiscordEmbed } from '@thxnetwork/types/interfaces';
+import type { TAccount, TDiscordButton, TDiscordEmbed, TToken } from '@thxnetwork/types/interfaces';
 import { client, PermissionFlagsBits } from '../../discord';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { ActionRowBuilder, ButtonBuilder, Guild } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
 import { logger } from '../util/logger';
-import { AccessTokenKind } from '@thxnetwork/common/lib/types/enums';
+import { AccessTokenKind, OAuthDiscordScope, OAuthRequiredScopes } from '@thxnetwork/common/lib/types/enums';
 import { DISCORD_API_ENDPOINT } from '@thxnetwork/common/lib/types/contants';
 import DiscordGuild, { DiscordGuildDocument } from '../models/DiscordGuild';
+import { getToken } from '../services/maps/quests';
 
 export enum NotificationVariant {
     QuestDaily = 0,
@@ -86,8 +87,7 @@ export default class DiscordDataProxy {
         return data.user.id;
     }
 
-    static async getGuilds(account: TAccount) {
-        const token = account.tokens.find((token) => token.kind === AccessTokenKind.Discord);
+    static async getGuilds(token: TToken) {
         const r = await discordClient({
             method: 'GET',
             url: '/users/@me/guilds',
@@ -101,9 +101,13 @@ export default class DiscordDataProxy {
     }
 
     static async validateGuildJoined(account: TAccount, guildId: string) {
-        const guilds = await this.getGuilds(account);
+        const token = getToken(account, AccessTokenKind.Discord, OAuthRequiredScopes.DiscordValidateGuild);
+        if (!token) return { result: false, reason: 'Could not find a Discord access_token for this account.' };
+
+        const guilds = await this.getGuilds(token);
         const isUserJoinedGuild = guilds.find((guild) => guild.id === guildId);
         if (isUserJoinedGuild) return { result: true, reason: '' };
+
         return { result: false, reason: 'Discord: Your Discord account is not a member of this server.' };
     }
 

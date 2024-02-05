@@ -11,6 +11,10 @@ async function controller(req: Request, res: Response) {
         brand = await BrandProxy.get(claim.pool._id);
     }
 
+    if (params.pool_id) {
+        brand = await BrandProxy.get(params.pool_id);
+    }
+
     const alert = {
         variant: 'info',
         icon: 'question-circle',

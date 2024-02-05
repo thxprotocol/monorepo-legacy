@@ -1,66 +1,52 @@
 import type { TAccount } from '@thxnetwork/types/interfaces';
-import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
-import { THXError } from '@thxnetwork/api/util/errors';
-import { AccessTokenKind } from '@thxnetwork/common/lib/types';
+import { google } from 'googleapis';
+import { AccessTokenKind, OAuthRequiredScopes, OAuthScope } from '@thxnetwork/common/lib/types';
+import { AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config/secrets';
+import { getToken } from '../services/maps/quests';
 
-class NoYoutubeDataError extends THXError {
-    message = 'Could not find youtube data for this account';
+const client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, AUTH_URL + '/oidc/callback/google');
+
+google.options({ auth: client });
+
+function getClient(account: TAccount, requiredScopes: OAuthScope[]) {
+    const token = getToken(account, AccessTokenKind.Google, requiredScopes);
+    client.setCredentials({
+        access_token: token.accessToken,
+        refresh_token: token.refreshToken,
+    });
+    return google.youtube({ version: 'v3' });
 }
 
 export default class YoutubeDataProxy {
-    static async getUserId(account: TAccount, kind = AccessTokenKind.Google) {
-        const { data } = await authClient({
-            method: 'GET',
-            url: `/account/${account.sub}`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
+    static async validateLike(account: TAccount, content: string, nextPageToken?: string) {
+        const youtube = getClient(account, OAuthRequiredScopes.GoogleYoutubeLike);
+        const { data } = await youtube.videos.list({
+            part: ['snippet'],
+            myRating: 'like',
+            maxResults: 50,
+            pageToken: nextPageToken,
         });
 
-        const token = data.tokens.find((token) => token.kind === kind);
-        if (!token) return;
-        return token.userId;
-    }
+        const isLiked = data.items.find((item) => item.id === content);
+        if (isLiked) return { result: true, reason: '' };
 
-    static async getYoutube(sub: string) {
-        const r = await authClient({
-            method: 'GET',
-            url: `/account/${sub}/google/youtube`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
-        });
+        if (data.nextPageToken) {
+            return await this.validateLike(account, content, nextPageToken);
+        }
 
-        if (!r.data) throw new NoYoutubeDataError();
-
-        return { isAuthorized: r.data.isAuthorized, channels: r.data.channels, videos: r.data.videos };
-    }
-
-    static async validateLike(account: TAccount, channelItem: string) {
-        const r = await authClient({
-            method: 'GET',
-            url: `/account/${account.sub}/google/youtube/like/${channelItem}`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
-        });
-
-        if (!r.data) throw new NoYoutubeDataError();
-
-        return r.data.result;
+        return { result: false, reason: 'YouTube: Could not find your like for this video.' };
     }
 
     static async validateSubscribe(account: TAccount, channelItem: string) {
-        const r = await authClient({
-            method: 'GET',
-            url: `/account/${account.sub}/google/youtube/subscribe/${channelItem}`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
+        const youtube = getClient(account, OAuthRequiredScopes.GoogleYoutubeLike);
+        const { data } = await youtube.subscriptions.list({
+            forChannelId: channelItem,
+            part: ['snippet'],
+            mine: true,
         });
+        const isSubscribed = data.items.length > 0;
+        if (isSubscribed) return { result: true, reason: '' };
 
-        if (!r.data) throw new NoYoutubeDataError();
-
-        return r.data.result;
+        return { result: false, reason: 'Could not find your subscription for this channel.' };
     }
 }
