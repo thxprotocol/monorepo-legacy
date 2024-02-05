@@ -3,7 +3,7 @@ import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
-import { TAccount } from '@thxnetwork/types/interfaces';
+import { TAccount, TToken } from '@thxnetwork/types/interfaces';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
 import { DailyReward } from '../models/DailyReward';
@@ -122,6 +122,12 @@ async function countByNetwork(chainId: ChainId) {
 
 async function find(model: any, pool: AssetPoolDocument) {
     return await model.find({ poolId: String(pool._id) });
+}
+
+async function findOwner(pool: AssetPoolDocument) {
+    const account = await AccountProxy.findById(pool.sub);
+    account.tokens = account.tokens.map(({ kind, expiry, scopes }) => ({ kind, expiry, scopes } as TToken));
+    return account;
 }
 
 async function getQuestCount(pool: AssetPoolDocument) {
@@ -352,6 +358,7 @@ export default {
     getParticipantCount,
     getQuestCount,
     getRewardCount,
+    findOwner,
     findIdentities,
     findParticipants,
     findGuilds,

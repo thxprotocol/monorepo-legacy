@@ -35,7 +35,7 @@ export const controller = async (req: Request, res: Response) => {
         BrandService.get(req.params.id),
         Wallet.find({ poolId: req.params.id }),
         PoolService.findCollaborators(pool),
-        AccountProxy.findById(pool.sub),
+        PoolService.findOwner(pool),
         Event.find({ poolId: pool._id }).distinct('name'), // Seperate list (many)
         Identity.find({ poolId: pool._id }), // Seperate list (many)
         PoolSubscription.countDocuments({ poolId: req.params.id }),
