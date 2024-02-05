@@ -1,11 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import type { TAccount, TPointReward } from '@thxnetwork/types/interfaces';
-import {
-    AccessTokenKind,
-    OAuthRequiredScopes,
-    OAuthScope,
-    OAuthTwitterScope,
-} from '@thxnetwork/common/lib/types/enums';
+import { TAccount, TPointReward } from '@thxnetwork/types/interfaces';
+import { AccessTokenKind, OAuthRequiredScopes, OAuthTwitterScope } from '@thxnetwork/common/lib/types/enums';
 import { TWITTER_API_ENDPOINT } from '@thxnetwork/common/lib/types/contants';
 import { formatDistance } from 'date-fns';
 import { getToken } from '../services/maps/quests';

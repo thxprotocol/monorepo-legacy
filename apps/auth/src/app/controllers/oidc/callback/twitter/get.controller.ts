@@ -6,9 +6,7 @@ import AuthService from '@thxnetwork/auth/services/AuthService';
 
 export async function controller(req: Request, res: Response) {
     const { code, interaction } = await AuthService.redirectCallback(req);
-    console.log({ code });
-    const token = await TokenService.requestToken({ kind: AccessTokenKind.Twitter, code });
-    console.log({ token });
+    const token = await TokenService.request({ kind: AccessTokenKind.Twitter, code });
     const account = await AuthService.signin(interaction, token, AccountVariant.SSOTwitter);
     const returnUrl = await AuthService.getReturn(interaction, account);
 

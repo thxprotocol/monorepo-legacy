@@ -6,7 +6,7 @@ import TokenService from '@thxnetwork/auth/services/TokenService';
 
 export async function controller(req: Request, res: Response) {
     const { code, interaction } = await AuthService.redirectCallback(req);
-    const token = await TokenService.requestToken({ kind: AccessTokenKind.Google, code });
+    const token = await TokenService.request({ kind: AccessTokenKind.Google, code });
     const account = await AuthService.signin(interaction, token, AccountVariant.SSOGoogle);
     const returnUrl = await AuthService.getReturn(interaction, account);
 

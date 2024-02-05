@@ -23,18 +23,17 @@ export default class TokenService {
         return serviceMap[kind].getLoginURL({ uid, scopes });
     }
 
-    static requestToken({ kind, code }: { kind: AccessTokenKind; code: string }) {
+    static request({ kind, code }: { kind: AccessTokenKind; code: string }) {
         return serviceMap[kind].requestToken(code);
     }
 
-    static revokeToken(token: TokenDocument) {
+    static revoke(token: TokenDocument) {
         return serviceMap[token.kind].revokeToken(token);
     }
 
-    static async refreshToken(account: AccountDocument, scope: OAuthScope) {
-        // Check if token exists for account
-        const token = await TokenService.getToken(account, { scope });
-        if (!token) return;
+    static async refresh(token: TokenDocument) {
+        // Return token if there is no expiry or no refreshtoken
+        if (!token || !token.expiry || !token.refreshToken) return token;
 
         // Check if token is expired
         const isExpired = Date.now() > token.expiry;
@@ -45,22 +44,28 @@ export default class TokenService {
     }
 
     static async list(account: AccountDocument) {
-        const tokens = await Token.find({ sub: account._id });
-
-        return tokens.map((token: TokenDocument) => {
-            const { accessTokenEncrypted, refreshTokenEncrypted } = token;
-            const accessToken = accessTokenEncrypted && decryptString(accessTokenEncrypted, SECURE_KEY);
-            const refreshToken = refreshTokenEncrypted && decryptString(refreshTokenEncrypted, SECURE_KEY);
-
-            return { ...token.toJSON(), accessToken, refreshToken };
-        });
+        const kinds = [
+            AccessTokenKind.Google,
+            AccessTokenKind.Twitter,
+            AccessTokenKind.Discord,
+            AccessTokenKind.Twitch,
+            AccessTokenKind.Github,
+        ];
+        return (await Promise.all(kinds.map((kind: AccessTokenKind) => this.getToken(account, kind)))).filter(
+            (token) => !!token,
+        );
     }
 
-    static getToken(
-        account: AccountDocument,
-        query: { scope?: string; kind?: AccessTokenKind },
-    ): Promise<TokenDocument> {
-        return Token.findOne({ sub: account._id, ...query });
+    static async getToken(account: AccountDocument, kind: AccessTokenKind): Promise<TokenDocument> {
+        const token = await Token.findOne({ sub: account._id, kind });
+        if (!token) return;
+
+        const { accessTokenEncrypted, refreshTokenEncrypted } = token;
+        const accessToken = accessTokenEncrypted && decryptString(accessTokenEncrypted, SECURE_KEY);
+        const refreshToken = refreshTokenEncrypted && decryptString(refreshTokenEncrypted, SECURE_KEY);
+        const refreshedToken = await this.refresh(token);
+
+        return { ...refreshedToken.toJSON(), accessToken, refreshToken };
     }
 
     static setToken(account: AccountDocument, token: Partial<TokenDocument>) {
@@ -72,10 +77,10 @@ export default class TokenService {
     }
 
     static async unsetToken(account: AccountDocument, kind: AccessTokenKind) {
-        const token = await this.getToken(account, { kind });
+        const token = await this.getToken(account, kind);
 
         // Revoke access at token provider
-        await this.revokeToken(token);
+        await this.revoke(token);
 
         // Remove from storage
         return await Token.findOneAndDelete({ sub: account._id, kind });

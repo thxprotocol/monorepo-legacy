@@ -128,7 +128,7 @@ export default class AuthService {
     }
 
     static async isOTPValid(account: AccountDocument, otp: string): Promise<boolean> {
-        const token = await TokenService.getToken(account, { kind: AccessTokenKind.Auth });
+        const token = await TokenService.getToken(account, AccessTokenKind.Auth);
         if (!token) return;
         return await bcrypt.compare(otp, token.accessToken);
     }
