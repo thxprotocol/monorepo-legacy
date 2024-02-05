@@ -84,13 +84,12 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async connectRedirect(payload: { kind: AccessTokenKind; returnUrl: string; scope }) {
-        debugger;
+    async connectRedirect(payload: { kind: AccessTokenKind; scopes: OAuthScope[]; returnUrl: string }) {
         await this.userManager.signinRedirect({
             extraQueryParams: {
                 prompt: 'connect',
                 access_token_kind: payload.kind,
-                provider_scope: payload.scope,
+                provider_scope: payload.scopes.join(' '),
                 return_url: payload.returnUrl,
             },
         });

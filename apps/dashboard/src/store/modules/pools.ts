@@ -6,7 +6,6 @@ import type {
     TParticipant,
     TPool,
     TPoolSettings,
-    TPoolTransferResponse,
     TQuest,
     TQuestEntry,
 } from '@thxnetwork/types/interfaces';
@@ -15,7 +14,6 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
-import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { TIdentity } from '@thxnetwork/common/lib/types/interfaces/Identity';
 
@@ -337,7 +335,6 @@ class PoolModule extends VuexModule {
             headers: { 'X-PoolId': pool._id },
         });
         for (const guild of data) {
-            console.log(guild);
             this.context.commit('setGuild', guild);
         }
     }

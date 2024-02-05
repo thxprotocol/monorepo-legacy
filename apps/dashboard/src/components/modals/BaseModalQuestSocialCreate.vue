@@ -25,7 +25,6 @@
             </b-form-group>
         </template>
         <template #col-right>
-            {{ requirement }}
             <BaseCardQuestRequirement
                 class="mb-3"
                 :pool="pool"
@@ -123,7 +122,7 @@ export default class ModalQuestSocialCreate extends Vue {
                   kind: this.reward.kind,
                   interaction: this.reward.interaction,
                   content: this.reward.content,
-                  contentMetadata: this.reward.contentMetadata,
+                  contentMetadata: JSON.parse(this.reward.contentMetadata),
               }
             : {
                   ...requirementDefaultsMap[this.variant],
@@ -151,7 +150,7 @@ export default class ModalQuestSocialCreate extends Vue {
                 kind: this.requirement.kind,
                 interaction: this.requirement.interaction,
                 content: this.requirement.content,
-                contentMetadata: this.requirement.contentMetadata,
+                contentMetadata: JSON.stringify(this.requirement.contentMetadata),
                 expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
                 page: this.reward ? this.reward.page : 1,
                 index: !this.reward ? this.total : this.reward.index,

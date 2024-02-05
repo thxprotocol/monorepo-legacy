@@ -36,13 +36,13 @@ export default class BaseDropdownYoutubeVideo extends Vue {
     onChange(url: string) {
         if (url && url.toLowerCase().includes('shorts')) return;
 
-        const result = /^https?:\/\/(www\.)?youtu\.be/.test(url)
+        const content = /^https?:\/\/(www\.)?youtu\.be/.test(url)
             ? url.replace(/^https?:\/\/(www\.)?youtu\.be\/([\w-]{11}).*/, '$2')
             : url.replace(/.*\?v=([\w-]{11}).*/, '$1');
 
-        if (result !== this.url) {
-            this.videoId = result;
-            this.$emit('selected', { content: result, contentMetadata: { videoId: this.videoId, videoURL: url } });
+        if (content !== this.url) {
+            this.videoId = content;
+            this.$emit('selected', { content });
         } else {
             this.videoId = '';
         }

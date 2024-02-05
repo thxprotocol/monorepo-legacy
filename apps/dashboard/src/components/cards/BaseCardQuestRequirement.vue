@@ -106,7 +106,7 @@ export default class BaseCardQuestRequirement extends Vue {
     kind: AccessTokenKind = AccessTokenKind.Google;
     interaction: QuestSocialRequirement = QuestSocialRequirement.YouTubeLike;
     content = '';
-    contentMetadata: unknown;
+    contentMetadata: unknown = {};
     isVisible = true;
     profile!: TAccount;
 
@@ -123,28 +123,33 @@ export default class BaseCardQuestRequirement extends Vue {
     }
 
     get isPlatformAvailable() {
-        if (!this.provider || !this.provider.kind || !this.pool.owner) return false;
-        return this.pool.owner.tokens.find(({ kind }) => kind === this.provider.kind);
+        if (!this.provider || !this.provider.kind || !this.pool.owner) return true;
+        return this.pool.owner.tokens.find(
+            ({ kind, scopes }) =>
+                this.provider.kind === kind && this.provider.scopes.every((scope) => scopes.includes(scope)),
+        );
     }
 
     async mounted() {
         if (this.requirement) {
             this.provider = getPlatform(this.requirement.kind) || providerList[0];
+            this.kind = this.requirement.kind;
             this.providerInteraction = getInteraction(this.requirement.interaction) || providerInteractionList[0];
+            this.interaction = this.requirement.interaction;
             this.content = this.requirement.content;
             this.contentMetadata = this.requirement.contentMetadata;
         }
     }
 
     async onClickConnect(provider: TQuestSocialProvider) {
-        await this.$store.dispatch('account/connect', { kind: provider.kind, scope: provider.scope });
+        await this.$store.dispatch('account/connect', { kind: provider.kind, scopes: provider.scopes });
     }
 
     onSelectProvider(provider: TQuestSocialProvider) {
         this.provider = provider;
         this.kind = provider.kind;
         this.content = '';
-        this.contentMetadata = undefined;
+        this.contentMetadata = {};
 
         const interaction = getInteraction(provider.actions[0]) as TQuestSocialInteraction;
         this.onSelectProviderInteraction(interaction);
@@ -157,7 +162,7 @@ export default class BaseCardQuestRequirement extends Vue {
         this.providerInteraction = interaction;
         this.interaction = interaction.type;
         this.content = '';
-        this.contentMetadata = undefined;
+        this.contentMetadata = {};
         this.change();
     }
 
@@ -172,8 +177,7 @@ export default class BaseCardQuestRequirement extends Vue {
             kind: this.kind,
             interaction: this.interaction,
             content: this.content,
-            contentMetadata:
-                typeof this.contentMetadata === 'object' ? JSON.stringify(this.contentMetadata) : this.contentMetadata,
+            contentMetadata: this.contentMetadata,
         });
     }
 }
