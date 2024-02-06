@@ -7,6 +7,14 @@ const PBKDF2_NAME = 'sha256';
 const PBKDF2_SALT_SIZE = 16;
 const PBKDF2_ITERATIONS = 1000;
 
+const accountVariantProviderMap = {
+    1: 'google',
+    2: 'twitter',
+    5: 'github',
+    6: 'discord',
+    7: 'twitch',
+};
+
 function encrypt(plaintext, key) {
     const nonce = crypto.randomBytes(ALGORITHM_NONCE_SIZE);
     const cipher = crypto.createCipheriv(ALGORITHM_NAME, key, nonce);
@@ -34,25 +42,38 @@ module.exports = {
         const accounts = await (await accountsColl.find({})).toArray();
         const operations = [];
 
+        // Iterate over accounts
         for (const account of accounts) {
             if (!account.tokens) continue;
+            // Iterate over tokens in account
             for (const token of account.tokens) {
-                if (!token.accessToken || !token.refreshToken || !token.userId) continue;
-                const operation = {
-                    insertOne: {
-                        document: {
-                            sub: String(account._id),
-                            kind: token.kind,
-                            accessTokenEncrypted: encryptString(token.accessToken, process.env.SECURE_KEY),
-                            refreshTokenEncrypted: encryptString(token.refreshToken, process.env.SECURE_KEY),
-                            expiry: token.expiry,
-                            userId: token.userId,
-                            createdAt: new Date(),
-                            updatedAt: new Date(),
+                // See what token is used for sign in
+                const accountTokenKind = accountVariantProviderMap[String(account.variant)];
+                // If not used for sign in
+                if (accountTokenKind) {
+                    // Check if token has sufficient properties
+                    // if (!token.accessToken || !token.refreshToken || !token.userId) continue;
+
+                    // Migrate that token
+                    const operation = {
+                        insertOne: {
+                            document: {
+                                sub: String(account._id),
+                                kind: token.kind,
+                                accessTokenEncrypted:
+                                    token.accessToken && encryptString(token.accessToken, process.env.SECURE_KEY),
+                                refreshTokenEncrypted:
+                                    token.refreshToken && encryptString(token.refreshToken, process.env.SECURE_KEY),
+                                expiry: token.expiry,
+                                userId: token.userId,
+                                createdAt: new Date(),
+                                updatedAt: new Date(),
+                            },
                         },
-                    },
-                };
-                operations.push(operation);
+                    };
+                    operations.push(operation);
+                }
+                // Ignore all other tokens
             }
         }
 
