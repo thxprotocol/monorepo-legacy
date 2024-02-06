@@ -1,6 +1,6 @@
 import { AccessTokenKind, OAuthScope } from '@thxnetwork/common/lib/types';
 import { Token, TokenDocument } from '../models/Token';
-import { AccountDocument } from '../models/Account';
+import { Account, AccountDocument } from '../models/Account';
 import { decryptString } from '../util/decrypt';
 import { SECURE_KEY } from '../config/secrets';
 import { IOAuthService } from './interfaces/IOAuthService';
@@ -55,18 +55,26 @@ export default class TokenService {
         return { ...refreshedToken.toJSON(), accessToken, refreshToken };
     }
 
-    static async setToken(account: AccountDocument, token: Partial<TokenDocument>) {
-        // Check if other accounts are using this token
-        const tokens = await Token.find({ kind: token.kind, userId: token.userId });
+    static async connect(account: AccountDocument, token: Partial<TokenDocument>) {
+        // Check if any other accounts are using this token
+        const tokens = await Token.find({ kind: token.kind, userId: token.userId, sub: { $ne: String(account._id) } });
         if (tokens.length) {
-            for (const token of tokens) {
-                // Revoke access for existing accounts
-                await this.revoke(token);
-                // Remove from storage
-                await this.remove(token);
-            }
+            throw new Error('Already connect to another THX account! Please disconnect that account first.');
         }
 
+        // Check if this account already has a token but with another userId
+        const existingToken = await Token.findOne({ sub: String(account._id), kind: token.kind });
+        if (existingToken && existingToken.userId !== token.userId) {
+            throw new Error(
+                'Already connected to a different account from this provider! Please disconnect that account first.',
+            );
+        }
+
+        // Store the token for the account
+        return await this.setToken(account, token);
+    }
+
+    static async setToken(account: AccountDocument, token: Partial<TokenDocument>) {
         // Store the token for the new account
         return Token.findOneAndUpdate(
             { sub: account._id, kind: token.kind },

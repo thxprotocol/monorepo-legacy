@@ -97,7 +97,7 @@ const tokenInteractionMap: { [interaction: number]: { kind: AccessTokenKind; sco
     },
 };
 
-export function getToken(account: TAccount, kind: AccessTokenKind, requiredScopes: OAuthScope[] = []) {
+function getPlatformToken(account: TAccount, kind: AccessTokenKind, requiredScopes: OAuthScope[] = []) {
     return account.tokens.find(
         (token) => token.kind === kind && requiredScopes.every((scope) => token.scopes.includes(scope)),
     );
@@ -106,7 +106,7 @@ export function getToken(account: TAccount, kind: AccessTokenKind, requiredScope
 export const getPlatformUserId = (account: TAccount, interaction: QuestSocialRequirement) => {
     if (typeof interaction === 'undefined') return;
     const { kind } = tokenInteractionMap[interaction];
-    const token = getToken(account, kind);
+    const token = getPlatformToken(account, kind);
 
     return token && token.userId;
 };

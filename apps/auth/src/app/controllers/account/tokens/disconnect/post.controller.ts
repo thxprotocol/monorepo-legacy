@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { AccessTokenKind } from '@thxnetwork/common/lib/types';
 
-const validation = [param('kind').isString()];
+const validation = [param('sub').isMongoId(), param('kind').isString()];
 
 export const controller = async (req: Request, res: Response) => {
     const account = await Account.findById(req.params.sub);

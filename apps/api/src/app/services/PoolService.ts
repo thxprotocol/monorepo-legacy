@@ -32,7 +32,6 @@ import { getChainId } from './ContractService';
 import { Identity } from '../models/Identity';
 import { TIdentity } from '@thxnetwork/types/interfaces';
 import { Client } from '../models/Client';
-import { getToken } from './maps/quests';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -306,10 +305,10 @@ async function inviteCollaborator(pool: AssetPoolDocument, email: string) {
     return collaborator;
 }
 
-function getAccountGuilds(account: TAccount) {
+async function getAccountGuilds(account: TAccount) {
     // Try as this is potentially rate limited due to subsequent GET pool for id requests
     try {
-        const token = getToken(account, AccessTokenKind.Discord, [
+        const token = await AccountProxy.getToken(account, AccessTokenKind.Discord, [
             OAuthDiscordScope.Identify,
             OAuthDiscordScope.Guilds,
         ]);

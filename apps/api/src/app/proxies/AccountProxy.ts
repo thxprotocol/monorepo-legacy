@@ -30,8 +30,8 @@ export default class AccountProxy {
 
     static disconnect(account: TAccount, kind: AccessTokenKind) {
         return this.request({
-            method: 'GET',
-            url: `/accounts/${account.sub}/tokens/${kind}/disconnect`,
+            method: 'DELETE',
+            url: `/accounts/${account.sub}/tokens/${kind}`,
         });
     }
 

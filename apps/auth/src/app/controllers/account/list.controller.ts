@@ -41,7 +41,7 @@ const controller = async (req: Request, res: Response) => {
                 variant: account.variant,
                 role: account.role,
                 goal: account.goal,
-                tokens,
+                tokens: tokens.map(({ kind, sub, userId, metadata }) => ({ kind, sub, userId, metadata })),
             };
         }),
     );

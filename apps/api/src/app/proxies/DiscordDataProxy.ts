@@ -5,10 +5,10 @@ import { AssetPoolDocument } from '../models/AssetPool';
 import { ActionRowBuilder, ButtonBuilder, Guild } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
 import { logger } from '../util/logger';
-import { AccessTokenKind, OAuthDiscordScope, OAuthRequiredScopes } from '@thxnetwork/common/lib/types/enums';
+import { AccessTokenKind, OAuthRequiredScopes } from '@thxnetwork/common/lib/types/enums';
 import { DISCORD_API_ENDPOINT } from '@thxnetwork/common/lib/types/contants';
 import DiscordGuild, { DiscordGuildDocument } from '../models/DiscordGuild';
-import { getToken } from '../services/maps/quests';
+import AccountProxy from './AccountProxy';
 
 export enum NotificationVariant {
     QuestDaily = 0,
@@ -87,7 +87,11 @@ export default class DiscordDataProxy {
     }
 
     static async validateGuildJoined(account: TAccount, guildId: string) {
-        const token = getToken(account, AccessTokenKind.Discord, OAuthRequiredScopes.DiscordValidateGuild);
+        const token = await AccountProxy.getToken(
+            account,
+            AccessTokenKind.Discord,
+            OAuthRequiredScopes.DiscordValidateGuild,
+        );
         if (!token) return { result: false, reason: 'Could not find a Discord access_token for this account.' };
 
         const guilds = await this.getGuilds(token);

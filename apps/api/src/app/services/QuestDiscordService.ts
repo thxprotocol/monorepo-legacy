@@ -5,15 +5,13 @@ import {
     TDiscordMessage,
     TValidationResult,
     QuestSocialRequirement,
-    AccessTokenKind,
 } from '@thxnetwork/common/lib/types';
 import { WalletDocument } from '../models/Wallet';
 import { PointRewardClaim } from '../models/PointRewardClaim';
 import { PointReward } from '../models/PointReward';
 import { IQuestService } from './interfaces/IQuestService';
-import { getPlatformUserId, getToken, requirementMap } from './maps/quests';
+import { getPlatformUserId, requirementMap } from './maps/quests';
 import DiscordMessage from '../models/DiscordMessage';
-import { account } from '../util/jest/constants';
 import QuestSocialService from './QuestSocialService';
 
 type TRestartDates = { now: Date; start: Date; endDay: Date; end: Date };

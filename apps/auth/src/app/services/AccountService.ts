@@ -5,6 +5,9 @@ import { toChecksumAddress } from 'web3-utils';
 import { BadRequestError } from '../util/errors';
 import { MailService } from './MailService';
 import { DASHBOARD_URL } from '../config/secrets';
+import { accountVariantProviderMap } from '@thxnetwork/common/lib/types/maps/oauth';
+import { AccountVariant } from '@thxnetwork/common/lib/types';
+import TokenService from './TokenService';
 
 export class AccountService {
     static create(data: Partial<AccountDocument>) {
@@ -65,5 +68,32 @@ export class AccountService {
 
     static async remove(id: string) {
         await Account.deleteOne({ _id: id });
+    }
+
+    static findAccountForSession(session: { accountId: string }) {
+        return Account.findById(session.accountId);
+    }
+
+    static findAccountForEmail(email: string) {
+        return Account.findOne({ email: email.toLowerCase() });
+    }
+
+    static async findAccountForToken(variant: AccountVariant, tokenInfo: Partial<{ userId: string }>) {
+        const kind = accountVariantProviderMap[variant];
+        const token = await TokenService.findTokenForUserId(tokenInfo.userId, kind);
+        if (!token) return;
+
+        return await Account.findById(token.sub);
+    }
+
+    static async findAccountForAddress(address: string) {
+        const checksummedAddress = toChecksumAddress(address);
+        const account = await Account.findOne({ address: checksummedAddress });
+        if (account) return account;
+        return await Account.create({
+            variant: AccountVariant.Metamask,
+            plan: AccountPlanType.Free,
+            address,
+        });
     }
 }

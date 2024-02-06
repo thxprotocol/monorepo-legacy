@@ -23,7 +23,7 @@ export async function createTwitterQuests() {
             const token = await AccountProxy.getToken(
                 account,
                 AccessTokenKind.Twitter,
-                OAuthRequiredScopes.TwitterAuth,
+                OAuthRequiredScopes.TwitterAutoQuest,
             );
             if (!token) {
                 logger.error(`Could not find Twitter accounts for ${pool.sub} in ${pool.settings.title}`);

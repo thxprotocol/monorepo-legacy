@@ -23,7 +23,7 @@ export default class YouTubeService implements IOAuthService {
 
     async requestToken(code: string) {
         const { tokens } = await client.getToken(code);
-        const expiry = tokens.expiry_date ? Date.now() + Number(tokens.expiry_date) * 1000 : undefined;
+        const expiry = tokens.expiry_date ? Date.now() + Number(tokens.expiry_date) : undefined;
         const claims = await parseJwt(tokens.id_token);
 
         return {
@@ -63,9 +63,12 @@ export default class YouTubeService implements IOAuthService {
     async revokeToken(token: TokenDocument): Promise<void> {
         try {
             const url = new URL('https://oauth2.googleapis.com/revoke');
-            url.searchParams.append('token', token.accessToken);
-
-            await axios({ url: url.toString(), method: 'POST' });
+            if (token.accessToken) {
+                await axios({ url: url.toString(), method: 'POST', params: { token: token.accessToken } });
+            }
+            if (token.refreshToken) {
+                await axios({ url: url.toString(), method: 'POST', params: { token: token.refreshToken } });
+            }
         } catch (error) {
             logger.error(error);
         }

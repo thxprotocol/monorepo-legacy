@@ -6,7 +6,7 @@ import Read from './get';
 import Create from './post';
 import CreateORPRetry from './retry/post';
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.get('/', assertInteraction, Read.controller);
 router.get('/otp', assertInteraction, ReadOTP.controller);

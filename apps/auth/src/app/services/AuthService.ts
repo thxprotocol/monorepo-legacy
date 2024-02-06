@@ -1,6 +1,5 @@
 import { Request } from 'express';
 import { Account, AccountDocument } from '../models/Account';
-import { toChecksumAddress } from 'web3-utils';
 import { SUCCESS_SIGNUP_COMPLETED } from '../util/messages';
 import { TInteraction, AccountVariant, TToken } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
@@ -12,70 +11,30 @@ import { oidc } from '@thxnetwork/auth/util/oidc';
 import { hubspot } from '@thxnetwork/auth/util/hubspot';
 import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
 import { MailService } from './MailService';
-import { accountVariantProviderMap } from '@thxnetwork/common/lib/types/maps/oauth';
 import TokenService from './TokenService';
 
 export default class AuthService {
-    static findAccountForSession(session: { accountId: string }) {
-        return Account.findById(session.accountId);
-    }
-
-    static findAccountForEmail(email: string) {
-        return Account.findOne({ email: email.toLowerCase() });
-    }
-
-    static async findAccountForToken(variant: AccountVariant, tokenInfo: Partial<{ userId: string }>) {
-        const kind = accountVariantProviderMap[variant];
-        const token = await TokenService.findTokenForUserId(tokenInfo.userId, kind);
-        if (!token) return;
-
-        return await Account.findById(token.sub);
-    }
-
-    static async findAccountForAddress(address: string) {
-        const checksummedAddress = toChecksumAddress(address);
-        const account = await Account.findOne({ address: checksummedAddress });
-        if (account) return account;
-        return await Account.create({
-            variant: AccountVariant.Metamask,
-            plan: AccountPlanType.Free,
-            address,
-        });
-    }
-
-    static async upsertAccount(
-        interaction: TInteraction,
-        tokenInfo: Partial<TToken>,
-        variant: AccountVariant,
-        email?: string,
-    ) {
+    static async connect(interaction: TInteraction, tokenInfo: Partial<TToken>, variant: AccountVariant) {
         let account: AccountDocument;
         const { session, params } = interaction;
 
         // Find account for active session
         if (session && session.accountId) {
-            account = await this.findAccountForSession(session);
+            account = await AccountService.findAccountForSession(session);
         }
-        // Find account for email
-        else if (email) {
-            account = await this.findAccountForEmail(email);
-        }
+
         // Find account for userId
         else if (tokenInfo) {
-            account = await this.findAccountForToken(variant, tokenInfo);
+            account = await AccountService.findAccountForToken(variant, tokenInfo);
         }
 
         // If no match, create the account
         if (!account) {
-            account = await AccountService.create({
-                variant,
-                email,
-                plan: params.signup_plan,
-            });
+            account = await AccountService.create({ variant, plan: params.signup_plan });
         }
 
-        // Store token for account
-        await TokenService.setToken(account, tokenInfo);
+        // Connect token to account
+        await TokenService.connect(account, tokenInfo);
 
         return account;
     }
@@ -104,7 +63,7 @@ export default class AuthService {
 
     static async redirectOTP(req: Request, email: string) {
         const { params } = req.interaction;
-        let account = await this.findAccountForEmail(email);
+        let account = await AccountService.findAccountForEmail(email);
 
         // Create and return account if none found the given email
         if (!account) {

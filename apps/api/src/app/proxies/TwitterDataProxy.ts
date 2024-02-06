@@ -138,12 +138,9 @@ export default class TwitterDataProxy {
             OAuthTwitterScope.TweetRead,
         ]);
         const startTime = new Date(Date.now() - 60 * 60 * 24).toISOString(); // 24h ago
-        const { data } = await twitterClient({
+        const data = await this.request(account, token, {
             url: '/tweets/search/recent',
             method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token.accessToken}`,
-            },
             params: {
                 query: `from:${token.userId} ${query}`,
                 start_time: startTime,
