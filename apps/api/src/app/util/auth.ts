@@ -15,7 +15,7 @@ export const authClient = async (options: AxiosRequestConfig) => {
         axios.defaults.baseURL = AUTH_URL;
         return await axios(options);
     } catch (error) {
-        if (error && error.response.status >= 400 && error.response.status <= 600) {
+        if (error && error.response && error.response.status >= 400 && error.response.status <= 600) {
             return error.response as AxiosResponse;
         }
     }

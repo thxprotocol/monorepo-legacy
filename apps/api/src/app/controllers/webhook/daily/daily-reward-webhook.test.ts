@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { QuestVariant } from '@thxnetwork/types/enums';
 import { dashboardAccessToken, userWalletAddress2, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
-import { isAddress, toNumber } from 'web3-utils';
+import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { DailyReward, DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
 import { poll } from '@thxnetwork/api/util/polling';
