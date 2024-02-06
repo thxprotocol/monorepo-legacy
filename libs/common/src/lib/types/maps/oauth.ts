@@ -17,6 +17,14 @@ export const accountVariantProviderMap = {
     [AccountVariant.SSOTwitch]: AccessTokenKind.Twitch,
 };
 
+export const providerAccountVariantMap = {
+    [AccessTokenKind.Google]: AccountVariant.SSOGoogle,
+    [AccessTokenKind.Discord]: AccountVariant.SSODiscord,
+    [AccessTokenKind.Twitter]: AccountVariant.SSOTwitter,
+    [AccessTokenKind.Github]: AccountVariant.SSOGithub,
+    [AccessTokenKind.Twitch]: AccountVariant.SSOTwitch,
+};
+
 export const interactionComponentMap = {
     [QuestSocialRequirement.YouTubeSubscribe]: 'BaseDropdownYoutubeChannels',
     [QuestSocialRequirement.YouTubeLike]: 'BaseDropdownYoutubeVideo',

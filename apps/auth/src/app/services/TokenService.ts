@@ -1,6 +1,6 @@
 import { AccessTokenKind, OAuthScope } from '@thxnetwork/common/lib/types';
 import { Token, TokenDocument } from '../models/Token';
-import { Account, AccountDocument } from '../models/Account';
+import { AccountDocument } from '../models/Account';
 import { decryptString } from '../util/decrypt';
 import { SECURE_KEY } from '../config/secrets';
 import { IOAuthService } from './interfaces/IOAuthService';

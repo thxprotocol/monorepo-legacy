@@ -35,9 +35,9 @@ describe('OAuth2 Grants', () => {
         });
     });
 
-    describe('GET /account', () => {
+    describe('GET /accounts', () => {
         it('HTTP 401 Unauthorized', async () => {
-            const res = await http.get('/account');
+            const res = await http.get('/accounts');
             expect(res.status).toBe(401);
         });
     });
@@ -138,7 +138,7 @@ describe('OAuth2 Grants', () => {
     describe('GET /account/:id', () => {
         it('HTTP 200', async () => {
             const res = await http
-                .get(`/account/${sub}`)
+                .get(`/accounts/${sub}`)
                 .set({ Authorization: `Bearer ${accessToken}` })
                 .send();
             expect(res.status).toBe(200);
