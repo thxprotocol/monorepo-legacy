@@ -1,43 +1,16 @@
 import { TAccount } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { BadRequestError } from '../util/errors';
-import { AccessTokenKind } from '@thxnetwork/common/lib/types/enums';
-
-async function authAccountRequest(url: string) {
-    const { data } = await authClient({
-        method: 'GET',
-        url,
-        headers: {
-            Authorization: await getAuthAccessToken(),
-        },
-    });
-    return data;
-}
+import { AccessTokenKind, OAuthScope } from '@thxnetwork/common/lib/types/enums';
+import { AxiosRequestConfig } from 'axios';
 
 export default class AccountProxy {
-    static async disconnect(account: TAccount, kind: AccessTokenKind) {
-        await authClient({
-            method: 'POST',
-            url: `/accounts/${account.sub}/disconnect`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
-            data: { kind },
-        });
-    }
-
-    static findById(sub: string): Promise<TAccount> {
-        return authAccountRequest(`/accounts/${sub}`);
-    }
-
-    static async update(sub: string, updates: TAccount): Promise<TAccount> {
+    static async request(config: AxiosRequestConfig) {
         const { status, data } = await authClient({
-            method: 'PATCH',
-            url: `/accounts/${sub}`,
+            ...config,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
-            data: updates,
         });
 
         if (status >= 400 && status <= 500) {
@@ -47,38 +20,70 @@ export default class AccountProxy {
         return data;
     }
 
-    static async remove(sub: string) {
-        await authClient({
-            method: 'DELETE',
-            url: `/accounts/${sub}`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
+    static async getToken(account: TAccount, kind: AccessTokenKind, requiredScopes: OAuthScope[] = []) {
+        const token = await this.request({
+            method: 'GET',
+            url: `/accounts/${account.sub}/tokens/${kind}`,
+        });
+        if (requiredScopes.every((scope) => token.scopes.includes(scope))) return token;
+    }
+
+    static disconnect(account: TAccount, kind: AccessTokenKind) {
+        return this.request({
+            method: 'GET',
+            url: `/accounts/${account.sub}/tokens/${kind}/disconnect`,
         });
     }
 
-    static async find({ subs }: { subs: string[] }): Promise<TAccount[]> {
-        const { data } = await authClient({
+    static findById(sub: string): Promise<TAccount> {
+        return this.request({
+            method: 'GET',
+            url: `/accounts/${sub}`,
+        });
+    }
+
+    static update(sub: string, updates: TAccount): Promise<TAccount> {
+        return this.request({
+            method: 'PATCH',
+            url: `/accounts/${sub}`,
+            data: updates,
+        });
+    }
+
+    static remove(sub: string) {
+        return this.request({
+            method: 'DELETE',
+            url: `/accounts/${sub}`,
+        });
+    }
+
+    static find({ subs }: { subs: string[] }): Promise<TAccount[]> {
+        return this.request({
             method: 'POST',
             url: '/accounts',
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
             data: { subs: JSON.stringify(subs) },
         });
-        return data;
     }
 
     static getByDiscordId(discordId: string): Promise<TAccount> {
-        return authAccountRequest(`/accounts/discord/${discordId}`);
+        return this.request({
+            method: 'GET',
+            url: `/accounts/discord/${discordId}`,
+        });
     }
 
     static getByEmail(email: string): Promise<TAccount> {
-        return authAccountRequest(`/accounts/email/${email}`);
+        return this.request({
+            method: 'GET',
+            url: `/accounts/email/${email}`,
+        });
     }
 
     static getByAddress(address: string): Promise<TAccount> {
-        return authAccountRequest(`/accounts/address/${address}`);
+        return this.request({
+            method: 'GET',
+            url: `/accounts/address/${address}`,
+        });
     }
 
     static async isEmailDuplicate(email: string) {

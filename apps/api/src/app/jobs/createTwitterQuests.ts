@@ -7,7 +7,6 @@ import TwitterDataProxy from '../proxies/TwitterDataProxy';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from '../services/MailService';
 import QuestService from '../services/QuestService';
-import { getToken } from '../services/maps/quests';
 
 export async function createTwitterQuests() {
     for await (const pool of AssetPool.find({ 'settings.isTwitterSyncEnabled': true })) {
@@ -21,7 +20,11 @@ export async function createTwitterQuests() {
                 continue;
             }
 
-            const token = getToken(account, AccessTokenKind.Twitter, OAuthRequiredScopes.TwitterAuth);
+            const token = await AccountProxy.getToken(
+                account,
+                AccessTokenKind.Twitter,
+                OAuthRequiredScopes.TwitterAuth,
+            );
             if (!token) {
                 logger.error(`Could not find Twitter accounts for ${pool.sub} in ${pool.settings.title}`);
                 continue;

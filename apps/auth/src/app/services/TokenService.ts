@@ -1,6 +1,6 @@
 import { AccessTokenKind, OAuthScope } from '@thxnetwork/common/lib/types';
 import { Token, TokenDocument } from '../models/Token';
-import { Account, AccountDocument } from '../models/Account';
+import { AccountDocument } from '../models/Account';
 import { decryptString } from '../util/decrypt';
 import { SECURE_KEY } from '../config/secrets';
 import { IOAuthService } from './interfaces/IOAuthService';
@@ -41,19 +41,6 @@ export default class TokenService {
 
         // If so, refresh the token and return
         return await serviceMap[token.kind].refreshToken(token);
-    }
-
-    static async list(account: AccountDocument) {
-        const kinds = [
-            AccessTokenKind.Google,
-            AccessTokenKind.Twitter,
-            AccessTokenKind.Discord,
-            AccessTokenKind.Twitch,
-            AccessTokenKind.Github,
-        ];
-        return (await Promise.all(kinds.map((kind: AccessTokenKind) => this.getToken(account, kind)))).filter(
-            (token) => !!token,
-        );
     }
 
     static async getToken(account: AccountDocument, kind: AccessTokenKind): Promise<TokenDocument> {

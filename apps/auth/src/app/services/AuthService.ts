@@ -43,7 +43,7 @@ export default class AuthService {
         });
     }
 
-    static async signin(
+    static async upsertAccount(
         interaction: TInteraction,
         tokenInfo: Partial<TToken>,
         variant: AccountVariant,

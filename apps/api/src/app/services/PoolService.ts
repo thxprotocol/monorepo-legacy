@@ -248,7 +248,6 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
             } catch (error) {
                 logger.error(error);
             }
-            console.log(account && account.tokens);
 
             return {
                 ...participant,

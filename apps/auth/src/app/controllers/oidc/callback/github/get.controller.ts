@@ -7,7 +7,7 @@ import AuthService from '@thxnetwork/auth/services/AuthService';
 export async function controller(req: Request, res: Response) {
     const { code, interaction } = await AuthService.redirectCallback(req);
     const token = await TokenService.request({ kind: AccessTokenKind.Github, code });
-    const account = await AuthService.signin(interaction, token, AccountVariant.SSOGithub);
+    const account = await AuthService.upsertAccount(interaction, token, AccountVariant.SSOGithub);
     const returnUrl = await AuthService.getReturn(interaction, account);
 
     res.redirect(returnUrl);

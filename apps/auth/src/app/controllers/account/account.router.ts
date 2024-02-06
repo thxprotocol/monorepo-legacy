@@ -3,9 +3,11 @@ import { getAccount, getAccountByAddress, getAccountByEmail, getAccountByDiscord
 import Patch from './patch.controller';
 import Delete from './delete.controller';
 import List from './list.controller';
-import DisconnectPost from './disconnect/post.controller';
 import { validate } from '../../util/validate';
 import { guard, validateJwt } from '../../middlewares';
+
+import DisconnectPost from './tokens/disconnect/post.controller';
+import TokenRead from './tokens/get.controller';
 
 const router = express.Router();
 
@@ -20,10 +22,16 @@ router.delete('/:sub', guard.check(['accounts:write']), validate(Delete.validati
 router.post('/', guard.check(['accounts:read']), validate(List.validation), List.controller);
 
 router.post(
-    '/:sub/disconnect',
+    '/:sub/tokens/:kind/disconnect',
     guard.check(['accounts:read', 'accounts:write']),
     validate(DisconnectPost.validation),
     DisconnectPost.controller,
+);
+router.post(
+    '/:sub/tokens/:kind',
+    guard.check(['accounts:read', 'accounts:write']),
+    validate(TokenRead.validation),
+    TokenRead.controller,
 );
 
 export default router;

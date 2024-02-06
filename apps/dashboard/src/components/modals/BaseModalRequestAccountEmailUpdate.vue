@@ -183,7 +183,6 @@ export default class BaseModalRequestAccountEmailUpdate extends Vue {
             this.$bvModal.hide('modalRequestAccountEmailUpdate');
         } catch (error) {
             const { response } = error as any;
-            console.log(response.data);
             this.error = response && response.data.error.message;
         } finally {
             this.isLoadingSubmit = false;

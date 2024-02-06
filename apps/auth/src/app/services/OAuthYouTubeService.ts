@@ -5,6 +5,7 @@ import { AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config/secr
 import { parseJwt } from '../util/jwt';
 import { Token, TokenDocument } from '../models/Token';
 import { IOAuthService } from '../services/interfaces/IOAuthService';
+import { logger } from '../util/logger';
 
 const client = new google.auth.OAuth2(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, AUTH_URL + '/oidc/callback/google');
 
@@ -60,10 +61,14 @@ export default class YouTubeService implements IOAuthService {
     }
 
     async revokeToken(token: TokenDocument): Promise<void> {
-        const url = new URL('https://oauth2.googleapis.com/revoke');
-        url.searchParams.append('token', token.accessToken);
+        try {
+            const url = new URL('https://oauth2.googleapis.com/revoke');
+            url.searchParams.append('token', token.accessToken);
 
-        await axios({ url: url.toString(), method: 'POST' });
+            await axios({ url: url.toString(), method: 'POST' });
+        } catch (error) {
+            logger.error(error);
+        }
     }
 
     // We only get one refreshToken from google and should use it for

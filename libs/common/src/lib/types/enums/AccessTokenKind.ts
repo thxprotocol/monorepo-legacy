@@ -48,6 +48,7 @@ export const OAuthRequiredScopes = {
     TwitterAuth: [OAuthTwitterScope.OfflineAccess, OAuthTwitterScope.UsersRead, OAuthTwitterScope.TweetRead],
     TwitterValidateUser: [OAuthTwitterScope.OfflineAccess, OAuthTwitterScope.UsersRead, OAuthTwitterScope.TweetRead],
     TwitterValidateRepost: [OAuthTwitterScope.OfflineAccess, OAuthTwitterScope.UsersRead, OAuthTwitterScope.TweetRead],
+    TwitterValidateMessage: [OAuthTwitterScope.OfflineAccess, OAuthTwitterScope.UsersRead, OAuthTwitterScope.TweetRead],
     TwitterValidateLike: [
         OAuthTwitterScope.OfflineAccess,
         OAuthTwitterScope.UsersRead,
