@@ -25,7 +25,7 @@ export default class AccountProxy {
             method: 'GET',
             url: `/accounts/${account.sub}/tokens/${kind}`,
         });
-        if (requiredScopes.every((scope) => token.scopes.includes(scope))) return token;
+        if (token && requiredScopes.every((scope) => token.scopes.includes(scope))) return token;
     }
 
     static disconnect(account: TAccount, kind: AccessTokenKind) {
