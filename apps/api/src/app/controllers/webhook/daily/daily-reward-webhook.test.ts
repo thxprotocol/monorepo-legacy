@@ -86,7 +86,7 @@ describe('Daily Rewards WebHooks', () => {
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
             .send()
             .expect(({ body }: request.Response) => {
-                expect(body.error).toBe('Quest is not available.');
+                expect(body.error).toBe('Already completed within the last 24 hours.');
             })
             .expect(200, done);
     });
