@@ -3,11 +3,10 @@ import { getAccount, getAccountByAddress, getAccountByEmail, getAccountByDiscord
 import Patch from './patch.controller';
 import Delete from './delete.controller';
 import List from './list.controller';
+import TokenRead from './tokens/get.controller';
+import TokenRemove from './tokens/delete.controller';
 import { validate } from '../../util/validate';
 import { guard, validateJwt } from '../../middlewares';
-
-import TokenRemove from './tokens/disconnect/post.controller';
-import TokenRead from './tokens/get.controller';
 
 const router = express.Router({ mergeParams: true });
 
