@@ -14,9 +14,9 @@ async function decorate(account: AccountDocument) {
         AccessTokenKind.Twitch,
         AccessTokenKind.Github,
     ];
-    const tokens = (await Promise.all(kinds.map((kind) => TokenService.getToken(account, kind)))).filter(
-        (token) => !!token,
-    );
+    const tokens = (await Promise.all(kinds.map((kind) => TokenService.getToken(account, kind))))
+        .filter((token) => !!token)
+        .map(({ kind, scopes, userId, metadata }) => ({ kind, scopes, userId, metadata }));
     const profileImg = account.profileImg || `https://api.dicebear.com/7.x/identicon/svg?seed=${sub}`;
 
     return {

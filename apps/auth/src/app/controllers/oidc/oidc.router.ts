@@ -3,6 +3,7 @@ import express, { urlencoded } from 'express';
 import { assertInput, assertAuthorization, assertInteraction } from '../../middlewares';
 
 import ReadConnect from './connect/get';
+import CreateDisconnect from './disconnect/post.controller';
 import ReadAccount from './account/get';
 import UpdateAccount from './account/post';
 import ReadAccountEmailVerify from './account/email/get';
@@ -18,6 +19,7 @@ router.use('/callback', RouterCallback);
 router.use('/:uid/signin', RouterSignin);
 router.get('/:uid', assertInteraction, ReadOIDC.controller);
 router.get('/:uid/connect', assertInteraction, assertAuthorization, ReadConnect.controller);
+router.post('/:uid/tokens/:kind/disconnect', assertInteraction, assertAuthorization, CreateDisconnect.controller);
 router.get('/:uid/account', assertInteraction, assertAuthorization, ReadAccount.controller);
 router.get('/:uid/account/email/verify', assertInteraction, assertAuthorization, ReadAccountEmailVerify.controller);
 router.post(

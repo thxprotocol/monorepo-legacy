@@ -44,11 +44,7 @@ export async function controller(req: Request, res: Response) {
             ? req.body.email.toLowerCase()
             : ''
         : false;
-
-    let profileImg = '';
-    if (file) {
-        profileImg = await UploadProxy.post(file);
-    }
+    const profileImg = file ? await UploadProxy.post(file) : '';
 
     account = await Account.findByIdAndUpdate(account._id, { ...req.body, profileImg }, { new: true });
 
