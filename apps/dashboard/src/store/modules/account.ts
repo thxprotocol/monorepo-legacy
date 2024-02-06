@@ -121,21 +121,9 @@ class AccountModule extends VuexModule {
         };
         const state = {};
 
-        if (payload.shopifyParams) {
-            extraQueryParams['shopify_params'] = payload.shopifyParams;
-        }
-
-        if (payload.referralCode) {
-            extraQueryParams['referral_code'] = payload.referralCode;
-        }
-
         if (payload.poolId) {
             extraQueryParams['pool_id'] = payload.poolId;
             state['poolId'] = payload.poolId;
-        }
-
-        if (payload.poolTransferToken) {
-            extraQueryParams['pool_transfer_token'] = payload.poolTransferToken;
         }
 
         if (payload.collaboratorRequestToken) {
@@ -177,14 +165,13 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async connect(kind: AccessTokenKind) {
-        const client = Mixpanel.client();
+    async connect({ kind, scopes = [] }: { kind: AccessTokenKind; scopes: OAuthScope[] }) {
         await this.userManager.signinRedirect({
             prompt: 'connect',
             extraQueryParams: {
                 access_token_kind: kind,
+                provider_scope: scopes.join(' '),
                 return_url: window.location.href,
-                distinct_id: client && client.get_distinct_id(),
             },
         });
     }

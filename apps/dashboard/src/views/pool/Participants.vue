@@ -30,7 +30,7 @@
                 <template #head(email)>
                     <BaseBtnSort @click="onClickSort('email', $event)">E-mail</BaseBtnSort>
                 </template>
-                <template #head(connectedAccounts)> Connected </template>
+                <template #head(tokens)> Connected </template>
                 <template #head(wallet)>
                     <BaseBtnSort @click="onClickSort('wallet', $event)">Wallet</BaseBtnSort>
                 </template>
@@ -51,8 +51,8 @@
                 </template>
                 <template #cell(account)="{ item }"> <BaseParticipantAccount :account="item.account" /> </template>
                 <template #cell(email)="{ item }"> {{ item.email }} </template>
-                <template #cell(connectedAccounts)="{ item }">
-                    <BaseParticipantConnectedAccount :account="a" :key="key" v-for="(a, key) in item.tokens" />
+                <template #cell(tokens)="{ item }">
+                    <BaseParticipantConnectedAccount :account="token" :key="key" v-for="(token, key) in item.tokens" />
                 </template>
                 <template #cell(wallet)="{ item }">
                     <BaseParticipantWallet :wallet="item.wallet" />
@@ -182,7 +182,7 @@ export default class ViewParticipants extends Vue {
             rank: p.rank,
             account: parseAccount({ id: p._id, account: p.account }),
             email: p.account && p.account.email,
-            connectedAccounts: p.account && parseConnectedAccounts(p.account.tokens),
+            tokens: p.account && parseConnectedAccounts(p.account.tokens),
             wallet: parseWallet(p.wallet),
             pointBalance: p.pointBalance,
             subscription: p.subscription,

@@ -1,6 +1,6 @@
 import { AccessTokenKind, OAuthScope } from '@thxnetwork/common/lib/types';
 import { Token, TokenDocument } from '../models/Token';
-import { AccountDocument } from '../models/Account';
+import { Account, AccountDocument } from '../models/Account';
 import { decryptString } from '../util/decrypt';
 import { SECURE_KEY } from '../config/secrets';
 import { IOAuthService } from './interfaces/IOAuthService';
@@ -68,7 +68,19 @@ export default class TokenService {
         return { ...refreshedToken.toJSON(), accessToken, refreshToken };
     }
 
-    static setToken(account: AccountDocument, token: Partial<TokenDocument>) {
+    static async setToken(account: AccountDocument, token: Partial<TokenDocument>) {
+        // Check if other accounts are using this token
+        const tokens = await Token.find({ kind: token.kind, userId: token.userId });
+        if (tokens.length) {
+            for (const token of tokens) {
+                // Revoke access for existing accounts
+                await this.revoke(token);
+                // Remove from storage
+                await this.remove(token);
+            }
+        }
+
+        // Store the token for the new account
         return Token.findOneAndUpdate(
             { sub: account._id, kind: token.kind },
             { ...token, sub: account._id },
@@ -83,7 +95,11 @@ export default class TokenService {
         await this.revoke(token);
 
         // Remove from storage
-        return await Token.findOneAndDelete({ sub: account._id, kind });
+        return this.remove({ sub: account._id, kind });
+    }
+
+    static remove({ sub, kind }: { sub: string; kind: AccessTokenKind }) {
+        return Token.findOneAndDelete({ sub, kind });
     }
 
     static findTokenForUserId(userId: string, kind: AccessTokenKind) {

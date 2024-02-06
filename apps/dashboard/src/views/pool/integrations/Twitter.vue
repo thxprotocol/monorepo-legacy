@@ -114,7 +114,13 @@
 import { IPools, TQuestState } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { AccessTokenKind, QuestSocialRequirement, RewardConditionPlatform } from '@thxnetwork/types/index';
+import {
+    AccessTokenKind,
+    OAuthRequiredScopes,
+    OAuthTwitterScope,
+    QuestSocialRequirement,
+    RewardConditionPlatform,
+} from '@thxnetwork/types/index';
 import type { TAccount, TQuest, TQuestLock } from '@thxnetwork/types/interfaces';
 
 @Component({
@@ -162,7 +168,12 @@ export default class IntegrationTwitterView extends Vue {
     }
 
     get twitterToken() {
-        return this.pool.owner.tokens.find((token) => token.kind === AccessTokenKind.Twitter);
+        if (!this.pool.owner) return;
+        return this.pool.owner.tokens.find(
+            ({ kind, scopes }) =>
+                kind === AccessTokenKind.Twitter &&
+                OAuthRequiredScopes.TwitterAutoQuest.every((scope) => scopes.includes(scope)),
+        );
     }
 
     get isDisabled() {
@@ -211,7 +222,8 @@ export default class IntegrationTwitterView extends Vue {
 
     onClickConnect() {
         this.$store.dispatch('account/connectRedirect', {
-            platform: RewardConditionPlatform.Twitter,
+            kind: AccessTokenKind.Twitter,
+            scopes: OAuthRequiredScopes.TwitterAutoQuest,
             returnUrl: window.location.href,
         });
     }

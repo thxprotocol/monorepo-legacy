@@ -181,7 +181,8 @@ async function findIdentities(pool: AssetPoolDocument, page: number, limit: numb
 async function findParticipants(pool: AssetPoolDocument, page: number, limit: number) {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const total = await Participant.find({ poolId: pool._id }).countDocuments().exec();
+    const poolId = String(pool._id);
+    const total = await Participant.find({ poolId }).countDocuments();
     const participants = {
         previous: startIndex > 0 && {
             page: page - 1,
@@ -191,7 +192,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
         },
         total,
         results: await Participant.aggregate([
-            { $match: { poolId: String(pool._id) } },
+            { $match: { poolId } },
             {
                 $addFields: {
                     rankSort: {
@@ -224,16 +225,19 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
             } catch (error) {
                 logger.error(error);
             }
+
             try {
                 account = accounts.find((a) => a.sub === wallet.sub);
             } catch (error) {
                 logger.error(error);
             }
+
             try {
                 subscription = await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub });
             } catch (error) {
                 logger.error(error);
             }
+
             try {
                 pointBalance =
                     wallet &&
@@ -244,6 +248,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
             } catch (error) {
                 logger.error(error);
             }
+            console.log(account && account.tokens);
 
             return {
                 ...participant,
@@ -253,10 +258,9 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                     profileImg: account.profileImg,
                     variant: account.variant,
                     tokens: account.tokens.map((token) => ({
-                        ...token,
-                        accessToken: undefined,
-                        refreshToken: undefined,
-                        expiry: undefined,
+                        kind: token.kind,
+                        userId: token.userId,
+                        metadata: token.metadata,
                     })),
                 },
                 wallet,

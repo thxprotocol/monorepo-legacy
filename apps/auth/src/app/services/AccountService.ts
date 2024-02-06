@@ -1,7 +1,6 @@
 import { Account, AccountDocument } from '../models/Account';
-import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountPlanType } from '@thxnetwork/types/enums';
 import { generateUsername } from 'unique-username-generator';
-import TokenService from './TokenService';
 import { toChecksumAddress } from 'web3-utils';
 import { BadRequestError } from '../util/errors';
 import { MailService } from './MailService';

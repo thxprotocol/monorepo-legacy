@@ -125,7 +125,7 @@ export default class ModalQuestSocialCreate extends Vue {
                   contentMetadata: JSON.parse(this.reward.contentMetadata),
               }
             : {
-                  ...requirementDefaultsMap[this.variant],
+                  ...requirementDefaultsMap[QuestVariant[this.variant]],
                   content: '',
                   contentMetadata: {},
               };

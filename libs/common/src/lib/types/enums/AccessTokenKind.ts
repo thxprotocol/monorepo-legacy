@@ -61,6 +61,7 @@ export const OAuthRequiredScopes = {
         OAuthTwitterScope.LikeRead,
         OAuthTwitterScope.FollowsWrite,
     ],
+    TwitterAutoQuest: [OAuthTwitterScope.OfflineAccess, OAuthTwitterScope.UsersRead, OAuthTwitterScope.TweetRead],
     DiscordAuth: [OAuthDiscordScope.Identify, OAuthDiscordScope.Email],
     DiscordValidateGuild: [OAuthDiscordScope.Identify, OAuthDiscordScope.Email, OAuthDiscordScope.Guilds],
     TwitchAuth: [OAuthTwitchScope.Email, OAuthTwitchScope.Follows, OAuthTwitchScope.Broadcast],

@@ -73,20 +73,6 @@ export default class DiscordDataProxy {
         return new ActionRowBuilder().addComponents(components);
     }
 
-    static async getUserId(account: TAccount) {
-        const { accessToken } = account.tokens.find((token) => token.kind === AccessTokenKind.Discord);
-        const { data } = await discordClient({
-            url: '/oauth2/@me',
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`,
-            },
-        });
-        return data.user.id;
-    }
-
     static async getGuilds(token: TToken) {
         const r = await discordClient({
             method: 'GET',

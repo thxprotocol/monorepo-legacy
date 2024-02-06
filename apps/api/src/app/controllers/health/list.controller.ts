@@ -30,8 +30,10 @@ async function getNetworkDetails(chainId: ChainId) {
     }
 }
 
-const controller = async (_req: Request, res: Response) => {
-    // #swagger.tags = ['Health']
+const controller = async (req: Request, res: Response) => {
+    logger.info(`IP Forwarded For: ${req.headers['x-forwarded-for']}`);
+    logger.info(`IP: ${req.ip}`);
+
     const result: any = {
         name,
         version,
