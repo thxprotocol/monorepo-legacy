@@ -27,7 +27,7 @@ export class AccountService {
             data.address = toChecksumAddress(data.address);
         }
 
-        // Test username when chaning username
+        // Test username when changing username
         if (data.username && account.username !== data.username) {
             const isUsed = await Account.exists({
                 username: data.username,

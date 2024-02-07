@@ -35,10 +35,13 @@ export default class QuestService {
             });
 
             return await Promise.all(
-                quests.map((q) => {
+                quests.map(async (q) => {
                     try {
                         const quest = q.toJSON() as TQuest;
-                        return serviceMap[variant].decorate({ quest, wallet, account });
+                        const decorated = await serviceMap[variant].decorate({ quest, wallet, account });
+                        const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : false;
+                        const isExpired = this.isExpired(quest);
+                        return { ...decorated, isLocked, isExpired };
                     } catch (error) {
                         logger.error(error);
                     }
@@ -88,14 +91,6 @@ export default class QuestService {
     static updateById(variant: QuestVariant, questId: string, options: Partial<TQuest>) {
         const Quest = serviceMap[variant].models.quest;
         return Quest.findByIdAndUpdate(questId, options, { new: true });
-    }
-
-    static async decorate(variant: QuestVariant, questId: string, wallet: WalletDocument) {
-        const quest = await QuestService.findById(variant, questId);
-        const q = await serviceMap[variant].decorate({ quest, wallet });
-        const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : false;
-        const isExpired = this.isExpired(quest);
-        return { ...q, isExpired, isLocked };
     }
 
     static getAmount(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
