@@ -57,7 +57,7 @@ export const requirementMap: {
     },
 };
 
-const tokenInteractionMap: { [interaction: number]: { kind: AccessTokenKind; scopes: OAuthScope[] } } = {
+export const tokenInteractionMap: { [interaction: number]: { kind: AccessTokenKind; scopes: OAuthScope[] } } = {
     [QuestSocialRequirement.YouTubeLike]: {
         kind: AccessTokenKind.Google,
         scopes: OAuthRequiredScopes.GoogleYoutubeLike,
@@ -95,18 +95,4 @@ const tokenInteractionMap: { [interaction: number]: { kind: AccessTokenKind; sco
         kind: AccessTokenKind.Discord,
         scopes: OAuthRequiredScopes.DiscordAuth,
     },
-};
-
-function getPlatformToken(account: TAccount, kind: AccessTokenKind, requiredScopes: OAuthScope[] = []) {
-    return account.tokens.find(
-        (token) => token.kind === kind && requiredScopes.every((scope) => token.scopes.includes(scope)),
-    );
-}
-
-export const getPlatformUserId = (account: TAccount, interaction: QuestSocialRequirement) => {
-    if (typeof interaction === 'undefined') return;
-    const { kind } = tokenInteractionMap[interaction];
-    const token = getPlatformToken(account, kind);
-
-    return token && token.userId;
 };

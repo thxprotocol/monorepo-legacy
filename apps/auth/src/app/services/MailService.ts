@@ -39,23 +39,30 @@ export class MailService {
     }
 
     static async sendVerificationEmail(account: AccountDocument, email: string, returnUrl: string) {
+        const accessToken = createRandomToken();
+        const expiry = get24HoursExpiryTimestamp();
         const token = await TokenService.setToken(account, {
             kind: AccessTokenKind.VerifyEmail,
-            accessToken: createRandomToken(),
-            expiry: get24HoursExpiryTimestamp(),
+            accessToken,
+            expiry,
         });
-        const verifyUrl = `${returnUrl}verify_email?verifyEmailToken=${token.accessToken}&return_url=${returnUrl}`;
+        const verifyURL = new URL(returnUrl);
+        verifyURL.pathname = '/verify_email';
+        verifyURL.searchParams.append('verifyEmailToken', token.accessTokenEncrypted);
+        verifyURL.searchParams.append('return_url', returnUrl);
+
         const html = await ejs.renderFile(
-            path.join(mailTemplatePath, 'email-verify.ejs'),
-            {
-                verifyUrl,
-                returnUrl,
-                baseUrl: AUTH_URL,
-            },
+            path.join(mailTemplatePath, '/email-verify.ejs'),
+            { verifyURL: verifyURL.toString(), returnUrl, baseUrl: AUTH_URL },
             { async: true },
         );
 
-        this.sendMail(email, 'Please complete the e-mail verification for your THX Account', html, verifyUrl);
+        this.sendMail(
+            email,
+            'Please complete the e-mail verification for your THX Account',
+            html,
+            verifyURL.toString(),
+        );
 
         await account.save();
     }

@@ -1,4 +1,4 @@
-import { JobType, QuestVariant } from '@thxnetwork/types/enums';
+import { AccessTokenKind, JobType, OAuthScope, QuestSocialRequirement, QuestVariant } from '@thxnetwork/types/enums';
 import { TAccount, TQuest, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
 import { AssetPoolDocument } from '../models/AssetPool';
@@ -15,6 +15,7 @@ import LockService from './LockService';
 import ImageService from './ImageService';
 import SafeService from './SafeService';
 import AccountProxy from '../proxies/AccountProxy';
+import { tokenInteractionMap } from './maps/quests';
 
 export default class QuestService {
     static async list(pool: AssetPoolDocument, wallet?: WalletDocument, account?: TAccount) {
@@ -171,5 +172,13 @@ export default class QuestService {
         } catch (error) {
             logger.error(error);
         }
+    }
+
+    static findUserIdForInteraction(account: TAccount, interaction: QuestSocialRequirement) {
+        if (typeof interaction === 'undefined') return;
+        const { kind } = tokenInteractionMap[interaction];
+        const token = account.tokens.find((token) => token.kind === kind);
+
+        return token && token.userId;
     }
 }

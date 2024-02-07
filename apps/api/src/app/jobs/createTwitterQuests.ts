@@ -31,7 +31,7 @@ export async function createTwitterQuests() {
             }
 
             const tweets = await TwitterDataProxy.searchTweets(account, `#${hashtag}`);
-            if (!tweets.length) continue;
+            if (!tweets || !tweets.length) continue;
             logger.info(`Found tweets matching the hashtag in the last 7 days!`);
             logger.info(JSON.stringify(tweets));
 

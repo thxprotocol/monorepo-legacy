@@ -86,8 +86,10 @@ export default class TokenService {
     static async unsetToken(account: AccountDocument, kind: AccessTokenKind) {
         const token = await this.getToken(account, kind);
 
-        // Revoke access at token provider
-        await this.revoke(token);
+        // Revoke access at token provider if token has scopes
+        if (token.scopes.length) {
+            await this.revoke(token);
+        }
 
         // Remove from storage
         return this.remove({ sub: account._id, kind });

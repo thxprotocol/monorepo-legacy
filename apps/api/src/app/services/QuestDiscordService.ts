@@ -10,9 +10,10 @@ import { WalletDocument } from '../models/Wallet';
 import { PointRewardClaim } from '../models/PointRewardClaim';
 import { PointReward } from '../models/PointReward';
 import { IQuestService } from './interfaces/IQuestService';
-import { getPlatformUserId, requirementMap } from './maps/quests';
+import { requirementMap } from './maps/quests';
 import DiscordMessage from '../models/DiscordMessage';
 import QuestSocialService from './QuestSocialService';
+import QuestService from './QuestService';
 
 type TRestartDates = { now: Date; start: Date; endDay: Date; end: Date };
 
@@ -164,7 +165,7 @@ export default class QuestDiscordService implements IQuestService {
     private async getMessages({ quest, account, start }: { quest: TPointReward; account: TAccount; start: Date }) {
         if (!account) return [];
 
-        const userId = getPlatformUserId(account, quest.interaction);
+        const userId = QuestService.findUserIdForInteraction(account, quest.interaction);
         return await DiscordMessage.find({
             guildId: quest.content,
             memberId: userId,
@@ -180,7 +181,7 @@ export default class QuestDiscordService implements IQuestService {
         if (!account) return { pointsAvailable: 0, pointsClaimed: 0 };
 
         const { start, end } = this.getRestartDates(quest);
-        const platformUserId = getPlatformUserId(account, quest.interaction);
+        const platformUserId = QuestService.findUserIdForInteraction(account, quest.interaction);
         const claims = await PointRewardClaim.find({
             questId: String(quest._id),
             platformUserId,

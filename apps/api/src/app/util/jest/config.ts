@@ -8,6 +8,7 @@ import { Wallet } from '@thxnetwork/api/services/SafeService';
 import Safe, { SafeFactory } from '@safe-global/protocol-kit';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { poll } from '../polling';
+import { agenda } from '../agenda';
 
 export async function beforeAllCallback(options = { skipWalletCreation: false }) {
     mockStart();
@@ -60,5 +61,12 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
 }
 
 export async function afterAllCallback() {
+    await new Promise<void>((resolve) => {
+        // Listen for 'complete' event
+        agenda.on('complete', () => {
+            resolve();
+        });
+    });
+    await agenda.stop();
     await db.truncate();
 }

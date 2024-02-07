@@ -4,9 +4,10 @@ import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { PointBalance } from './PointBalanceService';
 import { TPointReward, TAccount, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
 import { IQuestService } from './interfaces/IQuestService';
-import { getPlatformUserId, requirementMap } from './maps/quests';
+import { requirementMap } from './maps/quests';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { logger } from '../util/logger';
+import QuestService from './QuestService';
 
 export default class QuestSocialService implements IQuestService {
     models = {
@@ -46,7 +47,7 @@ export default class QuestSocialService implements IQuestService {
         // We validate for both here since there are entries that only contain a sub
         // and should not be claimed again.
         const ids: any[] = [{ sub: wallet.sub }, { walletId: wallet._id }];
-        const platformUserId = getPlatformUserId(account, quest.interaction);
+        const platformUserId = QuestService.findUserIdForInteraction(account, quest.interaction);
         if (platformUserId) ids.push({ platformUserId });
 
         // If no entry exist the quest is available
