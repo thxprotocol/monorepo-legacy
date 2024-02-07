@@ -27,8 +27,8 @@ export class AccountService {
             data.address = toChecksumAddress(data.address);
         }
 
-        // Test username
-        if (data.username) {
+        // Test username when chaning username
+        if (data.username && account.username !== data.username) {
             const isUsed = await Account.exists({
                 username: data.username,
                 _id: { $ne: data._id, $exists: true },
