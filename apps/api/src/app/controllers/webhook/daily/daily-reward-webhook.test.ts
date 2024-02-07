@@ -69,7 +69,6 @@ describe('Daily Rewards WebHooks', () => {
             .post(`/v1/quests/daily/${dailyReward._id}/entries`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
             .send();
-        console.log(status, body);
         expect(body.jobId).toBeDefined();
         expect(status).toBe(200);
 

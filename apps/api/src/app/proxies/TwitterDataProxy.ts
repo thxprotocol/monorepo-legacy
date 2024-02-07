@@ -5,6 +5,8 @@ import { TWITTER_API_ENDPOINT } from '@thxnetwork/common/lib/types/contants';
 import { formatDistance } from 'date-fns';
 import AccountProxy from './AccountProxy';
 import { logger } from '../util/logger';
+import { TwitterLike } from '../models/TwitterLike';
+import { TwitterRepost } from '../models/TwitterRepost';
 
 async function twitterClient(config: AxiosRequestConfig) {
     try {
@@ -49,12 +51,6 @@ export default class TwitterDataProxy {
             },
         });
 
-        // TODO Store TwitterUser
-        // await TwitterUser.findOneAndUpdate(
-        //     { userId: data.data.id },
-        //     { userId: data.data.id, publicMetrics: data.data.public_metrics },
-        // );
-
         return data.data;
     }
 
@@ -64,12 +60,6 @@ export default class TwitterDataProxy {
             OAuthTwitterScope.TweetRead,
         ]);
         if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
-
-        // TODO Store TwitterPost
-        // await TwitterPost.findOneAndUpdate(
-        //     { userId: data.data.id },
-        //     { userId: data.data.id, ...content },
-        // );
 
         const data = await this.request(account, token, {
             method: 'GET',
@@ -83,7 +73,7 @@ export default class TwitterDataProxy {
         return { tweet: data.data[0], user: data.includes.users[0] };
     }
 
-    static async validateLike(account: TAccount, tweetId: string, nextPageToken?: string) {
+    static async validateLike(account: TAccount, postId: string, nextPageToken?: string) {
         const token = await AccountProxy.getToken(
             account,
             AccessTokenKind.Twitter,
@@ -91,13 +81,13 @@ export default class TwitterDataProxy {
         );
         if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
         try {
-            // TODO Query cached TwitterLikes for this tweetId and userId
-            // const like = await TwitterLike.findOne({ userId: token.userId, tweetId });
-            // if (like) return { result: true, reason: '' };
+            // Query cached TwitterLikes for this tweetId and userId
+            const like = await TwitterLike.findOne({ userId: token.userId, postId });
+            if (like) return { result: true, reason: '' };
 
             // Not found? Search for it and cache results along the way
             const data = await this.request(account, token, {
-                url: `/tweets/${tweetId}/liking_users`,
+                url: `/tweets/${postId}/liking_users`,
                 method: 'GET',
                 params: {
                     max_results: 100,
@@ -105,15 +95,16 @@ export default class TwitterDataProxy {
                 },
             });
 
-            // TODO Cache TwitterLike
-            // await Promise.all(
-            //     data.data.map(async (post) => {
-            //         return await TwitterLike.findOneAndUpdate(
-            //             { userId: post.userId, tweetId: post.id },
-            //             { userId: post.userId, tweetId: post.id },
-            //         );
-            //     }),
-            // );
+            // Cache TwitterLike for future searches
+            await Promise.all(
+                data.data.map(async (user: { id: string }) => {
+                    return await TwitterLike.findOneAndUpdate(
+                        { userId: user.id, postId },
+                        { userId: user.id, postId },
+                        { upsert: true },
+                    );
+                }),
+            );
 
             // Check if the user is liked in the current set of data
             const isLiked = data.data ? !!data.data.find((u) => u.id === token.userId) : false;
@@ -123,7 +114,7 @@ export default class TwitterDataProxy {
 
             // If there is a next_token run again
             if (data.meta.next_token) {
-                return await this.validateLike(account, tweetId, data.meta.next_token);
+                return await this.validateLike(account, postId, data.meta.next_token);
             }
 
             return { result: false, reason: 'X: Post has not been not liked.' };
@@ -149,7 +140,7 @@ export default class TwitterDataProxy {
         return data.data;
     }
 
-    static async validateRetweet(account: TAccount, channelItem: string, nextPageToken?: string) {
+    static async validateRetweet(account: TAccount, postId: string, nextPageToken?: string) {
         const token = await AccountProxy.getToken(
             account,
             AccessTokenKind.Twitter,
@@ -157,14 +148,29 @@ export default class TwitterDataProxy {
         );
         if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
         try {
+            // Query cached TwitterReposts for this tweetId and userId
+            const repost = await TwitterRepost.findOne({ userId: token.userId, postId });
+            if (repost) return { result: true, reason: '' };
+
             const data = await this.request(account, token, {
-                url: `/tweets/${channelItem}/retweeted_by`,
+                url: `/tweets/${postId}/retweeted_by`,
                 method: 'GET',
                 params: {
                     max_results: 100,
                     pagination_token: nextPageToken,
                 },
             });
+
+            // Cache TwitterReposts for future searches
+            await Promise.all(
+                data.data.map(async (user: { id: string }) => {
+                    return await TwitterRepost.findOneAndUpdate(
+                        { userId: user.id, postId },
+                        { userId: user.id, postId },
+                        { upsert: true },
+                    );
+                }),
+            );
 
             // Check if the user is liked in the current set of data
             const isReposted = data.data ? !!data.data.find((u: { id: string }) => u.id === token.userId) : false;
@@ -175,7 +181,7 @@ export default class TwitterDataProxy {
             }
 
             if (data.meta.next_token) {
-                return await this.validateRetweet(account, channelItem, nextPageToken);
+                return await this.validateRetweet(account, postId, nextPageToken);
             }
 
             return { result: false, reason: 'X: Post has not been reposted.' };
@@ -273,10 +279,12 @@ export default class TwitterDataProxy {
         logger.error(res);
 
         if (res.status === 429) {
+            logger.info(`[429] X-RateLimit is hit by account ${account._id} for X UserId ${token.userId}.`);
             return this.handleRateLimitError(res);
         }
 
         if (res.status === 401) {
+            logger.info(`[401] Token for ${account._id} for X UserId ${token.userId} is invalid and disconnected.`);
             await AccountProxy.disconnect(account, token.kind);
             return { result: false, reason: 'X: Your connection has been removed, please reconnect!' };
         }
