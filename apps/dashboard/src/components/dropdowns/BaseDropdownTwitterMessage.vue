@@ -34,7 +34,7 @@ export default class BaseDropdownTwitterMessage extends Vue {
         this.message = this.content ? this.content : this.message;
         if (this.message) this.onInput(this.message);
         if (this.contentMetadata) {
-            const { minFollowersCount } = JSON.parse(this.contentMetadata);
+            const { minFollowersCount } = this.contentMetadata;
             this.minFollowersCount = minFollowersCount;
         }
     }

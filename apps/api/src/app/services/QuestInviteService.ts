@@ -22,16 +22,12 @@ export default class QuestInviteService implements IQuestService {
         quest: TReferralReward;
         wallet: WalletDocument;
         account: TAccount;
-    }): Promise<boolean> {
-        return true;
+    }): Promise<TValidationResult> {
+        return { result: false, reason: 'Not implemented' };
     }
 
     async getAmount({ quest }: { quest: TReferralReward; wallet: WalletDocument; account: TAccount }): Promise<number> {
         return quest.amount;
-    }
-
-    createEntry(options: Partial<TReferralRewardClaim>): Promise<TReferralRewardClaim> {
-        throw new Error('Method not implemented.');
     }
 
     async getValidationResult(options: {

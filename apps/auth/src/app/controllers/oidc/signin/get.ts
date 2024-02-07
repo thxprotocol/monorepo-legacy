@@ -1,16 +1,12 @@
-import { GithubService } from './../../../services/GithubServices';
 import { Request, Response } from 'express';
 import { AUTH_URL, DASHBOARD_URL, WIDGET_URL } from '../../../config/secrets';
-import { TwitterService } from '../../../services/TwitterService';
-import { YouTubeService } from '../../../services/YouTubeService';
-import { AUTH_REQUEST_TYPED_MESSAGE, createTypedMessage } from '../../../util/typedMessage';
-import { DiscordService } from '@thxnetwork/auth/services/DiscordService';
-import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
+import { AccountVariant } from '@thxnetwork/types/interfaces';
+import { OAuthScope, AccessTokenKind, OAuthGoogleScope, OAuthRequiredScopes } from '@thxnetwork/common/lib/types';
 import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
 import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';
-import WalletProxy from '@thxnetwork/auth/proxies/WalletProxy';
-import { AccountVariant } from '@thxnetwork/types/interfaces';
+import TokenService from '@thxnetwork/auth/services/TokenService';
+import EthereumService, { AUTH_REQUEST_TYPED_MESSAGE } from '@thxnetwork/auth/services/EthereumService';
 
 async function controller(req: Request, res: Response) {
     const { uid, params } = req.interaction;
@@ -32,30 +28,11 @@ async function controller(req: Request, res: Response) {
         }
     }
 
-    if (isDashboard) {
-        authenticationMethods = [
-            AccountVariant.EmailPassword,
-            AccountVariant.SSOGoogle,
-            AccountVariant.SSOTwitter,
-            AccountVariant.SSODiscord,
-            AccountVariant.SSOTwitch,
-            AccountVariant.SSOGithub,
-        ];
-    }
-
     if (pool && params.collaborator_request_token) {
         alert['variant'] = 'success';
         alert[
             'message'
         ] = `<i class="fas fa-info-circle mr-2" aria-hidden="true"></i> Accept invite for <strong>${pool.settings.title}</strong>!`;
-    }
-
-    if (params.wallet_transfer_token) {
-        const { pointBalance } = await WalletProxy.getWalletTransfer(params.wallet_transfer_token);
-        alert['variant'] = 'success';
-        alert[
-            'message'
-        ] = `<i class="fas fa-gift mr-2" aria-hidden="true"></i>Sign in to claim <strong>${pointBalance}</strong> points!`;
     }
 
     if (params.pool_transfer_token) {
@@ -90,22 +67,27 @@ async function controller(req: Request, res: Response) {
             AccountVariant.SSODiscord,
         ].includes(method),
     );
+
     params.googleLoginUrl = authenticationMethods.includes(AccountVariant.SSOGoogle)
-        ? YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes())
+        ? TokenService.getLoginURL({
+              kind: AccessTokenKind.Google,
+              uid,
+              scopes: OAuthRequiredScopes.GoogleAuth,
+          })
         : null;
     params.githubLoginUrl = authenticationMethods.includes(AccountVariant.SSOGithub)
-        ? GithubService.getLoginURL(uid, {})
+        ? TokenService.getLoginURL({ kind: AccessTokenKind.Github, uid, scopes: OAuthRequiredScopes.GithubAuth })
         : null;
     params.discordLoginUrl = authenticationMethods.includes(AccountVariant.SSODiscord)
-        ? DiscordService.getLoginURL(uid, {})
+        ? TokenService.getLoginURL({ kind: AccessTokenKind.Discord, uid, scopes: OAuthRequiredScopes.DiscordAuth })
         : null;
     params.twitchLoginUrl = authenticationMethods.includes(AccountVariant.SSOTwitch)
-        ? TwitchService.getLoginURL(uid, {})
+        ? TokenService.getLoginURL({ kind: AccessTokenKind.Twitch, uid, scopes: OAuthRequiredScopes.TwitchAuth })
         : null;
     params.twitterLoginUrl = authenticationMethods.includes(AccountVariant.SSOTwitter)
-        ? TwitterService.getLoginURL(uid, {})
+        ? TokenService.getLoginURL({ kind: AccessTokenKind.Twitter, uid, scopes: OAuthRequiredScopes.TwitterAuth })
         : null;
-    params.authRequestMessage = createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
+    params.authRequestMessage = EthereumService.createTypedMessage(AUTH_REQUEST_TYPED_MESSAGE, AUTH_URL, uid);
 
     res.render('signin', {
         uid,

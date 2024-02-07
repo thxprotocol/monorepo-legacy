@@ -3,16 +3,12 @@ import { query } from 'express-validator';
 import { TransactionState } from '@thxnetwork/types/enums';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { getChainId } from '@thxnetwork/api/services/ContractService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [query('chainId').optional().isNumeric()];
 
 const controller = async (req: Request, res: Response) => {
-    const wallet = await SafeService.findPrimary(
-        req.auth.sub,
-        req.query.chainId ? Number(req.query.chainId) : getChainId(),
-    );
+    const wallet = await SafeService.findPrimary(req.auth.sub);
     const wallets = [];
     if (wallet) wallets.push(wallet);
 

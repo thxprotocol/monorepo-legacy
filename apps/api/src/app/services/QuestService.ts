@@ -1,4 +1,4 @@
-import { JobType, QuestVariant } from '@thxnetwork/types/enums';
+import { AccessTokenKind, JobType, OAuthScope, QuestSocialRequirement, QuestVariant } from '@thxnetwork/types/enums';
 import { TAccount, TQuest, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
 import { AssetPoolDocument } from '../models/AssetPool';
@@ -15,6 +15,7 @@ import LockService from './LockService';
 import ImageService from './ImageService';
 import SafeService from './SafeService';
 import AccountProxy from '../proxies/AccountProxy';
+import { tokenInteractionMap } from './maps/quests';
 
 export default class QuestService {
     static async list(pool: AssetPoolDocument, wallet?: WalletDocument, account?: TAccount) {
@@ -119,11 +120,7 @@ export default class QuestService {
         const isLocked = await LockService.getIsLocked(options.quest.locks, options.wallet);
         if (isLocked) return { result: false, reason: 'Quest is locked.' };
 
-        const isAvailable = !!(await serviceMap[variant].isAvailable(options));
-        return {
-            result: isAvailable,
-            reason: !isAvailable ? 'Quest is not available.' : '',
-        };
+        return await serviceMap[variant].isAvailable(options);
     }
 
     static async getValidationResult(
@@ -143,7 +140,7 @@ export default class QuestService {
         try {
             const { variant, questId, sub, data } = job.attrs.data as any;
             const Entry = serviceMap[Number(variant)].models.entry;
-            const account = await AccountProxy.getById(sub);
+            const account = await AccountProxy.findById(sub);
             const wallet = await SafeService.findPrimary(sub);
             const quest = await this.findById(variant, questId);
             const pool = await PoolService.getById(quest.poolId);
@@ -175,5 +172,13 @@ export default class QuestService {
         } catch (error) {
             logger.error(error);
         }
+    }
+
+    static findUserIdForInteraction(account: TAccount, interaction: QuestSocialRequirement) {
+        if (typeof interaction === 'undefined') return;
+        const { kind } = tokenInteractionMap[interaction];
+        const token = account.tokens.find((token) => token.kind === kind);
+
+        return token && token.userId;
     }
 }

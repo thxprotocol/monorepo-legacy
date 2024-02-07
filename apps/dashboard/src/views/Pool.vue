@@ -5,7 +5,6 @@
 </template>
 
 <script lang="ts">
-import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
@@ -20,7 +19,6 @@ import type { TAccount } from '@thxnetwork/types/interfaces';
     }),
 })
 export default class PoolView extends Vue {
-    chainId: ChainId = ChainId.Polygon;
     account!: TAccount;
     pools!: IPools;
     ERC20Type = ERC20Type;
@@ -32,9 +30,7 @@ export default class PoolView extends Vue {
 
     async mounted() {
         this.$store.dispatch('account/getProfile');
-        await this.$store.dispatch('pools/read', this.$route.params.id).then(() => {
-            this.chainId = this.pool.chainId;
-        });
+        await this.$store.dispatch('pools/read', this.$route.params.id);
     }
 }
 </script>

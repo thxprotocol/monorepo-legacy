@@ -29,7 +29,7 @@ export default class QuestGitcoinService implements IQuestService {
         wallet?: WalletDocument;
     }): Promise<TGitcoinQuest & { isAvailable: boolean }> {
         const isAvailable = await this.isAvailable({ quest, wallet, account });
-        return { ...quest, isAvailable };
+        return { ...quest, isAvailable: isAvailable.result };
     }
 
     async isAvailable({
@@ -41,18 +41,21 @@ export default class QuestGitcoinService implements IQuestService {
         wallet: WalletDocument;
         account: TAccount;
         address?: string;
-    }): Promise<boolean> {
+    }): Promise<TValidationResult> {
+        if (!wallet) return { result: true, reason: '' };
+
         const ids = [];
         if (wallet) ids.push({ sub: wallet.sub });
         if (wallet) ids.push({ walletId: wallet._id });
         if (address) ids.push({ address });
 
-        return wallet
-            ? !(await GitcoinQuestEntry.exists({
-                  questId: quest._id,
-                  $or: ids,
-              }))
-            : false;
+        const isCompleted = await GitcoinQuestEntry.exists({
+            questId: quest._id,
+            $or: ids,
+        });
+        if (!isCompleted) return { result: true, reason: '' };
+
+        return { result: false, reason: 'You have completed this quest with this account and/or address already.' };
     }
 
     async getAmount({ quest }: { quest: TGitcoinQuest; wallet: WalletDocument; account: TAccount }): Promise<number> {

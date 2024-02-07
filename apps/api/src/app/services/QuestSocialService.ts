@@ -4,8 +4,10 @@ import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { PointBalance } from './PointBalanceService';
 import { TPointReward, TAccount, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
 import { IQuestService } from './interfaces/IQuestService';
-import { getPlatformUserId, requirementMap } from './maps/quests';
+import { requirementMap } from './maps/quests';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import { logger } from '../util/logger';
+import QuestService from './QuestService';
 
 export default class QuestSocialService implements IQuestService {
     models = {
@@ -26,7 +28,7 @@ export default class QuestSocialService implements IQuestService {
 
         return {
             ...quest,
-            isAvailable,
+            isAvailable: isAvailable.result,
             contentMetadata: quest.contentMetadata && JSON.parse(quest.contentMetadata),
         };
     }
@@ -39,20 +41,23 @@ export default class QuestSocialService implements IQuestService {
         quest: TPointReward;
         wallet: WalletDocument;
         account: TAccount;
-    }): Promise<boolean> {
-        if (!wallet || !account) return true;
+    }): Promise<TValidationResult> {
+        if (!wallet || !account) return { result: true, reason: '' };
 
         // We validate for both here since there are entries that only contain a sub
         // and should not be claimed again.
         const ids: any[] = [{ sub: wallet.sub }, { walletId: wallet._id }];
-        const platformUserId = await getPlatformUserId(account, quest.platform);
+        const platformUserId = QuestService.findUserIdForInteraction(account, quest.interaction);
         if (platformUserId) ids.push({ platformUserId });
 
         // If no entry exist the quest is available
-        return !(await PointRewardClaim.exists({
+        const isCompleted = await PointRewardClaim.exists({
             questId: quest._id,
             $or: ids,
-        }));
+        });
+        if (!isCompleted) return { result: true, reason: '' };
+
+        return { result: false, reason: 'You have completed this quest with this (connected) account already.' };
     }
 
     async getAmount({ quest }: { quest: TPointReward; wallet: WalletDocument; account: TAccount }): Promise<number> {
@@ -71,10 +76,9 @@ export default class QuestSocialService implements IQuestService {
         try {
             // Check quest requirements
             const validationResult = await requirementMap[quest.interaction](account, quest);
-            console.log(validationResult);
             return validationResult || { result: true, reason: '' };
         } catch (error) {
-            console.log(error);
+            logger.error(error);
             return { result: false, reason: 'We were unable to confirm the requirements for this quest.' };
         }
     }
@@ -84,7 +88,7 @@ export default class QuestSocialService implements IQuestService {
         const total = await PointRewardClaim.countDocuments({ questId: quest._id });
         const entries = await PointRewardClaim.find({ questId: quest._id }).limit(limit).skip(skip);
         const subs = entries.map((entry) => entry.sub);
-        const accounts = await AccountProxy.getMany(subs);
+        const accounts = await AccountProxy.find({ subs });
         const pointBalances = await PointBalance.find({
             poolId: quest.poolId,
         });

@@ -23,7 +23,7 @@ async function send(
 ) {
     const poolSubs = await PoolSubscription.find({ poolId: pool._id });
     const subs = poolSubs.map((x) => x.sub);
-    const accounts = (await AccountProxy.getMany(subs)).filter((a) => a.email);
+    const accounts = (await AccountProxy.find({ subs })).filter((a) => a.email);
 
     // Create chunks for bulk email sending to avoid hitting rate limits
     for (let i = 0; i < subs.length; i += MAIL_CHUNK_SIZE) {
@@ -117,7 +117,6 @@ async function sendQuestPublishNotification(
         [embed],
         [
             {
-                disabled: true,
                 customId: `${DiscordButtonVariant.QuestComplete}:${quest.variant}:${quest._id}`,
                 label: 'Complete Quest!',
                 style: ButtonStyle.Success,
@@ -139,7 +138,7 @@ async function sendQuestEntryNotification(
     amount: number,
 ) {
     const index = Math.floor(Math.random() * celebratoryWords.length);
-    const discord = account.connectedAccounts && account.connectedAccounts.find((a) => a.kind === 'discord');
+    const discord = account.tokens && account.tokens.find((a) => a.kind === 'discord');
     const user =
         discord && discord.userId
             ? `<@${discord.userId}>`

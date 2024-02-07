@@ -1,32 +1,37 @@
-import {
-    AccessTokenKind,
-    QuestVariant,
-    RewardConditionInteraction,
-    RewardConditionPlatform,
-} from '@thxnetwork/types/enums';
-import { TAccount } from '@thxnetwork/types/interfaces';
+import { AccessTokenKind, QuestVariant, QuestSocialRequirement, OAuthRequiredScopes } from '@thxnetwork/types/enums';
 import { AssetPool } from '../models/AssetPool';
 import { PointReward } from '../models/PointReward';
+import { logger } from '../util/logger';
+import { DASHBOARD_URL } from '../config/secrets';
 import TwitterDataProxy from '../proxies/TwitterDataProxy';
 import AccountProxy from '../proxies/AccountProxy';
 import MailService from '../services/MailService';
 import QuestService from '../services/QuestService';
-import { logger } from '../util/logger';
-import { DASHBOARD_URL } from '../config/secrets';
 
 export async function createTwitterQuests() {
     for await (const pool of AssetPool.find({ 'settings.isTwitterSyncEnabled': true })) {
         try {
-            const { isAuthorized } = await TwitterDataProxy.getTwitter(pool.sub);
-            if (!isAuthorized) {
-                logger.error(`Started autoquest but ${pool.sub} has no Twitter access.`);
-                continue;
-            }
             const { hashtag, title, description, amount, locks, isPublished } =
                 pool.settings.defaults.conditionalRewards;
 
-            const tweets = await TwitterDataProxy.searchTweets(pool.sub, `#${hashtag}`);
-            if (!tweets.length) continue;
+            const account = await AccountProxy.findById(pool.sub);
+            if (!account) {
+                logger.error(`Account not found for ${pool.sub}.`);
+                continue;
+            }
+
+            const token = await AccountProxy.getToken(
+                account,
+                AccessTokenKind.Twitter,
+                OAuthRequiredScopes.TwitterAutoQuest,
+            );
+            if (!token) {
+                logger.error(`Could not find Twitter accounts for ${pool.sub} in ${pool.settings.title}`);
+                continue;
+            }
+
+            const tweets = await TwitterDataProxy.searchTweets(account, `#${hashtag}`);
+            if (!tweets || !tweets.length) continue;
             logger.info(`Found tweets matching the hashtag in the last 7 days!`);
             logger.info(JSON.stringify(tweets));
 
@@ -49,19 +54,12 @@ export async function createTwitterQuests() {
             }
             logger.info(`Found ${newTweets.length} new autoquest for ${pool.sub} in ${pool.settings.title}`);
 
-            const account: TAccount = await AccountProxy.getById(pool.sub);
-            const twitterAccount = account.connectedAccounts.find((token) => token.kind === AccessTokenKind.Twitter);
-            if (!twitterAccount) {
-                logger.error(`Could not find Twitter accounts for ${pool.sub} in ${pool.settings.title}`);
-                continue;
-            }
-
             const quests = await Promise.all(
                 newTweets.map(async (tweet) => {
                     try {
                         const contentMetadata = JSON.stringify({
-                            url: `https://twitter.com/${twitterAccount.metadata.username}/status/${tweet.id}`,
-                            username: twitterAccount.metadata.username,
+                            url: `https://twitter.com/${token.metadata.username}/status/${tweet.id}`,
+                            username: token.metadata.username,
                             text: tweet.text,
                             minFollowersCount: 0,
                         });
@@ -71,8 +69,8 @@ export async function createTwitterQuests() {
                             description,
                             amount,
                             locks,
-                            platform: RewardConditionPlatform.Twitter,
-                            interaction: RewardConditionInteraction.TwitterLikeRetweet,
+                            kind: AccessTokenKind.Twitter,
+                            interaction: QuestSocialRequirement.TwitterLikeRetweet,
                             content: tweet.id,
                             contentMetadata,
                             isPublished,
@@ -86,8 +84,8 @@ export async function createTwitterQuests() {
             const subject = `Created ${quests.length} Twitter Quest${quests.length && 's'}!`;
             const message = `We have detected ${quests.length} new tweet${
                 quests.length && 's'
-            } in <a href="https://www.twitter.com/${twitterAccount.metadata.username}">@${
-                twitterAccount.metadata.username
+            } in <a href="https://www.twitter.com/${token.metadata.username}">@${
+                token.metadata.username
             }</a>. A Twitter Quest ${quests.length && 'for each'} has been ${
                 isPublished ? 'published' : 'prepared'
             } for you in <a href="${DASHBOARD_URL}/pool/${pool._id}/quests">${pool.settings.title}</a>.`;

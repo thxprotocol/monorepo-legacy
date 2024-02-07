@@ -1,14 +1,14 @@
-import { QuestVariant, RewardConditionInteraction } from '../enums';
+import { QuestVariant, QuestSocialRequirement } from '../enums';
 
 export const questInteractionVariantMap = {
-    [RewardConditionInteraction.TwitterFollow]: QuestVariant.Twitter,
-    [RewardConditionInteraction.TwitterLike]: QuestVariant.Twitter,
-    [RewardConditionInteraction.TwitterMessage]: QuestVariant.Twitter,
-    [RewardConditionInteraction.TwitterRetweet]: QuestVariant.Twitter,
-    [RewardConditionInteraction.TwitterLikeRetweet]: QuestVariant.Twitter,
-    [RewardConditionInteraction.YouTubeLike]: QuestVariant.YouTube,
-    [RewardConditionInteraction.YouTubeSubscribe]: QuestVariant.YouTube,
-    [RewardConditionInteraction.DiscordGuildJoined]: QuestVariant.Discord,
-    [RewardConditionInteraction.DiscordMessage]: QuestVariant.Discord,
-    [RewardConditionInteraction.DiscordMessageReaction]: QuestVariant.Discord,
+    [QuestSocialRequirement.TwitterFollow]: QuestVariant.Twitter,
+    [QuestSocialRequirement.TwitterLike]: QuestVariant.Twitter,
+    [QuestSocialRequirement.TwitterMessage]: QuestVariant.Twitter,
+    [QuestSocialRequirement.TwitterRetweet]: QuestVariant.Twitter,
+    [QuestSocialRequirement.TwitterLikeRetweet]: QuestVariant.Twitter,
+    [QuestSocialRequirement.YouTubeLike]: QuestVariant.YouTube,
+    [QuestSocialRequirement.YouTubeSubscribe]: QuestVariant.YouTube,
+    [QuestSocialRequirement.DiscordGuildJoined]: QuestVariant.Discord,
+    [QuestSocialRequirement.DiscordMessage]: QuestVariant.Discord,
+    [QuestSocialRequirement.DiscordMessageReaction]: QuestVariant.Discord,
 };

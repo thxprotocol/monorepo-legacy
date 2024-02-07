@@ -38,11 +38,7 @@
                         {{ item.email }}
                     </template>
                     <template #cell(connectedAccounts)="{ item }">
-                        <BaseParticipantConnectedAccount
-                            :account="a"
-                            :key="key"
-                            v-for="(a, key) in item.connectedAccounts"
-                        />
+                        <BaseParticipantConnectedAccount :account="a" :key="key" v-for="(a, key) in item.tokens" />
                     </template>
                     <template #cell(wallet)="{ item }">
                         <BaseParticipantWallet :wallet="item.wallet" />
@@ -67,7 +63,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TPointReward, TPool, TQuest, TQuestEntry } from '@thxnetwork/types/interfaces';
+import type { TPointReward, TQuest, TQuestEntry } from '@thxnetwork/types/interfaces';
 import { mapGetters } from 'vuex';
 import { format, differenceInMilliseconds } from 'date-fns';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
@@ -140,7 +136,7 @@ export default class BaseModalQuestSocialEntries extends Vue {
             .map((entry: any) => ({
                 account: parseAccount({ id: entry._id, account: entry.account }),
                 email: entry.account && entry.account.email,
-                connectedAccounts: entry.account && parseConnectedAccounts(entry.account.connectedAccounts),
+                connectedAccounts: entry.account && parseConnectedAccounts(entry.account.tokens),
                 wallet: parseWallet(entry.wallet),
                 pointBalance: entry.pointBalance,
                 amount: entry.amount,

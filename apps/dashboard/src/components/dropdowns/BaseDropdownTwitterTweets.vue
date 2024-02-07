@@ -60,9 +60,8 @@ export default class BaseDropdownTwitterTweets extends Vue {
         if (this.url && this.isValidTweetUrl && !this.contentMetadata) {
             this.getTweet();
         } else if (this.url && this.isValidTweetUrl && this.contentMetadata) {
-            const metadata = JSON.parse(this.contentMetadata);
-            this.preview = metadata;
-            this.minFollowersCount = metadata.minFollowersCount;
+            this.preview = this.contentMetadata;
+            this.minFollowersCount = this.contentMetadata.minFollowersCount;
         }
     }
 

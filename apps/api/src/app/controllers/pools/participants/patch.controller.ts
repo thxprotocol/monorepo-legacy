@@ -23,10 +23,11 @@ export const controller = async (req: Request, res: Response) => {
         pointBalance = await PointBalance.findOneAndUpdate(
             { poolId: participant.poolId, walletId: wallet._id },
             { balance: Number(req.body.pointBalance) },
+            { new: true, upsert: true },
         );
     }
 
-    res.json({ ...participant, pointBalance });
+    res.json({ ...participant.toJSON(), pointBalance: pointBalance.balance });
 };
 
 export default { controller, validation };

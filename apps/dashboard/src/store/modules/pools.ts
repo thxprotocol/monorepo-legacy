@@ -6,7 +6,6 @@ import type {
     TParticipant,
     TPool,
     TPoolSettings,
-    TPoolTransferResponse,
     TQuest,
     TQuestEntry,
 } from '@thxnetwork/types/interfaces';
@@ -15,7 +14,6 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
-import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { TIdentity } from '@thxnetwork/common/lib/types/interfaces/Identity';
 
@@ -217,21 +215,6 @@ class PoolModule extends VuexModule {
     @Mutation
     set(pool: TPool) {
         Vue.set(this._all, pool._id, pool);
-    }
-
-    @Mutation
-    clearTransfers(pool: TPool) {
-        Vue.set(this._all[pool._id], 'transfers', []);
-    }
-
-    @Mutation
-    setTransfer(poolTransfer: TPoolTransferResponse) {
-        const pool = this._all[poolTransfer.poolId] as TPool & { transfers: TPoolTransferResponse[] };
-        poolTransfer.isCopied = false;
-        poolTransfer.url = `${BASE_URL}/preview/${pool._id}?token=${poolTransfer.token}`;
-
-        const transfers = [...(pool.transfers ? pool.transfers : []), poolTransfer];
-        Vue.set(this._all[pool._id], 'transfers', transfers);
     }
 
     @Mutation
@@ -491,54 +474,19 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async listTransfers(pool: TPool) {
-        this.context.commit('clearTransfers', pool);
-
-        const r = await axios({
-            method: 'GET',
-            url: `/pools/${pool._id}/transfers`,
-            headers: { 'X-PoolId': pool._id },
-        });
-
-        r.data.forEach((poolTransfer: TPoolTransferResponse) => {
-            this.context.commit('setTransfer', poolTransfer);
-        });
-    }
-
-    @Action({ rawError: true })
-    async refreshTransfers(pool: TPool & { transfers: TPoolTransferResponse[] }) {
-        await axios({
-            method: 'POST',
-            url: `/pools/${pool._id}/transfers/refresh`,
-            headers: { 'X-PoolId': pool._id },
-            data: { token: pool.transfers[0].token },
-        });
-        this.context.dispatch('listTransfers', pool);
-    }
-
-    @Action({ rawError: true })
-    async deleteTransfers(pool: TPool & { transfers: TPoolTransferResponse[] }) {
-        await axios({
-            method: 'DELETE',
-            url: `/pools/${pool._id}/transfers`,
-            headers: { 'X-PoolId': pool._id },
-            data: { token: pool.transfers[0].token },
-        });
-        this.context.dispatch('listTransfers', pool);
-    }
-
-    @Action({ rawError: true })
     async list() {
         this.context.commit('clear');
 
-        const r = await axios({
+        const { data } = await axios({
             method: 'GET',
             url: '/pools',
         });
 
-        r.data.forEach((pool: TPool) => {
+        for (const pool of data) {
+            // Skip pools that are already in store
+            if (this.context.rootGetters['pools/all'][pool._id]) continue;
             this.context.commit('set', pool);
-        });
+        }
     }
 
     @Action({ rawError: true })

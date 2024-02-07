@@ -5,13 +5,12 @@ import { Widget } from '@thxnetwork/api/services/WidgetService';
 import { PoolSubscription } from '@thxnetwork/api/models/PoolSubscription';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { Event } from '@thxnetwork/api/models/Event';
-import PoolService from '@thxnetwork/api/services/PoolService';
-import BrandService from '@thxnetwork/api/services/BrandService';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { logger } from '@thxnetwork/api/util/logger';
+import PoolService from '@thxnetwork/api/services/PoolService';
+import BrandService from '@thxnetwork/api/services/BrandService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 export const validation = [param('id').isMongoId()];
 
@@ -35,7 +34,7 @@ export const controller = async (req: Request, res: Response) => {
         BrandService.get(req.params.id),
         Wallet.find({ poolId: req.params.id }),
         PoolService.findCollaborators(pool),
-        AccountProxy.getById(pool.sub),
+        PoolService.findOwner(pool),
         Event.find({ poolId: pool._id }).distinct('name'), // Seperate list (many)
         Identity.find({ poolId: pool._id }), // Seperate list (many)
         PoolSubscription.countDocuments({ poolId: req.params.id }),

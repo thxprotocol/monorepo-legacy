@@ -24,7 +24,7 @@ const controller = async (req: Request, res: Response) => {
     if (!couponReward) throw new NotFoundError('Could not find this reward');
     if (!couponReward.pointPrice) throw new NotFoundError('No point price for this reward has been set.');
 
-    const account = await AccountProxy.getById(req.auth.sub);
+    const account = await AccountProxy.findById(req.auth.sub);
     const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
     const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
     if (!pointBalance || Number(pointBalance.balance) < Number(couponReward.pointPrice)) {

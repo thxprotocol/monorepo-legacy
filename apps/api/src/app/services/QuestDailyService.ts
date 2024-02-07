@@ -38,7 +38,7 @@ export default class QuestDailyService implements IQuestService {
 
         return {
             ...quest,
-            isAvailable,
+            isAvailable: isAvailable.result,
             amount,
             entries,
             claimAgainDuration:
@@ -53,20 +53,21 @@ export default class QuestDailyService implements IQuestService {
         quest: TDailyReward;
         wallet: WalletDocument;
         account: TAccount;
-    }): Promise<boolean> {
-        if (!wallet) return true;
+    }): Promise<TValidationResult> {
+        if (!wallet) return { result: true, reason: '' };
 
         const now = Date.now(),
             start = now - ONE_DAY_MS,
             end = now;
 
-        const entry = await DailyRewardClaim.findOne({
+        const isCompleted = await DailyRewardClaim.findOne({
             questId: quest._id,
             walletId: wallet._id,
             createdAt: { $gt: new Date(start), $lt: new Date(end) },
         });
+        if (!isCompleted) return { result: true, reason: '' };
 
-        return !entry;
+        return { result: false, reason: 'You have completed this quest within the last 24 hours.' };
     }
 
     async getAmount({

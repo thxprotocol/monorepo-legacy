@@ -38,7 +38,7 @@ describe('NFT Rewards', () => {
             .expect(201, done);
     });
 
-    it('POST /erc721?:id/metadata', (done) => {
+    it('POST /erc721/:id/metadata', (done) => {
         const config = {
             name: 'Lorem',
             description: 'Lorem ipsum dolor sit.',

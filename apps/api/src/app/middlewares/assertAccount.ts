@@ -5,7 +5,7 @@ import AccountProxy from '../proxies/AccountProxy';
 import SafeService from '../services/SafeService';
 
 const assertAccount = async (req: Request, res: Response, next: NextFunction) => {
-    const account = await AccountProxy.getById(req.auth.sub);
+    const account = await AccountProxy.findById(req.auth.sub);
     if (!account) throw new Error('Account not found.');
     req.account = account;
 

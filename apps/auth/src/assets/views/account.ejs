@@ -129,7 +129,7 @@
                 </div>
                 <div class="d-flex col-8">
                     <div class="w-100 d-flex flex-column">
-                        <% if (params.twitchLoginUrl && !params.twitchAccess) { %>
+                        <!-- <% if (params.twitchLoginUrl) { %>
                         <a class="btn btn-sign-in btn-twitch btn-block my-1" href="<%= params.twitchLoginUrl %>">
                             <div class="logo">
                                 <img src="/img/twitch-logo.png" alt="twitch logo" />
@@ -137,8 +137,8 @@
                             <div class="label">Connect Twitch</div>
                         </a>
                         <% } %>
-                        <% if (params.twitchAccess) { %>
-                        <form method="post" action="/oidc/<%= uid %>/account/twitch/disconnect">
+                        <% if (!params.twitchLoginUrl) { %>
+                        <form method="post" action="/oidc/<%= uid %>/tokens/twitch/disconnect">
                             <button class="btn btn-sign-in btn-discord bg-gray btn-block my-1" type="submit">
                                 <div class="logo">
                                     <img src="/img/twitch-logo.png" alt="Twitch logo" />
@@ -146,8 +146,8 @@
                                 <div class="label">Disconnect Twitch</div>
                             </button>
                         </form>
-                        <% } %>
-                        <% if (params.discordLoginUrl && !params.discordAccess) { %>
+                        <% } %> -->
+                        <% if (params.discordLoginUrl) { %>
                         <a class="btn btn-sign-in btn-discord btn-block my-1" href="<%= params.discordLoginUrl %>">
                             <div class="logo">
                                 <img src="/img/discord-logo.png" alt="Discord logo" />
@@ -155,8 +155,8 @@
                             <div class="label">Connect Discord</div>
                         </a>
                         <% } %>
-                        <% if (params.discordAccess) { %>
-                        <form method="post" action="/oidc/<%= uid %>/account/discord/disconnect">
+                        <% if (!params.discordLoginUrl) { %>
+                        <form method="post" action="/oidc/<%= uid %>/tokens/discord/disconnect">
                             <button class="btn btn-sign-in btn-twitch bg-gray btn-block my-1" type="submit">
                                 <div class="logo">
                                     <img src="/img/discord-logo.png" alt="Twitch logo" />
@@ -165,7 +165,7 @@
                             </button>
                         </form>
                         <% } %>
-                        <% if (params.googleLoginUrl && !params.googleAccess) { %>
+                        <!-- <% if (!params.googleLoginUrl) { %>
                         <a class="btn btn-sign-in btn-google btn-block my-1" href="<%= params.googleLoginUrl %>">
                             <div class="logo">
                                 <img src="/img/g-logo.png" alt="Google logo" />
@@ -173,8 +173,8 @@
                             <div class="label">Connect Google</div>
                         </a>
                         <% } %>
-                        <% if (params.googleAccess) { %>
-                        <form method="post" action="/oidc/<%= uid %>/account/google/disconnect">
+                        <% if (params.googleLoginUrl) { %>
+                        <form method="post" action="/oidc/<%= uid %>/tokens/google/disconnect">
                             <button class="btn btn-sign-in btn-google bg-gray btn-block my-1" type="submit">
                                 <div class="logo">
                                     <img src="/img/g-logo.png" alt="Google logo" />
@@ -183,7 +183,7 @@
                             </button>
                         </form>
                         <% } %>
-                        <% if (params.githubLoginUrl && !params.githubAccess) { %>
+                        <% if (params.githubLoginUrl) { %>
                         <a class="btn btn-sign-in btn-github btn-block my-1" href="<%= params.githubLoginUrl %>">
                             <div class="logo">
                                 <img src="/img/github-logo.png" alt="github logo" />
@@ -191,8 +191,8 @@
                             <div class="label">Connect Github</div>
                         </a>
                         <% } %>
-                        <% if (params.githubAccess) { %>
-                        <form method="post" action="/oidc/<%= uid %>/account/github/disconnect">
+                        <% if (!params.githubLoginUrl) { %>
+                        <form method="post" action="/oidc/<%= uid %>/tokens/github/disconnect">
                             <button class="btn btn-sign-in bg-gray btn-github btn-block my-1" type="submit">
                                 <div class="logo">
                                     <img src="/img/github-logo.png" alt="github logo" />
@@ -200,8 +200,8 @@
                                 <div class="label">Disconnect Github</div>
                             </button>
                         </form>
-                        <% } %>
-                        <% if (params.twitterLoginUrl && !params.twitterAccess) { %>
+                        <% } %> -->
+                        <% if (params.twitterLoginUrl) { %>
                         <a class="btn btn-sign-in btn-twitter btn-block my-1" href="<%= params.twitterLoginUrl %>">
                             <div class="logo">
                                 <img src="/img/t-logo.png" alt="Twitter logo" />
@@ -209,8 +209,8 @@
                             <div class="label">Connect Twitter</div>
                         </a>
                         <% } %>
-                        <% if (params.twitterAccess) { %>
-                        <form method="post" action="/oidc/<%= uid %>/account/twitter/disconnect">
+                        <% if (!params.twitterLoginUrl) { %>
+                        <form method="post" action="/oidc/<%= uid %>/tokens/twitter/disconnect">
                             <button class="btn btn-sign-in bg-gray btn-twitter btn-block my-1" type="submit">
                                 <div class="logo">
                                     <img src="/img/t-logo.png" alt="Twitter logo" />

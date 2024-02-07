@@ -1,29 +1,61 @@
-import { IAccessToken } from '@thxnetwork/types/interfaces';
 import { Account, AccountDocument } from '../models/Account';
-import { toChecksumAddress } from 'web3-utils';
-import {
-    SUCCESS_SIGNUP_COMPLETED,
-    ERROR_VERIFY_EMAIL_TOKEN_INVALID,
-    ERROR_VERIFY_EMAIL_EXPIRED,
-} from '../util/messages';
-import { YouTubeService } from './YouTubeService';
-import { TInteraction, TAccount, AccountVariant } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountPlanType } from '@thxnetwork/types/enums';
 import { generateUsername } from 'unique-username-generator';
-import bcrypt from 'bcrypt';
+import { toChecksumAddress } from 'web3-utils';
+import { BadRequestError } from '../util/errors';
+import { MailService } from './MailService';
+import { DASHBOARD_URL } from '../config/secrets';
+import { accountVariantProviderMap } from '@thxnetwork/common/lib/types/maps/oauth';
+import { AccountVariant } from '@thxnetwork/common/lib/types';
+import TokenService from './TokenService';
 
 export class AccountService {
-    static async get(sub: string) {
-        return await Account.findById(sub);
+    static create(data: Partial<AccountDocument>) {
+        return Account.create({
+            plan: AccountPlanType.Free,
+            username: generateUsername(),
+            ...data,
+            email: data.email && data.email.toLowerCase(),
+            isEmailVerified: false,
+            active: true,
+        });
     }
 
-    static async getMany(subs: string[]) {
-        if (!subs.length) return [];
-        return await Account.find({ _id: { $in: subs } });
+    static async update(account: AccountDocument, data: Partial<AccountDocument & { returnUrl?: string }>) {
+        // Checksum address
+        if (data.address) {
+            data.address = toChecksumAddress(data.address);
+        }
+
+        // Test username
+        if (data.username) {
+            const isUsed = await Account.exists({
+                username: data.username,
+                _id: { $ne: data._id, $exists: true },
+            });
+            if (isUsed) throw new BadRequestError('Username already in use.');
+        }
+
+        // Send verification email when changing email
+        if (data.email && account.email !== data.email) {
+            const isUsed = await Account.exists({
+                email: data.email,
+                _id: { $ne: String(account._id), $exists: true },
+            });
+            if (isUsed) throw new BadRequestError('Email already in use.');
+
+            await MailService.sendVerificationEmail(account, data.email, data.returnUrl || DASHBOARD_URL);
+        }
+
+        return await Account.findByIdAndUpdate(account._id, data, { new: true });
     }
 
-    static getByDiscordId(discordId: string) {
-        return Account.findOne({ 'tokens.userId': discordId });
+    static get(sub: string) {
+        return Account.findById(sub);
+    }
+
+    static find(query: { _id: string[] }) {
+        return Account.find({ _id: { $in: query._id } });
     }
 
     static getByEmail(email: string) {
@@ -34,213 +66,35 @@ export class AccountService {
         return Account.findOne({ address });
     }
 
-    static async update(account: AccountDocument, updates: Partial<TAccount>) {
-        account.username = updates.username || account.username;
-        account.email = updates.email || account.email;
-        account.firstName = updates.firstName || account.firstName;
-        account.lastName = updates.lastName || account.lastName;
-        account.plan = updates.plan || account.plan;
-        account.organisation = updates.organisation || account.organisation;
-        account.address = updates.address ? toChecksumAddress(updates.address) : account.address;
-        account.acceptUpdates = updates.acceptUpdates === null ? false : account.acceptUpdates;
-        account.referralCode = updates.referralCode ? updates.referralCode : account.referralCode;
-        account.role = updates.role || account.role;
-        account.goal = updates.goal || account.goal;
-
-        if (typeof updates.profileImg !== 'undefined') {
-            account.profileImg = updates.profileImg;
-        }
-
-        if (updates.website) {
-            try {
-                account.website = updates.website ? new URL(updates.website).hostname : account.website;
-            } catch {
-                // no-op
-            }
-        }
-
-        if (updates.googleAccess === false) {
-            const token = account.getToken(AccessTokenKind.Google);
-            if (token) {
-                await YouTubeService.revokeAccess(account, token);
-                account.unsetToken(AccessTokenKind.Google);
-            }
-        }
-
-        if (updates.youtubeViewAccess === false) {
-            const token = account.getToken(AccessTokenKind.YoutubeView);
-            if (token) {
-                await YouTubeService.revokeAccess(account, token);
-                account.unsetToken(AccessTokenKind.YoutubeView);
-            }
-        }
-
-        if (updates.youtubeManageAccess === false) {
-            const token = account.getToken(AccessTokenKind.YoutubeManage);
-            if (token) {
-                await YouTubeService.revokeAccess(account, token);
-                account.unsetToken(AccessTokenKind.YoutubeManage);
-            }
-        }
-
-        if (updates.twitterAccess === false) {
-            account.unsetToken(AccessTokenKind.Twitter);
-        }
-
-        if (updates.githubAccess === false) {
-            account.unsetToken(AccessTokenKind.Github);
-        }
-
-        if (updates.twitchAccess === false) {
-            account.unsetToken(AccessTokenKind.Twitch);
-        }
-
-        if (updates.discordAccess === false) {
-            account.unsetToken(AccessTokenKind.Discord);
-        }
-
-        return await account.save();
-    }
-
-    static async signinWithAddress(addr: string) {
-        const address = toChecksumAddress(addr);
-        const account = await Account.findOne({ address });
-        if (account) return account;
-
-        return await Account.create({
-            username: generateUsername(''),
-            variant: AccountVariant.Metamask,
-            plan: AccountPlanType.Free,
-            active: true,
-            address,
-        });
-    }
-
-    static async findOrCreate(
-        interaction: TInteraction,
-        tokenInfo: IAccessToken,
-        variant: AccountVariant,
-        email?: string,
-    ) {
-        const { session, params } = interaction;
-
-        let account: AccountDocument;
-        // Find account for active session
-        if (session && session.accountId) {
-            account = await Account.findById(session.accountId);
-        }
-        // Find account for email
-        else if (email) {
-            account = await Account.findOne({ email });
-        }
-        // Find account for userId
-        else if (tokenInfo.userId) {
-            account = await Account.findOne({ 'tokens.userId': tokenInfo.userId, 'tokens.kind': tokenInfo.kind });
-        }
-
-        // When no account is matched, create the account.
-        if (!account) {
-            const isEmailVerified = this.getIsEmailVerified(variant, email);
-            const data = {
-                username: generateUsername(''),
-                variant,
-                plan: params.signup_plan || AccountPlanType.Free,
-                active: true,
-                isEmailVerified,
-            };
-            if (email) {
-                data['email'] = email;
-            }
-            account = await Account.create(data);
-        }
-
-        // Always update latest tokenInfo for account
-        account.setToken(tokenInfo);
-
-        return await account.save();
-    }
-
-    private static getIsEmailVerified(accountVariant: AccountVariant, email?: string): undefined | boolean {
-        if (!email) return undefined;
-
-        const ssoVariants = [
-            AccountVariant.SSOGoogle,
-            AccountVariant.SSOTwitter,
-            AccountVariant.SSOGithub,
-            AccountVariant.SSODiscord,
-            AccountVariant.SSOTwitch,
-        ];
-
-        if (ssoVariants.includes(accountVariant)) return true;
-
-        return false;
-    }
-
-    static async signup(data: { email?: string; plan: AccountPlanType; variant: AccountVariant; active: boolean }) {
-        let account: AccountDocument;
-
-        if (data.email) {
-            account = await Account.findOne({ email: data.email, active: false });
-        }
-
-        if (!account) {
-            account = new Account({
-                username: generateUsername(''),
-                email: data.email,
-                active: data.active,
-                variant: data.variant,
-                plan: data.plan,
-                isEmailVerified: this.getIsEmailVerified(data.variant, data.email),
-            });
-        }
-
-        account.active = data.active;
-        account.email = data.email;
-        account.variant = data.variant;
-        account.plan = data.plan;
-
-        return await account.save();
-    }
-
-    static async isOTPValid(account: TAccount, otp: string): Promise<boolean> {
-        const token = account.getToken(AccessTokenKind.Auth);
-        if (!token) return;
-
-        return await bcrypt.compare(otp, token.accessToken);
-    }
-
-    static async verifyEmailToken(verifyEmailToken: string) {
-        const account = await Account.findOne({
-            'tokens.kind': AccessTokenKind.VerifyEmail,
-            'tokens.accessToken': verifyEmailToken,
-        });
-
-        if (!account) {
-            return { error: ERROR_VERIFY_EMAIL_TOKEN_INVALID };
-        }
-
-        const token: IAccessToken = account.getToken(AccessTokenKind.VerifyEmail);
-        if (token.expiry < Date.now()) {
-            return { error: ERROR_VERIFY_EMAIL_EXPIRED };
-        }
-
-        account.unsetToken(AccessTokenKind.VerifyEmail);
-        account.isEmailVerified = true;
-
-        await account.save();
-
-        return { result: SUCCESS_SIGNUP_COMPLETED, account };
-    }
-
     static async remove(id: string) {
         await Account.deleteOne({ _id: id });
     }
 
-    static isConnected = async (interaction: any, userId: string, tokenKind: AccessTokenKind) => {
-        return await Account.exists({
-            'tokens.kind': tokenKind,
-            'tokens.userId': userId,
-            '_id': { $ne: interaction.session.accountId },
+    static findAccountForSession(session: { accountId: string }) {
+        return Account.findById(session.accountId);
+    }
+
+    static findAccountForEmail(email: string) {
+        return Account.findOne({ email: email.toLowerCase() });
+    }
+
+    static async findAccountForToken(variant: AccountVariant, tokenInfo: Partial<{ userId: string }>) {
+        const kind = accountVariantProviderMap[variant];
+        const token = await TokenService.findTokenForUserId(tokenInfo.userId, kind);
+        if (!token) return;
+
+        return await Account.findById(token.sub);
+    }
+
+    static async findAccountForAddress(address: string) {
+        const checksummedAddress = toChecksumAddress(address);
+        // Checking for non checksummed as well in order to avoid issues with existing data in db
+        const account = await Account.findOne({ $or: [{ address: checksummedAddress }, { address }] });
+        if (account) return account;
+        return await Account.create({
+            variant: AccountVariant.Metamask,
+            plan: AccountPlanType.Free,
+            address,
         });
-    };
+    }
 }

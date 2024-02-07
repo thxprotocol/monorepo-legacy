@@ -1,21 +1,26 @@
 import { Request, Response } from 'express';
-import { DiscordService } from '../../../services/DiscordService';
-import { TwitterService } from '../../../services/TwitterService';
-import { YouTubeService } from '../../../services/YouTubeService';
 import { AccountService } from '../../../services/AccountService';
-import { GithubService } from '../../../services/GithubServices';
-import { TwitchService } from '@thxnetwork/auth/services/TwitchService';
-import { AccountPlanType, AccessTokenKind } from '@thxnetwork/types/enums';
+import { AccessTokenKind, AccountPlanType, OAuthRequiredScopes } from '@thxnetwork/types/enums';
+import TokenService from '@thxnetwork/auth/services/TokenService';
 
 async function controller(req: Request, res: Response) {
     const { uid, params, alert, session } = req.interaction;
     const account = await AccountService.get(session.accountId);
 
-    params.githubLoginUrl = GithubService.getLoginURL(uid, {});
-    params.googleLoginUrl = YouTubeService.getLoginUrl(req.params.uid, YouTubeService.getBasicScopes());
-    params.twitterLoginUrl = TwitterService.getLoginURL(uid, {});
-    params.discordLoginUrl = DiscordService.getLoginURL(uid, {});
-    params.twitchLoginUrl = TwitchService.getLoginURL(uid, {});
+    const kinds = [
+        { kind: AccessTokenKind.Google, scopes: OAuthRequiredScopes.GoogleAuth },
+        { kind: AccessTokenKind.Twitter, scopes: OAuthRequiredScopes.TwitterAuth },
+        { kind: AccessTokenKind.Discord, scopes: OAuthRequiredScopes.DiscordAuth },
+        { kind: AccessTokenKind.Twitch, scopes: OAuthRequiredScopes.TwitchAuth },
+        { kind: AccessTokenKind.Github, scopes: OAuthRequiredScopes.GithubAuth },
+    ];
+    const [googleLoginUrl, twitterLoginUrl, discordLoginUrl, twitchLoginUrl, githubLoginUrl] = await Promise.all(
+        kinds.map(async ({ kind, scopes }) => {
+            const token = await TokenService.getToken(account, kind);
+            if (token) return;
+            return TokenService.getLoginURL({ kind, uid, scopes });
+        }),
+    );
 
     return res.render('account', {
         uid,
@@ -32,15 +37,12 @@ async function controller(req: Request, res: Response) {
             address: account.address,
             plan: account.plan,
             planType: AccountPlanType[account.plan],
-            otpSecret: account.otpSecret,
             variant: account.variant,
-            googleAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.Google),
-            youtubeViewAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeView),
-            youtubeManageAccess: await YouTubeService.isAuthorized(account, AccessTokenKind.YoutubeManage),
-            twitterAccess: await TwitterService.isAuthorized(account),
-            githubAccess: await GithubService.isAuthorized(account),
-            discordAccess: await DiscordService.isAuthorized(account),
-            twitchAccess: await TwitchService.isAuthorized(account),
+            googleLoginUrl,
+            twitterLoginUrl,
+            discordLoginUrl,
+            twitchLoginUrl,
+            githubLoginUrl,
         },
     });
 }

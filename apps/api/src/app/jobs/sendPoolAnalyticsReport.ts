@@ -21,14 +21,14 @@ export async function sendPoolAnalyticsReport() {
 
     for await (const pool of AssetPool.find({ 'settings.isWeeklyDigestEnabled': true })) {
         try {
-            if (!account || account.sub != pool.sub) account = await AccountProxy.getById(pool.sub);
+            if (!account || account.sub != pool.sub) account = await AccountProxy.findById(pool.sub);
             if (!account.email) continue;
 
             const { dailyQuest, inviteQuest, socialQuest, customQuest, coinReward, nftReward } =
                 await AnalyticsService.getPoolMetrics(pool, dateRange);
             const leaderboard = await PoolService.findParticipants(pool, 1, 10);
             const subs = leaderboard.results.map((entry) => entry.sub);
-            const accounts = await AccountProxy.getMany(subs);
+            const accounts = await AccountProxy.find({ subs });
 
             const totalPointsClaimed =
                 dailyQuest.totalAmount + inviteQuest.totalAmount + socialQuest.totalAmount + customQuest.totalAmount;

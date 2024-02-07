@@ -78,9 +78,12 @@ export default class BaseDropdownDiscordMessage extends Vue {
         await this.$store.dispatch('pools/listGuilds', this.pool);
 
         this.serverId = this.content ? this.content : this.guilds.length ? this.guilds[0].guildId : this.serverId;
-        this.limit = this.contentMetadata.length ? JSON.parse(this.contentMetadata).limit : this.limit;
-        this.days = this.contentMetadata.length ? JSON.parse(this.contentMetadata).days : this.days;
-        this.channels = this.contentMetadata.length ? JSON.parse(this.contentMetadata).channels : this.channels;
+        if (this.contentMetadata) {
+            const { limit, days, channels } = this.contentMetadata;
+            this.limit = limit || this.limit;
+            this.days = days || this.days;
+            this.channels = channels || this.channels;
+        }
     }
 
     onChangeChannels(channels: string[]) {
@@ -99,7 +102,6 @@ export default class BaseDropdownDiscordMessage extends Vue {
     }
 
     update() {
-        debugger;
         this.$emit('selected', {
             content: this.serverId,
             contentMetadata: {

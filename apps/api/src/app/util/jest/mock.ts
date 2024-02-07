@@ -50,21 +50,21 @@ export function mockStart() {
     // mockAuthPath('get', `https://local.auth.thx.network/account?subs=${sub}`, 200, account);
 
     // Account 1 (Dashboard)
-    mockAuthPath('get', `/account/${sub}`, 200, account);
-    mockAuthPath('patch', `/account/${sub}`, 204, {});
-    mockAuthPath('get', `/account/email/${userEmail}`, 200, account);
-    mockAuthPath('get', `/account/address/${userWalletAddress}`, 200, account);
+    mockAuthPath('get', `/accounts/${sub}`, 200, account);
+    mockAuthPath('patch', `/accounts/${sub}`, 204, {});
+    mockAuthPath('get', `/accounts/email/${userEmail}`, 200, account);
+    mockAuthPath('get', `/accounts/address/${userWalletAddress}`, 200, account);
 
     // Account 2 (Web Wallet)
-    mockAuthPath('get', `/account/${sub2}`, 200, account2);
-    mockAuthPath('patch', `/account/${sub2}`, 204, {});
-    mockAuthPath('post', '/account', 200, account2);
-    mockAuthPath('get', `/account/address/${userWalletAddress2}`, 200, account2);
-    mockAuthPath('get', `/account/email/${userEmail2}`, 404, {});
+    mockAuthPath('get', `/accounts/${sub2}`, 200, account2);
+    mockAuthPath('patch', `/accounts/${sub2}`, 204, {});
+    mockAuthPath('post', '/accounts', 200, [account2]);
+    mockAuthPath('get', `/accounts/address/${userWalletAddress2}`, 200, account2);
+    mockAuthPath('get', `/accounts/email/${userEmail2}`, 404, {});
 
     // Account 3
-    mockAuthPath('get', `/account/${sub3}`, 200, account3);
-    mockAuthPath('patch', `/account/${sub3}`, 204, account3);
+    mockAuthPath('get', `/accounts/${sub3}`, 200, account3);
+    mockAuthPath('patch', `/accounts/${sub3}`, 204, account3);
 }
 
 export function mockClear() {

@@ -31,7 +31,7 @@ export default class BaseDropdownDiscordGuilds extends Vue {
     mounted() {
         this.serverId = this.content ? this.content : '';
         if (this.contentMetadata) {
-            const { inviteURL } = JSON.parse(this.contentMetadata);
+            const { inviteURL } = this.contentMetadata;
             this.inviteURL = inviteURL;
         }
     }
@@ -51,10 +51,10 @@ export default class BaseDropdownDiscordGuilds extends Vue {
         this.inviteURL = url;
         this.$emit('selected', {
             content: this.serverId,
-            contentMetadata: JSON.stringify({
+            contentMetadata: {
                 serverId: this.serverId,
                 inviteURL: this.inviteURL,
-            }),
+            },
         });
     }
 }

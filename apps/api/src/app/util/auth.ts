@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { THXError } from './errors';
 import { AUTH_CLIENT_ID, AUTH_CLIENT_SECRET, AUTH_URL } from '@thxnetwork/api/config/secrets';
+import { AxiosResponse } from 'axios';
 
 class AuthAccesTokenRequestError extends THXError {
     message = 'Auth access token request failed';
@@ -9,9 +10,15 @@ class AuthAccesTokenRequestError extends THXError {
 let authAccessToken = '';
 let authAccessTokenExpires = 0;
 
-export const authClient = (options: AxiosRequestConfig) => {
-    axios.defaults.baseURL = AUTH_URL;
-    return axios(options);
+export const authClient = async (options: AxiosRequestConfig) => {
+    try {
+        axios.defaults.baseURL = AUTH_URL;
+        return await axios(options);
+    } catch (error) {
+        if (error && error.response && error.response.status >= 400 && error.response.status <= 600) {
+            return error.response as AxiosResponse;
+        }
+    }
 };
 
 async function requestAuthAccessToken() {

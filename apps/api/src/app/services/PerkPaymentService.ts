@@ -23,7 +23,7 @@ async function parsePaymentIntent(event) {
 
 async function onPaymentIntentSucceeded(event) {
     const { id, sub, perk_id, amount, currency } = await parsePaymentIntent(event);
-    const account = await AccountProxy.getById(sub);
+    const account = await AccountProxy.findById(sub);
     const perk = await ERC721Perk.findById(perk_id);
     const erc721 = await ERC721.findById(perk.erc721Id);
     const metadata = await ERC721Metadata.findById(perk.metadataId);

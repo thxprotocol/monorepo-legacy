@@ -1,9 +1,9 @@
-import { ChainId, CollaboratorInviteState } from '@thxnetwork/types/enums';
+import { AccessTokenKind, ChainId, CollaboratorInviteState, OAuthDiscordScope } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
-import { TAccount } from '@thxnetwork/types/interfaces';
+import { TAccount, TToken } from '@thxnetwork/types/interfaces';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
 import { DailyReward } from '../models/DailyReward';
@@ -123,6 +123,12 @@ async function find(model: any, pool: AssetPoolDocument) {
     return await model.find({ poolId: String(pool._id) });
 }
 
+async function findOwner(pool: AssetPoolDocument) {
+    const account = await AccountProxy.findById(pool.sub);
+    account.tokens = account.tokens.map(({ kind, expiry, scopes }) => ({ kind, expiry, scopes } as TToken));
+    return account;
+}
+
 async function getQuestCount(pool: AssetPoolDocument) {
     const result = await Promise.all(
         [DailyReward, ReferralReward, PointReward, MilestoneReward, Web3Quest].map(
@@ -161,7 +167,7 @@ async function findIdentities(pool: AssetPoolDocument, page: number, limit: numb
     };
 
     const subs = identities.results.filter(({ sub }) => !!sub).map(({ sub }) => sub);
-    const accounts = await AccountProxy.getMany(subs);
+    const accounts = await AccountProxy.find({ subs });
 
     identities.results = identities.results.map((identity: TIdentity) => ({
         ...identity,
@@ -174,7 +180,8 @@ async function findIdentities(pool: AssetPoolDocument, page: number, limit: numb
 async function findParticipants(pool: AssetPoolDocument, page: number, limit: number) {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const total = await Participant.find({ poolId: pool._id }).countDocuments().exec();
+    const poolId = String(pool._id);
+    const total = await Participant.find({ poolId }).countDocuments();
     const participants = {
         previous: startIndex > 0 && {
             page: page - 1,
@@ -184,7 +191,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
         },
         total,
         results: await Participant.aggregate([
-            { $match: { poolId: String(pool._id) } },
+            { $match: { poolId } },
             {
                 $addFields: {
                     rankSort: {
@@ -203,7 +210,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
     };
 
     const subs = participants.results.map((p) => p.sub);
-    const accounts = await AccountProxy.getMany(subs);
+    const accounts = await AccountProxy.find({ subs });
 
     participants.results = await Promise.all(
         participants.results.map(async (participant) => {
@@ -217,16 +224,19 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
             } catch (error) {
                 logger.error(error);
             }
+
             try {
                 account = accounts.find((a) => a.sub === wallet.sub);
             } catch (error) {
                 logger.error(error);
             }
+
             try {
                 subscription = await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub });
             } catch (error) {
                 logger.error(error);
             }
+
             try {
                 pointBalance =
                     wallet &&
@@ -245,7 +255,11 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                     username: account.username,
                     profileImg: account.profileImg,
                     variant: account.variant,
-                    connectedAccounts: account.connectedAccounts,
+                    tokens: account.tokens.map((token) => ({
+                        kind: token.kind,
+                        userId: token.userId,
+                        metadata: token.metadata,
+                    })),
                 },
                 wallet,
                 subscription,
@@ -291,19 +305,22 @@ async function inviteCollaborator(pool: AssetPoolDocument, email: string) {
     return collaborator;
 }
 
-async function getAccountGuilds(sub: string) {
+async function getAccountGuilds(account: TAccount) {
     // Try as this is potentially rate limited due to subsequent GET pool for id requests
     try {
-        return await DiscordDataProxy.get(sub);
+        const token = await AccountProxy.getToken(account, AccessTokenKind.Discord, [
+            OAuthDiscordScope.Identify,
+            OAuthDiscordScope.Guilds,
+        ]);
+        return DiscordDataProxy.getGuilds(token);
     } catch (error) {
-        return { isAuthorized: false, guilds: [] };
+        return [];
     }
 }
 
 async function findGuilds(pool: AssetPoolDocument) {
-    const { isAuthorized, guilds: userGuilds } = await getAccountGuilds(pool.sub);
-    if (!isAuthorized) return [];
-
+    const account = await AccountProxy.findById(pool.sub);
+    const userGuilds = await getAccountGuilds(account);
     const guilds = await DiscordGuild.find({ poolId: pool._id });
     const promises = userGuilds.map(async (userGuild: { id: string; name: string }) => {
         const guild = guilds.find(({ guildId }) => guildId === userGuild.id);
@@ -323,7 +340,7 @@ async function findCollaborators(pool: AssetPoolDocument) {
     const collabs = await Collaborator.find({ poolId: pool._id });
     const promises = collabs.map(async (collaborator: CollaboratorDocument) => {
         if (collaborator.sub) {
-            const account = await AccountProxy.getById(collaborator.sub);
+            const account = await AccountProxy.findById(collaborator.sub);
             return { ...collaborator.toJSON(), account };
         }
         return collaborator;
@@ -343,6 +360,7 @@ export default {
     getParticipantCount,
     getQuestCount,
     getRewardCount,
+    findOwner,
     findIdentities,
     findParticipants,
     findGuilds,

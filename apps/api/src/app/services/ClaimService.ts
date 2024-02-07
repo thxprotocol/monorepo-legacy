@@ -20,7 +20,7 @@ function findByPool(pool: AssetPoolDocument) {
 async function findByPerk(perk: TBaseReward) {
     const claims = await Claim.find({ rewardUuid: perk.uuid, poolId: perk.poolId });
     const subs = claims.filter((c) => c.sub).map(({ sub }) => sub);
-    const accounts = await AccountProxy.getMany(subs);
+    const accounts = await AccountProxy.find({ subs });
 
     return claims
         .map((claim) => {

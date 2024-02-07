@@ -3,8 +3,8 @@ import { TQuestLock } from '@thxnetwork/common/lib/types';
 import { serviceMap } from './interfaces/IQuestService';
 
 async function getIsUnlocked(lock: TQuestLock, wallet: WalletDocument): Promise<boolean> {
-    const Quest = serviceMap[lock.variant].models.quest;
-    return !!(await Quest.exists({ questId: lock.questId, walletId: wallet._id }));
+    const Entry = serviceMap[lock.variant].models.entry;
+    return !!(await Entry.exists({ questId: lock.questId, walletId: wallet._id }));
 }
 
 async function getIsLocked(locks: TQuestLock[], wallet: WalletDocument) {

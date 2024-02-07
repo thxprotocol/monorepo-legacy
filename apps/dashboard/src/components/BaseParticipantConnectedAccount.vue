@@ -15,25 +15,22 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { getUserUrl, platformIconMap, tokenKindPlatformMap } from '../types/rewards';
-import { PlatformVariant } from '@thxnetwork/types/enums';
+import { getPlatform, getUserUrl } from '../types/rewards';
+import { providerIconMap } from '@thxnetwork/common/lib/types/maps/oauth';
 
 export function parseConnectedAccounts(accounts: any) {
     if (!accounts.length) return [];
     return accounts
         .map((a) => {
-            const platformId = tokenKindPlatformMap[a.kind];
-            return (
-                platformId && {
-                    platform: {
-                        name: PlatformVariant[platformId],
-                        icon: platformIconMap[platformId],
-                    },
-                    userName: a.metadata ? a.metadata.username : '',
-                    userId: a.userId,
-                    url: getUserUrl(a),
-                }
-            );
+            return {
+                platform: {
+                    name: getPlatform(a.kind)?.name,
+                    icon: providerIconMap[a.kind],
+                },
+                userName: a.metadata ? a.metadata.username : '',
+                userId: a.userId,
+                url: getUserUrl(a),
+            };
         })
         .filter((a) => a);
 }

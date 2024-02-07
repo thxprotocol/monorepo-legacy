@@ -18,7 +18,7 @@ const controller = async (req: Request, res: Response) => {
 
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const wallet = sub && (await SafeService.findPrimary(sub));
-    const account = sub && (await AccountProxy.getById(sub));
+    const account = sub && (await AccountProxy.findById(sub));
 
     const [daily, invite, twitter, discord, youtube, custom, web3, gitcoin] = await QuestService.list(
         pool,

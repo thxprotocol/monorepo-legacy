@@ -5,7 +5,6 @@ import { JobType, questInteractionVariantMap } from '@thxnetwork/common/lib/type
 import { agenda } from '@thxnetwork/api/util/agenda';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import QuestService from '@thxnetwork/api/services/QuestService';
-import { getPlatformUserId } from '@thxnetwork/api/services/maps/quests';
 
 const validation = [param('id').isMongoId()];
 
@@ -18,7 +17,7 @@ const controller = async ({ params, account, wallet }: Request, res: Response) =
     const variant = questInteractionVariantMap[quest.interaction];
 
     // Get platform user id for account
-    const platformUserId = await getPlatformUserId(account, quest.platform);
+    const platformUserId = QuestService.findUserIdForInteraction(account, quest.interaction);
     if (!platformUserId) return res.json({ error: 'Could not find platform user id.' });
 
     // Get validation result for this quest entry

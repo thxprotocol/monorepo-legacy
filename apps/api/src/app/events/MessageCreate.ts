@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import { logger } from '../util/logger';
 import { PointReward, PointRewardDocument } from '../models/PointReward';
-import { RewardConditionInteraction } from '@thxnetwork/common/lib/types';
+import { QuestSocialRequirement } from '@thxnetwork/common/lib/types';
 import DiscordMessage from '../models/DiscordMessage';
 import DiscordGuild from '../models/DiscordGuild';
 import AccountProxy from '../proxies/AccountProxy';
@@ -23,7 +23,7 @@ const onMessageCreate = async (message: Message) => {
         const guild = await DiscordGuild.findOne({ guildId: message.guild.id });
         const quests = await PointReward.find({
             poolId: guild.poolId,
-            interaction: RewardConditionInteraction.DiscordMessage,
+            interaction: QuestSocialRequirement.DiscordMessage,
         });
         if (!quests.length) return;
 

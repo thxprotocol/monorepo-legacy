@@ -3,9 +3,9 @@ import app from '../../app';
 import db from '../../util/database';
 import { accountAddress, accountEmail } from '../../util/jest';
 import { INITIAL_ACCESS_TOKEN } from '@thxnetwork/auth/config/secrets';
-import { AccountService } from '@thxnetwork/auth/services/AccountService';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { AccountPlanType } from '@thxnetwork/types/enums';
+import AuthService from '@thxnetwork/auth/services/AuthService';
 
 const http = request.agent(app);
 
@@ -48,7 +48,7 @@ describe('Account Controller', () => {
         basicAuthHeader = await registerClient();
         authHeader = await requestToken();
 
-        const account = await AccountService.signup({
+        const account = await AuthService.signup({
             plan: AccountPlanType.Free,
             email: accountEmail,
             variant: AccountVariant.EmailPassword,
@@ -64,7 +64,7 @@ describe('Account Controller', () => {
     describe('GET /account/:id', () => {
         it('HTTP 200', async () => {
             const res = await http
-                .get(`/account/${sub}`)
+                .get(`/accounts/${sub}`)
                 .set({
                     Authorization: authHeader,
                 })
@@ -75,33 +75,38 @@ describe('Account Controller', () => {
         });
     });
 
-    describe('GET /account', () => {
+    describe('GET /accounts', () => {
         it('HTTP 200', async () => {
-            const res = await http.get(`/account?subs=${sub}`).set({
-                Authorization: authHeader,
-            });
+            const res = await http
+                .post(`/accounts`)
+                .send({
+                    subs: JSON.stringify([sub]),
+                })
+                .set({
+                    Authorization: authHeader,
+                });
             expect(res.status).toBe(200);
             expect(res.body.length).toBe(1);
             expect(res.body[0].email).toBe(accountEmail);
         });
     });
 
-    describe('PATCH /account/:id', () => {
+    describe('PATCH /accounts/:id', () => {
         it('HTTP 200', async () => {
             const res = await http
-                .patch(`/account/${sub}`)
+                .patch(`/accounts/${sub}`)
                 .set({
                     Authorization: authHeader,
                 })
                 .send({
                     address: accountAddress,
                 });
-            expect(res.status).toBe(204);
+            expect(res.status).toBe(200);
         });
 
         it('HTTP 200', async () => {
             const res = await http
-                .get(`/account/${sub}`)
+                .get(`/accounts/${sub}`)
                 .set({
                     Authorization: authHeader,
                 })

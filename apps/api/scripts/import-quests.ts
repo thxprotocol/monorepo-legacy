@@ -1,7 +1,7 @@
 import path from 'path';
 import db from '@thxnetwork/api/util/database';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
-import { ChainId, QuestVariant, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
+import { ChainId, QuestVariant, QuestSocialRequirement, AccessTokenKind } from '@thxnetwork/types/enums';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
 import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
@@ -98,8 +98,8 @@ async function main() {
                     title: `Watch & Like`,
                     description: '',
                     amount: 75,
-                    platform: RewardConditionPlatform.Google,
-                    interaction: RewardConditionInteraction.YouTubeLike,
+                    kind: AccessTokenKind.Google,
+                    interaction: QuestSocialRequirement.YouTubeLike,
                     content: videoId,
                     contentMetadata: JSON.stringify({ videoId }),
                     isPublished: true,
@@ -119,8 +119,8 @@ async function main() {
                     title: `Follow ${sql['Game']}`,
                     description: '',
                     amount: 75,
-                    platform: RewardConditionPlatform.Twitter,
-                    interaction: RewardConditionInteraction.TwitterFollow,
+                    kind: AccessTokenKind.Twitter,
+                    interaction: QuestSocialRequirement.TwitterFollow,
                     content: twitterUser.id,
                     variant: QuestVariant.Twitter,
                     contentMetadata: JSON.stringify({
@@ -142,8 +142,8 @@ async function main() {
                     title: `Boost Tweet!`,
                     description: '',
                     amount: 50,
-                    platform: RewardConditionPlatform.Twitter,
-                    interaction: RewardConditionInteraction.TwitterLikeRetweet,
+                    kind: AccessTokenKind.Twitter,
+                    interaction: QuestSocialRequirement.TwitterLikeRetweet,
                     content: tweetId,
                     contentMetadata: JSON.stringify({
                         url: tweetUrl,
@@ -165,8 +165,8 @@ async function main() {
                     title: `Join ${gameName} Discord`,
                     description: 'Become a part of our fam!',
                     amount: 75,
-                    platform: RewardConditionPlatform.Discord,
-                    interaction: RewardConditionInteraction.DiscordGuildJoined,
+                    kind: AccessTokenKind.Discord,
+                    interaction: QuestSocialRequirement.DiscordGuildJoined,
                     content: serverId,
                     contentMetadata: JSON.stringify({ serverId, inviteURL: inviteURL || undefined }),
                     isPublished: true,

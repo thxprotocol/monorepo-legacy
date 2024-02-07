@@ -14,7 +14,6 @@ import { agenda } from '@thxnetwork/api/util/agenda';
 import { DiscordDisconnected, DiscordSafeNotFound } from '@thxnetwork/api/util/errors';
 import { TPointReward } from '@thxnetwork/common/lib/types';
 import { serviceMap } from '@thxnetwork/api/services/interfaces/IQuestService';
-import { getPlatformUserId } from '@thxnetwork/api/services/maps/quests';
 
 export async function completeQuest(
     interaction: ButtonInteraction | StringSelectMenuInteraction,
@@ -35,8 +34,8 @@ export async function completeQuest(
         const pool = await PoolService.getById(quest.poolId);
         if (!pool) throw new Error('Could not find this campaign.');
 
-        const { platform } = quest as TPointReward;
-        const platformUserId = platform && getPlatformUserId(account, platform);
+        const { interaction: questInteraction } = quest as TPointReward;
+        const platformUserId = questInteraction && QuestService.findUserIdForInteraction(account, questInteraction);
 
         const availabilityValidation = await QuestService.isAvailable(variant, { quest, account, wallet });
         if (!availabilityValidation.result) throw new Error(availabilityValidation.reason);

@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2 class="mb-3">Integrations</h2>
-        <b-card class="shadow-sm mb-5" v-if="pool" header-class="p-0">
+        <b-card class="shadow-sm mb-5" v-if="pool && pool.settings" header-class="p-0">
             <template #header>
                 <b-nav card-header tabs pills class="px-3 border-0">
                     <b-nav-text active v-for="(item, key) in childRoutes" :key="key">

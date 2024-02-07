@@ -26,7 +26,7 @@ const controller = async (req: Request, res: Response) => {
     if (!discordRoleReward) throw new NotFoundError('Could not find this reward');
     if (!discordRoleReward.pointPrice) throw new NotFoundError('No point price for this reward has been set.');
 
-    const account = await AccountProxy.getById(req.auth.sub);
+    const account = await AccountProxy.findById(req.auth.sub);
     const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
     const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
     if (!pointBalance || Number(pointBalance.balance) < Number(discordRoleReward.pointPrice)) {
@@ -44,12 +44,12 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError(`THX Bot is not invited to the ${discordGuild.name} Discord server`);
     }
     const guild = await client.guilds.fetch(discordGuild.guildId);
-    const connectedAccount = account.connectedAccounts.find(({ kind }) => kind === AccessTokenKind.Discord);
-    if (!connectedAccount) {
+    const token = account.tokens.find(({ kind }) => kind === AccessTokenKind.Discord);
+    if (!token) {
         throw new ForbiddenError('Your account is not connected to a Discord account');
     }
 
-    const member = await guild.members.fetch(connectedAccount.userId);
+    const member = await guild.members.fetch(token.userId);
     if (!member) {
         throw new ForbiddenError(`You are not a member of the ${discordGuild.name} Discord server`);
     }

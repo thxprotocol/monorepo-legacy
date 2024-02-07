@@ -10,9 +10,7 @@ import { PutObjectCommand } from '@aws-sdk/client-s3';
 import { fromBuffer } from 'file-type';
 import { Request, Response } from 'express';
 import { body, check, param } from 'express-validator';
-import { AccountPlanType } from '@thxnetwork/types/enums';
 import short from 'short-uuid';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import IPFSService from '@thxnetwork/api/services/IPFSService';
 
 const validation = [
