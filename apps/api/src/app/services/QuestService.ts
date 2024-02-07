@@ -126,7 +126,7 @@ export default class QuestService {
         data: Partial<TQuestEntry & { rpc: string }>,
     ) {
         const isAvailable = await serviceMap[variant].isAvailable({ quest, account, wallet });
-        if (!isAvailable) return { result: false, reason: 'Quest is not available.' };
+        if (!isAvailable.result) return isAvailable;
 
         return await serviceMap[variant].getValidationResult({ quest, account, wallet, data });
     }
