@@ -42,3 +42,4 @@ export * from './Participant';
 export * from './Identity';
 export * from './Token';
 export * from './Job';
+export * from './Twitter';
