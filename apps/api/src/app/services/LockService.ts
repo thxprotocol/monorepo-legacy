@@ -4,7 +4,11 @@ import { serviceMap } from './interfaces/IQuestService';
 
 async function getIsUnlocked(lock: TQuestLock, wallet: WalletDocument): Promise<boolean> {
     const Entry = serviceMap[lock.variant].models.entry;
-    return !!(await Entry.exists({ questId: lock.questId, walletId: wallet._id }));
+
+    console.log({ questId: lock.questId, walletId: wallet._id });
+    const exists = await Entry.exists({ questId: lock.questId, walletId: wallet._id });
+    console.log(exists);
+    return !!exists;
 }
 
 async function getIsLocked(locks: TQuestLock[], wallet: WalletDocument) {

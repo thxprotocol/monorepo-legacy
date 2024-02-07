@@ -35,10 +35,13 @@ export default class QuestService {
             });
 
             return await Promise.all(
-                quests.map((q) => {
+                quests.map(async (q) => {
                     try {
                         const quest = q.toJSON() as TQuest;
-                        return serviceMap[variant].decorate({ quest, wallet, account });
+                        const decorated = await serviceMap[variant].decorate({ quest, wallet, account });
+                        const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : false;
+                        const isExpired = this.isExpired(quest);
+                        return { ...decorated, isLocked, isExpired };
                     } catch (error) {
                         logger.error(error);
                     }
@@ -90,14 +93,6 @@ export default class QuestService {
         return Quest.findByIdAndUpdate(questId, options, { new: true });
     }
 
-    static async decorate(variant: QuestVariant, questId: string, wallet: WalletDocument) {
-        const quest = await QuestService.findById(variant, questId);
-        const q = await serviceMap[variant].decorate({ quest, wallet });
-        const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : false;
-        const isExpired = this.isExpired(quest);
-        return { ...q, isExpired, isLocked };
-    }
-
     static getAmount(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
         return serviceMap[variant].getAmount({ quest, account, wallet });
     }
@@ -131,7 +126,7 @@ export default class QuestService {
         data: Partial<TQuestEntry & { rpc: string }>,
     ) {
         const isAvailable = await serviceMap[variant].isAvailable({ quest, account, wallet });
-        if (!isAvailable) return { result: false, reason: 'Quest is not available.' };
+        if (!isAvailable.result) return isAvailable;
 
         return await serviceMap[variant].getValidationResult({ quest, account, wallet, data });
     }
@@ -148,8 +143,8 @@ export default class QuestService {
 
             // Test availabily of quest once more as it could be completed by a job that was scheduled already
             // if the jobs were created in parallel.
-            const available = await this.isAvailable(variant, { quest, account, wallet });
-            if (!available) throw new Error(`Quest entry exists already.`);
+            const isAvailable = await this.isAvailable(variant, { quest, account, wallet });
+            if (!isAvailable.result) throw new Error(isAvailable.reason);
 
             // Create the quest entry
             const entry = await Entry.create({

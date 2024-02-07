@@ -9,6 +9,7 @@ import TwitterService from './OAuthTwitterService';
 import TwitchService from './OAuthTwitchService';
 import YouTubeService from './OAuthYouTubeService';
 import GithubService from './OAuthGithubService';
+import { logger } from '../util/logger';
 
 const serviceMap: { [variant: string]: IOAuthService } = {
     [AccessTokenKind.Twitter]: new TwitterService(),
@@ -39,8 +40,14 @@ export default class TokenService {
         const isExpired = Date.now() > token.expiry;
         if (!isExpired) return token;
 
-        // If so, refresh the token and return
-        return await serviceMap[token.kind].refreshToken(token);
+        try {
+            // If so, refresh the token and return
+            return await serviceMap[token.kind].refreshToken(token);
+        } catch (error) {
+            logger.error(error);
+            logger.error('Token refresh failed');
+            return token;
+        }
     }
 
     static async getToken(account: AccountDocument, kind: AccessTokenKind): Promise<TokenDocument> {
