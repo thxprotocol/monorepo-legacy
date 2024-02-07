@@ -88,7 +88,8 @@ export class AccountService {
 
     static async findAccountForAddress(address: string) {
         const checksummedAddress = toChecksumAddress(address);
-        const account = await Account.findOne({ address: checksummedAddress });
+        // Checking for non checksummed as well in order to avoid issues with existing data in db
+        const account = await Account.findOne({ $or: [{ address: checksummedAddress }, { address }] });
         if (account) return account;
         return await Account.create({
             variant: AccountVariant.Metamask,
