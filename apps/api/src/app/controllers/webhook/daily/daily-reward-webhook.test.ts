@@ -33,6 +33,7 @@ describe('Daily Rewards WebHooks', () => {
         user.post(`/v1/pools/${poolId}/quests`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
+                isPublished: true,
                 variant: QuestVariant.Daily,
                 title: 'Expiration date is next 30 min',
                 description: 'Lorem ipsum dolor sit amet',
@@ -68,6 +69,7 @@ describe('Daily Rewards WebHooks', () => {
             .post(`/v1/quests/daily/${dailyReward._id}/entries`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
             .send();
+        console.log(status, body);
         expect(body.jobId).toBeDefined();
         expect(status).toBe(200);
 
