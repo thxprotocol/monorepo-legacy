@@ -10,7 +10,13 @@ export default class QuestInviteService implements IQuestService {
         entry: ReferralRewardClaim,
     };
 
-    async decorate({ quest }: { quest: TReferralReward; wallet?: WalletDocument }): Promise<TReferralReward> {
+    async decorate({
+        quest,
+    }: {
+        quest: TReferralReward;
+        wallet?: WalletDocument;
+        data: Partial<TReferralRewardClaim>;
+    }): Promise<TReferralReward> {
         return {
             ...quest,
             pathname: quest.pathname,
@@ -22,6 +28,7 @@ export default class QuestInviteService implements IQuestService {
         quest: TReferralReward;
         wallet: WalletDocument;
         account: TAccount;
+        data: Partial<TReferralRewardClaim>;
     }): Promise<TValidationResult> {
         return { result: false, reason: 'Not implemented' };
     }

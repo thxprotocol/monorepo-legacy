@@ -19,12 +19,14 @@ export default class QuestSocialService implements IQuestService {
         quest,
         wallet,
         account,
+        data,
     }: {
         quest: TPointReward;
         account?: TAccount;
         wallet?: WalletDocument;
+        data: Partial<TQuestEntry>;
     }): Promise<TPointReward & { isAvailable: boolean }> {
-        const isAvailable = await this.isAvailable({ quest, wallet, account });
+        const isAvailable = await this.isAvailable({ quest, wallet, account, data });
 
         return {
             ...quest,
@@ -41,6 +43,7 @@ export default class QuestSocialService implements IQuestService {
         quest: TPointReward;
         wallet: WalletDocument;
         account: TAccount;
+        data: Partial<TQuestEntry>;
     }): Promise<TValidationResult> {
         if (!wallet || !account) return { result: true, reason: '' };
 

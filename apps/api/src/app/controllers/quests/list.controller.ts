@@ -4,6 +4,7 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import { getIP } from '@thxnetwork/api/util/ip';
 
 const getToken = (header: string): { sub: string } => {
     if (!header || !header.startsWith('Bearer ')) return;
@@ -20,11 +21,13 @@ const controller = async (req: Request, res: Response) => {
     const wallet = sub && (await SafeService.findPrimary(sub));
     const account = sub && (await AccountProxy.findById(sub));
 
-    const [daily, invite, twitter, discord, youtube, custom, web3, gitcoin] = await QuestService.list(
+    const ip = getIP(req);
+    const [daily, invite, twitter, discord, youtube, custom, web3, gitcoin] = await QuestService.list({
         pool,
         wallet,
         account,
-    );
+        data: { ip },
+    });
 
     res.json({
         daily,

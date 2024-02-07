@@ -3,7 +3,7 @@ import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import { BigNumber, ethers } from 'ethers';
 import { logger } from '@thxnetwork/api/util/logger';
 import { IQuestService } from './interfaces/IQuestService';
-import { TAccount, TWeb3Quest, ChainId, TValidationResult } from '@thxnetwork/common/lib/types';
+import { TAccount, TWeb3Quest, ChainId, TValidationResult, TWeb3QuestClaim } from '@thxnetwork/common/lib/types';
 import { Web3Quest } from '../models/Web3Quest';
 
 export default class QuestWeb3Service implements IQuestService {
@@ -16,14 +16,14 @@ export default class QuestWeb3Service implements IQuestService {
         quest,
         wallet,
         account,
-        address,
+        data,
     }: {
         quest: TWeb3Quest;
+        data: Partial<TWeb3QuestClaim>;
         account?: TAccount;
         wallet?: WalletDocument;
-        address?: string;
     }): Promise<TWeb3Quest & { isAvailable: boolean }> {
-        const isAvailable = await this.isAvailable({ quest, wallet, account, address });
+        const isAvailable = await this.isAvailable({ quest, wallet, account, data });
 
         return {
             ...quest,
@@ -38,17 +38,17 @@ export default class QuestWeb3Service implements IQuestService {
     async isAvailable({
         quest,
         wallet,
-        address,
+        data,
     }: {
         quest: TWeb3Quest;
         wallet: WalletDocument;
         account: TAccount;
-        address?: string;
+        data: Partial<TWeb3QuestClaim>;
     }): Promise<TValidationResult> {
         const ids = [];
         if (wallet) ids.push({ sub: wallet.sub });
         if (wallet) ids.push({ walletId: wallet._id });
-        if (address) ids.push({ address });
+        if (data && data.address) ids.push({ address: data.address });
 
         const isCompleted = wallet
             ? await Web3QuestClaim.exists({
@@ -74,7 +74,7 @@ export default class QuestWeb3Service implements IQuestService {
         quest: TWeb3Quest;
         account: TAccount;
         wallet: WalletDocument;
-        data: Partial<{ rpc: string; chainId: ChainId; address: string }>;
+        data: Partial<TWeb3QuestClaim & { rpc: string }>;
     }): Promise<TValidationResult> {
         const { rpc, chainId, address } = data;
         const provider = new ethers.providers.JsonRpcProvider(rpc);

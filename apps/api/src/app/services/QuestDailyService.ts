@@ -18,11 +18,12 @@ export default class QuestDailyService implements IQuestService {
         quest,
         wallet,
         account,
+        data,
     }: {
         quest: TDailyReward;
+        data: Partial<TDailyRewardClaim>;
         wallet?: WalletDocument;
         account?: TAccount;
-        ip?: string;
     }): Promise<
         TDailyReward & {
             isAvailable: boolean;
@@ -35,7 +36,7 @@ export default class QuestDailyService implements IQuestService {
         const entries = wallet ? await this.findEntries({ quest, wallet }) : [];
         const claimAgainTime = entries.length ? new Date(entries[0].createdAt).getTime() + ONE_DAY_MS : null;
         const now = Date.now();
-        const isAvailable = await this.isAvailable({ quest, wallet, account });
+        const isAvailable = await this.isAvailable({ quest, wallet, account, data });
 
         return {
             ...quest,
@@ -50,17 +51,33 @@ export default class QuestDailyService implements IQuestService {
     async isAvailable({
         quest,
         wallet,
+        data,
     }: {
         quest: TDailyReward;
         wallet: WalletDocument;
         account: TAccount;
-        ip?: string;
+        data: Partial<TDailyRewardClaim>;
     }): Promise<TValidationResult> {
         if (!wallet) return { result: true, reason: '' };
 
         const now = Date.now(),
             start = now - ONE_DAY_MS,
             end = now;
+
+        // Check for IP as we limit to 1 per IP per day (if an ip is passed)
+        if (data.ip) {
+            const isCompletedForIP = !!(await DailyRewardClaim.exists({
+                questId: quest._id,
+                createdAt: { $gt: new Date(start), $lt: new Date(end) },
+                ip: data.ip,
+            }));
+            if (isCompletedForIP) {
+                return {
+                    result: false,
+                    reason: 'You have completed this quest from this IP within the last 24 hours.',
+                };
+            }
+        }
 
         const isCompleted = await DailyRewardClaim.findOne({
             questId: quest._id,

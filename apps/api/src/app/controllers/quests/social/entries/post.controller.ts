@@ -21,16 +21,15 @@ const controller = async ({ params, account, wallet }: Request, res: Response) =
     if (!platformUserId) return res.json({ error: 'Could not find platform user id.' });
 
     // Get validation result for this quest entry
-    const { result, reason } = await QuestService.getValidationResult(variant, quest, account, wallet, {
-        platformUserId,
-    });
+    const data = { platformUserId };
+    const { result, reason } = await QuestService.getValidationResult(variant, { quest, account, wallet, data });
     if (!result) return res.json({ error: reason });
 
     const job = await agenda.now(JobType.CreateQuestEntry, {
         variant,
         questId: String(quest._id),
         sub: account.sub,
-        data: { platformUserId },
+        data,
     });
 
     res.json({ jobId: job.attrs._id });

@@ -14,18 +14,15 @@ const controller = async ({ account, wallet, body, params }: Request, res: Respo
     if (!quest) throw new NotFoundError('Quest not found');
 
     const address = recoverSigner(body.message, body.signature);
-    const { result, reason } = await QuestService.getValidationResult(quest.variant, quest, account, wallet, {
-        address,
-    });
+    const data = { address };
+    const { result, reason } = await QuestService.getValidationResult(quest.variant, { quest, account, wallet, data });
     if (!result) return res.json({ error: reason });
 
     const job = await agenda.now(JobType.CreateQuestEntry, {
         variant: QuestVariant.Gitcoin,
         questId: String(quest._id),
         sub: account.sub,
-        data: {
-            address,
-        },
+        data,
     });
 
     res.json({ jobId: job.attrs._id });

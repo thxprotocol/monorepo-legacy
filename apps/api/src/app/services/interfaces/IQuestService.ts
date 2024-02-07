@@ -14,15 +14,25 @@ import QuestWeb3Service from '../QuestWeb3Service';
 
 export interface IQuestService {
     models: { quest: Model<TQuest>; entry: Model<TQuestEntry> };
-    decorate(options: { quest: TQuest; wallet?: WalletDocument; account?: TAccount }): Promise<TQuest>;
-    isAvailable(options: { quest: TQuest; wallet: WalletDocument; account: TAccount }): Promise<TValidationResult>;
-    getAmount(options: { quest: TQuest; wallet: WalletDocument; account: TAccount }): Promise<number>;
+    decorate(options: {
+        quest: TQuest;
+        wallet?: WalletDocument;
+        account?: TAccount;
+        data: Partial<TQuestEntry>;
+    }): Promise<TQuest>;
+    isAvailable(options: {
+        quest: TQuest;
+        wallet: WalletDocument;
+        account: TAccount;
+        data: Partial<TQuestEntry>;
+    }): Promise<TValidationResult>;
     getValidationResult(options: {
         quest: TQuest;
         account: TAccount;
         wallet: WalletDocument;
         data: Partial<TQuestEntry>;
     }): Promise<TValidationResult>;
+    getAmount(options: { quest: TQuest; wallet: WalletDocument; account: TAccount }): Promise<number>;
 }
 
 export const serviceMap: {

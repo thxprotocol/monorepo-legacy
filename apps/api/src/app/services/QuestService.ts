@@ -1,4 +1,4 @@
-import { AccessTokenKind, JobType, OAuthScope, QuestSocialRequirement, QuestVariant } from '@thxnetwork/types/enums';
+import { JobType, QuestSocialRequirement, QuestVariant } from '@thxnetwork/types/enums';
 import { TAccount, TQuest, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
 import { AssetPoolDocument } from '../models/AssetPool';
@@ -18,7 +18,17 @@ import AccountProxy from '../proxies/AccountProxy';
 import { tokenInteractionMap } from './maps/quests';
 
 export default class QuestService {
-    static async list(pool: AssetPoolDocument, wallet?: WalletDocument, account?: TAccount) {
+    static async list({
+        pool,
+        data,
+        wallet,
+        account,
+    }: {
+        pool: AssetPoolDocument;
+        data: Partial<TQuestEntry>;
+        wallet?: WalletDocument;
+        account?: TAccount;
+    }) {
         const questVariants = Object.keys(QuestVariant).filter((v) => !isNaN(Number(v)));
         const callback: any = async (variant: QuestVariant) => {
             const Quest = serviceMap[variant].models.quest;
@@ -38,7 +48,7 @@ export default class QuestService {
                 quests.map(async (q) => {
                     try {
                         const quest = q.toJSON() as TQuest;
-                        const decorated = await serviceMap[variant].decorate({ quest, wallet, account });
+                        const decorated = await serviceMap[variant].decorate({ quest, wallet, account, data });
                         const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : false;
                         const isExpired = this.isExpired(quest);
                         return { ...decorated, isLocked, isExpired };
@@ -103,7 +113,12 @@ export default class QuestService {
 
     static async isAvailable(
         variant: QuestVariant,
-        options: { quest: TQuest; account: TAccount; wallet: WalletDocument; address?: string },
+        options: {
+            quest: TQuest;
+            account: TAccount;
+            wallet: any; // Typing fails on WalletDocument
+            data: Partial<TQuestEntry & { rpc: string }>;
+        },
     ): Promise<TValidationResult> {
         if (!options.quest.isPublished) {
             return { result: false, reason: 'Quest has not been published.' };
@@ -120,15 +135,17 @@ export default class QuestService {
 
     static async getValidationResult(
         variant: QuestVariant,
-        quest: TQuest,
-        account: TAccount,
-        wallet: WalletDocument,
-        data: Partial<TQuestEntry & { rpc: string }>,
+        options: {
+            quest: TQuest;
+            account: TAccount;
+            wallet: WalletDocument;
+            data: Partial<TQuestEntry & { rpc: string }>;
+        },
     ) {
-        const isAvailable = await serviceMap[variant].isAvailable({ quest, account, wallet });
+        const isAvailable = await this.isAvailable(variant, options);
         if (!isAvailable.result) return isAvailable;
 
-        return await serviceMap[variant].getValidationResult({ quest, account, wallet, data });
+        return await serviceMap[variant].getValidationResult(options);
     }
 
     static async createEntryJob(job: Job) {
@@ -143,7 +160,7 @@ export default class QuestService {
 
             // Test availabily of quest once more as it could be completed by a job that was scheduled already
             // if the jobs were created in parallel.
-            const isAvailable = await this.isAvailable(variant, { quest, account, wallet });
+            const isAvailable = await this.isAvailable(variant, { quest, account, wallet, data });
             if (!isAvailable.result) throw new Error(isAvailable.reason);
 
             // Create the quest entry

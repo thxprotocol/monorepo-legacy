@@ -37,10 +37,24 @@ export async function completeQuest(
         const { interaction: questInteraction } = quest as TPointReward;
         const platformUserId = questInteraction && QuestService.findUserIdForInteraction(account, questInteraction);
 
-        const availabilityValidation = await QuestService.isAvailable(variant, { quest, account, wallet });
+        const data = {
+            isClaimed: true,
+            platformUserId,
+        };
+        const availabilityValidation = await QuestService.isAvailable(variant, {
+            quest,
+            account,
+            wallet,
+            data,
+        });
         if (!availabilityValidation.result) throw new Error(availabilityValidation.reason);
 
-        const requirementValidation = await QuestService.getValidationResult(variant, quest, account, wallet, {});
+        const requirementValidation = await QuestService.getValidationResult(variant, {
+            quest,
+            account,
+            wallet,
+            data,
+        });
         if (!requirementValidation.result) throw new Error(requirementValidation.reason);
 
         const amount = await QuestService.getAmount(variant, quest, account, wallet);
@@ -49,10 +63,7 @@ export async function completeQuest(
             variant,
             questId: quest._id,
             sub: account.sub,
-            data: {
-                isClaimed: true,
-                platformUserId,
-            },
+            data,
         });
 
         interaction.reply({
@@ -80,7 +91,8 @@ export async function onSelectQuestComplete(interaction: StringSelectMenuInterac
         const pool = await PoolService.getById(quest.poolId);
         if (!pool) throw new Error('Could not find this campaign.');
 
-        const isAvailable = await QuestService.isAvailable(variant, { quest, account, wallet });
+        const data = {};
+        const isAvailable = await QuestService.isAvailable(variant, { quest, account, wallet, data });
         const brand = await Brand.findOne({ poolId: pool._id });
         const widget = await Widget.findOne({ poolId: pool._id });
         const theme = JSON.parse(widget.theme);

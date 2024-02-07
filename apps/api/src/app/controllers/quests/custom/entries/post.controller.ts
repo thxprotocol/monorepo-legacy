@@ -12,7 +12,12 @@ const controller = async ({ params, account, wallet }: Request, res: Response) =
     const quest = await MilestoneReward.findById(params.id);
     if (!quest) throw new NotFoundError('Quest not found.');
 
-    const { result, reason } = await QuestService.getValidationResult(quest.variant, quest, account, wallet, {});
+    const { result, reason } = await QuestService.getValidationResult(quest.variant, {
+        quest,
+        account,
+        wallet,
+        data: {},
+    });
     if (!result) return res.json({ error: reason });
 
     const job = await agenda.now(JobType.CreateQuestEntry, {

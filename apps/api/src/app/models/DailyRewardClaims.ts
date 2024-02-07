@@ -12,7 +12,7 @@ const schema = new mongoose.Schema(
         amount: Number,
         poolId: String,
         state: Number,
-        ipHashed: String,
+        ip: String,
     },
     { timestamps: true },
 );

@@ -8,6 +8,7 @@ import {
     TGitcoinQuestEntry,
     TGitcoinQuest,
     TValidationResult,
+    TQuestEntry,
 } from '@thxnetwork/common/lib/types/interfaces';
 import { GitcoinQuest } from '../models/GitcoinQuest';
 import { IQuestService } from './interfaces/IQuestService';
@@ -23,31 +24,33 @@ export default class QuestGitcoinService implements IQuestService {
         quest,
         wallet,
         account,
+        data,
     }: {
         quest: TGitcoinQuest;
         account?: TAccount;
         wallet?: WalletDocument;
+        data: Partial<TGitcoinQuestEntry>;
     }): Promise<TGitcoinQuest & { isAvailable: boolean }> {
-        const isAvailable = await this.isAvailable({ quest, wallet, account });
+        const isAvailable = await this.isAvailable({ quest, wallet, account, data });
         return { ...quest, isAvailable: isAvailable.result };
     }
 
     async isAvailable({
         quest,
         wallet,
-        address,
+        data,
     }: {
         quest: TGitcoinQuest;
         wallet: WalletDocument;
         account: TAccount;
-        address?: string;
+        data: Partial<TGitcoinQuestEntry>;
     }): Promise<TValidationResult> {
         if (!wallet) return { result: true, reason: '' };
 
         const ids = [];
         if (wallet) ids.push({ sub: wallet.sub });
         if (wallet) ids.push({ walletId: wallet._id });
-        if (address) ids.push({ address });
+        if (data && data.address) ids.push({ address: data.address });
 
         const isCompleted = await GitcoinQuestEntry.exists({
             questId: quest._id,

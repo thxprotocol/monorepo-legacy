@@ -15,10 +15,12 @@ export default class QuestCustomService implements IQuestService {
     async isAvailable({
         quest,
         wallet,
+        data,
     }: {
         quest: MilestoneRewardDocument;
         wallet: WalletDocument;
         account: TAccount;
+        data: Partial<TMilestoneRewardClaim>;
     }): Promise<TValidationResult> {
         const isCompleted = await MilestoneRewardClaim.exists({
             walletId: String(wallet._id),
@@ -38,10 +40,12 @@ export default class QuestCustomService implements IQuestService {
         quest,
         account,
         wallet,
+        data,
     }: {
         quest: MilestoneRewardDocument;
         account?: TAccount;
         wallet?: WalletDocument;
+        data: Partial<TMilestoneRewardClaim>;
     }) {
         const entries = wallet
             ? await MilestoneRewardClaim.find({
@@ -54,7 +58,7 @@ export default class QuestCustomService implements IQuestService {
         const identityIds = identities.map(({ _id }) => String(_id));
         const events = identityIds.length ? await Event.find({ name: quest.eventName, identityId: identityIds }) : [];
         const pointsAvailable = (quest.limit - entries.length) * quest.amount;
-        const isAvailable = await this.isAvailable({ quest, wallet, account });
+        const isAvailable = await this.isAvailable({ quest, wallet, account, data });
 
         return {
             ...quest,

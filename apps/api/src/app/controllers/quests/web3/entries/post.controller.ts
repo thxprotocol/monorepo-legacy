@@ -20,10 +20,12 @@ const controller = async ({ account, wallet, body, params }: Request, res: Respo
     const { rpc, name } = chainList[body.chainId];
     if (!rpc) throw new NotFoundError(`Could not find RPC for ${name}`);
 
-    const { result, reason } = await QuestService.getValidationResult(quest.variant, quest, account, wallet, {
-        address,
-        rpc,
-        chainId: body.chainId,
+    const data = { address };
+    const { result, reason } = await QuestService.getValidationResult(quest.variant, {
+        quest,
+        account,
+        wallet,
+        data,
     });
     if (!result) return res.json({ error: reason });
 
@@ -31,11 +33,7 @@ const controller = async ({ account, wallet, body, params }: Request, res: Respo
         variant: QuestVariant.Web3,
         questId: String(quest._id),
         sub: account.sub,
-        data: {
-            address,
-            rpc,
-            chainId: body.chainId,
-        },
+        data: { ...data, rpc, chainId: body.chainId },
     });
 
     res.json({ jobId: job.attrs._id });
