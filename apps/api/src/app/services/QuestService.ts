@@ -143,8 +143,8 @@ export default class QuestService {
 
             // Test availabily of quest once more as it could be completed by a job that was scheduled already
             // if the jobs were created in parallel.
-            const available = await this.isAvailable(variant, { quest, account, wallet });
-            if (!available) throw new Error(`Quest entry exists already.`);
+            const isAvailable = await this.isAvailable(variant, { quest, account, wallet });
+            if (!isAvailable.result) throw new Error(isAvailable.reason);
 
             // Create the quest entry
             const entry = await Entry.create({
