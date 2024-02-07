@@ -8,4 +8,5 @@ export type TDailyRewardClaim = {
     poolId: string;
     createdAt: Date;
     state: DailyRewardClaimState;
+    ipHashed: string;
 };

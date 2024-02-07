@@ -22,6 +22,7 @@ export default class QuestDailyService implements IQuestService {
         quest: TDailyReward;
         wallet?: WalletDocument;
         account?: TAccount;
+        ip?: string;
     }): Promise<
         TDailyReward & {
             isAvailable: boolean;
@@ -53,6 +54,7 @@ export default class QuestDailyService implements IQuestService {
         quest: TDailyReward;
         wallet: WalletDocument;
         account: TAccount;
+        ip?: string;
     }): Promise<TValidationResult> {
         if (!wallet) return { result: true, reason: '' };
 

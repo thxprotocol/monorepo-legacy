@@ -5,7 +5,6 @@ import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { v4 } from 'uuid';
 import { twitterClient } from '@thxnetwork/api/util/twitter';
-import { ChainId } from '@thxnetwork/types/enums';
 import { OpenAIApi, Configuration } from 'openai';
 
 async function readCSV(csvFilePath: string) {
