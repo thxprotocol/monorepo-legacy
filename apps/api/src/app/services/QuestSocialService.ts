@@ -5,8 +5,8 @@ import { PointBalance } from './PointBalanceService';
 import { TPointReward, TAccount, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
 import { IQuestService } from './interfaces/IQuestService';
 import { requirementMap } from './maps/quests';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { logger } from '../util/logger';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import QuestService from './QuestService';
 
 export default class QuestSocialService implements IQuestService {

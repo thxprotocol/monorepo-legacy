@@ -1,6 +1,5 @@
 import {
     TAccount,
-    TQuestEntry,
     TPointReward,
     TDiscordMessage,
     TValidationResult,
