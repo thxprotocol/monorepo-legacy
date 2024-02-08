@@ -115,8 +115,8 @@ export default class QuestService {
         variant: QuestVariant,
         options: {
             quest: TQuest;
-            account: TAccount;
-            wallet: any; // Typing fails on WalletDocument
+            wallet?: WalletDocument;
+            account?: TAccount;
             data: Partial<TQuestEntry & { rpc: string }>;
         },
     ): Promise<TValidationResult> {

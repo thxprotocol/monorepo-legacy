@@ -22,17 +22,17 @@ export interface IQuestService {
     }): Promise<TQuest>;
     isAvailable(options: {
         quest: TQuest;
-        wallet: WalletDocument;
-        account: TAccount;
+        wallet?: WalletDocument;
+        account?: TAccount;
         data: Partial<TQuestEntry>;
     }): Promise<TValidationResult>;
+    getAmount(options: { quest: TQuest; wallet?: WalletDocument; account?: TAccount }): Promise<number>;
     getValidationResult(options: {
         quest: TQuest;
         account: TAccount;
         wallet: WalletDocument;
         data: Partial<TQuestEntry>;
     }): Promise<TValidationResult>;
-    getAmount(options: { quest: TQuest; wallet: WalletDocument; account: TAccount }): Promise<number>;
 }
 
 export const serviceMap: {

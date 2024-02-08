@@ -41,8 +41,8 @@ export default class QuestGitcoinService implements IQuestService {
         data,
     }: {
         quest: TGitcoinQuest;
-        wallet: WalletDocument;
-        account: TAccount;
+        wallet?: WalletDocument;
+        account?: TAccount;
         data: Partial<TGitcoinQuestEntry>;
     }): Promise<TValidationResult> {
         if (!wallet) return { result: true, reason: '' };
