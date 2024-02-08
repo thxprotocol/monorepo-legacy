@@ -15,19 +15,26 @@ export default class QuestCustomService implements IQuestService {
     async isAvailable({
         quest,
         wallet,
-        data,
     }: {
         quest: MilestoneRewardDocument;
-        wallet: WalletDocument;
-        account: TAccount;
+        wallet?: WalletDocument;
+        account?: TAccount;
         data: Partial<TMilestoneRewardClaim>;
     }): Promise<TValidationResult> {
-        const isCompleted = await MilestoneRewardClaim.exists({
-            walletId: String(wallet._id),
-            questId: String(quest._id),
-            isClaimed: true,
-        });
-        if (!isCompleted) return { result: true, reason: '' };
+        const entries = wallet
+            ? await MilestoneRewardClaim.find({
+                  walletId: String(wallet._id),
+                  questId: String(quest._id),
+                  isClaimed: true,
+              })
+            : [];
+        if ((!quest.limit && !entries.length) || (quest.limit && entries.length < quest.limit)) {
+            return { result: true, reason: '' };
+        }
+
+        if (quest.limit && entries.length >= quest.limit) {
+            return { result: false, reason: 'You have reached the limit for this quest.' };
+        }
 
         return { result: false, reason: 'You have completed this quest already.' };
     }
@@ -62,8 +69,6 @@ export default class QuestCustomService implements IQuestService {
 
         return {
             ...quest,
-            limit: quest.limit,
-            amount: quest.amount,
             isAvailable: isAvailable.result,
             pointsAvailable,
             claims: entries,

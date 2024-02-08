@@ -65,8 +65,8 @@ export default class QuestDiscordService implements IQuestService {
         account,
     }: {
         quest: TPointReward;
-        wallet: WalletDocument;
-        account: TAccount;
+        wallet?: WalletDocument;
+        account?: TAccount;
         data: Partial<TPointRewardClaim>;
     }): Promise<TValidationResult> {
         const map = {
@@ -83,8 +83,8 @@ export default class QuestDiscordService implements IQuestService {
         data,
     }: {
         quest: TPointReward;
-        wallet: WalletDocument;
-        account: TAccount;
+        wallet?: WalletDocument;
+        account?: TAccount;
         data: Partial<TPointRewardClaim>;
     }) {
         if (!wallet || !account) return { result: true, reason: '' };
@@ -94,8 +94,16 @@ export default class QuestDiscordService implements IQuestService {
         return await new QuestSocialService().isAvailable({ quest, wallet, account, data });
     }
 
-    private async isAvailableMessage(options: { quest: TPointReward; wallet: WalletDocument; account: TAccount }) {
-        const amount = await this.getAmount(options);
+    private async isAvailableMessage({
+        quest,
+        account,
+        wallet,
+    }: {
+        quest: TPointReward;
+        wallet?: WalletDocument;
+        account?: TAccount;
+    }) {
+        const amount = await this.getAmount({ quest, account, wallet });
         const isAvailable = amount > 0;
         if (isAvailable) return { result: true, reason: '' };
 
@@ -107,15 +115,16 @@ export default class QuestDiscordService implements IQuestService {
         quest,
     }: {
         quest: TPointReward;
-        wallet: WalletDocument;
-        account: TAccount;
+        wallet?: WalletDocument;
+        account?: TAccount;
     }): Promise<number> {
+        if (!account) return 0;
+
         const interactionMap = {
             [QuestSocialRequirement.DiscordMessage]: this.getMessagePoints.bind(this),
             [QuestSocialRequirement.DiscordGuildJoined]: this.getPoints.bind(this),
         };
         const { pointsAvailable } = await interactionMap[quest.interaction]({ quest, account });
-
         return pointsAvailable;
     }
 

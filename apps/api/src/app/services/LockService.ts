@@ -4,17 +4,12 @@ import { serviceMap } from './interfaces/IQuestService';
 
 async function getIsUnlocked(lock: TQuestLock, wallet: WalletDocument): Promise<boolean> {
     const Entry = serviceMap[lock.variant].models.entry;
-
-    console.log({ questId: lock.questId, walletId: wallet._id });
     const exists = await Entry.exists({ questId: lock.questId, walletId: wallet._id });
-    console.log(exists);
     return !!exists;
 }
 
 async function getIsLocked(locks: TQuestLock[], wallet: WalletDocument) {
-    if (!locks.length) return false;
-    // Check if all quests still exist
-    // TODO
+    if (!locks.length || !wallet) return false;
 
     // Check if there are entries for the remaining quests
     const promises = locks.map((lock) => getIsUnlocked(lock, wallet));

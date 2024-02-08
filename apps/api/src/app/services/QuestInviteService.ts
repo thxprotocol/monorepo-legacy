@@ -26,8 +26,8 @@ export default class QuestInviteService implements IQuestService {
 
     async isAvailable(options: {
         quest: TReferralReward;
-        wallet: WalletDocument;
-        account: TAccount;
+        wallet?: WalletDocument;
+        account?: TAccount;
         data: Partial<TReferralRewardClaim>;
     }): Promise<TValidationResult> {
         return { result: false, reason: 'Not implemented' };
