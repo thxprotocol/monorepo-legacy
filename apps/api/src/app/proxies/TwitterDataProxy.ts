@@ -188,12 +188,7 @@ export default class TwitterDataProxy {
         return await TwitterCacheService.cacheLikes(account, quest, token);
     }
 
-    static async validateRetweet(
-        account: TAccount,
-        postId: string,
-        options?: { sinceId: string; maxId: string; nextPageToken?: string },
-    ) {
-        let { sinceId, maxId } = options || {};
+    static async validateRetweet(account: TAccount, postId: string, options?: { nextPageToken?: string }) {
         const { nextPageToken } = options || {};
 
         const token = await AccountProxy.getToken(
@@ -210,18 +205,12 @@ export default class TwitterDataProxy {
             // Construct paging parameters
             const params = { max_results: 100 };
             if (nextPageToken) params['pagination_token'] = nextPageToken;
-            if (sinceId) params['since_id'] = sinceId;
-            if (maxId) params['max_id'] = maxId;
 
             const data = await this.request(token, {
                 url: `/tweets/${postId}/retweeted_by`,
                 method: 'GET',
                 params,
             });
-
-            // Update sinceId for future searches
-            sinceId = data.meta.newest_id;
-            maxId = data.meta.oldest_id;
 
             // Cache TwitterReposts for future searches
             await Promise.all(
@@ -243,7 +232,7 @@ export default class TwitterDataProxy {
             }
 
             if (data.meta.next_token) {
-                return await this.validateRetweet(account, postId, { sinceId, maxId, nextPageToken });
+                return await this.validateRetweet(account, postId, { nextPageToken });
             }
 
             return { result: false, reason: 'X: Post has not been reposted.' };
