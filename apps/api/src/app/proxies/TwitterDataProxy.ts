@@ -140,7 +140,14 @@ export default class TwitterDataProxy {
         return data.data;
     }
 
-    static async validateRetweet(account: TAccount, postId: string, nextPageToken?: string) {
+    static async validateRetweet(
+        account: TAccount,
+        postId: string,
+        options?: { sinceId: string; maxId: string; nextPageToken?: string },
+    ) {
+        let { sinceId, maxId } = options || {};
+        const { nextPageToken } = options || {};
+
         const token = await AccountProxy.getToken(
             account,
             AccessTokenKind.Twitter,
@@ -152,14 +159,21 @@ export default class TwitterDataProxy {
             const repost = await TwitterRepost.findOne({ userId: token.userId, postId });
             if (repost) return { result: true, reason: '' };
 
+            // Construct paging parameters
+            const params = { max_results: 100 };
+            if (nextPageToken) params['pagination_token'] = nextPageToken;
+            if (sinceId) params['since_id'] = sinceId;
+            if (maxId) params['max_id'] = maxId;
+
             const data = await this.request(account, token, {
                 url: `/tweets/${postId}/retweeted_by`,
                 method: 'GET',
-                params: {
-                    max_results: 100,
-                    pagination_token: nextPageToken,
-                },
+                params,
             });
+
+            // Update sinceId for future searches
+            sinceId = data.meta.newest_id;
+            maxId = data.meta.oldest_id;
 
             // Cache TwitterReposts for future searches
             await Promise.all(
@@ -181,7 +195,7 @@ export default class TwitterDataProxy {
             }
 
             if (data.meta.next_token) {
-                return await this.validateRetweet(account, postId, nextPageToken);
+                return await this.validateRetweet(account, postId, { sinceId, maxId, nextPageToken });
             }
 
             return { result: false, reason: 'X: Post has not been reposted.' };
