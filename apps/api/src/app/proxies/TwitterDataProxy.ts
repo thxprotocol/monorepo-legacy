@@ -7,14 +7,11 @@ import AccountProxy from './AccountProxy';
 import { logger } from '../util/logger';
 import { TwitterLike } from '../models/TwitterLike';
 import { TwitterRepost } from '../models/TwitterRepost';
+import { TwitterUser } from '../models/TwitterUser';
 
 async function twitterClient(config: AxiosRequestConfig) {
-    try {
-        const client = axios.create({ ...config, baseURL: TWITTER_API_ENDPOINT });
-        return await client(config);
-    } catch (error) {
-        throw error.response;
-    }
+    const client = axios.create({ ...config, baseURL: TWITTER_API_ENDPOINT });
+    return await client(config);
 }
 
 export default class TwitterDataProxy {
@@ -43,15 +40,38 @@ export default class TwitterDataProxy {
         ]);
         if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
 
-        const data = await this.request(account, token, {
-            method: 'GET',
-            url: `/users/${userId}`,
-            params: {
-                'user.fields': 'profile_image_url,public_metrics',
-            },
-        });
+        try {
+            const data = await this.request(account, token, {
+                method: 'GET',
+                url: `/users/${userId}`,
+                params: {
+                    'user.fields': 'profile_image_url,public_metrics',
+                },
+            });
 
-        return data.data;
+            // Cache TwitterUser
+            await TwitterUser.findOneAndUpdate(
+                { userId: data.data.id },
+                {
+                    userId: data.data.id,
+                    profileImgUrl: data.data.profile_image_url,
+                    name: data.data.name,
+                    username: data.data.username,
+                    publicMetrics: {
+                        followersCount: data.data.public_metrics.followers_count,
+                        followingCount: data.data.public_metrics.following_count,
+                        tweetCount: data.data.public_metrics.tweet_count,
+                        listedCount: data.data.public_metrics.listed_count,
+                        likeCount: data.data.public_metrics.like_count,
+                    },
+                },
+                { upsert: true },
+            );
+
+            return data.data;
+        } catch (res) {
+            return this.handleError(account, token, res);
+        }
     }
 
     static async getTweet(account: TAccount, tweetId: string) {
@@ -71,6 +91,79 @@ export default class TwitterDataProxy {
         });
 
         return { tweet: data.data[0], user: data.includes.users[0] };
+    }
+
+    static async searchTweets(account: TAccount, query: string) {
+        const token = await AccountProxy.getToken(account, AccessTokenKind.Twitter, [
+            OAuthTwitterScope.UsersRead,
+            OAuthTwitterScope.TweetRead,
+        ]);
+        const startTime = new Date(Date.now() - 60 * 60 * 24).toISOString(); // 24h ago
+        const data = await this.request(account, token, {
+            url: '/tweets/search/recent',
+            method: 'GET',
+            params: {
+                query: `from:${token.userId} ${query}`,
+                start_time: startTime,
+            },
+        });
+        return data.data;
+    }
+
+    static async validateUser(account: TAccount, reward: TPointReward) {
+        const token = await AccountProxy.getToken(
+            account,
+            AccessTokenKind.Twitter,
+            OAuthRequiredScopes.TwitterValidateUser,
+        );
+        if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
+
+        const metadata = JSON.parse(reward.contentMetadata);
+        const minFollowersCount = metadata.minFollowersCount ? Number(metadata.minFollowersCount) : 0;
+
+        try {
+            const user = await this.getUser(account, token.userId);
+
+            // Validate the follower count for this user
+            const followersCount = user.public_metrics.followers_count;
+            if (followersCount >= minFollowersCount) return { result: true, reason: '' };
+
+            return {
+                result: false,
+                reason: `X: Your account does not meet the threshold of ${minFollowersCount} followers.`,
+            };
+        } catch (res) {
+            return this.handleError(account, token, res);
+        }
+    }
+
+    static async validateFollow(account: TAccount, userId: string) {
+        const token = await AccountProxy.getToken(
+            account,
+            AccessTokenKind.Twitter,
+            OAuthRequiredScopes.TwitterValidateFollow,
+        );
+        if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
+        try {
+            if (token.userId === userId) {
+                return { result: false, reason: 'X: Can not validate a follow for your account with your account.' };
+            }
+
+            const data = await this.request(account, token, {
+                url: `/users/${token.userId}/following`,
+                method: 'POST',
+                data: {
+                    target_user_id: userId,
+                },
+            });
+
+            const isFollowing = data.data.following;
+            if (isFollowing) return { result: true, reason: '' };
+
+            return { result: false, reason: 'X: Account is not found as a follower.' };
+        } catch (res) {
+            return this.handleError(account, token, res);
+        }
     }
 
     static async validateLike(account: TAccount, postId: string, nextPageToken?: string) {
@@ -121,23 +214,6 @@ export default class TwitterDataProxy {
         } catch (res) {
             return this.handleError(account, token, res);
         }
-    }
-
-    static async searchTweets(account: TAccount, query: string) {
-        const token = await AccountProxy.getToken(account, AccessTokenKind.Twitter, [
-            OAuthTwitterScope.UsersRead,
-            OAuthTwitterScope.TweetRead,
-        ]);
-        const startTime = new Date(Date.now() - 60 * 60 * 24).toISOString(); // 24h ago
-        const data = await this.request(account, token, {
-            url: '/tweets/search/recent',
-            method: 'GET',
-            params: {
-                query: `from:${token.userId} ${query}`,
-                start_time: startTime,
-            },
-        });
-        return data.data;
     }
 
     static async validateRetweet(
@@ -204,58 +280,6 @@ export default class TwitterDataProxy {
         }
     }
 
-    static async validateFollow(account: TAccount, userId: string) {
-        const token = await AccountProxy.getToken(
-            account,
-            AccessTokenKind.Twitter,
-            OAuthRequiredScopes.TwitterValidateFollow,
-        );
-        if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
-        try {
-            if (token.userId === userId) {
-                return { result: false, reason: 'X: Can not validate a follow for your account with your account.' };
-            }
-
-            const data = await this.request(account, token, {
-                url: `/users/${token.userId}/following`,
-                method: 'POST',
-                data: {
-                    target_user_id: userId,
-                },
-            });
-
-            const isFollowing = data.data.following;
-            if (isFollowing) return { result: true, reason: '' };
-
-            return { result: false, reason: 'X: Account is not found as a follower.' };
-        } catch (res) {
-            return this.handleError(account, token, res);
-        }
-    }
-
-    static async validateUser(account: TAccount, reward: TPointReward) {
-        const token = await AccountProxy.getToken(
-            account,
-            AccessTokenKind.Twitter,
-            OAuthRequiredScopes.TwitterValidateUser,
-        );
-        if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
-        try {
-            const user = await this.getUser(account, token.userId);
-            const metadata = JSON.parse(reward.contentMetadata);
-            const minFollowersCount = metadata.minFollowersCount ? Number(metadata.minFollowersCount) : 0;
-            const followersCount = user.public_metrics.followers_count;
-            if (followersCount >= minFollowersCount) return { result: true, reason: '' };
-
-            return {
-                result: false,
-                reason: `X: Your account does not meet the threshold of ${minFollowersCount} followers.`,
-            };
-        } catch (res) {
-            return this.handleError(account, token, res);
-        }
-    }
-
     static async validateMessage(account: TAccount, message: string) {
         const token = await AccountProxy.getToken(
             account,
@@ -285,7 +309,12 @@ export default class TwitterDataProxy {
             });
             return data;
         } catch (error) {
-            throw new Error(error);
+            if (error.response) {
+                // Rethrow if this is an axios error
+                throw error.response;
+            } else {
+                logger.error(error);
+            }
         }
     }
 
@@ -293,14 +322,19 @@ export default class TwitterDataProxy {
         logger.error(res);
 
         if (res.status === 429) {
-            logger.info(`[429] X-RateLimit is hit by account ${account._id} for X UserId ${token.userId}.`);
+            logger.info(`[429] X-RateLimit is hit by account ${account.sub} with X UserId ${token.userId}.`);
             return this.handleRateLimitError(res);
         }
 
         if (res.status === 401) {
-            logger.info(`[401] Token for ${account._id} for X UserId ${token.userId} is invalid and disconnected.`);
+            logger.info(`[401] Token for ${account.sub} with X UserId ${token.userId} is invalid and disconnected.`);
             await AccountProxy.disconnect(account, token.kind);
-            return { result: false, reason: 'X: Your connection has been removed, please reconnect!' };
+            return { result: false, reason: 'Your X account connection has been removed, please reconnect!' };
+        }
+
+        if (res.status === 403) {
+            logger.info(`[403] Token for ${account.sub} with X UserId ${token.userId} has insufficient permissions.`);
+            return { result: false, reason: 'Your X account access level is insufficient, please reconnect!' };
         }
 
         return { result: false, reason: 'X: An unexpected issue occured during your request.' };
