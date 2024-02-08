@@ -17,7 +17,7 @@ export const requirementMap: {
     [QuestSocialRequirement.TwitterLike]: async (account, quest) => {
         const validationResultUser = await TwitterDataProxy.validateUser(account, quest);
         if (!validationResultUser.result) return validationResultUser;
-        const validationResultLike = await TwitterDataProxy.validateLike(account, quest.content);
+        const validationResultLike = await TwitterDataProxy.validateLike(account, quest);
         if (!validationResultLike.result) return validationResultLike;
     },
     [QuestSocialRequirement.TwitterRetweet]: async (account, quest) => {
@@ -29,7 +29,7 @@ export const requirementMap: {
     [QuestSocialRequirement.TwitterLikeRetweet]: async (account, quest) => {
         const validationResultUser = await TwitterDataProxy.validateUser(account, quest);
         if (!validationResultUser.result) return validationResultUser;
-        const validationResultLike = await TwitterDataProxy.validateLike(account, quest.content);
+        const validationResultLike = await TwitterDataProxy.validateLike(account, quest);
         if (!validationResultLike.result) return validationResultLike;
         const validationResultRepost = await TwitterDataProxy.validateRetweet(account, quest.content);
         if (!validationResultRepost.result) return validationResultRepost;

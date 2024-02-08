@@ -1,19 +1,14 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { TAccount, TPointReward, TToken } from '@thxnetwork/types/interfaces';
-import {
-    AccessTokenKind,
-    OAuthRequiredScopes,
-    OAuthTwitterScope,
-    QuestSocialRequirement,
-} from '@thxnetwork/common/lib/types/enums';
+import { AccessTokenKind, OAuthRequiredScopes, OAuthTwitterScope } from '@thxnetwork/common/lib/types/enums';
 import { TWITTER_API_ENDPOINT } from '@thxnetwork/common/lib/types/contants';
 import { formatDistance } from 'date-fns';
-import AccountProxy from './AccountProxy';
 import { logger } from '../util/logger';
 import { TwitterLike } from '../models/TwitterLike';
 import { TwitterRepost } from '../models/TwitterRepost';
 import { TwitterUser } from '../models/TwitterUser';
-import { TwitterCursor, TwitterCursorDocument } from '../models/TwitterCursor';
+import AccountProxy from './AccountProxy';
+import TwitterCacheService from '../services/TwitterCacheService';
 
 async function twitterClient(config: AxiosRequestConfig) {
     const client = axios.create({ ...config, baseURL: TWITTER_API_ENDPOINT });
@@ -28,7 +23,7 @@ export default class TwitterDataProxy {
         ]);
         if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
 
-        const data = await this.request(account, token, {
+        const data = await this.request(token, {
             method: 'GET',
             url: `/users/by/username/${username}`,
             params: {
@@ -47,7 +42,7 @@ export default class TwitterDataProxy {
         if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
 
         try {
-            const data = await this.request(account, token, {
+            const data = await this.request(token, {
                 method: 'GET',
                 url: `/users/${userId}`,
                 params: {
@@ -87,7 +82,7 @@ export default class TwitterDataProxy {
         ]);
         if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
 
-        const data = await this.request(account, token, {
+        const data = await this.request(token, {
             method: 'GET',
             url: `/tweets`,
             params: {
@@ -105,7 +100,7 @@ export default class TwitterDataProxy {
             OAuthTwitterScope.TweetRead,
         ]);
         const startTime = new Date(Date.now() - 60 * 60 * 24).toISOString(); // 24h ago
-        const data = await this.request(account, token, {
+        const data = await this.request(token, {
             url: '/tweets/search/recent',
             method: 'GET',
             params: {
@@ -155,7 +150,7 @@ export default class TwitterDataProxy {
                 return { result: false, reason: 'X: Can not validate a follow for your account with your account.' };
             }
 
-            const data = await this.request(account, token, {
+            const data = await this.request(token, {
                 url: `/users/${token.userId}/following`,
                 method: 'POST',
                 data: {
@@ -175,11 +170,8 @@ export default class TwitterDataProxy {
         }
     }
 
-    static async validateLike(
-        account: TAccount,
-        postId: string,
-        cursor?: TwitterCursorDocument & { nextPageToken: string },
-    ) {
+    static async validateLike(account: TAccount, quest: TPointReward) {
+        const postId = quest.content;
         const token = await AccountProxy.getToken(
             account,
             AccessTokenKind.Twitter,
@@ -187,71 +179,13 @@ export default class TwitterDataProxy {
         );
         if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
 
-        // Query TwitterLikes for this userId and postId
+        // Search for TwitterLikes with this userId and postId in the cache
         const like = await TwitterLike.findOne({ userId: token.userId, postId });
         if (like) return { result: true, reason: '' };
 
-        const requirement = QuestSocialRequirement.TwitterLike;
-        try {
-            // // Get the cursor for this requirement and postId
-            // if (!cursor) {
-            //     cursor = await TwitterCursor.findOne({ requirement, postId });
-            //     if (cursor) this.validateLike(account, postId, cursor);
-            // }
-
-            const params = { max_results: 100 };
-            if (cursor && cursor.nextPageToken) params['pagination_token'] = cursor.nextPageToken;
-            if (cursor && cursor.newestId) params['since_id'] = cursor.newestId;
-            // if (cursor && cursor.oldestId) params['max_id'] = cursor.oldestId;
-
-            // Not found? Search for it and cache results along the way
-            const data = await this.request(account, token, {
-                url: `/tweets/${postId}/liking_users`,
-                method: 'GET',
-                params,
-            });
-
-            console.log(data);
-
-            // Cache TwitterLike for future searches
-            await Promise.all(
-                data.data.map(async (user: { id: string }) => {
-                    return await TwitterLike.findOneAndUpdate(
-                        { userId: user.id, postId },
-                        { userId: user.id, postId },
-                        { upsert: true },
-                    );
-                }),
-            );
-
-            // Update the cursor
-            cursor = await TwitterCursor.findOneAndUpdate(
-                { requirement, postId },
-                {
-                    requirement,
-                    postId,
-                    newestId: data.meta.newest_id,
-                    oldestId: data.meta.oldest_id,
-                },
-                { upsert: true, new: true },
-            );
-
-            // Check if the user is liked in the current set of data
-            const isLiked = data.data ? !!data.data.find((u) => u.id === token.userId) : false;
-            if (isLiked) return { result: true, reason: '' };
-
-            // If there is a next_token run again
-            if (data.meta.next_token) {
-                return await this.validateLike(account, postId, {
-                    ...cursor.toJSON(),
-                    nextPageToken: data.meta.next_token,
-                });
-            }
-
-            return { result: false, reason: 'X: Post has not been not liked.' };
-        } catch (res) {
-            return this.handleError(account, token, res);
-        }
+        // No cache result means we should update the cache. Returns a positive validation result if the user
+        // has liked the post or a negative validation result including reason if caching fails due to rate limits.
+        return await TwitterCacheService.cacheLikes(account, quest, token);
     }
 
     static async validateRetweet(
@@ -279,7 +213,7 @@ export default class TwitterDataProxy {
             if (sinceId) params['since_id'] = sinceId;
             if (maxId) params['max_id'] = maxId;
 
-            const data = await this.request(account, token, {
+            const data = await this.request(token, {
                 url: `/tweets/${postId}/retweeted_by`,
                 method: 'GET',
                 params,
@@ -339,7 +273,7 @@ export default class TwitterDataProxy {
         }
     }
 
-    private static async request(account: TAccount, token: TToken, config: AxiosRequestConfig) {
+    static async request(token: TToken, config: AxiosRequestConfig) {
         try {
             const { data } = await twitterClient({
                 ...config,
@@ -356,7 +290,7 @@ export default class TwitterDataProxy {
         }
     }
 
-    private static async handleError(account: TAccount, token: TToken, res: AxiosResponse) {
+    static async handleError(account: TAccount, token: TToken, res: AxiosResponse) {
         logger.error(res);
 
         if (res.status === 429) {

@@ -7,8 +7,7 @@ const twitterCursorSchema = new mongoose.Schema(
     {
         requirement: Number,
         postId: String,
-        newestId: String,
-        oldestId: String,
+        nextToken: String,
     },
     { timestamps: true },
 );
