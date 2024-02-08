@@ -1,3 +1,13 @@
+import { QuestSocialRequirement } from '../enums';
+
+export type TTwitterCursor = {
+    _id: string;
+    requirement: QuestSocialRequirement;
+    postId: string;
+    newestId: string;
+    oldestId: string;
+};
+
 export type TTwitterLike = {
     _id: string;
     userId: string;
