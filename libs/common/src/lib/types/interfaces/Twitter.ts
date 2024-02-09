@@ -1,18 +1,8 @@
-import { QuestSocialRequirement } from '../enums';
-
 export type TTwitterRequestParams = {
     max_results: number;
     pagination_token?: string;
     since_id?: string;
     max_id?: string;
-};
-
-export type TTwitterCursor = {
-    _id: string;
-    sub: string;
-    requirement: QuestSocialRequirement;
-    postId: string;
-    nextToken: string;
 };
 
 export type TTwitterLike = {

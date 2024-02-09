@@ -198,54 +198,29 @@ export default class TwitterDataProxy {
         }
     }
 
-    static async validateRetweet(account: TAccount, postId: string, options?: { nextPageToken?: string }) {
-        const { nextPageToken } = options || {};
-
+    static async validateRetweet(account: TAccount, quest: TPointReward) {
+        const postId = quest.content;
         const token = await AccountProxy.getToken(
             account,
             AccessTokenKind.Twitter,
             OAuthRequiredScopes.TwitterValidateRepost,
         );
         if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
+
+        // Query cached TwitterReposts for this tweetId and userId
+        const repost = await TwitterRepost.findOne({ userId: token.userId, postId });
+        if (repost) return { result: true, reason: '' };
+
         try {
-            // Query cached TwitterReposts for this tweetId and userId
+            // No cache result means we should update the cache.
+            await TwitterCacheService.updateRepostCache(account, quest, token);
+
+            // Search the database again after cache update
             const repost = await TwitterRepost.findOne({ userId: token.userId, postId });
             if (repost) return { result: true, reason: '' };
 
-            // Construct paging parameters
-            const params = { max_results: 100 };
-            if (nextPageToken) params['pagination_token'] = nextPageToken;
-
-            const data = await this.request(token, {
-                url: `/tweets/${postId}/retweeted_by`,
-                method: 'GET',
-                params,
-            });
-
-            // Cache TwitterReposts for future searches
-            await Promise.all(
-                data.data.map(async (user: { id: string }) => {
-                    return await TwitterRepost.findOneAndUpdate(
-                        { userId: user.id, postId },
-                        { userId: user.id, postId },
-                        { upsert: true },
-                    );
-                }),
-            );
-
-            // Check if the user is liked in the current set of data
-            const isReposted = data.data ? !!data.data.find((u: { id: string }) => u.id === token.userId) : false;
-
-            // If user has reposted or there is no next_token, break out of the loop
-            if (isReposted) {
-                return { result: true, reason: '' };
-            }
-
-            if (data.meta.next_token) {
-                return await this.validateRetweet(account, postId, { nextPageToken });
-            }
-
-            return { result: false, reason: 'X: Post has not been reposted.' };
+            // Fail if nothing is found
+            return { result: false, reason: 'X: Post has not been not reposted.' };
         } catch (res) {
             return this.handleError(account, token, res);
         }
@@ -318,11 +293,11 @@ export default class TwitterDataProxy {
 
         return {
             result: false,
-            reason: `X API allows for a max of ${limit} requests within a 15 minute window. Try again in ${formatDistance(
+            reason: `X allows for a max of ${limit} searches per 15 minute. We will continue searching in ${formatDistance(
                 0,
                 seconds * 1000,
                 { includeSeconds: true },
-            )}.`,
+            )}. Come back later to complete your quest!`,
         };
     }
 
