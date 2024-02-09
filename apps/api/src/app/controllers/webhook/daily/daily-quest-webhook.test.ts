@@ -8,6 +8,7 @@ import { DailyReward, DailyRewardDocument } from '@thxnetwork/api/models/DailyRe
 import { poll } from '@thxnetwork/api/util/polling';
 import { Job } from '@thxnetwork/api/models/Job';
 import { TJob } from '@thxnetwork/common/lib/types';
+import { IJobParameters } from '@hokify/agenda';
 
 const user = request.agent(app);
 
@@ -74,11 +75,11 @@ describe('Daily Rewards WebHooks', () => {
 
         await poll(
             () => Job.findById(body.jobId),
-            (job: TJob) => !job.lastRunAt,
+            (job: any) => !job.lastRunAt,
             1000,
         );
 
-        const job = await Job.findById(body.jobId);
+        const job = (await Job.findById(body.jobId)) as IJobParameters;
         expect(job.lastRunAt).toBeDefined();
     });
 

@@ -5,7 +5,7 @@ import { agenda } from '../util/agenda';
 import { PointReward } from '../models/PointReward';
 import { logger } from '../util/logger';
 import { TJob } from '@thxnetwork/common/lib/types';
-import { Job } from '@thxnetwork/api/models/Job';
+import { Job } from '../models/Job';
 import AccountProxy from '../proxies/AccountProxy';
 import TwitterDataProxy from '../proxies/TwitterDataProxy';
 import { TwitterRepost } from '../models/TwitterRepost';
