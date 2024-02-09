@@ -11,6 +11,7 @@
         "serve:auth": "NODE_TLS_REJECT_UNAUTHORIZED='0' nx serve auth",
         "safe:install": "docker compose exec txs-web python manage.py insert_safe_master_copy --address \"0xC44951780f195Ed71145e3d0d2F25726A097C348\"",
         "import-quests": "yarn build api; cp -R ./dist/libs ./dist/apps/api/libs; yarn nx run api:import-quests",
+        "script": "NODE_TLS_REJECT_UNAUTHORIZED='0' nx run api:script",
         "build": "nx build",
         "test": "NODE_OPTIONS='--max-old-space-size=8192' nx test",
         "test:e2e": "yarn cypress run --headed --no-exit",
