@@ -193,13 +193,18 @@ export default class TwitterDataProxy {
             // No cache result means we should update the cache.
             await TwitterCacheService.updateLikeCache(account, quest, token);
 
-            // Search the database again after cache update
-            const like = await TwitterLike.findOne({ userId: token.userId, postId });
+            // Search the database again after a complete cache update that is not rate limited
+            const like = await this.findLike(token.userId, postId);
             if (like) return { result: true, reason: '' };
 
             // Fail if nothing is found
             return { result: false, reason: 'X: Post has not been not liked.' };
         } catch (res) {
+            // Search the database again after a partial cache update that threw an error
+            const like = await this.findLike(token.userId, postId);
+            if (like) return { result: true, reason: '' };
+
+            // If not found amongst the latest cache update then we show the rate limit error
             return this.handleError(account, token, res);
         }
     }
@@ -221,13 +226,17 @@ export default class TwitterDataProxy {
             // No cache result means we should update the cache.
             await TwitterCacheService.updateRepostCache(account, quest, token);
 
-            // Search the database again after cache update
-            const repost = await TwitterRepost.findOne({ userId: token.userId, postId });
+            // Search the database again after a complete cache update that is not rate limited
+            const repost = await this.findRepost(token.userId, postId);
             if (repost) return { result: true, reason: '' };
 
             // Fail if nothing is found
             return { result: false, reason: 'X: Post has not been not reposted.' };
         } catch (res) {
+            // Search the database again after a partial cache update that threw an error
+            const repost = await this.findRepost(token.userId, postId);
+            if (repost) return { result: true, reason: '' };
+
             return this.handleError(account, token, res);
         }
     }
@@ -251,6 +260,14 @@ export default class TwitterDataProxy {
         } catch (res) {
             return this.handleError(account, token, res);
         }
+    }
+
+    static findLike(userId: string, postId: string) {
+        return TwitterLike.findOne({ userId, postId });
+    }
+
+    static findRepost(userId: string, postId: string) {
+        return TwitterRepost.findOne({ userId, postId });
     }
 
     static async request(token: TToken, config: AxiosRequestConfig) {
