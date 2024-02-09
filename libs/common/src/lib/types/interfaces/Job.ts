@@ -1,3 +1,3 @@
-import { Job } from '@hokify/agenda';
+import { Job, IJobParameters } from '@hokify/agenda';
 
-export type TJob = Job;
+export type TJob = Job & IJobParameters;
