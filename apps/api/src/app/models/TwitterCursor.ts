@@ -5,6 +5,7 @@ export type TwitterCursorDocument = mongoose.Document & TTwitterCursor;
 
 const twitterCursorSchema = new mongoose.Schema(
     {
+        sub: String,
         requirement: Number,
         postId: String,
         nextToken: String,

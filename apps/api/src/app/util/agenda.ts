@@ -11,6 +11,7 @@ import { MONGODB_URI } from '../config/secrets';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import WebhookService from '../services/WebhookService';
 import QuestService from '../services/QuestService';
+import TwitterCacheService from '../services/TwitterCacheService';
 
 const agenda = new Agenda({
     db: {
@@ -31,6 +32,7 @@ agenda.define(JobType.DeploySafe, (job: Job) => SafeService.createJob(job));
 agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
 agenda.define(JobType.MigrateWallets, (job: Job) => SafeService.migrateJob(job));
 agenda.define(JobType.RequestAttemp, (job: Job) => WebhookService.requestAttemptJob(job));
+agenda.define(JobType.UpdateLikeCache, (job: Job) => TwitterCacheService.updateLikeCacheJob(job));
 
 db.connection.once('open', async () => {
     await agenda.start();

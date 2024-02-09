@@ -8,4 +8,5 @@ export enum JobType {
     DeploySafe = 'deploySafe',
     CreateQuestEntry = 'createQuestEntry',
     RequestAttemp = 'requestAttempt',
+    UpdateLikeCache = 'updateLikeCache',
 }

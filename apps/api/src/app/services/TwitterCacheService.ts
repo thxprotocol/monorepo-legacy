@@ -1,21 +1,20 @@
-import { TAccount, TPointReward, TToken } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind, OAuthRequiredScopes } from '@thxnetwork/common/lib/types/enums';
+import { TAccount, TPointReward, TToken, TTwitterRequestParams } from '@thxnetwork/types/interfaces';
+import { AccessTokenKind, JobType, OAuthRequiredScopes } from '@thxnetwork/common/lib/types/enums';
 import { TwitterLike } from '../models/TwitterLike';
-import { TwitterCursor } from '../models/TwitterCursor';
 import { agenda } from '../util/agenda';
-import { Job } from '@hokify/agenda';
-import PoolService from '../services/PoolService';
+import { PointReward } from '../models/PointReward';
+import { logger } from '../util/logger';
+import { TJob } from '@thxnetwork/common/lib/types';
+import { Job } from '@thxnetwork/api/models/Job';
 import AccountProxy from '../proxies/AccountProxy';
 import TwitterDataProxy from '../proxies/TwitterDataProxy';
-
 export default class TwitterCacheService {
-    static async cacheLikes(
+    static async updateLikeCache(
         account: TAccount,
         quest: TPointReward,
         token: TToken,
         params: TTwitterRequestParams = { max_results: 100 },
     ) {
-        const requirement = quest.interaction;
         const postId = quest.content;
 
         try {
@@ -25,7 +24,10 @@ export default class TwitterCacheService {
                 params,
             });
 
-            // Update all TwitterLikes found in the database
+            // If no results return early
+            if (!data.meta.result_count) return;
+
+            // If there are results, upsert all TwitterLikes into the database
             await Promise.all(
                 data.data.map(async (user: { id: string }) => {
                     return await TwitterLike.findOneAndUpdate(
@@ -36,62 +38,72 @@ export default class TwitterCacheService {
                 }),
             );
 
-            // If there is a next_token, we store the next_token in case we get rate limited and
-            // continue on the next page
+            // If there is a next_token, we store the next_token in case we get rate limited
+            // and continue on the next page
             if (data.meta.next_token) {
-                const nextToken = data.meta.next_token;
-
-                // Update cursor with last used next_token
-                await TwitterCursor.findByIdAndUpdate(
-                    { postId, requirement },
-                    { postId, requirement, nextToken },
-                    { upsert: true },
-                );
-
                 // Start with caching the next 100 results
-                return await this.cacheLikes(account, quest, token, {
+                await this.updateLikeCache(account, quest, token, {
                     ...params,
-                    pagination_token: nextToken,
+                    pagination_token: data.meta.next_token,
                 });
             }
-
-            // If there is no next_token, break out of the loop
-            return { result: false, reason: 'X: Post has not been not liked.' };
         } catch (res) {
             // Check if we are failing due to a rate limit
             if (res.status === 429) {
-                const pool = await PoolService.getById(quest.poolId);
-                const owner = await PoolService.findOwner(pool);
+                const sub = account.sub;
+                const questId = String(quest._id);
+                const job = await Job.findOne({
+                    'name': JobType.UpdateLikeCache,
+                    'data.sub': sub,
+                    'data.questId': questId,
+                });
 
-                // If we are not using the owner token already we try again with the owner
-                if (token.sub !== owner.sub) {
-                    const token = await AccountProxy.getToken(
-                        owner,
-                        AccessTokenKind.Twitter,
-                        OAuthRequiredScopes.TwitterValidateRepost,
-                    );
+                if (!job) {
+                    const resetTime = Number(res.headers['x-rate-limit-reset']);
+                    const seconds = resetTime - Math.ceil(Date.now() / 1000);
+                    const minutes = Math.ceil(seconds / 60);
 
-                    return await this.cacheLikes(account, quest, token, params);
-                } else {
-                    // In case we're already using the pool owner account we schedule a job
-                    // to retry the request in 15min and resumes caching from the last cursor.nextToken
-                    await agenda.schedule('in 15 minutes', 'retry-validate-like', {
-                        sub: account.sub,
-                        questId: quest._id,
-                    });
+                    // Resume caching when rate limit is reset
+                    await agenda.schedule(`in ${minutes} minutes`, JobType.UpdateLikeCache, { sub, questId, params });
 
-                    // If there is no next_token, break out of the loop
-                    return { result: false, reason: 'X: Post has not been not liked.' };
+                    logger.info('Scheduled updateLikeCacheJob', { questId, sub, params });
                 }
             }
 
-            // Handle other errors
-            return this.handleError(account, token, res);
+            throw res;
         }
     }
 
-    static async cacheLikesCallbackJob(job: Job) {
-        const { attrs } = job;
-        //
+    static async updateLikeCacheJob(job: TJob) {
+        const { questId, sub, params } = job.attrs.data as {
+            sub: string;
+            questId: string;
+            params: TTwitterRequestParams;
+        };
+        logger.info('Starting updateLikeCacheJob', { questId, sub, params });
+
+        try {
+            const quest = await PointReward.findById(questId);
+            if (!quest) throw new Error(`No token found for questId ${questId}.`);
+
+            const account = await AccountProxy.findById(sub);
+            if (!account) throw new Error(`No account found for sub ${sub}.`);
+
+            const token = await AccountProxy.getToken(
+                account,
+                AccessTokenKind.Twitter,
+                OAuthRequiredScopes.TwitterValidateLike,
+            );
+            if (!token) throw new Error(`No token found for sub ${sub}.`);
+
+            // Remove this job so it can be recreated if another rate limit is hit
+            await job.remove();
+
+            // Continue cache update for likes until the last page is reached
+            // or the next rate limit is hit
+            await this.updateLikeCache(account, quest, token, params);
+        } catch (error) {
+            logger.error(error.response ? error.response : error);
+        }
     }
 }

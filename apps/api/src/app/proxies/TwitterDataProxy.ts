@@ -7,8 +7,8 @@ import { logger } from '../util/logger';
 import { TwitterLike } from '../models/TwitterLike';
 import { TwitterRepost } from '../models/TwitterRepost';
 import { TwitterUser } from '../models/TwitterUser';
-import AccountProxy from './AccountProxy';
 import TwitterCacheService from '../services/TwitterCacheService';
+import AccountProxy from './AccountProxy';
 
 async function twitterClient(config: AxiosRequestConfig) {
     const client = axios.create({ ...config, baseURL: TWITTER_API_ENDPOINT });
@@ -183,9 +183,19 @@ export default class TwitterDataProxy {
         const like = await TwitterLike.findOne({ userId: token.userId, postId });
         if (like) return { result: true, reason: '' };
 
-        // No cache result means we should update the cache. Returns a positive validation result if the user
-        // has liked the post or a negative validation result including reason if caching fails due to rate limits.
-        return await TwitterCacheService.cacheLikes(account, quest, token);
+        try {
+            // No cache result means we should update the cache.
+            await TwitterCacheService.updateLikeCache(account, quest, token);
+
+            // Search the database again after cache update
+            const like = await TwitterLike.findOne({ userId: token.userId, postId });
+            if (like) return { result: true, reason: '' };
+
+            // Fail if nothing is found
+            return { result: false, reason: 'X: Post has not been not liked.' };
+        } catch (res) {
+            return this.handleError(account, token, res);
+        }
     }
 
     static async validateRetweet(account: TAccount, postId: string, options?: { nextPageToken?: string }) {
@@ -280,8 +290,6 @@ export default class TwitterDataProxy {
     }
 
     static async handleError(account: TAccount, token: TToken, res: AxiosResponse) {
-        logger.error(res);
-
         if (res.status === 429) {
             logger.info(`[429] X-RateLimit is hit by account ${account.sub} with X UserId ${token.userId}.`);
             return this.handleRateLimitError(res);
@@ -297,6 +305,8 @@ export default class TwitterDataProxy {
             logger.info(`[403] Token for ${account.sub} with X UserId ${token.userId} has insufficient permissions.`);
             return { result: false, reason: 'Your X account access level is insufficient, please reconnect!' };
         }
+
+        logger.error(res);
 
         return { result: false, reason: 'X: An unexpected issue occured during your request.' };
     }

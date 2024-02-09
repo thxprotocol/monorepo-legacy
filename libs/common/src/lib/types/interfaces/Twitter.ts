@@ -9,9 +9,10 @@ export type TTwitterRequestParams = {
 
 export type TTwitterCursor = {
     _id: string;
+    sub: string;
     requirement: QuestSocialRequirement;
     postId: string;
-    nextTokens: string[];
+    nextToken: string;
 };
 
 export type TTwitterLike = {
