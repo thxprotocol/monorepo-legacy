@@ -21,26 +21,25 @@ export default class QuestCustomService implements IQuestService {
         account?: TAccount;
         data: Partial<TMilestoneRewardClaim>;
     }): Promise<TValidationResult> {
-        const entries = wallet
-            ? await MilestoneRewardClaim.find({
-                  walletId: String(wallet._id),
-                  questId: String(quest._id),
-                  isClaimed: true,
-              })
-            : [];
-        if ((!quest.limit && !entries.length) || (quest.limit && entries.length < quest.limit)) {
-            return { result: true, reason: '' };
-        }
-
+        const entries = await this.findEntries({ quest, wallet });
         if (quest.limit && entries.length >= quest.limit) {
-            return { result: false, reason: 'You have reached the limit for this quest.' };
+            return { result: false, reason: 'Quest entry limit has been reached.' };
         }
 
-        return { result: false, reason: 'You have completed this quest already.' };
+        return { result: true, reason: '' };
     }
 
     async getAmount({ quest }: { quest: MilestoneRewardDocument; wallet: WalletDocument; account: TAccount }) {
         return quest.amount;
+    }
+
+    async findEntries({ quest, wallet }: { quest: MilestoneRewardDocument; wallet: WalletDocument }) {
+        if (!wallet) return [];
+        return MilestoneRewardClaim.find({
+            questId: quest._id,
+            walletId: wallet._id,
+            isClaimed: true,
+        });
     }
 
     async decorate({
@@ -54,13 +53,7 @@ export default class QuestCustomService implements IQuestService {
         wallet?: WalletDocument;
         data: Partial<TMilestoneRewardClaim>;
     }) {
-        const entries = wallet
-            ? await MilestoneRewardClaim.find({
-                  walletId: String(wallet._id),
-                  questId: String(quest._id),
-                  isClaimed: true,
-              })
-            : [];
+        const entries = await this.findEntries({ quest, wallet });
         const identities = wallet ? await Identity.find({ poolId: quest.poolId, sub: wallet.sub }) : [];
         const identityIds = identities.map(({ _id }) => String(_id));
         const events = identityIds.length ? await Event.find({ name: quest.eventName, identityId: identityIds }) : [];
@@ -71,7 +64,7 @@ export default class QuestCustomService implements IQuestService {
             ...quest,
             isAvailable: isAvailable.result,
             pointsAvailable,
-            claims: entries,
+            entries,
             events,
         };
     }
@@ -96,7 +89,7 @@ export default class QuestCustomService implements IQuestService {
             walletId: options.wallet._id,
             isClaimed: true,
         });
-        if (entries.length >= options.quest.limit) {
+        if (options.quest.limit && entries.length >= options.quest.limit) {
             return { result: false, reason: 'Quest entry limit has been reached' };
         }
 
