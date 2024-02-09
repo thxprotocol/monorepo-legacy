@@ -24,15 +24,36 @@ export default class TwitterCacheService {
                 method: 'GET',
                 params,
             });
+            logger.info(`Fetched ${data.meta.result_count} reposts from X.`);
 
             // If no results return early
             if (!data.meta.result_count) return;
 
+            const userIds = data.data.map((user: { id: string }) => user.id);
+            const cachedReposts = await TwitterRepost.find({ userId: { $in: userIds }, postId });
+            const newReposts = userIds.filter(
+                (userId: string) => !cachedReposts.map((like) => like.userId).includes(userId),
+            );
+
+            // If there are new reposting users on a page where we have already cached some likes
+            // then we need to cache the new users and return early
+            if (newReposts.length) {
+                const operations = data.data
+                    .filter((user: { id: string }) => newReposts.includes(user.id))
+                    .map((user) => ({
+                        updateOne: {
+                            filter: { userId: user.id, postId },
+                            update: { userId: user.id, postId },
+                            upsert: true,
+                        },
+                    }));
+
+                await TwitterLike.bulkWrite(operations);
+            }
+
             // If one of the userIds is already in the db we consider the
             // cache up to date and we return early
-            const userIds = data.data.map((user: { id: string }) => user.id);
-            const existingReposts = await TwitterRepost.find({ userId: { $in: userIds }, postId });
-            if (existingReposts.length) return;
+            if (cachedReposts.length) return;
 
             // If not then we upsert all TwitterReposts into the database
             const operations = data.data.map((user: { id: string }) => ({
@@ -72,15 +93,35 @@ export default class TwitterCacheService {
                 method: 'GET',
                 params,
             });
+            logger.info(`Fetched ${data.meta.result_count} likes from X.`);
 
             // If no results return early
             if (!data.meta.result_count) return;
 
+            const userIds = data.data.map((user: { id: string }) => user.id);
+            const cachedLikes = await TwitterLike.find({ userId: { $in: userIds }, postId });
+            const newLikes = userIds.filter(
+                (userId: string) => !cachedLikes.map((like) => like.userId).includes(userId),
+            );
+
+            // If there are new liking users on a page where we have already cached some likes
+            // then we need to cache the new users and return early
+            if (newLikes.length) {
+                const operations = data.data
+                    .filter((user: { id: string }) => newLikes.includes(user.id))
+                    .map((user) => ({
+                        updateOne: {
+                            filter: { userId: user.id, postId },
+                            update: { userId: user.id, postId },
+                            upsert: true,
+                        },
+                    }));
+
+                await TwitterLike.bulkWrite(operations);
+            }
             // If one of the userIds is already in the db we consider the
             // cache up to date and we return early
-            const userIds = data.data.map((user: { id: string }) => user.id);
-            const existingLikes = await TwitterLike.find({ userId: { $in: userIds }, postId });
-            if (existingLikes.length) return;
+            if (cachedLikes.length) return;
 
             // If not then we upsert all TwitterLikes into the database
             const operations = data.data.map((user: { id: string }) => ({
@@ -113,7 +154,7 @@ export default class TwitterCacheService {
         params: TTwitterRequestParams,
         jobType: JobType,
     ) {
-        // Check if we are failing due to a rate limit
+        // Retrow the error if it's not a rate limit error
         if (res.status === 429) {
             const sub = account.sub;
             const questId = String(quest._id);
@@ -165,7 +206,7 @@ export default class TwitterCacheService {
             questId: string;
             params: TTwitterRequestParams;
         };
-        logger.info(`Starting ${job.attrs.name}`);
+        logger.info(`Starting ${job.attrs.name}`, params);
 
         try {
             const quest = await PointReward.findById(questId);
