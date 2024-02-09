@@ -9,6 +9,7 @@ import { TwitterRepost } from '../models/TwitterRepost';
 import { TwitterUser } from '../models/TwitterUser';
 import TwitterCacheService from '../services/TwitterCacheService';
 import AccountProxy from './AccountProxy';
+import { TwitterFollower } from '../models/TwitterFollower';
 
 async function twitterClient(config: AxiosRequestConfig) {
     const client = axios.create({ ...config, baseURL: TWITTER_API_ENDPOINT });
@@ -21,7 +22,7 @@ export default class TwitterDataProxy {
             OAuthTwitterScope.UsersRead,
             OAuthTwitterScope.TweetRead,
         ]);
-        if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
+        if (!token) return { result: false, reason: 'X: Could not find a connection for this account.' };
 
         const data = await this.request(token, {
             method: 'GET',
@@ -39,7 +40,7 @@ export default class TwitterDataProxy {
             OAuthTwitterScope.UsersRead,
             OAuthTwitterScope.TweetRead,
         ]);
-        if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
+        if (!token) return { result: false, reason: 'X: Could not find a connection for this account.' };
 
         try {
             const data = await this.request(token, {
@@ -80,7 +81,7 @@ export default class TwitterDataProxy {
             OAuthTwitterScope.UsersRead,
             OAuthTwitterScope.TweetRead,
         ]);
-        if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
+        if (!token) return { result: false, reason: 'X: Could not find a connection for this account.' };
 
         const data = await this.request(token, {
             method: 'GET',
@@ -117,7 +118,7 @@ export default class TwitterDataProxy {
             AccessTokenKind.Twitter,
             OAuthRequiredScopes.TwitterValidateUser,
         );
-        if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
+        if (!token) return { result: false, reason: 'X: Could not find a connection for this account.' };
 
         const metadata = JSON.parse(quest.contentMetadata);
         const minFollowersCount = metadata.minFollowersCount ? Number(metadata.minFollowersCount) : 0;
@@ -144,7 +145,7 @@ export default class TwitterDataProxy {
             AccessTokenKind.Twitter,
             OAuthRequiredScopes.TwitterValidateFollow,
         );
-        if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
+        if (!token) return { result: false, reason: 'X: Could not find a connection for this account.' };
         try {
             if (token.userId === userId) {
                 return { result: false, reason: 'X: Can not validate a follow for your account with your account.' };
@@ -158,11 +159,16 @@ export default class TwitterDataProxy {
                 },
             });
 
-            // TODO Cache TwitterFollower here if isFollowing is true
-            // TODO Create migration to build follower cache based on existing TwitterFollow quest entries
+            // Cache TwitterFollower here if isFollowing is true
+            await TwitterFollower.findOneAndUpdate(
+                { userId: token.userId, targetUserId: userId },
+                { userId: token.userId, targetUserId: userId },
+                { upsert: true },
+            );
 
-            const isFollowing = data.data.following;
-            if (isFollowing) return { result: true, reason: '' };
+            if (data.data.following) {
+                return { result: true, reason: '' };
+            }
 
             return { result: false, reason: 'X: Account is not found as a follower.' };
         } catch (res) {
@@ -177,7 +183,7 @@ export default class TwitterDataProxy {
             AccessTokenKind.Twitter,
             OAuthRequiredScopes.TwitterValidateLike,
         );
-        if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
+        if (!token) return { result: false, reason: 'X: Could not find a connection for this account.' };
 
         // Search for TwitterLikes with this userId and postId in the cache
         const like = await TwitterLike.findOne({ userId: token.userId, postId });
@@ -205,7 +211,7 @@ export default class TwitterDataProxy {
             AccessTokenKind.Twitter,
             OAuthRequiredScopes.TwitterValidateRepost,
         );
-        if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
+        if (!token) return { result: false, reason: 'X: Could not find a connection for this account.' };
 
         // Query cached TwitterReposts for this tweetId and userId
         const repost = await TwitterRepost.findOne({ userId: token.userId, postId });
@@ -232,7 +238,7 @@ export default class TwitterDataProxy {
             AccessTokenKind.Twitter,
             OAuthRequiredScopes.TwitterValidateMessage,
         );
-        if (!token) return { result: false, reason: 'Could not find an X connection for this account.' };
+        if (!token) return { result: false, reason: 'X: Could not find a connection for this account.' };
         try {
             const query = this.parseSearchQuery(message);
             const results = await this.searchTweets(account, query);
@@ -293,11 +299,11 @@ export default class TwitterDataProxy {
 
         return {
             result: false,
-            reason: `X allows for a max of ${limit} searches per 15 minute. We will continue searching in ${formatDistance(
-                0,
-                seconds * 1000,
-                { includeSeconds: true },
-            )}. Come back later to complete your quest!`,
+            reason: `Quest requirement not found yet! We can only check ${
+                limit * 100
+            } items every 15 minutes. Please wait ${formatDistance(0, seconds * 1000, {
+                includeSeconds: true,
+            })} before retrying. Thank you!`,
         };
     }
 

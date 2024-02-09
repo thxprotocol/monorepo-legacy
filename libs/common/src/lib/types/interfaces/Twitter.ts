@@ -17,6 +17,12 @@ export type TTwitterRepost = {
     postId: string;
 };
 
+export type TTwitterFollower = {
+    _id: string;
+    userId: string;
+    targetUserId: string;
+};
+
 export type TTwitterUser = {
     _id: string;
     userId: string;
