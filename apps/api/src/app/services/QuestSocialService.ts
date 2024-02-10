@@ -49,7 +49,7 @@ export default class QuestSocialService implements IQuestService {
 
         // We validate for both here since there are entries that only contain a sub
         // and should not be claimed again.
-        const ids: any[] = [{ sub: wallet.sub }, { walletId: wallet._id }];
+        const ids: any[] = [{ sub: wallet.sub }, { walletId: String(wallet._id) }];
         const platformUserId = QuestService.findUserIdForInteraction(account, quest.interaction);
         if (platformUserId) ids.push({ platformUserId });
 

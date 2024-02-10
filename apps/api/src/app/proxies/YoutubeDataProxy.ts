@@ -18,7 +18,7 @@ async function getClient(account: TAccount, requiredScopes: OAuthScope[]) {
 }
 
 export default class YoutubeDataProxy {
-    static async validateLike(account: TAccount, content: string, nextPageToken?: string) {
+    static async validateLike(account: TAccount, videoId: string, nextPageToken?: string) {
         const youtube = await getClient(account, OAuthRequiredScopes.GoogleYoutubeLike);
         const { data } = await youtube.videos.list({
             part: ['snippet'],
@@ -27,20 +27,22 @@ export default class YoutubeDataProxy {
             pageToken: nextPageToken,
         });
 
-        const isLiked = data.items.find((item) => item.id === content);
+        const isLiked = data.items.find((item) => item.id === videoId);
         if (isLiked) return { result: true, reason: '' };
 
-        if (data.nextPageToken) {
-            return await this.validateLike(account, content, nextPageToken);
-        }
+        // NOTE Disabled paging as we hit rate limits when searching
+        // through all liked videos of a user.
+        // if (data.nextPageToken) {
+        //     return await this.validateLike(account, content, nextPageToken);
+        // }
 
         return { result: false, reason: 'YouTube: Could not find your like for this video.' };
     }
 
-    static async validateSubscribe(account: TAccount, channelItem: string) {
+    static async validateSubscribe(account: TAccount, channelId: string) {
         const youtube = await getClient(account, OAuthRequiredScopes.GoogleYoutubeLike);
         const { data } = await youtube.subscriptions.list({
-            forChannelId: channelItem,
+            forChannelId: channelId,
             part: ['snippet'],
             mine: true,
         });
