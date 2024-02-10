@@ -182,7 +182,7 @@ export default class ViewParticipants extends Vue {
             rank: p.rank,
             account: parseAccount({ id: p._id, account: p.account }),
             email: p.account && p.account.email,
-            tokens: p.account && parseConnectedAccounts(p.account.tokens),
+            tokens: p.account && parseConnectedAccounts(p.account),
             wallet: parseWallet(p.wallet),
             pointBalance: p.pointBalance,
             subscription: p.subscription,

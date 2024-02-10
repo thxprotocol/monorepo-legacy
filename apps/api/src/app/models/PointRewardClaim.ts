@@ -11,6 +11,13 @@ const schema = new mongoose.Schema(
         amount: Number,
         poolId: String,
         platformUserId: String,
+        publicMetrics: {
+            followersCount: Number,
+            followingCount: Number,
+            tweetCount: Number,
+            listedCount: Number,
+            likeCount: Number,
+        },
     },
     { timestamps: true },
 );

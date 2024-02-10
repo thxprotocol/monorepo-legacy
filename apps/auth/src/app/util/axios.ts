@@ -15,21 +15,21 @@ export async function twitterClient(config: AxiosRequestConfig) {
     }
 }
 
-export async function githubClient(config: AxiosRequestConfig) {
-    try {
-        const client = axios.create({ ...config, baseURL: GITHUB_API_ENDPOINT });
-        return await client(config);
-    } catch (error) {
-        console.error(error);
-    }
-}
-
 export async function discordClient(config: AxiosRequestConfig) {
     try {
         const client = axios.create({ ...config, baseURL: DISCORD_API_ENDPOINT });
         return await client(config);
     } catch (error) {
-        console.error(error);
+        throw error.response;
+    }
+}
+
+export async function githubClient(config: AxiosRequestConfig) {
+    try {
+        const client = axios.create({ ...config, baseURL: GITHUB_API_ENDPOINT });
+        return await client(config);
+    } catch (error) {
+        throw error.response;
     }
 }
 
@@ -38,6 +38,6 @@ export async function twitchClient(config: AxiosRequestConfig) {
         const client = axios.create({ ...config, baseURL: TWITCH_API_ENDPOINT });
         return await client(config);
     } catch (error) {
-        console.error(error);
+        throw error.response;
     }
 }

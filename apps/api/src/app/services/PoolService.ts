@@ -3,7 +3,7 @@ import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
-import { TAccount, TToken } from '@thxnetwork/types/interfaces';
+import { TAccount, TToken, TTwitterUser } from '@thxnetwork/types/interfaces';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
 import { DailyReward } from '../models/DailyReward';
@@ -32,6 +32,7 @@ import { getChainId } from './ContractService';
 import { Identity } from '../models/Identity';
 import { TIdentity } from '@thxnetwork/types/interfaces';
 import { Client } from '../models/Client';
+import { TwitterUser, TwitterUserDocument } from '../models/TwitterUser';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -227,6 +228,17 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
 
             try {
                 account = accounts.find((a) => a.sub === wallet.sub);
+                account.tokens = await Promise.all(
+                    account.tokens.map(async (token: TToken) => {
+                        const user = await TwitterUser.findOne({ userId: token.userId });
+                        return {
+                            kind: token.kind,
+                            userId: token.userId,
+                            metadata: token.metadata,
+                            user,
+                        } as unknown as TToken;
+                    }),
+                );
             } catch (error) {
                 logger.error(error);
             }
@@ -255,11 +267,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                     username: account.username,
                     profileImg: account.profileImg,
                     variant: account.variant,
-                    tokens: account.tokens.map((token) => ({
-                        kind: token.kind,
-                        userId: token.userId,
-                        metadata: token.metadata,
-                    })),
+                    tokens: account.tokens,
                 },
                 wallet,
                 subscription,

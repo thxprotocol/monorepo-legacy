@@ -23,17 +23,19 @@ export type TTwitterFollower = {
     targetUserId: string;
 };
 
+export type TTwitterUserPublicMetrics = {
+    followersCount: number;
+    followingCount: number;
+    tweetCount: number;
+    listedCount: number;
+    likeCount: number;
+};
+
 export type TTwitterUser = {
     _id: string;
     userId: string;
     profileImgUrl: string;
     name: string;
     username: string;
-    publicMetrics: {
-        followersCount: number;
-        followingCount: number;
-        tweetCount: number;
-        listedCount: number;
-        likeCount: number;
-    };
+    publicMetrics: TTwitterUserPublicMetrics;
 };

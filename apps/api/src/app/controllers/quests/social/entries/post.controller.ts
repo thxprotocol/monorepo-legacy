@@ -5,6 +5,8 @@ import { JobType, questInteractionVariantMap } from '@thxnetwork/common/lib/type
 import { agenda } from '@thxnetwork/api/util/agenda';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import QuestService from '@thxnetwork/api/services/QuestService';
+import { QuestVariant } from '@thxnetwork/sdk/types/enums';
+import { TwitterUser } from '@thxnetwork/api/models/TwitterUser';
 
 const validation = [param('id').isMongoId()];
 
@@ -25,6 +27,13 @@ const controller = async ({ params, account, wallet }: Request, res: Response) =
     const { result, reason } = await QuestService.getValidationResult(variant, { quest, account, wallet, data });
     if (!result) return res.json({ error: reason });
 
+    // Little exception here in order to store public metrics with the entry
+    if (variant === QuestVariant.Twitter) {
+        const user = await TwitterUser.findOne({ userId: platformUserId });
+        data['publicMetrics'] = user.publicMetrics;
+    }
+
+    // Schedule serial job
     const job = await agenda.now(JobType.CreateQuestEntry, {
         variant,
         questId: String(quest._id),
