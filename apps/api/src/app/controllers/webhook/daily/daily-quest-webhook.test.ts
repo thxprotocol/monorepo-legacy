@@ -8,6 +8,7 @@ import { DailyReward, DailyRewardDocument } from '@thxnetwork/api/models/DailyRe
 import { poll } from '@thxnetwork/api/util/polling';
 import { Job } from '@thxnetwork/api/models/Job';
 import { TJob } from '@thxnetwork/common/lib/types';
+import { IJobParameters } from '@hokify/agenda';
 
 const user = request.agent(app);
 
@@ -74,21 +75,21 @@ describe('Daily Rewards WebHooks', () => {
 
         await poll(
             () => Job.findById(body.jobId),
-            (job: TJob) => !job.lastRunAt,
+            (job: any) => !job.lastRunAt,
             1000,
         );
 
-        const job = await Job.findById(body.jobId);
+        const job = (await Job.findById(body.jobId)) as IJobParameters;
         expect(job.lastRunAt).toBeDefined();
     });
 
-    // it('POST /quests/daily/:id/entries should throw an error', (done) => {
-    //     user.post(`/v1/quests/daily/${dailyReward._id}/entries`)
-    //         .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
-    //         .send()
-    //         .expect(({ body }: request.Response) => {
-    //             expect(body.error).toBe('Already completed within the last 24 hours.');
-    //         })
-    //         .expect(200, done);
-    // });
+    it('POST /quests/daily/:id/entries should throw an error', (done) => {
+        user.post(`/v1/quests/daily/${dailyReward._id}/entries`)
+            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
+            .send()
+            .expect(({ body }: request.Response) => {
+                expect(body.error).toBe('You have completed this quest within the last 24 hours.');
+            })
+            .expect(200, done);
+    });
 });

@@ -8,4 +8,6 @@ export enum JobType {
     DeploySafe = 'deploySafe',
     CreateQuestEntry = 'createQuestEntry',
     RequestAttemp = 'requestAttempt',
+    UpdateTwitterLikeCache = 'updateTwitterLikeCache',
+    UpdateTwitterRepostCache = 'updateTwitterRepostCache',
 }
