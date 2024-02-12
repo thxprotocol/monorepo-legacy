@@ -103,6 +103,7 @@ export default class QuestSocialService implements IQuestService {
             const pointBalance = pointBalances.find((w) => w.walletId === String(wallet._id));
             const tokens = await Promise.all(
                 account.tokens.map(async (token: TToken) => {
+                    if (token.kind !== 'twitter') return token;
                     const user = await TwitterUser.findOne({ userId: entry.platformUserId });
                     return { ...token, user };
                 }),

@@ -7,7 +7,7 @@
             <template v-if="account.kind !== AccessTokenKind.Twitter">
                 {{ account.userId }}
             </template>
-            <template v-else>
+            <template v-else-if="account.user">
                 <b-media class="pt-2">
                     <template #aside>
                         <b-avatar :src="account.user.profileImgUrl" size="2.8rem" class="ml-1" />
@@ -18,22 +18,29 @@
                         @{{ account.user.username }}
                     </b-link>
                 </b-media>
-                <b-row class="text-muted mt-2">
-                    <b-col>Followers</b-col>
-                    <b-col>{{ account.user.publicMetrics.followersCount }}</b-col>
-                </b-row>
-                <b-row class="text-muted mt-2">
-                    <b-col>Following</b-col>
-                    <b-col>{{ account.user.publicMetrics.followingCount }}</b-col>
-                </b-row>
-                <b-row class="text-muted mt-2">
-                    <b-col>Tweets</b-col>
-                    <b-col>{{ account.user.publicMetrics.tweetCount }}</b-col>
-                </b-row>
-                <b-row class="text-muted mt-2">
-                    <b-col>Likes</b-col>
-                    <b-col>{{ account.user.publicMetrics.likeCount }}</b-col>
-                </b-row>
+                <template v-if="account.user.publicMetrics">
+                    <b-row class="text-muted mt-2">
+                        <b-col>Followers</b-col>
+                        <b-col>{{ account.user.publicMetrics.followersCount }}</b-col>
+                    </b-row>
+                    <b-row class="text-muted mt-2">
+                        <b-col>Following</b-col>
+                        <b-col>{{ account.user.publicMetrics.followingCount }}</b-col>
+                    </b-row>
+                    <b-row class="text-muted mt-2">
+                        <b-col>Tweets</b-col>
+                        <b-col>{{ account.user.publicMetrics.tweetCount }}</b-col>
+                    </b-row>
+                    <b-row class="text-muted mt-2">
+                        <b-col>Likes</b-col>
+                        <b-col>{{ account.user.publicMetrics.likeCount }}</b-col>
+                    </b-row>
+                </template>
+            </template>
+            <template v-else-if="!account.user">
+                <b-link :href="`https://www.x.com/${account.metadata.username}`" target="_blank">
+                    @{{ account.metadata.username }}
+                </b-link>
             </template>
         </b-popover>
     </span>
@@ -57,6 +64,7 @@ export function parseConnectedAccounts(account: { tokens: TToken[] }) {
                 kind: a.kind,
                 user: a.user,
                 userId: a.userId,
+                metadata: a.metadata,
                 url: getUserUrl(a),
             };
         })
@@ -74,6 +82,7 @@ export default class BaseParticipantConnectedAccount extends Vue {
         userName: string;
         userId: string;
         user: TTwitterUser;
+        metadata: { username: string };
     };
 }
 </script>
