@@ -7,6 +7,7 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import { QuestVariant } from '@thxnetwork/sdk/types/enums';
 import { TwitterUser } from '@thxnetwork/api/models/TwitterUser';
+import { logger } from '@thxnetwork/api/util/logger';
 
 const validation = [param('id').isMongoId()];
 
@@ -25,7 +26,13 @@ const controller = async ({ params, account, wallet }: Request, res: Response) =
     // Get validation result for this quest entry
     const data = { platformUserId };
     const { result, reason } = await QuestService.getValidationResult(variant, { quest, account, wallet, data });
-    if (!result) return res.json({ error: reason });
+    if (!result) {
+        // Reason includes part of the rate limit error so we log
+        if (reason.includes('every 15 minutes')) {
+            logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} responds with rate limit error.`);
+        }
+        return res.json({ error: reason });
+    }
 
     // Little exception here in order to store public metrics with the entry
     if (variant === QuestVariant.Twitter) {

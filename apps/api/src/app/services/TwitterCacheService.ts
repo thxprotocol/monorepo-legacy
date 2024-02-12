@@ -10,6 +10,11 @@ import AccountProxy from '../proxies/AccountProxy';
 import TwitterDataProxy from '../proxies/TwitterDataProxy';
 import { TwitterRepost } from '../models/TwitterRepost';
 import { AxiosResponse } from 'axios';
+
+function findUserById(users: { id: string }[], userId: string) {
+    return users.find((user: { id: string }) => user.id === userId);
+}
+
 export default class TwitterCacheService {
     static async updateRepostCache(
         account: TAccount,
@@ -19,6 +24,7 @@ export default class TwitterCacheService {
     ) {
         const postId = quest.content;
         try {
+            logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} Repost verification calls X API.`);
             const data = await TwitterDataProxy.request(token, {
                 url: `/tweets/${postId}/retweeted_by`,
                 method: 'GET',
@@ -29,32 +35,6 @@ export default class TwitterCacheService {
             // If no results return early
             if (!data.meta.result_count) return;
 
-            const userIds = data.data.map((user: { id: string }) => user.id);
-            const cachedReposts = await TwitterRepost.find({ userId: { $in: userIds }, postId });
-            const newReposts = userIds.filter(
-                (userId: string) => !cachedReposts.map((like) => like.userId).includes(userId),
-            );
-
-            // If there are new reposting users on a page where we have already cached some likes
-            // then we need to cache the new users and return early
-            if (newReposts.length) {
-                const operations = data.data
-                    .filter((user: { id: string }) => newReposts.includes(user.id))
-                    .map((user) => ({
-                        updateOne: {
-                            filter: { userId: user.id, postId },
-                            update: { userId: user.id, postId },
-                            upsert: true,
-                        },
-                    }));
-
-                await TwitterLike.bulkWrite(operations);
-            }
-
-            // If one of the userIds is already in the db we consider the
-            // cache up to date and we return early
-            if (cachedReposts.length) return;
-
             // If not then we upsert all TwitterReposts into the database
             const operations = data.data.map((user: { id: string }) => ({
                 updateOne: {
@@ -64,6 +44,9 @@ export default class TwitterCacheService {
                 },
             }));
             await TwitterRepost.bulkWrite(operations);
+
+            // If the user has reposted the post, we return early
+            if (findUserById(data.data, token.userId)) return;
 
             // If there is a next_token, we store the next_token in case we get rate limited
             // and continue on the next page
@@ -88,6 +71,7 @@ export default class TwitterCacheService {
         const postId = quest.content;
 
         try {
+            logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} Like verification calls X API.`);
             const data = await TwitterDataProxy.request(token, {
                 url: `/tweets/${postId}/liking_users`,
                 method: 'GET',
@@ -98,31 +82,6 @@ export default class TwitterCacheService {
             // If no results return early
             if (!data.meta.result_count) return;
 
-            const userIds = data.data.map((user: { id: string }) => user.id);
-            const cachedLikes = await TwitterLike.find({ userId: { $in: userIds }, postId });
-            const newLikes = userIds.filter(
-                (userId: string) => !cachedLikes.map((like) => like.userId).includes(userId),
-            );
-
-            // If there are new liking users on a page where we have already cached some likes
-            // then we need to cache the new users and return early
-            if (newLikes.length) {
-                const operations = data.data
-                    .filter((user: { id: string }) => newLikes.includes(user.id))
-                    .map((user) => ({
-                        updateOne: {
-                            filter: { userId: user.id, postId },
-                            update: { userId: user.id, postId },
-                            upsert: true,
-                        },
-                    }));
-
-                await TwitterLike.bulkWrite(operations);
-            }
-            // If one of the userIds is already in the db we consider the
-            // cache up to date and we return early
-            if (cachedLikes.length) return;
-
             // If not then we upsert all TwitterLikes into the database
             const operations = data.data.map((user: { id: string }) => ({
                 updateOne: {
@@ -132,6 +91,9 @@ export default class TwitterCacheService {
                 },
             }));
             await TwitterLike.bulkWrite(operations);
+
+            // If the user has liked the post, we return early
+            if (findUserById(data.data, token.userId)) return;
 
             // If there is a next_token, we store the next_token in case we get rate limited
             // and continue on the next page
@@ -184,11 +146,11 @@ export default class TwitterCacheService {
     }
 
     static async updateRepostCacheJob(job: TJob) {
-        await this.updateCacheJob(job, OAuthRequiredScopes.TwitterValidateRepost, this.updateRepostCache);
+        await this.updateCacheJob(job, OAuthRequiredScopes.TwitterValidateRepost, this.updateRepostCache.bind(this));
     }
 
     static async updateLikeCacheJob(job: TJob) {
-        await this.updateCacheJob(job, OAuthRequiredScopes.TwitterValidateLike, this.updateLikeCache);
+        await this.updateCacheJob(job, OAuthRequiredScopes.TwitterValidateLike, this.updateLikeCache.bind(this));
     }
 
     static async updateCacheJob(

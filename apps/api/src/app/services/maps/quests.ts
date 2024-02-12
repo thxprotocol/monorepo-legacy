@@ -4,6 +4,7 @@ import { AccessTokenKind, QuestSocialRequirement, OAuthScope, OAuthRequiredScope
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
 import TwitterDataProxy from '@thxnetwork/api/proxies/TwitterDataProxy';
 import YouTubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
+import { logger } from '@thxnetwork/api/util/logger';
 
 export const requirementMap: {
     [interaction: number]: (account: TAccount, quest: TPointReward) => Promise<TValidationResult>;
@@ -15,18 +16,24 @@ export const requirementMap: {
         return await YouTubeDataProxy.validateSubscribe(account, quest.content);
     },
     [QuestSocialRequirement.TwitterLike]: async (account, quest) => {
+        logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} Like verification started`);
+
         const validationResultUser = await TwitterDataProxy.validateUser(account, quest);
         if (!validationResultUser.result) return validationResultUser;
         const validationResultLike = await TwitterDataProxy.validateLike(account, quest);
         if (!validationResultLike.result) return validationResultLike;
     },
     [QuestSocialRequirement.TwitterRetweet]: async (account, quest) => {
+        logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} Repost verification started`);
+
         const validationResultUser = await TwitterDataProxy.validateUser(account, quest);
         if (!validationResultUser.result) return validationResultUser;
         const validationResultRepost = await TwitterDataProxy.validateRetweet(account, quest);
         if (!validationResultRepost.result) return validationResultRepost;
     },
     [QuestSocialRequirement.TwitterLikeRetweet]: async (account, quest) => {
+        logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} LikeRepost verification started`);
+
         const validationResultUser = await TwitterDataProxy.validateUser(account, quest);
         if (!validationResultUser.result) return validationResultUser;
         const validationResultLike = await TwitterDataProxy.validateLike(account, quest);
@@ -35,12 +42,16 @@ export const requirementMap: {
         if (!validationResultRepost.result) return validationResultRepost;
     },
     [QuestSocialRequirement.TwitterFollow]: async (account, quest) => {
+        logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} Follow verification started`);
+
         const resultUser = await TwitterDataProxy.validateUser(account, quest);
         if (!resultUser.result) return resultUser;
         const validationResultFollow = await TwitterDataProxy.validateFollow(account, quest.content);
         if (!validationResultFollow.result) return validationResultFollow;
     },
     [QuestSocialRequirement.TwitterMessage]: async (account, quest) => {
+        logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} Message verification started`);
+
         const resultUser = await TwitterDataProxy.validateUser(account, quest);
         if (!resultUser.result) return resultUser;
         const validationResultMessage = await TwitterDataProxy.validateMessage(account, quest.content);
