@@ -14,7 +14,7 @@ describe('Wallets', () => {
 
     describe('GET /wallets', () => {
         it('HTTP 200 if OK', (done) => {
-            user.get(`/v1/wallets?chainId=${ChainId.Hardhat}`)
+            user.get(`/v1/wallets`)
                 .set({ Authorization: widgetAccessToken })
                 .expect((res: request.Response) => {
                     expect(res.body.length).toEqual(1);
@@ -39,11 +39,12 @@ describe('Wallets', () => {
                 })
                 .expect(200, done);
         });
-    });
-
-    describe('GET /wallets/:id', () => {
-        it('HTTP 403 if OK', (done) => {
+        it('HTTP 403 if NOK', (done) => {
             user.get(`/v1/wallets/${walletId}`).set({ Authorization: widgetAccessToken2 }).expect(403, done);
         });
+    });
+
+    describe('POST /wallets', () => {
+        //
     });
 });

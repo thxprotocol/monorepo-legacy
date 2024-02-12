@@ -17,12 +17,10 @@ import erc20Router from './erc20/erc20.router';
 import clientRouter from './client/client.router';
 import claimsRouter from './claims/claims.router';
 import brandsRouter from './brands/brands.router';
-import walletsRouter from './wallets/wallets.router';
 import widgetRouter from './widget/widget.router';
 import questsRouter from './quests/quests.router';
 import rewardsRouter from './rewards/rewards.router';
 import leaderboardsRouter from './leaderboards/leaderboards.router';
-import webhookRouter from './webhook/webhook.router';
 import webhooksRouter from './webhooks/webhooks.router';
 import widgetsRouter from './widgets/widgets.router';
 import identityRouter from './identity/identity.router';
@@ -43,11 +41,8 @@ router.use('/brands', brandsRouter);
 router.use('/claims', claimsRouter);
 router.use('/widget', widgetRouter);
 router.use('/leaderboards', leaderboardsRouter); // TODO Partial refactor
-
 router.use('/quests', questsRouter); // TODO Refactor
 router.use('/rewards', rewardsRouter); // TODO Refactor
-
-router.use('/webhook', webhookRouter); // TODO Deprecate or refactor
 
 router.use(checkJwt, corsHandler);
 router.use('/jobs', RouterJobs);
@@ -56,7 +51,6 @@ router.use('/identity', identityRouter);
 router.use('/events', eventsRouter);
 router.use('/account', accountRouter);
 router.use('/point-balances', pointBalancesRouter);
-router.use('/wallets', walletsRouter);
 router.use('/pools', poolsRouter);
 router.use('/widgets', widgetsRouter);
 router.use('/clients', clientRouter);

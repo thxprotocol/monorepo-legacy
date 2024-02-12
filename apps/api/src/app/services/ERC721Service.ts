@@ -1,27 +1,21 @@
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
-import {
-    getAbiForContractName,
-    getByteCodeForContractName,
-    getContractFromName,
-} from '@thxnetwork/api/services/ContractService';
+import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/services/ContractService';
 import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
-import { Transaction, TransactionDocument } from '@thxnetwork/api/models/Transaction';
+import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { TransactionState } from '@thxnetwork/types/enums';
 import {
     TERC721DeployCallbackArgs,
     TERC721TokenMintCallbackArgs,
     TERC721TransferFromCallBackArgs,
-    TERC721TransferFromWalletCallbackArgs,
 } from '@thxnetwork/api/types/TTransaction';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
 import { type TERC721, type TERC721Metadata, type TERC721Token, ERC721TokenState } from '@thxnetwork/types/interfaces';
 import { WalletDocument } from '../models/Wallet';
-import { toChecksumAddress } from 'web3-utils';
 import { ERC721Perk } from '../models/ERC721Perk';
 import PoolService from './PoolService';
 import TransactionService from './TransactionService';

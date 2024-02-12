@@ -12,6 +12,7 @@ const walletSchema = new mongoose.Schema(
         chainId: Number,
         version: String,
         safeVersion: String,
+        variant: String,
     },
     { timestamps: true },
 );

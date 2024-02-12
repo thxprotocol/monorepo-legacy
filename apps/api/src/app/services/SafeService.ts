@@ -1,5 +1,5 @@
 import { Wallet as WalletModel, WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, WalletVariant } from '@thxnetwork/types/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { getChainId, safeVersion } from '@thxnetwork/api/services/ContractService';
@@ -41,7 +41,7 @@ async function create(
 ) {
     const { safeVersion, chainId, sub, address, poolId } = data;
     const { defaultAccount } = getProvider(chainId);
-    const wallet = await Wallet.create({ sub, chainId, address, safeVersion, poolId });
+    const wallet = await Wallet.create({ variant: WalletVariant.Safe, sub, chainId, address, safeVersion, poolId });
 
     // Concerns a Metamask account so we do not deploy and return early
     if (!safeVersion && address) return wallet;

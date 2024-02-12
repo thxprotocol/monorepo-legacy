@@ -1,4 +1,4 @@
-import { ChainId } from '../enums';
+import { ChainId, WalletVariant } from '../enums';
 import { Contract } from 'web3-eth-contract';
 
 export type TWallet = {
@@ -10,6 +10,7 @@ export type TWallet = {
     uuid?: string;
     contract?: Contract;
     version?: string;
+    variant: WalletVariant;
     safeVersion?: string;
     isUpgradeAvailable?: boolean;
     createdAt?: Date;
