@@ -1,5 +1,3 @@
-export type TJob = {
-    _id: string;
-    nanme: string;
-    lastRunAt?: Date;
-};
+import { Job } from '@hokify/agenda';
+
+export type TJob = Job;
