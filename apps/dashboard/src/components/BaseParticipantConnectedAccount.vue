@@ -37,10 +37,13 @@
                     </b-row>
                 </template>
             </template>
-            <template v-else-if="!account.user">
+            <template v-else-if="account.metadata">
                 <b-link :href="`https://www.x.com/${account.metadata.username}`" target="_blank">
-                    @{{ account.metadata.username }}
+                    @{{ account.metadata.username.toLowerCase() }}
                 </b-link>
+            </template>
+            <template v-else-if="account.userId">
+                {{ account.userId }}
             </template>
         </b-popover>
     </span>
