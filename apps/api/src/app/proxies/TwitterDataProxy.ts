@@ -187,7 +187,12 @@ export default class TwitterDataProxy {
 
         // Search for TwitterLikes with this userId and postId in the cache
         const like = await TwitterLike.findOne({ userId: token.userId, postId });
-        if (like) return { result: true, reason: '' };
+        if (like) {
+            logger.info(
+                `[${quest.poolId}][${account.sub}] X Quest ${quest._id} Like verification resolves from cache.`,
+            );
+            return { result: true, reason: '' };
+        }
 
         try {
             // No cache result means we should update the cache.
@@ -220,7 +225,12 @@ export default class TwitterDataProxy {
 
         // Query cached TwitterReposts for this tweetId and userId
         const repost = await TwitterRepost.findOne({ userId: token.userId, postId });
-        if (repost) return { result: true, reason: '' };
+        if (repost) {
+            logger.info(
+                `[${quest.poolId}][${account.sub}] X Quest ${quest._id} Repost verification resolves from cache.`,
+            );
+            return { result: true, reason: '' };
+        }
 
         try {
             // No cache result means we should update the cache.

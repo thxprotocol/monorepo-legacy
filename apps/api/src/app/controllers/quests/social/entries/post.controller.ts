@@ -5,6 +5,7 @@ import { JobType, questInteractionVariantMap } from '@thxnetwork/common/lib/type
 import { agenda } from '@thxnetwork/api/util/agenda';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import QuestService from '@thxnetwork/api/services/QuestService';
+import { logger } from '@thxnetwork/api/util/logger';
 
 const validation = [param('id').isMongoId()];
 
@@ -23,7 +24,13 @@ const controller = async ({ params, account, wallet }: Request, res: Response) =
     // Get validation result for this quest entry
     const data = { platformUserId };
     const { result, reason } = await QuestService.getValidationResult(variant, { quest, account, wallet, data });
-    if (!result) return res.json({ error: reason });
+    if (!result) {
+        // Reason includes part of the rate limit error so we log
+        if (reason.includes('every 15 minutes')) {
+            logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} responds with rate limit error.`);
+        }
+        return res.json({ error: reason });
+    }
 
     const job = await agenda.now(JobType.CreateQuestEntry, {
         variant,

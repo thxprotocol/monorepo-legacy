@@ -19,6 +19,7 @@ export default class TwitterCacheService {
     ) {
         const postId = quest.content;
         try {
+            logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} Repost verification calls X API.`);
             const data = await TwitterDataProxy.request(token, {
                 url: `/tweets/${postId}/retweeted_by`,
                 method: 'GET',
@@ -88,6 +89,7 @@ export default class TwitterCacheService {
         const postId = quest.content;
 
         try {
+            logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} Like verification calls X API.`);
             const data = await TwitterDataProxy.request(token, {
                 url: `/tweets/${postId}/liking_users`,
                 method: 'GET',
