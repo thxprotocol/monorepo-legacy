@@ -25,7 +25,7 @@ async function send(
     const subs = poolSubs.map((x) => x.sub);
     const accounts = (await AccountProxy.find({ subs })).filter((a) => a.email);
 
-    // Create chunks for bulk email sending to avoid hitting rate limits
+    // Create chunks for bulk email sending to avoid hitting Sendgrit rate limits
     for (let i = 0; i < subs.length; i += MAIL_CHUNK_SIZE) {
         const chunk = subs.slice(i, i + MAIL_CHUNK_SIZE);
         await Promise.all(
@@ -68,12 +68,13 @@ async function sendQuestPublishEmail(pool: AssetPoolDocument, variant: QuestVari
     const message = `<p style="font-size: 18px">Earn ${amount || amounts[0]} points!🔔</p>
     <p>Hi! <strong>${pool.settings.title}</strong> just published a new ${QuestVariant[variant]} Quest.
     <p><strong>${quest.title}</strong><br />${quest.description}.</p>`;
+    const src = WIDGET_URL + `/c/${pool.settings.slug}`;
 
     send(pool, {
         subjectId: quest.uuid,
         subject,
         message,
-        link: { text: `Complete ${QuestVariant[variant]} Quest`, src: widget.domain },
+        link: { text: `Complete ${QuestVariant[variant]} Quest`, src },
     });
 }
 

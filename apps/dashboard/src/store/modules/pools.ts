@@ -136,9 +136,13 @@ export type TQuestState = {
     };
 };
 
+export type TQuestEntryMeta = {
+    reachTotal: number;
+};
+
 export type TQuestEntryState = {
     [poolId: string]: {
-        [questId: string]: TPaginationResult & { results: TQuestEntry[] };
+        [questId: string]: TPaginationResult & { results: TQuestEntry[]; meta?: TQuestEntryMeta };
     };
 };
 

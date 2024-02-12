@@ -1,6 +1,16 @@
 <template>
-    <base-modal hide-footer size="xl" :title="`Quest Entries: ${questEntries.total} `" :id="id">
+    <base-modal hide-footer size="xl" :title="`Quest Entries`" :id="id">
         <template #modal-body>
+            <b-card>
+                <b-row>
+                    <b-col>
+                        Total: <strong>{{ questEntries.total }}</strong> entries
+                    </b-col>
+                    <b-col v-if="questEntries.meta && questEntries.meta.reachTotal">
+                        Reach: <strong>{{ questEntries.meta.reachTotal }}</strong> users
+                    </b-col>
+                </b-row>
+            </b-card>
             <BaseCardTableHeader
                 :page="page"
                 :limit="limit"
@@ -23,7 +33,7 @@
                     <!-- Head formatting -->
                     <template #head(account)> Username </template>
                     <template #head(email)> E-mail</template>
-                    <template #head(connectedAccounts)> Connected </template>
+                    <template #head(tokens)> Connected </template>
                     <template #head(walletAddress)> Wallet </template>
                     <template #head(pointBalance)> Point Balance </template>
                     <template #head(amount)> Amount </template>
@@ -37,7 +47,7 @@
                     <template #cell(email)="{ item }">
                         {{ item.email }}
                     </template>
-                    <template #cell(connectedAccounts)="{ item }">
+                    <template #cell(tokens)="{ item }">
                         <BaseParticipantConnectedAccount :account="a" :key="key" v-for="(a, key) in item.tokens" />
                     </template>
                     <template #cell(wallet)="{ item }">
@@ -124,7 +134,7 @@ export default class BaseModalQuestSocialEntries extends Vue {
     @Prop() id!: string;
     @Prop() quest!: TPointReward;
 
-    get questEntries() {
+    get questEntries(): { total: number; results: TQuestEntry[]; meta?: { reachTotal: number } } {
         if (!this.entriesList[this.quest.poolId]) return { total: 0, results: [] };
         if (!this.entriesList[this.quest.poolId][this.quest._id]) return { total: 0, results: [] };
         return this.entriesList[this.quest.poolId][this.quest._id];
@@ -136,7 +146,7 @@ export default class BaseModalQuestSocialEntries extends Vue {
             .map((entry: any) => ({
                 account: parseAccount({ id: entry._id, account: entry.account }),
                 email: entry.account && entry.account.email,
-                connectedAccounts: entry.account && parseConnectedAccounts(entry.account.tokens),
+                tokens: entry.account && parseConnectedAccounts(entry.account),
                 wallet: parseWallet(entry.wallet),
                 pointBalance: entry.pointBalance,
                 amount: entry.amount,
