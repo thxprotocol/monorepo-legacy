@@ -30,32 +30,6 @@ export default class TwitterCacheService {
             // If no results return early
             if (!data.meta.result_count) return;
 
-            const userIds = data.data.map((user: { id: string }) => user.id);
-            const cachedReposts = await TwitterRepost.find({ userId: { $in: userIds }, postId });
-            const newReposts = userIds.filter(
-                (userId: string) => !cachedReposts.map((like) => like.userId).includes(userId),
-            );
-
-            // If there are new reposting users on a page where we have already cached some likes
-            // then we need to cache the new users and return early
-            if (newReposts.length) {
-                const operations = data.data
-                    .filter((user: { id: string }) => newReposts.includes(user.id))
-                    .map((user) => ({
-                        updateOne: {
-                            filter: { userId: user.id, postId },
-                            update: { userId: user.id, postId },
-                            upsert: true,
-                        },
-                    }));
-
-                await TwitterLike.bulkWrite(operations);
-            }
-
-            // If one of the userIds is already in the db we consider the
-            // cache up to date and we return early
-            if (cachedReposts.length) return;
-
             // If not then we upsert all TwitterReposts into the database
             const operations = data.data.map((user: { id: string }) => ({
                 updateOne: {
@@ -99,31 +73,6 @@ export default class TwitterCacheService {
 
             // If no results return early
             if (!data.meta.result_count) return;
-
-            const userIds = data.data.map((user: { id: string }) => user.id);
-            const cachedLikes = await TwitterLike.find({ userId: { $in: userIds }, postId });
-            const newLikes = userIds.filter(
-                (userId: string) => !cachedLikes.map((like) => like.userId).includes(userId),
-            );
-
-            // If there are new liking users on a page where we have already cached some likes
-            // then we need to cache the new users and return early
-            if (newLikes.length) {
-                const operations = data.data
-                    .filter((user: { id: string }) => newLikes.includes(user.id))
-                    .map((user) => ({
-                        updateOne: {
-                            filter: { userId: user.id, postId },
-                            update: { userId: user.id, postId },
-                            upsert: true,
-                        },
-                    }));
-
-                await TwitterLike.bulkWrite(operations);
-            }
-            // If one of the userIds is already in the db we consider the
-            // cache up to date and we return early
-            if (cachedLikes.length) return;
 
             // If not then we upsert all TwitterLikes into the database
             const operations = data.data.map((user: { id: string }) => ({
