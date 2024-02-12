@@ -19,6 +19,7 @@ export default class TwitterCacheService {
     ) {
         const postId = quest.content;
         try {
+            logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} Repost verification calls X API.`);
             const data = await TwitterDataProxy.request(token, {
                 url: `/tweets/${postId}/retweeted_by`,
                 method: 'GET',
@@ -88,6 +89,7 @@ export default class TwitterCacheService {
         const postId = quest.content;
 
         try {
+            logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} Like verification calls X API.`);
             const data = await TwitterDataProxy.request(token, {
                 url: `/tweets/${postId}/liking_users`,
                 method: 'GET',
@@ -184,11 +186,11 @@ export default class TwitterCacheService {
     }
 
     static async updateRepostCacheJob(job: TJob) {
-        await this.updateCacheJob(job, OAuthRequiredScopes.TwitterValidateRepost, this.updateRepostCache);
+        await this.updateCacheJob(job, OAuthRequiredScopes.TwitterValidateRepost, this.updateRepostCache.bind(this));
     }
 
     static async updateLikeCacheJob(job: TJob) {
-        await this.updateCacheJob(job, OAuthRequiredScopes.TwitterValidateLike, this.updateLikeCache);
+        await this.updateCacheJob(job, OAuthRequiredScopes.TwitterValidateLike, this.updateLikeCache.bind(this));
     }
 
     static async updateCacheJob(
