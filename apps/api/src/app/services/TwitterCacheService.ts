@@ -10,6 +10,11 @@ import AccountProxy from '../proxies/AccountProxy';
 import TwitterDataProxy from '../proxies/TwitterDataProxy';
 import { TwitterRepost } from '../models/TwitterRepost';
 import { AxiosResponse } from 'axios';
+
+function findUserById(users: { id: string }[], userId: string) {
+    return users.find((user: { id: string }) => user.id === userId);
+}
+
 export default class TwitterCacheService {
     static async updateRepostCache(
         account: TAccount,
@@ -39,6 +44,9 @@ export default class TwitterCacheService {
                 },
             }));
             await TwitterRepost.bulkWrite(operations);
+
+            // If the user has reposted the post, we return early
+            if (findUserById(data.data, token.userId)) return;
 
             // If there is a next_token, we store the next_token in case we get rate limited
             // and continue on the next page
@@ -83,6 +91,9 @@ export default class TwitterCacheService {
                 },
             }));
             await TwitterLike.bulkWrite(operations);
+
+            // If the user has liked the post, we return early
+            if (findUserById(data.data, token.userId)) return;
 
             // If there is a next_token, we store the next_token in case we get rate limited
             // and continue on the next page
