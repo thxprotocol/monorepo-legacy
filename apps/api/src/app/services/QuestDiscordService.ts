@@ -23,6 +23,10 @@ export default class QuestDiscordService implements IQuestService {
         entry: PointRewardClaim,
     };
 
+    findEntryMetadata(options: { quest: TPointReward }) {
+        return {};
+    }
+
     async decorate({
         quest,
         account,

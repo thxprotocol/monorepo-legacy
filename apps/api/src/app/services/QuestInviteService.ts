@@ -10,6 +10,10 @@ export default class QuestInviteService implements IQuestService {
         entry: ReferralRewardClaim,
     };
 
+    findEntryMetadata(options: { quest: TReferralReward }) {
+        return {};
+    }
+
     async decorate({
         quest,
     }: {

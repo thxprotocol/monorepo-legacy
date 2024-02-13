@@ -4,10 +4,13 @@
             <b-card>
                 <b-row>
                     <b-col>
-                        Total: <strong>{{ questEntries.total }}</strong> entries
+                        Entries: <strong>{{ questEntries.total }}</strong>
+                    </b-col>
+                    <b-col v-if="questEntries.meta && questEntries.meta.participantCount">
+                        Participants: <strong>{{ questEntries.meta.participantCount }}</strong>
                     </b-col>
                     <b-col v-if="questEntries.meta && questEntries.meta.reachTotal">
-                        Reach: <strong>{{ questEntries.meta.reachTotal }}</strong> users
+                        Reached Users: <strong>{{ questEntries.meta.reachTotal }}</strong>
                     </b-col>
                 </b-row>
             </b-card>
@@ -38,7 +41,7 @@
                     <template #head(pointBalance)> Point Balance </template>
                     <template #head(amount)> Amount </template>
                     <template #head(duration)> Duration </template>
-                    <template #head(createdAt)> Created </template>
+                    <template #head(entry)> Created </template>
 
                     <!-- Cell formatting -->
                     <template #cell(account)="{ item }">
@@ -48,7 +51,12 @@
                         {{ item.email }}
                     </template>
                     <template #cell(tokens)="{ item }">
-                        <BaseParticipantConnectedAccount :account="a" :key="key" v-for="(a, key) in item.tokens" />
+                        <BaseParticipantConnectedAccount
+                            :id="`entry${item.entry._id}`"
+                            :account="a"
+                            :key="key"
+                            v-for="(a, key) in item.tokens"
+                        />
                     </template>
                     <template #cell(wallet)="{ item }">
                         <BaseParticipantWallet :wallet="item.wallet" />
@@ -62,8 +70,10 @@
                     <template #cell(duration)="{ item }">
                         <code>{{ item.duration }}</code>
                     </template>
-                    <template #cell(createdAt)="{ item }">
-                        <small class="text-muted">{{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}</small>
+                    <template #cell(entry)="{ item }">
+                        <small class="text-muted">{{
+                            format(new Date(item.entry.createdAt), 'dd-MM-yyyy HH:mm')
+                        }}</small>
                     </template>
                 </b-table>
             </b-card>
@@ -134,9 +144,14 @@ export default class BaseModalQuestSocialEntries extends Vue {
     @Prop() id!: string;
     @Prop() quest!: TPointReward;
 
-    get questEntries(): { total: number; results: TQuestEntry[]; meta?: { reachTotal: number } } {
+    get questEntries(): {
+        total: number;
+        results: TQuestEntry[];
+        meta?: { reachTotal?: number; participantCount?: number };
+    } {
         if (!this.entriesList[this.quest.poolId]) return { total: 0, results: [] };
         if (!this.entriesList[this.quest.poolId][this.quest._id]) return { total: 0, results: [] };
+
         return this.entriesList[this.quest.poolId][this.quest._id];
     }
 
@@ -151,7 +166,7 @@ export default class BaseModalQuestSocialEntries extends Vue {
                 pointBalance: entry.pointBalance,
                 amount: entry.amount,
                 duration: this.getDuration(this.quest, entry),
-                createdAt: entry.createdAt,
+                entry,
             }));
     }
 

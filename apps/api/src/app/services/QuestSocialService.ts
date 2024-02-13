@@ -1,15 +1,12 @@
 import { PointReward, PointRewardDocument } from '@thxnetwork/api/models/PointReward';
 import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
-import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { PointBalance } from './PointBalanceService';
-import { TPointReward, TAccount, TQuestEntry, TValidationResult, TToken } from '@thxnetwork/types/interfaces';
+import { WalletDocument } from '@thxnetwork/api/models/Wallet';
+import { TPointReward, TAccount, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
 import { IQuestService } from './interfaces/IQuestService';
 import { requirementMap } from './maps/quests';
 import { logger } from '../util/logger';
-import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import QuestService from './QuestService';
 import { QuestVariant } from '@thxnetwork/common/lib/types';
-import { TwitterUser } from '../models/TwitterUser';
 
 export default class QuestSocialService implements IQuestService {
     models = {
@@ -88,46 +85,16 @@ export default class QuestSocialService implements IQuestService {
         }
     }
 
-    static async findEntries(quest: PointRewardDocument, page = 1, limit = 25) {
-        const skip = (page - 1) * limit;
-        const total = await PointRewardClaim.countDocuments({ questId: quest._id });
-        const entries = await PointRewardClaim.find({ questId: quest._id }).limit(limit).skip(skip);
-        const subs = entries.map((entry) => entry.sub);
-        const accounts = await AccountProxy.find({ subs });
-        const pointBalances = await PointBalance.find({
-            poolId: quest.poolId,
-        });
-        const promises = entries.map(async (entry) => {
-            const wallet = await Wallet.findById(entry.walletId);
-            const account = accounts.find((a) => a.sub === wallet.sub);
-            const pointBalance = pointBalances.find((w) => w.walletId === String(wallet._id));
-            const tokens = await Promise.all(
-                account.tokens.map(async (token: TToken) => {
-                    if (token.kind !== 'twitter') return token;
-                    const user = await TwitterUser.findOne({ userId: entry.platformUserId });
-                    return { ...token, user };
-                }),
-            );
-            return {
-                ...entry.toJSON(),
-                account: { ...account, tokens },
-                wallet,
-                pointBalance: pointBalance ? pointBalance.balance : 0,
-            };
-        });
-        const results = await Promise.allSettled(promises);
+    async findEntryMetadata({ quest }: { quest: PointRewardDocument }) {
         const reachTotal = await this.getTwitterFollowerCount(quest);
+        const uniqueParticipantIds = await PointRewardClaim.find({
+            questId: String(quest._id),
+        }).distinct('sub');
 
-        return {
-            total,
-            limit,
-            page,
-            meta: { reachTotal },
-            results: results.filter((result) => result.status === 'fulfilled').map((result: any) => result.value),
-        };
+        return { reachTotal, participantCount: uniqueParticipantIds.length };
     }
 
-    static async getTwitterFollowerCount(quest: PointRewardDocument) {
+    async getTwitterFollowerCount(quest: PointRewardDocument) {
         if (quest.variant !== QuestVariant.Twitter) return;
 
         const [result] = await PointRewardClaim.aggregate([

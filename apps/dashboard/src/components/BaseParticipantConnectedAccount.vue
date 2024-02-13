@@ -1,11 +1,12 @@
 <template>
     <span v-if="account" class="mr-1">
-        <b-link :id="`popover-user-${account.userId}`">
+        <b-link :id="`popover-user-${id}-${account.userId}`">
             <i :class="account.platform.icon" class="text-gray" />
         </b-link>
-        <b-popover v-b-popover :target="`popover-user-${account.userId}`" triggers="hover">
+        <b-popover v-b-popover :target="`popover-user-${id}-${account.userId}`" triggers="hover">
             <template v-if="account.kind !== AccessTokenKind.Twitter">
-                {{ account.userId }}
+                Account ID:<br />
+                <span class="text-muted">{{ account.userId }}</span>
             </template>
             <template v-else-if="account.user">
                 <b-media class="pt-2">
@@ -78,6 +79,7 @@ export function parseConnectedAccounts(account: { tokens: TToken[] }) {
 export default class BaseParticipantConnectedAccount extends Vue {
     AccessTokenKind = AccessTokenKind;
 
+    @Prop() id!: string;
     @Prop() account!: {
         kind: AccessTokenKind;
         url: string;

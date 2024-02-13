@@ -8,7 +8,6 @@ import {
     TGitcoinQuestEntry,
     TGitcoinQuest,
     TValidationResult,
-    TQuestEntry,
 } from '@thxnetwork/common/lib/types/interfaces';
 import { GitcoinQuest } from '../models/GitcoinQuest';
 import { IQuestService } from './interfaces/IQuestService';
@@ -19,6 +18,10 @@ export default class QuestGitcoinService implements IQuestService {
         quest: GitcoinQuest,
         entry: GitcoinQuestEntry,
     };
+
+    findEntryMetadata(options: { quest: TGitcoinQuest }) {
+        return {};
+    }
 
     async decorate({
         quest,

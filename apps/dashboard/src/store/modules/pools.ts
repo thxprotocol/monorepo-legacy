@@ -463,7 +463,7 @@ class PoolModule extends VuexModule {
     async listEntries(payload: { quest: TQuest; limit: number; page: number }) {
         const { data } = await axios({
             method: 'GET',
-            url: `/pools/${payload.quest.poolId}/quests/${payload.quest._id}/entries`,
+            url: `/pools/${payload.quest.poolId}/quests/${payload.quest._id}/entries/${payload.quest.variant}`,
             headers: { 'X-PoolId': payload.quest.poolId },
             params: {
                 page: payload.page,
