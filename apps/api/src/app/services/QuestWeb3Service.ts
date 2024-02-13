@@ -3,14 +3,18 @@ import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import { BigNumber, ethers } from 'ethers';
 import { logger } from '@thxnetwork/api/util/logger';
 import { IQuestService } from './interfaces/IQuestService';
-import { TAccount, TWeb3Quest, ChainId, TValidationResult, TWeb3QuestClaim } from '@thxnetwork/common/lib/types';
-import { Web3Quest } from '../models/Web3Quest';
+import { TAccount, TWeb3Quest, TValidationResult, TWeb3QuestClaim } from '@thxnetwork/common/lib/types';
+import { Web3Quest, Web3QuestDocument } from '../models/Web3Quest';
 
 export default class QuestWeb3Service implements IQuestService {
     models = {
         quest: Web3Quest,
         entry: Web3QuestClaim,
     };
+
+    findEntryMetadata(options: { quest: TWeb3Quest }) {
+        return {};
+    }
 
     async decorate({
         quest,

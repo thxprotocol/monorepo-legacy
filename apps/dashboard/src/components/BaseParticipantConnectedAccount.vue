@@ -1,13 +1,14 @@
 <template>
     <span v-if="account" class="mr-1">
-        <b-link :id="`popover-user-${account.userId}`">
+        <b-link :id="`popover-user-${id}-${account.userId}`">
             <i :class="account.platform.icon" class="text-gray" />
         </b-link>
-        <b-popover v-b-popover :target="`popover-user-${account.userId}`" triggers="hover">
+        <b-popover v-b-popover :target="`popover-user-${id}-${account.userId}`" triggers="hover">
             <template v-if="account.kind !== AccessTokenKind.Twitter">
-                {{ account.userId }}
+                Account ID:<br />
+                <span class="text-muted">{{ account.userId }}</span>
             </template>
-            <template v-else>
+            <template v-else-if="account.user">
                 <b-media class="pt-2">
                     <template #aside>
                         <b-avatar :src="account.user.profileImgUrl" size="2.8rem" class="ml-1" />
@@ -18,22 +19,32 @@
                         @{{ account.user.username }}
                     </b-link>
                 </b-media>
-                <b-row class="text-muted mt-2">
-                    <b-col>Followers</b-col>
-                    <b-col>{{ account.user.publicMetrics.followersCount }}</b-col>
-                </b-row>
-                <b-row class="text-muted mt-2">
-                    <b-col>Following</b-col>
-                    <b-col>{{ account.user.publicMetrics.followingCount }}</b-col>
-                </b-row>
-                <b-row class="text-muted mt-2">
-                    <b-col>Tweets</b-col>
-                    <b-col>{{ account.user.publicMetrics.tweetCount }}</b-col>
-                </b-row>
-                <b-row class="text-muted mt-2">
-                    <b-col>Likes</b-col>
-                    <b-col>{{ account.user.publicMetrics.likeCount }}</b-col>
-                </b-row>
+                <template v-if="account.user.publicMetrics">
+                    <b-row class="text-muted mt-2">
+                        <b-col>Followers</b-col>
+                        <b-col>{{ account.user.publicMetrics.followersCount }}</b-col>
+                    </b-row>
+                    <b-row class="text-muted mt-2">
+                        <b-col>Following</b-col>
+                        <b-col>{{ account.user.publicMetrics.followingCount }}</b-col>
+                    </b-row>
+                    <b-row class="text-muted mt-2">
+                        <b-col>Tweets</b-col>
+                        <b-col>{{ account.user.publicMetrics.tweetCount }}</b-col>
+                    </b-row>
+                    <b-row class="text-muted mt-2">
+                        <b-col>Likes</b-col>
+                        <b-col>{{ account.user.publicMetrics.likeCount }}</b-col>
+                    </b-row>
+                </template>
+            </template>
+            <template v-else-if="account.metadata">
+                <b-link :href="`https://www.x.com/${account.metadata.username}`" target="_blank">
+                    @{{ account.metadata.username.toLowerCase() }}
+                </b-link>
+            </template>
+            <template v-else-if="account.userId">
+                {{ account.userId }}
             </template>
         </b-popover>
     </span>
@@ -57,6 +68,7 @@ export function parseConnectedAccounts(account: { tokens: TToken[] }) {
                 kind: a.kind,
                 user: a.user,
                 userId: a.userId,
+                metadata: a.metadata,
                 url: getUserUrl(a),
             };
         })
@@ -67,6 +79,7 @@ export function parseConnectedAccounts(account: { tokens: TToken[] }) {
 export default class BaseParticipantConnectedAccount extends Vue {
     AccessTokenKind = AccessTokenKind;
 
+    @Prop() id!: string;
     @Prop() account!: {
         kind: AccessTokenKind;
         url: string;
@@ -74,6 +87,7 @@ export default class BaseParticipantConnectedAccount extends Vue {
         userName: string;
         userId: string;
         user: TTwitterUser;
+        metadata: { username: string };
     };
 }
 </script>

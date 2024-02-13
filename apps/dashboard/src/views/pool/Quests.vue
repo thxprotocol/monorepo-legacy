@@ -117,9 +117,13 @@
                 <template #cell(entries)="{ item }">
                     <BaseBtnQuestEntries
                         v-if="
-                            [QuestVariant.Twitter, QuestVariant.YouTube, QuestVariant.Discord].includes(
-                                item.quest.variant,
-                            )
+                            [
+                                QuestVariant.Daily,
+                                QuestVariant.Custom,
+                                QuestVariant.Twitter,
+                                QuestVariant.YouTube,
+                                QuestVariant.Discord,
+                            ].includes(item.quest.variant)
                         "
                         :pool="pool"
                         :quest="item.quest"

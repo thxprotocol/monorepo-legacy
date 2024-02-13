@@ -1,5 +1,5 @@
 import { JobType, QuestSocialRequirement, QuestVariant } from '@thxnetwork/types/enums';
-import { TAccount, TQuest, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
+import { TAccount, TQuest, TQuestEntry, TToken, TValidationResult } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { agenda } from '../util/agenda';
@@ -10,12 +10,14 @@ import { serviceMap } from './interfaces/IQuestService';
 
 import PoolService from './PoolService';
 import NotificationService from './NotificationService';
-import PointBalanceService from './PointBalanceService';
+import PointBalanceService, { PointBalance } from './PointBalanceService';
 import LockService from './LockService';
 import ImageService from './ImageService';
-import SafeService from './SafeService';
+import SafeService, { Wallet } from './SafeService';
 import AccountProxy from '../proxies/AccountProxy';
 import { tokenInteractionMap } from './maps/quests';
+import { TwitterUser } from '../models/TwitterUser';
+import { PointRewardClaimDocument } from '../models/PointRewardClaim';
 
 export default class QuestService {
     static async list({
@@ -192,5 +194,46 @@ export default class QuestService {
         const token = account.tokens.find((token) => token.kind === kind);
 
         return token && token.userId;
+    }
+
+    static async findEntries(
+        variant: QuestVariant,
+        { quest, page = 1, limit = 25 }: { quest: TQuest; page: number; limit: number },
+    ) {
+        const skip = (page - 1) * limit;
+        const Entry = serviceMap[variant].models.entry;
+        const total = await Entry.countDocuments({ questId: quest._id });
+        const entries = await Entry.find({ questId: quest._id }).limit(limit).skip(skip);
+        const subs = entries.map((entry) => entry.sub);
+        const accounts = await AccountProxy.find({ subs });
+        const pointBalances = await PointBalance.find({ poolId: quest.poolId });
+        const promises = entries.map(async (entry) => {
+            const wallet = await Wallet.findById(entry.walletId);
+            const account = accounts.find((a) => a.sub === wallet.sub);
+            const pointBalance = pointBalances.find((w) => w.walletId === String(wallet._id));
+            const tokens = await Promise.all(
+                account.tokens.map(async (token: TToken) => {
+                    if (token.kind !== 'twitter') return token;
+                    const user = await TwitterUser.findOne({ userId: token.userId });
+                    return { ...token, user };
+                }),
+            );
+            return {
+                ...entry.toJSON(),
+                account: { ...account, tokens },
+                wallet,
+                pointBalance: pointBalance ? pointBalance.balance : 0,
+            };
+        });
+        const results = await Promise.allSettled(promises);
+        const meta = await serviceMap[variant].findEntryMetadata({ quest });
+
+        return {
+            total,
+            limit,
+            page,
+            meta,
+            results: results.filter((result) => result.status === 'fulfilled').map((result: any) => result.value),
+        };
     }
 }

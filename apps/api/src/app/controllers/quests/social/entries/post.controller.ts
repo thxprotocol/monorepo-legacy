@@ -5,9 +5,9 @@ import { JobType, questInteractionVariantMap } from '@thxnetwork/common/lib/type
 import { agenda } from '@thxnetwork/api/util/agenda';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import QuestService from '@thxnetwork/api/services/QuestService';
-import { logger } from '@thxnetwork/api/util/logger';
 import { QuestVariant } from '@thxnetwork/sdk/types/enums';
 import { TwitterUser } from '@thxnetwork/api/models/TwitterUser';
+import { logger } from '@thxnetwork/api/util/logger';
 
 const validation = [param('id').isMongoId()];
 

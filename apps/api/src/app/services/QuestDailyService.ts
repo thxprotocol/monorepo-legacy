@@ -14,6 +14,16 @@ export default class QuestDailyService implements IQuestService {
         entry: DailyRewardClaim,
     };
 
+    async findEntryMetadata({ quest }: { quest: TDailyReward }) {
+        const uniqueParticipantIds = await this.models.entry
+            .countDocuments({
+                questId: String(quest._id),
+            })
+            .distinct('sub');
+
+        return { participantCount: uniqueParticipantIds.length };
+    }
+
     async decorate({
         quest,
         wallet,

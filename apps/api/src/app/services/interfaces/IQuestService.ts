@@ -33,6 +33,7 @@ export interface IQuestService {
         wallet: WalletDocument;
         data: Partial<TQuestEntry>;
     }): Promise<TValidationResult>;
+    findEntryMetadata(options: { quest: TQuest });
 }
 
 export const serviceMap: {

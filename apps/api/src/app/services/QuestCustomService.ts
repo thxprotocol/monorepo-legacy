@@ -1,10 +1,4 @@
-import {
-    TAccount,
-    TIdentity,
-    TMilestoneReward,
-    TMilestoneRewardClaim,
-    TValidationResult,
-} from '@thxnetwork/types/index';
+import { TAccount, TMilestoneRewardClaim, TValidationResult } from '@thxnetwork/types/index';
 import { MilestoneReward, MilestoneRewardDocument } from '../models/MilestoneReward';
 import { Identity, IdentityDocument } from '../models/Identity';
 import { Event } from '../models/Event';
@@ -18,6 +12,14 @@ export default class QuestCustomService implements IQuestService {
         entry: MilestoneRewardClaim,
     };
 
+    async findEntryMetadata({ quest }: { quest: MilestoneRewardDocument }) {
+        const uniqueParticipantIds = await MilestoneRewardClaim.countDocuments({
+            questId: String(quest._id),
+        }).distinct('sub');
+
+        return { participantCount: uniqueParticipantIds.length };
+    }
+
     async isAvailable({
         quest,
         wallet,
@@ -27,7 +29,7 @@ export default class QuestCustomService implements IQuestService {
         account?: TAccount;
         data: Partial<TMilestoneRewardClaim>;
     }): Promise<TValidationResult> {
-        const entries = await this.findEntries({ quest, wallet });
+        const entries = await this.findAllEntries({ quest, wallet });
         if (quest.limit && entries.length >= quest.limit) {
             return { result: false, reason: 'Quest entry limit has been reached.' };
         }
@@ -50,7 +52,7 @@ export default class QuestCustomService implements IQuestService {
         wallet?: WalletDocument;
         data: Partial<TMilestoneRewardClaim>;
     }) {
-        const entries = await this.findEntries({ quest, wallet });
+        const entries = await this.findAllEntries({ quest, wallet });
         const identities = await this.findIdentities({ quest, wallet });
         const events = await this.findEvents({ quest, identities });
         const isAvailable = await this.isAvailable({ quest, wallet, account, data });
@@ -84,7 +86,7 @@ export default class QuestCustomService implements IQuestService {
         }
 
         // Find existing entries for this quest and check optional limit
-        const entries = await this.findEntries({ quest, wallet });
+        const entries = await this.findAllEntries({ quest, wallet });
         if (quest.limit && entries.length >= quest.limit) {
             return { result: false, reason: 'Quest entry limit has been reached' };
         }
@@ -98,7 +100,7 @@ export default class QuestCustomService implements IQuestService {
         if (entries.length < events.length) return { result: true, reason: '' };
     }
 
-    private async findEntries({ quest, wallet }: { quest: MilestoneRewardDocument; wallet: WalletDocument }) {
+    private async findAllEntries({ quest, wallet }: { quest: MilestoneRewardDocument; wallet: WalletDocument }) {
         if (!wallet) return [];
         return await this.models.entry.find({
             questId: quest._id,
