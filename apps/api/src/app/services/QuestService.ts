@@ -10,7 +10,7 @@ import { serviceMap } from './interfaces/IQuestService';
 
 import PoolService from './PoolService';
 import NotificationService from './NotificationService';
-import PointBalanceService, { PointBalance } from './PointBalanceService';
+import PointBalanceService from './PointBalanceService';
 import LockService from './LockService';
 import ImageService from './ImageService';
 import SafeService, { Wallet } from './SafeService';
@@ -178,7 +178,7 @@ export default class QuestService {
             if (!entry) throw new Error('Entry creation failed.');
 
             // Should make sure quest entry is properly created
-            await PointBalanceService.add(pool, wallet._id, amount);
+            await PointBalanceService.add(pool, account, amount);
             await NotificationService.sendQuestEntryNotification(pool, quest, account, wallet, amount);
 
             // Update participant ranks async
