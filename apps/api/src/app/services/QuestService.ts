@@ -17,6 +17,7 @@ import SafeService, { Wallet } from './SafeService';
 import AccountProxy from '../proxies/AccountProxy';
 import { tokenInteractionMap } from './maps/quests';
 import { TwitterUser } from '../models/TwitterUser';
+import { Participant } from '../models/Participant';
 
 export default class QuestService {
     static async list({
@@ -50,7 +51,7 @@ export default class QuestService {
                     try {
                         const quest = q.toJSON() as TQuest;
                         const decorated = await serviceMap[variant].decorate({ quest, wallet, account, data });
-                        const isLocked = wallet ? await LockService.getIsLocked(quest.locks, wallet) : false;
+                        const isLocked = await LockService.getIsLocked(quest.locks, wallet);
                         const isExpired = this.isExpired(quest);
                         return { ...decorated, isLocked, isExpired };
                     } catch (error) {
@@ -205,11 +206,11 @@ export default class QuestService {
         const entries = await Entry.find({ questId: quest._id }).limit(limit).skip(skip);
         const subs = entries.map((entry) => entry.sub);
         const accounts = await AccountProxy.find({ subs });
-        const pointBalances = await PointBalance.find({ poolId: quest.poolId });
+        const participants = await Participant.find({ poolId: quest.poolId });
         const promises = entries.map(async (entry) => {
             const wallet = await Wallet.findById(entry.walletId);
             const account = accounts.find((a) => a.sub === wallet.sub);
-            const pointBalance = pointBalances.find((w) => w.walletId === String(wallet._id));
+            const pointBalance = participants.find((p) => account.sub === String(p.sub));
             const tokens = await Promise.all(
                 account.tokens.map(async (token: TToken) => {
                     if (token.kind !== 'twitter') return token;

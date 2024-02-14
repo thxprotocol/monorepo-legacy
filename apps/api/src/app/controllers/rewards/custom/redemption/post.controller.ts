@@ -13,6 +13,7 @@ import WebhookService from '@thxnetwork/api/services/WebhookService';
 import { Webhook } from '@thxnetwork/api/models/Webhook';
 import { CustomReward } from '@thxnetwork/api/models/CustomReward';
 import { CustomRewardPayment } from '@thxnetwork/api/models/CustomRewardPayment';
+import { Participant } from '@thxnetwork/api/models/Participant';
 
 const validation = [param('uuid').exists()];
 
@@ -27,9 +28,8 @@ const controller = async (req: Request, res: Response) => {
     if (!customReward.pointPrice) throw new NotFoundError('No point price for this reward has been set.');
 
     const account = await AccountProxy.findById(req.auth.sub);
-    const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
-    const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
-    if (!pointBalance || Number(pointBalance.balance) < Number(customReward.pointPrice)) {
+    const participant = await Participant.findOne({ sub: account.sub, poolId: pool._id });
+    if (!participant || Number(participant.balance) < Number(customReward.pointPrice)) {
         throw new BadRequestError('Not enough points on this account for this payment');
     }
 
@@ -46,6 +46,7 @@ const controller = async (req: Request, res: Response) => {
         data: { customRewardId: customReward._id, metadata: customReward.metadata },
     });
 
+    const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
     const customRewardPayment = await CustomRewardPayment.create({
         perkId: customReward.id,
         sub: req.auth.sub,
@@ -54,7 +55,7 @@ const controller = async (req: Request, res: Response) => {
         amount: customReward.pointPrice,
     });
 
-    await PointBalanceService.subtract(pool, wallet._id, customReward.pointPrice);
+    await PointBalanceService.subtract(pool, account, customReward.pointPrice);
 
     let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
     html += `<p>Your point redemption has been received and a custom reward has been created for you!</p>`;

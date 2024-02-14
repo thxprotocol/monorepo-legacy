@@ -18,6 +18,7 @@ import { ERC1155Document } from '@thxnetwork/api/models/ERC1155';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import { Participant } from '@thxnetwork/api/models/Participant';
 
 const validation = [param('uuid').exists()];
 
@@ -35,9 +36,9 @@ const controller = async (req: Request, res: Response) => {
     const nft = await PerkService.getNFT(perk);
     if (!nft) throw new NotFoundError('Could not find the nft for this perk');
 
-    const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
-    const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
-    if (!pointBalance || Number(pointBalance.balance) < Number(perk.pointPrice))
+    const account = await AccountProxy.findById(req.auth.sub);
+    const participant = await Participant.findOne({ sub: account.sub, poolId: pool._id });
+    if (!participant || Number(participant.balance) < Number(perk.pointPrice))
         throw new BadRequestError('Not enough points on this account for this perk.');
 
     const redeemValidationResult = await PerkService.validate({ perk, sub: req.auth.sub, pool });
@@ -45,8 +46,7 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
 
-    const account = await AccountProxy.findById(req.auth.sub);
-
+    const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
     let token: ERC721TokenDocument | ERC1155TokenDocument, metadata: ERC721MetadataDocument | ERC1155MetadataDocument;
 
     // Mint a token if metadataId is present
@@ -105,7 +105,7 @@ const controller = async (req: Request, res: Response) => {
         amount: perk.pointPrice,
     });
 
-    await PointBalanceService.subtract(pool, wallet._id, perk.pointPrice);
+    await PointBalanceService.subtract(pool, account, perk.pointPrice);
 
     let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
     html += `<p>Your payment has been received and <strong>${

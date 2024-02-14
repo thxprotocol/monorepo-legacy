@@ -26,11 +26,6 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
         const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
         if (!wallet) throw new Error('Could not find your wallet.');
 
-        const balance = await PointBalance.findOne({
-            poolId: pool._id,
-            walletId: wallet._id,
-        });
-
         const participant = await Participant.findOne({ poolId: pool._id, sub: account.sub });
         if (!participant) throw new Error('You have not participated in the campaign yet.');
 
@@ -70,7 +65,7 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
                 },
                 {
                     name: `Points`,
-                    value: balance ? `${balance.balance}` : '0',
+                    value: participant ? `${participant.balance}` : '0',
                     inline: true,
                 },
                 {

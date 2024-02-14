@@ -8,19 +8,18 @@ import { BigNumber } from 'ethers';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
 import { Widget } from '@thxnetwork/api/models/Widget';
-import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
+import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import PerkService from '@thxnetwork/api/services/PerkService';
+import { Participant } from '@thxnetwork/api/models/Participant';
 
 const validation = [param('uuid').exists()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Reward Payment']
-
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
     if (!safe) throw new NotFoundError('Could not find campaign wallet');
@@ -34,10 +33,9 @@ const controller = async (req: Request, res: Response) => {
     if (!erc20) throw new NotFoundError('Could not find the erc20 for this perk');
 
     const account = await AccountProxy.findById(req.auth.sub);
-    const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
-    const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
+    const participant = await Participant.findOne({ sub: account.sub, poolId: pool._id });
 
-    if (!pointBalance || Number(pointBalance.balance) < Number(erc20Perk.pointPrice)) {
+    if (!participant || Number(participant.balance) < Number(erc20Perk.pointPrice)) {
         throw new BadRequestError('Not enough points on this account for this payment');
     }
 
@@ -46,6 +44,7 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
 
+    const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
     const contract = getContractFromName(pool.chainId, 'LimitedSupplyToken', erc20.address);
     const amount = toWei(erc20Perk.amount).toString();
     const balanceOfPool = await contract.methods.balanceOf(safe.address).call();
@@ -74,7 +73,7 @@ const controller = async (req: Request, res: Response) => {
         amount: erc20Perk.pointPrice,
     });
 
-    await PointBalanceService.subtract(pool, wallet._id, erc20Perk.pointPrice);
+    await PointBalanceService.subtract(pool, account, erc20Perk.pointPrice);
 
     let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
     html += `<p>Your payment has been received and <strong>${erc20Perk.amount} ${erc20.symbol}</strong> dropped into your wallet!</p>`;
