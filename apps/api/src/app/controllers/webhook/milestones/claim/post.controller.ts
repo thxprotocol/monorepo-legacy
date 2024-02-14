@@ -47,7 +47,11 @@ export function getIdentityForCode(pool: AssetPoolDocument, code: string) {
 // This function should deprecate as soon as clients implement the wallet onboarding webhook
 export async function getIdentityForAddress(pool: AssetPoolDocument, address: string) {
     // Find the virtual wallet for this address
-    let virtualWallet = await Wallet.findOne({ poolId: pool._id, chainId: pool.chainId, address });
+    let virtualWallet = await Wallet.findOne({
+        poolId: pool._id,
+        chainId: pool.chainId,
+        address,
+    });
 
     // If no wallet is found for this address then create a virtual wallet
     if (!virtualWallet) {

@@ -53,7 +53,7 @@ export default class QuestCustomService implements IQuestService {
         data: Partial<TMilestoneRewardClaim>;
     }) {
         const entries = await this.findAllEntries({ quest, wallet });
-        const identities = await this.findIdentities({ quest, wallet });
+        const identities = await this.findIdentities({ quest, account });
         const events = await this.findEvents({ quest, identities });
         const isAvailable = await this.isAvailable({ quest, wallet, account, data });
         const pointsAvailable = quest.limit ? (quest.limit - entries.length) * quest.amount : quest.amount;
@@ -69,6 +69,7 @@ export default class QuestCustomService implements IQuestService {
 
     async getValidationResult({
         quest,
+        account,
         wallet,
     }: {
         quest: MilestoneRewardDocument;
@@ -77,7 +78,7 @@ export default class QuestCustomService implements IQuestService {
         data: Partial<TMilestoneRewardClaim>;
     }): Promise<{ reason: string; result: boolean }> {
         // See if there are identities
-        const identities = await Identity.find({ poolId: quest.poolId, sub: wallet.sub });
+        const identities = await this.findIdentities({ quest, account });
         if (!identities.length) {
             return {
                 result: false,
@@ -109,9 +110,9 @@ export default class QuestCustomService implements IQuestService {
         });
     }
 
-    private async findIdentities({ quest, wallet }: { quest: MilestoneRewardDocument; wallet: WalletDocument }) {
-        if (!wallet || !wallet.sub) return [];
-        return await Identity.find({ poolId: quest.poolId, sub: wallet.sub });
+    private async findIdentities({ quest, account }: { quest: MilestoneRewardDocument; account: TAccount }) {
+        if (!account || !account.sub) return [];
+        return await Identity.find({ poolId: quest.poolId, sub: account.sub });
     }
 
     private async findEvents({

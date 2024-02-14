@@ -17,7 +17,6 @@ import SafeService, { Wallet } from './SafeService';
 import AccountProxy from '../proxies/AccountProxy';
 import { tokenInteractionMap } from './maps/quests';
 import { TwitterUser } from '../models/TwitterUser';
-import { PointRewardClaimDocument } from '../models/PointRewardClaim';
 
 export default class QuestService {
     static async list({
