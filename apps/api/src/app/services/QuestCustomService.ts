@@ -110,7 +110,7 @@ export default class QuestCustomService implements IQuestService {
     }
 
     private async findIdentities({ quest, wallet }: { quest: MilestoneRewardDocument; wallet: WalletDocument }) {
-        if (!wallet) return [];
+        if (!wallet || !wallet.sub) return [];
         return await Identity.find({ poolId: quest.poolId, sub: wallet.sub });
     }
 
