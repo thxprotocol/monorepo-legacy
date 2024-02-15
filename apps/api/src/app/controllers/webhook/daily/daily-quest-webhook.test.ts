@@ -68,13 +68,10 @@ describe('Daily Rewards WebHooks', () => {
     });
 
     it('POST /quests/daily/:id/entries', async () => {
-        console.log(await Identity.find({}));
-
         const { status, body } = await user
             .post(`/v1/quests/daily/${dailyReward._id}/entries`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken4 })
             .send();
-        console.log(body);
         expect(body.jobId).toBeDefined();
         expect(status).toBe(200);
 
@@ -93,7 +90,6 @@ describe('Daily Rewards WebHooks', () => {
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken4 })
             .send()
             .expect(({ body }: request.Response) => {
-                console.log(body);
                 expect(body.error).toBe('You have completed this quest within the last 24 hours.');
             })
             .expect(200, done);
