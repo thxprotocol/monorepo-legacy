@@ -154,7 +154,7 @@ function drawImageRounded(ctx, x, y, width, height, radius) {
     ctx.closePath();
 }
 
-async function main() {
+export default async function main() {
     const start = Date.now();
 
     console.log('Start', new Date());
@@ -177,10 +177,3 @@ async function main() {
     console.log('End', new Date());
     console.log('Duration', Date.now() - start, 'seconds');
 }
-
-main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });
