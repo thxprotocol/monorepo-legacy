@@ -6,7 +6,7 @@
                     <div class="mt-sm-5 mb-5">
                         <h1 class="h1 font-size-xl mt-3 mb-3">Choose Your Plan</h1>
                         <div class="lead">
-                            Start with a 30-day free trial, <strong>no credit card required</strong>.<br />
+                            Start with a 14-day free trial, <strong>no credit card required</strong>.<br />
                             <span class="text-muted small">
                                 Like it? Pay in crypto, credit card, Google + Apple Pay or SEPA transfer.
                             </span>
