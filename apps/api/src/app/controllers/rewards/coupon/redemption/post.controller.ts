@@ -12,6 +12,7 @@ import { CouponReward } from '@thxnetwork/api/models/CouponReward';
 import { CouponCode } from '@thxnetwork/api/models/CouponCode';
 import { CouponRewardPayment } from '@thxnetwork/api/models/CouponRewardPayment';
 import { Participant } from '@thxnetwork/api/models/Participant';
+import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 
 const validation = [param('uuid').exists()];
 
@@ -53,7 +54,7 @@ const controller = async (req: Request, res: Response) => {
 
     let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
     html += `<p>Your point redemption has been received and a coupon reward has been created for you!</p>`;
-    html += `<p class="btn"><a href="${widget.domain}">View Wallet</a></p>`;
+    html += `<p class="btn"><a href="${pool.campaignURL}">View Wallet</a></p>`;
 
     await MailService.send(account.email, `🎁 Coupon Reward Received!"`, html);
 

@@ -50,7 +50,7 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
             {
                 style: ButtonStyle.Link,
                 label: 'Campaign URL',
-                url: `${WIDGET_URL}/c/${pool.settings.slug}`,
+                url: `${pool.campaignURL}`,
             },
         ]);
 

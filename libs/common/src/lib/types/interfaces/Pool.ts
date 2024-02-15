@@ -54,6 +54,7 @@ export type TPool = {
     identities: TIdentity[];
     owner: TAccount;
     safe: TWallet;
+    campaignURL: string;
     createdAt?: Date;
 };
 

@@ -19,6 +19,7 @@ import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { Participant } from '@thxnetwork/api/models/Participant';
+import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 
 const validation = [param('uuid').exists()];
 
@@ -111,7 +112,7 @@ const controller = async (req: Request, res: Response) => {
     html += `<p>Your payment has been received and <strong>${
         metadata ? metadata.name : 'Surprise!'
     }</strong> dropped into your wallet!</p>`;
-    html += `<p class="btn"><a href="${widget.domain}">View Wallet</a></p>`;
+    html += `<p class="btn"><a href="${pool.campaignURL}">View Wallet</a></p>`;
 
     await MailService.send(account.email, `🎁 NFT Drop! ${metadata ? metadata.name : 'Surprise!'}`, html);
 

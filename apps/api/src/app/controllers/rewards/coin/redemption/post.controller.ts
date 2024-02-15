@@ -24,7 +24,6 @@ const controller = async (req: Request, res: Response) => {
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
     if (!safe) throw new NotFoundError('Could not find campaign wallet');
 
-    const widget = await Widget.findOne({ poolId: pool._id });
     const erc20Perk = await ERC20Perk.findOne({ uuid: req.params.uuid });
     if (!erc20Perk) throw new NotFoundError('Could not find this perk');
     if (!erc20Perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
@@ -77,7 +76,7 @@ const controller = async (req: Request, res: Response) => {
 
     let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
     html += `<p>Your payment has been received and <strong>${erc20Perk.amount} ${erc20.symbol}</strong> dropped into your wallet!</p>`;
-    html += `<p class="btn"><a href="${widget.domain}">View Wallet</a></p>`;
+    html += `<p class="btn"><a href="${pool.campaignURL}}">View Wallet</a></p>`;
 
     await MailService.send(account.email, `🎁 Coin Drop! ${erc20Perk.amount} ${erc20.symbol}"`, html);
 
