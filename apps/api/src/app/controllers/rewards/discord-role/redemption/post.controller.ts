@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { Widget } from '@thxnetwork/api/models/Widget';
-import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
+import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
@@ -13,6 +13,8 @@ import { DiscordRoleRewardPayment } from '@thxnetwork/api/models/DiscordRoleRewa
 import { client } from 'apps/api/src/discord';
 import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 import { AccessTokenKind } from '@thxnetwork/common/lib/types';
+import { Participant } from '@thxnetwork/api/models/Participant';
+import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 
 const validation = [param('uuid').exists()];
 
@@ -27,9 +29,8 @@ const controller = async (req: Request, res: Response) => {
     if (!discordRoleReward.pointPrice) throw new NotFoundError('No point price for this reward has been set.');
 
     const account = await AccountProxy.findById(req.auth.sub);
-    const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
-    const pointBalance = await PointBalance.findOne({ walletId: wallet._id, poolId: pool._id });
-    if (!pointBalance || Number(pointBalance.balance) < Number(discordRoleReward.pointPrice)) {
+    const participant = await Participant.findOne({ sub: account.sub, poolId: pool._id });
+    if (!participant || Number(participant.balance) < Number(discordRoleReward.pointPrice)) {
         throw new BadRequestError('Not enough points on this account for this payment');
     }
 
@@ -59,6 +60,7 @@ const controller = async (req: Request, res: Response) => {
 
     await member.roles.add(role);
 
+    const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
     const discordRoleRewardPayment = await DiscordRoleRewardPayment.create({
         perkId: discordRoleReward._id,
         discordRoleId: discordRoleReward.discordRoleId,
@@ -68,11 +70,11 @@ const controller = async (req: Request, res: Response) => {
         amount: discordRoleReward.pointPrice,
     });
 
-    await PointBalanceService.subtract(pool, wallet._id, discordRoleReward.pointPrice);
+    await PointBalanceService.subtract(pool, account, discordRoleReward.pointPrice);
 
     let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
     html += `<p>Your point redemption has been received and a Discord Role Reward has been created for you!</p>`;
-    html += `<p class="btn"><a href="${widget.domain}">View Wallet</a></p>`;
+    html += `<p class="btn"><a href="${pool.campaignURL}">View Wallet</a></p>`;
 
     await MailService.send(account.email, `🎁 Discord Role Reward Received!"`, html);
 

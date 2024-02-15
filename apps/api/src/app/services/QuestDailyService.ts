@@ -118,13 +118,13 @@ export default class QuestDailyService implements IQuestService {
     async getValidationResult({
         quest,
         wallet,
+        account,
     }: {
         quest: TDailyReward;
         account: TAccount;
         wallet: WalletDocument;
         data: Partial<TDailyRewardClaim>;
     }): Promise<TValidationResult> {
-        const identities = await Identity.find({ sub: wallet.sub, poolId: quest.poolId });
         const now = Date.now(),
             start = now - ONE_DAY_MS,
             end = now;
@@ -146,11 +146,19 @@ export default class QuestDailyService implements IQuestService {
         }
 
         // If an event is required we check if there is an event found within the time window
+        const identities = await this.findIdentities({ quest, account });
+        if (!identities.length) {
+            return {
+                result: false,
+                reason: 'No identity connected to this account. Please ask for this in your community!',
+            };
+        }
+
         const identityIds = identities.map(({ _id }) => String(_id));
         const events = await Event.find({
             name: quest.eventName,
             poolId: quest.poolId,
-            identityId: identityIds,
+            identityId: { $in: identityIds },
             createdAt: { $gt: new Date(start), $lt: new Date(end) },
         });
 
@@ -163,6 +171,10 @@ export default class QuestDailyService implements IQuestService {
         else {
             return { result: true, reason: '' };
         }
+    }
+
+    private async findIdentities({ quest, account }: { quest: TDailyReward; account: TAccount }) {
+        return await Identity.find({ sub: account.sub, poolId: quest.poolId });
     }
 
     private async findEntries({ wallet, quest }: { wallet: WalletDocument; quest: TDailyReward }) {

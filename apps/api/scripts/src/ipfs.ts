@@ -1,10 +1,7 @@
 import { ERC721 } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
-import db from '@thxnetwork/api/util/database';
 import pinataSDK from '@pinata/sdk';
 import axios from 'axios';
-
-db.connect(process.env.MONGODB_URI_PROD);
 
 const pinata = new pinataSDK({ pinataJWTKey: process.env.PINATA_API_JWT });
 
@@ -21,7 +18,7 @@ class PinataIPFS {
     }
 }
 
-async function main() {
+export default async function main() {
     const nft = await ERC721.findById('64c8f15e01506efa24c1c72c');
     const metadataList = await ERC721Metadata.find({ erc721Id: nft._id });
     for (const metadata of metadataList) {
@@ -30,10 +27,3 @@ async function main() {
         console.log(metadata.name, String(metadata._id), imgCid, metadataCid);
     }
 }
-
-main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });

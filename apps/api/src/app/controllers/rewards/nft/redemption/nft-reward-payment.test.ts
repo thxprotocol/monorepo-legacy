@@ -2,8 +2,8 @@ import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { dashboardAccessToken, sub, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
-import { ERC721TokenState } from '@thxnetwork/types/interfaces';
+import { account, dashboardAccessToken, sub, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
+import { ERC721TokenState, TAccount } from '@thxnetwork/types/interfaces';
 import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { deployERC721, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/erc721';
@@ -160,7 +160,7 @@ describe('NFT Reward Payment', () => {
         beforeAll(async () => {
             wallet = await SafeService.findPrimary(sub, ChainId.Hardhat);
             // Add some points for the subs wallet
-            await PointBalanceService.add(pool as AssetPoolDocument, wallet._id, 500);
+            await PointBalanceService.add(pool as AssetPoolDocument, account as TAccount, 500);
         });
 
         it('POST /rewards/nft/:uuid/redemption', (done) => {
@@ -191,11 +191,12 @@ describe('NFT Reward Payment', () => {
             expect(token.sub).toBe(sub);
         });
 
-        it('GET /point-balances', (done) => {
-            user.get(`/v1/point-balances`)
-                .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
+        it('GET /participants', (done) => {
+            user.get(`/v1/participants`)
+                .query({ poolId: pool._id })
+                .set({ Authorization: widgetAccessToken })
                 .expect(({ body }: request.Response) => {
-                    expect(body.balance).toBe(Number(balance) - perk.pointPrice);
+                    expect(body[0].balance).toBe(Number(balance) - perk.pointPrice);
                 })
                 .expect(200, done);
         });

@@ -1,20 +1,20 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { QuestVariant } from '@thxnetwork/types/enums';
-import { dashboardAccessToken, userWalletAddress2, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
+import { account4, dashboardAccessToken, widgetAccessToken4 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { DailyReward, DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
+import { DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
 import { poll } from '@thxnetwork/api/util/polling';
 import { Job } from '@thxnetwork/api/models/Job';
-import { TJob } from '@thxnetwork/common/lib/types';
 import { IJobParameters } from '@hokify/agenda';
+import { v4 } from 'uuid';
 
 const user = request.agent(app);
 
 describe('Daily Rewards WebHooks', () => {
     let poolId: string, dailyReward: DailyRewardDocument;
-    const eventName = 'test_event';
+    const eventName = v4();
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
@@ -47,29 +47,31 @@ describe('Daily Rewards WebHooks', () => {
                 expect(body.eventName).toBeDefined();
                 expect(body.amounts[0]).toBe(100);
                 dailyReward = body;
-
-                // Simulate Forest Knight migration where eventName === quest.uuid
-                await DailyReward.findByIdAndUpdate(dailyReward._id, { eventName: dailyReward.uuid });
             })
             .expect(201, done);
     });
 
     it('POST /webhook/daily/:uuid', async () => {
-        const { status } = await user.post(`/v1/webhook/daily/${dailyReward.uuid}`).send({
-            address: userWalletAddress2,
+        const { status } = await user.post(`/v1/webhook/daily/${eventName}`).send({
+            address: account4.address,
         });
         expect(status).toBe(201);
     });
 
-    it('GET /account to update identity', (done) => {
-        user.get(`/v1/account`).set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 }).expect(200, done);
+    it('GET /participant to update identity', async () => {
+        const { status } = await user
+            .get(`/v1/participants`)
+            .query({ poolId })
+            .set({ Authorization: widgetAccessToken4 });
+        expect(status).toBe(200);
     });
 
     it('POST /quests/daily/:id/entries', async () => {
         const { status, body } = await user
             .post(`/v1/quests/daily/${dailyReward._id}/entries`)
-            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
+            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken4 })
             .send();
+        console.log(body);
         expect(body.jobId).toBeDefined();
         expect(status).toBe(200);
 
@@ -85,7 +87,7 @@ describe('Daily Rewards WebHooks', () => {
 
     it('POST /quests/daily/:id/entries should throw an error', (done) => {
         user.post(`/v1/quests/daily/${dailyReward._id}/entries`)
-            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
+            .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken4 })
             .send()
             .expect(({ body }: request.Response) => {
                 expect(body.error).toBe('You have completed this quest within the last 24 hours.');
