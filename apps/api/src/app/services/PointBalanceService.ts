@@ -1,28 +1,30 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { PointBalance as PointBalanceDocument } from '@thxnetwork/api/models/PointBalance';
+import { Participant } from '../models/Participant';
+import { TAccount } from '@thxnetwork/common/lib/types/interfaces';
 
-async function add(pool: AssetPoolDocument, walletId: string, amount: number) {
-    const currentBalance = await PointBalance.findOne({ poolId: pool._id, walletId });
-    const balance = currentBalance ? Number(currentBalance.balance) + Number(amount) : Number(amount);
+async function add(pool: AssetPoolDocument, account: TAccount, amount: number) {
+    const participant = await Participant.findOne({ poolId: pool._id, sub: account.sub });
+    const balance = participant ? Number(participant.balance) + Number(amount) : Number(amount);
 
-    await PointBalance.updateOne(
-        { poolId: String(pool._id), walletId },
-        { poolId: String(pool._id), walletId, balance },
+    await Participant.updateOne(
+        { poolId: String(pool._id), sub: account.sub },
+        { poolId: String(pool._id), sub: account.sub, balance },
         { upsert: true },
     );
 }
 
-async function subtract(pool: AssetPoolDocument, walletId: string, price: number) {
+async function subtract(pool: AssetPoolDocument, account: TAccount, price: number) {
     if (!price) return;
 
-    const currentBalance = await PointBalance.findOne({ poolId: pool._id, walletId });
-    if (!currentBalance) return;
+    const participant = await Participant.findOne({ poolId: pool._id, sub: account.sub });
+    if (!participant) return;
 
-    const balance = Number(currentBalance.balance) >= price ? Number(currentBalance.balance) - price : 0;
+    const balance = Number(participant.balance) >= price ? Number(participant.balance) - price : 0;
 
-    await PointBalance.updateOne(
-        { poolId: String(pool._id), walletId },
-        { poolId: String(pool._id), walletId, balance },
+    await Participant.updateOne(
+        { poolId: String(pool._id), sub: account.sub },
+        { poolId: String(pool._id), sub: account.sub, balance },
         { upsert: true },
     );
 }

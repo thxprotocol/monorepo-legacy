@@ -3,7 +3,7 @@ import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
-import { TAccount, TToken, TTwitterUser } from '@thxnetwork/types/interfaces';
+import { TAccount, TToken } from '@thxnetwork/types/interfaces';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { v4 } from 'uuid';
 import { DailyReward } from '../models/DailyReward';
@@ -16,11 +16,9 @@ import { getsigningSecret } from '../util/signingsecret';
 import { Web3Quest } from '../models/Web3Quest';
 import { CustomReward } from '../models/CustomReward';
 import { Participant } from '../models/Participant';
-import { PointBalance } from './PointBalanceService';
 import { Collaborator, CollaboratorDocument } from '../models/Collaborator';
 import { DASHBOARD_URL } from '../config/secrets';
 import { WalletDocument } from '../models/Wallet';
-import { PointBalanceDocument } from '../models/PointBalance';
 import { Widget } from '../models/Widget';
 import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
 import AccountProxy from '../proxies/AccountProxy';
@@ -32,7 +30,7 @@ import { getChainId } from './ContractService';
 import { Identity } from '../models/Identity';
 import { TIdentity } from '@thxnetwork/types/interfaces';
 import { Client } from '../models/Client';
-import { TwitterUser, TwitterUserDocument } from '../models/TwitterUser';
+import { TwitterUser } from '../models/TwitterUser';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -215,10 +213,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
 
     participants.results = await Promise.all(
         participants.results.map(async (participant) => {
-            let wallet: WalletDocument,
-                account: TAccount,
-                subscription: PoolSubscriptionDocument,
-                pointBalance: PointBalanceDocument;
+            let wallet: WalletDocument, account: TAccount, subscription: PoolSubscriptionDocument;
 
             try {
                 wallet = await SafeService.findPrimary(participant.sub, pool.chainId);
@@ -249,17 +244,6 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                 logger.error(error);
             }
 
-            try {
-                pointBalance =
-                    wallet &&
-                    (await PointBalance.findOne({
-                        poolId: participant.poolId,
-                        walletId: wallet._id,
-                    }));
-            } catch (error) {
-                logger.error(error);
-            }
-
             return {
                 ...participant,
                 account: account && {
@@ -271,7 +255,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                 },
                 wallet,
                 subscription,
-                pointBalance: pointBalance ? pointBalance.balance : 0,
+                pointBalance: participant.balance,
             };
         }),
     );

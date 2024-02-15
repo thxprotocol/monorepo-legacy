@@ -120,3 +120,4 @@ export const PINATA_API_JWT = process.env.PINATA_API_JWT || '';
 export const ALLOWED_API_CLIENT_ID = process.env.ALLOWED_API_CLIENT_ID || '';
 export const BALANCER_POOL_ID = '0xb204bf10bc3a5435017d3db247f56da601dfe08a0002000000000000000000fe';
 export const BAL_ADDRESS = '0xba100000625a3754423978a60c9317c58a424e3d';
+export const CAMPAIGN_ID_FK = '642ef0056fdb0c824e4b4d04';

@@ -1,13 +1,12 @@
 import { Request, Response } from 'express';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { body, param } from 'express-validator';
-import { v4 } from 'uuid';
 import { toChecksumAddress } from 'web3-utils';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
-import { Wallet } from '@thxnetwork/api/services/SafeService';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import { Event } from '@thxnetwork/api/models/Event';
+import IdentityService from '@thxnetwork/api/services/IdentityService';
 
 const validation = [
     param('uuid').isUUID('4'),
@@ -45,35 +44,10 @@ export function getIdentityForCode(pool: AssetPoolDocument, code: string) {
 
 // @peterpolman (FK still depends on this)
 // This function should deprecate as soon as clients implement the wallet onboarding webhook
-export async function getIdentityForAddress(pool: AssetPoolDocument, address: string) {
-    // Find the virtual wallet for this address
-    let virtualWallet = await Wallet.findOne({
-        poolId: pool._id,
-        chainId: pool.chainId,
-        address,
-    });
-
-    // If no wallet is found for this address then create a virtual wallet
-    if (!virtualWallet) {
-        const uuid = v4();
-        virtualWallet = await Wallet.create({
-            uuid,
-            poolId: pool._id,
-            chainId: pool.chainId,
-            address,
-        });
-    }
-
-    // If a primary wallet is found for this address, we can instantly connect the Identity to the sub
-    const primaryWallet = await Wallet.findOne({ address, $or: [{ poolId: { $exists: false } }, { poolId: '' }] });
-
-    // Always upsert and Identity to support the modern SDK implementation
-    return await Identity.findOneAndUpdate(
-        { poolId: pool._id, uuid: virtualWallet.uuid },
-        // If an account is found for this address, connect the Identity
-        { poolId: pool._id, uuid: virtualWallet.uuid, sub: primaryWallet && primaryWallet.sub },
-        { upsert: true, new: true },
-    );
+// Defaulting into identity derivation for the provided address. This will require FK to present derived
+// identity uuids in their client in order to connect the identity to their account.
+export function getIdentityForAddress(pool: AssetPoolDocument, address: string) {
+    return IdentityService.getIdentityForSalt(pool, address);
 }
 
 export default { validation, controller };

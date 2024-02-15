@@ -9,6 +9,7 @@ const participantSchema = new mongoose.Schema(
         poolId: String,
         rank: Number,
         score: Number,
+        balance: { type: Number, default: 0 },
         questEntryCount: Number,
     },
     { timestamps: true },

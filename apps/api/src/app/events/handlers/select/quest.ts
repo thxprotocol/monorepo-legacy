@@ -132,7 +132,7 @@ export async function onSelectQuestComplete(interaction: StringSelectMenuInterac
             {
                 label: 'More Info',
                 style: ButtonStyle.Link,
-                url: `${WIDGET_URL}/c/${pool.settings.slug}/quests`,
+                url: `${pool.campaignURL}/quests`,
             },
         ]);
         const components = [];

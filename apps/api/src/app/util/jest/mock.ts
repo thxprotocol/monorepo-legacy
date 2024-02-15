@@ -14,6 +14,8 @@ import {
     userWalletAddress,
     sub3,
     account3,
+    sub4,
+    account4,
 } from './constants';
 import { getToken, jwksResponse } from './jwt';
 import { AUTH_URL } from '@thxnetwork/api/config/secrets';
@@ -65,6 +67,10 @@ export function mockStart() {
     // Account 3
     mockAuthPath('get', `/accounts/${sub3}`, 200, account3);
     mockAuthPath('patch', `/accounts/${sub3}`, 204, account3);
+
+    // Account 4
+    mockAuthPath('get', `/accounts/${sub4}`, 200, account4);
+    mockAuthPath('patch', `/accounts/${sub4}`, 204, account4);
 }
 
 export function mockClear() {

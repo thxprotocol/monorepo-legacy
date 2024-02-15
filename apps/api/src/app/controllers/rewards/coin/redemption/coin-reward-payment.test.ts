@@ -2,13 +2,14 @@ import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
 import {
+    account,
     dashboardAccessToken,
     sub,
     tokenName,
     tokenSymbol,
     widgetAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
-import { fromWei, isAddress, toWei } from 'web3-utils';
+import { isAddress, toWei } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes, subMinutes } from '@thxnetwork/api/util/rewards';
 import { poll } from '@thxnetwork/api/util/polling';
@@ -16,8 +17,8 @@ import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import ERC20, { ERC20Document } from '@thxnetwork/api/models/ERC20';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import SafeService from '@thxnetwork/api/services/SafeService';
-import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import { getProvider } from '@thxnetwork/api/util/network';
+import { TAccount } from '@thxnetwork/common/lib/types';
 
 const user = request.agent(app);
 
@@ -63,7 +64,7 @@ describe('Coin Reward Payment', () => {
                 poolId = res.body._id;
                 campaignSafe = res.body.safe;
 
-                await PointBalanceService.add(res.body, wallet._id, 5000);
+                await PointBalanceService.add(res.body, account as TAccount, 5000);
             })
             .expect(201);
     });

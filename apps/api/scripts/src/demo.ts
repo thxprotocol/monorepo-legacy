@@ -15,12 +15,9 @@ import {
     getSuggestion,
     getTwitterTWeet,
     getTwitterUser,
-} from './helpers/index';
+} from './utils/index';
 import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
 import { Collaborator } from '@thxnetwork/api/models/Collaborator';
-
-// db.connect(process.env.MONGODB_URI);
-db.connect(process.env.MONGODB_URI_PROD);
 
 const csvFilePath = path.join(__dirname, '../../../', 'quests.csv');
 // const sub = '60a38b36bf804b033c5e3faa'; // Local
@@ -47,7 +44,7 @@ const chainId = ChainId.Polygon;
 // const erc20Id = '64d3a4149f7e6d78c9366982'; // Local
 const erc20Id = '6464c665633c1cf385d8cc2b'; // THX Network (POS) on Prod
 
-async function main() {
+export default async function main() {
     const start = Date.now();
     const skipped = [];
     const results = [];
@@ -267,10 +264,3 @@ async function main() {
     console.log('Duration', Date.now() - start, 'seconds');
     console.log('Tokens Spent', tokens);
 }
-
-main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });

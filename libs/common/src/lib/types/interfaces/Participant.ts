@@ -5,5 +5,5 @@ export type TParticipant = {
     rank: number;
     score: number;
     questEntryCount: number;
-    pointBalance: number;
+    balance: number;
 };
