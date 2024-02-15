@@ -39,7 +39,7 @@ const controller = async (req: Request, res: Response) => {
     if (!participant || Number(participant.balance) < Number(perk.pointPrice))
         throw new BadRequestError('Not enough points on this account for this perk.');
 
-    const redeemValidationResult = await PerkService.validate({ perk, sub: req.auth.sub, pool });
+    const redeemValidationResult = await PerkService.validate({ perk, account, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }

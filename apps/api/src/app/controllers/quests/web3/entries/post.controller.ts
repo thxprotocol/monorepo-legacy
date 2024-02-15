@@ -10,7 +10,7 @@ import QuestService from '@thxnetwork/api/services/QuestService';
 
 const validation = [param('id').isMongoId(), body('signature').isString(), body('chainId').isInt()];
 
-const controller = async ({ account, wallet, body, params }: Request, res: Response) => {
+const controller = async ({ account, body, params }: Request, res: Response) => {
     const quest = await Web3Quest.findById(params.id);
     if (!quest) throw new NotFoundError('Quest not found');
 
@@ -24,7 +24,6 @@ const controller = async ({ account, wallet, body, params }: Request, res: Respo
     const { result, reason } = await QuestService.getValidationResult(quest.variant, {
         quest,
         account,
-        wallet,
         data,
     });
     if (!result) return res.json({ error: reason });

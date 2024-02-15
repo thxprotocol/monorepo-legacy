@@ -25,7 +25,7 @@ const controller = async ({ params, account, wallet }: Request, res: Response) =
 
     // Get validation result for this quest entry
     const data = { platformUserId };
-    const { result, reason } = await QuestService.getValidationResult(variant, { quest, account, wallet, data });
+    const { result, reason } = await QuestService.getValidationResult(variant, { quest, account, data });
     if (!result) {
         // Reason includes part of the rate limit error so we log
         if (reason.includes('every 15 minutes')) {

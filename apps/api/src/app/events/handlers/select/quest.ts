@@ -44,7 +44,6 @@ export async function completeQuest(
         const availabilityValidation = await QuestService.isAvailable(variant, {
             quest,
             account,
-            wallet,
             data,
         });
         if (!availabilityValidation.result) throw new Error(availabilityValidation.reason);
@@ -52,12 +51,11 @@ export async function completeQuest(
         const requirementValidation = await QuestService.getValidationResult(variant, {
             quest,
             account,
-            wallet,
             data,
         });
         if (!requirementValidation.result) throw new Error(requirementValidation.reason);
 
-        const amount = await QuestService.getAmount(variant, quest, account, wallet);
+        const amount = await QuestService.getAmount(variant, quest, account);
 
         await agenda.now(JobType.CreateQuestEntry, {
             variant,
@@ -92,11 +90,11 @@ export async function onSelectQuestComplete(interaction: StringSelectMenuInterac
         if (!pool) throw new Error('Could not find this campaign.');
 
         const data = {};
-        const isAvailable = await QuestService.isAvailable(variant, { quest, account, wallet, data });
+        const isAvailable = await QuestService.isAvailable(variant, { quest, account, data });
         const brand = await Brand.findOne({ poolId: pool._id });
         const widget = await Widget.findOne({ poolId: pool._id });
         const theme = JSON.parse(widget.theme);
-        const amount = await QuestService.getAmount(quest.variant, quest, account, wallet);
+        const amount = await QuestService.getAmount(quest.variant, quest, account);
         const embedQuest = {
             title: quest.title,
             description: quest.description,

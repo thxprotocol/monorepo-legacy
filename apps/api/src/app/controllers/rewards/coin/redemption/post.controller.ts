@@ -7,7 +7,6 @@ import { getContractFromName } from '@thxnetwork/api/services/ContractService';
 import { BigNumber } from 'ethers';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
 import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
-import { Widget } from '@thxnetwork/api/models/Widget';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
@@ -38,7 +37,7 @@ const controller = async (req: Request, res: Response) => {
         throw new BadRequestError('Not enough points on this account for this payment');
     }
 
-    const redeemValidationResult = await PerkService.validate({ perk: erc20Perk, sub: req.auth.sub, pool });
+    const redeemValidationResult = await PerkService.validate({ perk: erc20Perk, account, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }

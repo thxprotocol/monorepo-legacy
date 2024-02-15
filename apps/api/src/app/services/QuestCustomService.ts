@@ -22,14 +22,14 @@ export default class QuestCustomService implements IQuestService {
 
     async isAvailable({
         quest,
-        wallet,
+        account,
     }: {
         quest: MilestoneRewardDocument;
         wallet?: WalletDocument;
         account?: TAccount;
         data: Partial<TMilestoneRewardClaim>;
     }): Promise<TValidationResult> {
-        const entries = await this.findAllEntries({ quest, wallet });
+        const entries = await this.findAllEntries({ quest, account });
         if (quest.limit && entries.length >= quest.limit) {
             return { result: false, reason: 'Quest entry limit has been reached.' };
         }
@@ -44,18 +44,16 @@ export default class QuestCustomService implements IQuestService {
     async decorate({
         quest,
         account,
-        wallet,
         data,
     }: {
         quest: MilestoneRewardDocument;
         account?: TAccount;
-        wallet?: WalletDocument;
         data: Partial<TMilestoneRewardClaim>;
     }) {
-        const entries = await this.findAllEntries({ quest, wallet });
+        const entries = await this.findAllEntries({ quest, account });
         const identities = await this.findIdentities({ quest, account });
         const events = await this.findEvents({ quest, identities });
-        const isAvailable = await this.isAvailable({ quest, wallet, account, data });
+        const isAvailable = await this.isAvailable({ quest, account, data });
         const pointsAvailable = quest.limit ? (quest.limit - entries.length) * quest.amount : quest.amount;
 
         return {
@@ -71,11 +69,9 @@ export default class QuestCustomService implements IQuestService {
     async getValidationResult({
         quest,
         account,
-        wallet,
     }: {
         quest: MilestoneRewardDocument;
         account: TAccount;
-        wallet: WalletDocument;
         data: Partial<TMilestoneRewardClaim>;
     }): Promise<{ reason: string; result: boolean }> {
         // See if there are identities
@@ -88,7 +84,7 @@ export default class QuestCustomService implements IQuestService {
         }
 
         // Find existing entries for this quest and check optional limit
-        const entries = await this.findAllEntries({ quest, wallet });
+        const entries = await this.findAllEntries({ quest, account });
         if (quest.limit && entries.length >= quest.limit) {
             return { result: false, reason: 'Quest entry limit has been reached' };
         }
@@ -102,11 +98,11 @@ export default class QuestCustomService implements IQuestService {
         if (entries.length < events.length) return { result: true, reason: '' };
     }
 
-    private async findAllEntries({ quest, wallet }: { quest: MilestoneRewardDocument; wallet: WalletDocument }) {
-        if (!wallet) return [];
+    private async findAllEntries({ quest, account }: { quest: MilestoneRewardDocument; account: TAccount }) {
+        if (!account) return [];
         return await this.models.entry.find({
             questId: quest._id,
-            walletId: wallet._id,
+            sub: account.sub,
             isClaimed: true,
         });
     }

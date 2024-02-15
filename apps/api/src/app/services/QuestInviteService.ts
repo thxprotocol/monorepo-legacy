@@ -1,4 +1,3 @@
-import { WalletDocument } from '../models/Wallet';
 import { TAccount, TReferralReward, TReferralRewardClaim, TValidationResult } from '@thxnetwork/common/lib/types';
 import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
 import { ReferralReward } from '../models/ReferralReward';
@@ -18,7 +17,6 @@ export default class QuestInviteService implements IQuestService {
         quest,
     }: {
         quest: TReferralReward;
-        wallet?: WalletDocument;
         data: Partial<TReferralRewardClaim>;
     }): Promise<TReferralReward> {
         return {
@@ -30,21 +28,19 @@ export default class QuestInviteService implements IQuestService {
 
     async isAvailable(options: {
         quest: TReferralReward;
-        wallet?: WalletDocument;
         account?: TAccount;
         data: Partial<TReferralRewardClaim>;
     }): Promise<TValidationResult> {
         return { result: false, reason: 'Not implemented' };
     }
 
-    async getAmount({ quest }: { quest: TReferralReward; wallet: WalletDocument; account: TAccount }): Promise<number> {
+    async getAmount({ quest }: { quest: TReferralReward; account: TAccount }): Promise<number> {
         return quest.amount;
     }
 
     async getValidationResult(options: {
         quest: TReferralReward;
         account: TAccount;
-        wallet: WalletDocument;
         data: Partial<TReferralRewardClaim>;
     }): Promise<TValidationResult> {
         return {

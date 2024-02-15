@@ -1,10 +1,9 @@
-import { WalletDocument } from '../models/Wallet';
 import { Web3QuestClaim } from '../models/Web3QuestClaim';
 import { BigNumber, ethers } from 'ethers';
 import { logger } from '@thxnetwork/api/util/logger';
 import { IQuestService } from './interfaces/IQuestService';
 import { TAccount, TWeb3Quest, TValidationResult, TWeb3QuestClaim } from '@thxnetwork/common/lib/types';
-import { Web3Quest, Web3QuestDocument } from '../models/Web3Quest';
+import { Web3Quest } from '../models/Web3Quest';
 
 export default class QuestWeb3Service implements IQuestService {
     models = {
@@ -18,16 +17,14 @@ export default class QuestWeb3Service implements IQuestService {
 
     async decorate({
         quest,
-        wallet,
         account,
         data,
     }: {
         quest: TWeb3Quest;
         data: Partial<TWeb3QuestClaim>;
         account?: TAccount;
-        wallet?: WalletDocument;
     }): Promise<TWeb3Quest & { isAvailable: boolean }> {
-        const isAvailable = await this.isAvailable({ quest, wallet, account, data });
+        const isAvailable = await this.isAvailable({ quest, account, data });
 
         return {
             ...quest,
@@ -41,54 +38,47 @@ export default class QuestWeb3Service implements IQuestService {
 
     async isAvailable({
         quest,
-        wallet,
+        account,
         data,
     }: {
         quest: TWeb3Quest;
-        wallet: WalletDocument;
         account: TAccount;
         data: Partial<TWeb3QuestClaim>;
     }): Promise<TValidationResult> {
-        const ids = [];
-        if (wallet) ids.push({ sub: wallet.sub });
-        if (wallet) ids.push({ walletId: wallet._id });
+        if (!account) return { result: true, reason: '' };
+
+        const ids: any[] = [{ sub: account.sub }];
         if (data && data.address) ids.push({ address: data.address });
 
-        const isCompleted = wallet
-            ? await Web3QuestClaim.exists({
-                  questId: quest._id,
-                  $or: ids,
-              })
-            : false;
+        const isCompleted = await Web3QuestClaim.exists({
+            questId: quest._id,
+            $or: ids,
+        });
         if (!isCompleted) return { result: true, reason: '' };
 
         return { result: false, reason: 'You have completed this quest with this account and/or address already.' };
     }
 
-    async getAmount({ quest }: { quest: TWeb3Quest; wallet: WalletDocument; account: TAccount }): Promise<number> {
+    async getAmount({ quest }: { quest: TWeb3Quest; account: TAccount }): Promise<number> {
         return quest.amount;
     }
 
     async getValidationResult({
         quest,
         account,
-        wallet,
         data,
     }: {
         quest: TWeb3Quest;
         account: TAccount;
-        wallet: WalletDocument;
         data: Partial<TWeb3QuestClaim & { rpc: string }>;
     }): Promise<TValidationResult> {
         const { rpc, chainId, address } = data;
         const provider = new ethers.providers.JsonRpcProvider(rpc);
         const isClaimed = await Web3QuestClaim.exists({
             questId: quest._id,
-            $or: [{ sub: account.sub }, { walletId: wallet._id }, { address }],
+            $or: [{ sub: account.sub }, { address }],
         });
-        if (isClaimed) {
-            return { result: false, reason: 'You have claimed this quest already' };
-        }
+        if (isClaimed) return { result: false, reason: 'You have claimed this quest already' };
 
         const contract = quest.contracts.find((c) => c.chainId === chainId);
         if (!contract) return { result: false, reason: 'Smart contract not found.' };
@@ -104,7 +94,7 @@ export default class QuestWeb3Service implements IQuestService {
             result = await contractInstance[quest.methodName](address);
         } catch (error) {
             logger.error(error);
-            return { result: false, reason: `Smart contract call on ${name} failed` };
+            return { result: false, reason: `Smart contract call on ${quest.methodName} failed` };
         }
 
         const threshold = BigNumber.from(quest.threshold);

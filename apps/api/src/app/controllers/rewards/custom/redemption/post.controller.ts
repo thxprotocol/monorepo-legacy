@@ -28,7 +28,7 @@ const controller = async (req: Request, res: Response) => {
         throw new BadRequestError('Not enough points on this account for this payment');
     }
 
-    const redeemValidationResult = await PerkService.validate({ perk: customReward, sub: req.auth.sub, pool });
+    const redeemValidationResult = await PerkService.validate({ perk: customReward, account, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }

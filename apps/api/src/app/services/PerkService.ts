@@ -1,4 +1,3 @@
-import { WalletDocument } from '../models/Wallet';
 import { ERC20PerkDocument } from '../models/ERC20Perk';
 import { ERC721PerkDocument } from '../models/ERC721Perk';
 import { AssetPoolDocument } from '../models/AssetPool';
@@ -21,6 +20,7 @@ import { DiscordRoleRewardPayment } from '../models/DiscordRoleRewardPayment';
 import { ERC721Metadata } from '../models/ERC721Metadata';
 import { ERC1155Metadata } from '../models/ERC1155Metadata';
 import LockService from './LockService';
+import { TAccount } from '@thxnetwork/common/lib/types';
 
 export type PerkDocument =
     | ERC20PerkDocument
@@ -55,18 +55,6 @@ export async function getNFT(perk: ERC721PerkDocument) {
     if (perk.erc1155Id) {
         return await ERC1155Service.findById(perk.erc1155Id);
     }
-}
-
-export async function getIsLockedForWallet(perk: PerkDocument, wallet: WalletDocument) {
-    if (!perk.locks.length || !wallet) return;
-    return await LockService.getIsLocked(perk.locks, wallet);
-}
-
-export async function getIsLockedForSub(perk: PerkDocument, sub: string, pool: AssetPoolDocument) {
-    if (!perk.locks.length) return;
-    const wallet = await SafeService.findPrimary(sub, pool.chainId);
-    if (!wallet) return true;
-    return await LockService.getIsLocked(perk.locks, wallet);
 }
 
 async function getProgress(r: PerkDocument, model: any) {
@@ -104,19 +92,19 @@ export function getPaymentModel(perk: PerkDocument): mongoose.Model<any> {
 export async function validate({
     perk,
     pool,
-    sub,
+    account,
 }: {
     perk: PerkDocument;
     pool?: AssetPoolDocument;
     claim?: ClaimDocument;
-    sub?: string;
+    account?: TAccount;
 }): Promise<{ isError: boolean; errorMessage?: string }> {
     const model = getPaymentModel(perk);
     if (!model) return { isError: true, errorMessage: 'Could not determine payment model.' };
 
     // Is gated and reqeust is made authenticated
-    if (sub && pool && perk.locks.length) {
-        const isPerkLocked = await getIsLockedForSub(perk, sub, pool);
+    if (account && pool && perk.locks.length) {
+        const isPerkLocked = await LockService.getIsLocked(perk.locks, account);
         if (isPerkLocked) {
             return { isError: true, errorMessage: 'This perk has been gated with a token.' };
         }
@@ -139,10 +127,8 @@ export async function validate({
 }
 
 export default {
-    getIsLockedForWallet,
     getExpiry,
     getProgress,
-    getIsLockedForSub,
     getMetadata,
     getToken,
     getNFT,

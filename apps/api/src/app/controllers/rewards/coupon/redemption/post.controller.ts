@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { Widget } from '@thxnetwork/api/models/Widget';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
@@ -12,13 +11,11 @@ import { CouponReward } from '@thxnetwork/api/models/CouponReward';
 import { CouponCode } from '@thxnetwork/api/models/CouponCode';
 import { CouponRewardPayment } from '@thxnetwork/api/models/CouponRewardPayment';
 import { Participant } from '@thxnetwork/api/models/Participant';
-import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 
 const validation = [param('uuid').exists()];
 
 const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const widget = await Widget.findOne({ poolId: pool._id });
 
     const couponReward = await CouponReward.findOne({ uuid: req.params.uuid });
     if (!couponReward) throw new NotFoundError('Could not find this reward');
@@ -30,7 +27,7 @@ const controller = async (req: Request, res: Response) => {
         throw new BadRequestError('Not enough points on this account for this payment');
     }
 
-    const redeemValidationResult = await PerkService.validate({ perk: couponReward, sub: req.auth.sub, pool });
+    const redeemValidationResult = await PerkService.validate({ perk: couponReward, account, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }

@@ -14,15 +14,11 @@ import { client } from 'apps/api/src/discord';
 import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 import { AccessTokenKind } from '@thxnetwork/common/lib/types';
 import { Participant } from '@thxnetwork/api/models/Participant';
-import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 
 const validation = [param('uuid').exists()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Reward Payment']
-
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const widget = await Widget.findOne({ poolId: pool._id });
 
     const discordRoleReward = await DiscordRoleReward.findOne({ uuid: req.params.uuid });
     if (!discordRoleReward) throw new NotFoundError('Could not find this reward');
@@ -34,7 +30,7 @@ const controller = async (req: Request, res: Response) => {
         throw new BadRequestError('Not enough points on this account for this payment');
     }
 
-    const redeemValidationResult = await PerkService.validate({ perk: discordRoleReward, sub: req.auth.sub, pool });
+    const redeemValidationResult = await PerkService.validate({ perk: discordRoleReward, account, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }

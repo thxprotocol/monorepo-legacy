@@ -1,6 +1,5 @@
 import { DailyReward } from '@thxnetwork/api/models/DailyReward';
 import { DailyRewardClaim } from '../models/DailyRewardClaims';
-import { WalletDocument } from '../models/Wallet';
 import { Event } from '../models/Event';
 import { TDailyReward, TAccount, TDailyRewardClaim, TValidationResult } from '@thxnetwork/common/lib/types';
 import { Identity } from '../models/Identity';
@@ -26,13 +25,11 @@ export default class QuestDailyService implements IQuestService {
 
     async decorate({
         quest,
-        wallet,
         account,
         data,
     }: {
         quest: TDailyReward;
         data: Partial<TDailyRewardClaim>;
-        wallet?: WalletDocument;
         account?: TAccount;
     }): Promise<
         TDailyReward & {
@@ -42,11 +39,11 @@ export default class QuestDailyService implements IQuestService {
             claimAgainDuration: number;
         }
     > {
-        const amount = await this.getAmount({ quest, wallet, account });
-        const entries = wallet ? await this.findEntries({ quest, wallet }) : [];
+        const amount = await this.getAmount({ quest, account });
+        const entries = account ? await this.findEntries({ quest, account }) : [];
         const claimAgainTime = entries.length ? new Date(entries[0].createdAt).getTime() + ONE_DAY_MS : null;
         const now = Date.now();
-        const isAvailable = await this.isAvailable({ quest, wallet, account, data });
+        const isAvailable = await this.isAvailable({ quest, account, data });
 
         return {
             ...quest,
@@ -60,15 +57,14 @@ export default class QuestDailyService implements IQuestService {
 
     async isAvailable({
         quest,
-        wallet,
+        account,
         data,
     }: {
         quest: TDailyReward;
-        wallet: WalletDocument;
         account: TAccount;
         data: Partial<TDailyRewardClaim>;
     }): Promise<TValidationResult> {
-        if (!wallet) return { result: true, reason: '' };
+        if (!account) return { result: true, reason: '' };
 
         const now = Date.now(),
             start = now - ONE_DAY_MS,
@@ -91,7 +87,7 @@ export default class QuestDailyService implements IQuestService {
 
         const isCompleted = await DailyRewardClaim.findOne({
             questId: quest._id,
-            walletId: wallet._id,
+            sub: account.sub,
             createdAt: { $gt: new Date(start), $lt: new Date(end) },
         });
         if (!isCompleted) return { result: true, reason: '' };
@@ -99,17 +95,10 @@ export default class QuestDailyService implements IQuestService {
         return { result: false, reason: 'You have completed this quest within the last 24 hours.' };
     }
 
-    async getAmount({
-        quest,
-        wallet,
-    }: {
-        quest: TDailyReward;
-        wallet: WalletDocument;
-        account: TAccount;
-    }): Promise<number> {
-        if (!wallet) return quest.amounts[0];
+    async getAmount({ quest, account }: { quest: TDailyReward; account: TAccount }): Promise<number> {
+        if (!account) return quest.amounts[0];
 
-        const claims = await this.findEntries({ quest, wallet });
+        const claims = await this.findEntries({ quest, account });
         const amountIndex =
             claims.length >= quest.amounts.length ? claims.length % quest.amounts.length : claims.length;
         return quest.amounts[amountIndex];
@@ -117,12 +106,10 @@ export default class QuestDailyService implements IQuestService {
 
     async getValidationResult({
         quest,
-        wallet,
         account,
     }: {
         quest: TDailyReward;
         account: TAccount;
-        wallet: WalletDocument;
         data: Partial<TDailyRewardClaim>;
     }): Promise<TValidationResult> {
         const now = Date.now(),
@@ -131,7 +118,7 @@ export default class QuestDailyService implements IQuestService {
 
         const entry = await DailyRewardClaim.findOne({
             questId: quest._id,
-            walletId: wallet._id,
+            sub: account.sub,
             createdAt: { $gt: new Date(start), $lt: new Date(end) },
         });
 
@@ -177,13 +164,13 @@ export default class QuestDailyService implements IQuestService {
         return await Identity.find({ sub: account.sub, poolId: quest.poolId });
     }
 
-    private async findEntries({ wallet, quest }: { wallet: WalletDocument; quest: TDailyReward }) {
+    private async findEntries({ account, quest }: { account: TAccount; quest: TDailyReward }) {
         const claims = [];
         const now = Date.now(),
             start = now - ONE_DAY_MS,
             end = now;
 
-        let lastEntry = await this.getLastEntry(wallet, quest, start, end);
+        let lastEntry = await this.getLastEntry(account, quest, start, end);
         if (!lastEntry) return [];
         claims.push(lastEntry);
 
@@ -191,7 +178,7 @@ export default class QuestDailyService implements IQuestService {
             const timestamp = new Date(lastEntry.createdAt).getTime();
             lastEntry = await DailyRewardClaim.findOne({
                 questId: quest._id,
-                walletId: wallet._id,
+                sub: account.sub,
                 createdAt: {
                     $gt: new Date(timestamp - ONE_DAY_MS * 2),
                     $lt: new Date(timestamp - ONE_DAY_MS),
@@ -204,17 +191,17 @@ export default class QuestDailyService implements IQuestService {
         return claims;
     }
 
-    private async getLastEntry(wallet: WalletDocument, quest: TDailyReward, start: number, end: number) {
+    private async getLastEntry(account: TAccount, quest: TDailyReward, start: number, end: number) {
         let lastEntry = await DailyRewardClaim.findOne({
             questId: quest._id,
-            walletId: wallet._id,
+            sub: account.sub,
             createdAt: { $gt: new Date(start), $lt: new Date(end) },
         });
 
         if (!lastEntry) {
             lastEntry = await DailyRewardClaim.findOne({
                 questId: quest._id,
-                walletId: wallet._id,
+                sub: account.sub,
                 createdAt: { $gt: new Date(start - ONE_DAY_MS), $lt: new Date(end - ONE_DAY_MS) },
             });
         }

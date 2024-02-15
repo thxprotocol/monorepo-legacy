@@ -16,16 +16,14 @@ export default class QuestSocialService implements IQuestService {
 
     async decorate({
         quest,
-        wallet,
         account,
         data,
     }: {
         quest: TPointReward;
         account?: TAccount;
-        wallet?: WalletDocument;
         data: Partial<TQuestEntry>;
     }): Promise<TPointReward & { isAvailable: boolean }> {
-        const isAvailable = await this.isAvailable({ quest, wallet, account, data });
+        const isAvailable = await this.isAvailable({ quest, account, data });
 
         return {
             ...quest,
@@ -36,19 +34,19 @@ export default class QuestSocialService implements IQuestService {
 
     async isAvailable({
         quest,
-        wallet,
         account,
     }: {
         quest: TPointReward;
-        wallet: WalletDocument;
         account: TAccount;
         data: Partial<TQuestEntry>;
     }): Promise<TValidationResult> {
-        if (!wallet || !account) return { result: true, reason: '' };
+        if (!account) return { result: true, reason: '' };
 
         // We validate for both here since there are entries that only contain a sub
         // and should not be claimed again.
-        const ids: any[] = [{ sub: account.sub }, { walletId: String(wallet._id) }];
+        const ids: any[] = [{ sub: account.sub }];
+
+        // TODO Could be derived from `data`
         const platformUserId = QuestService.findUserIdForInteraction(account, quest.interaction);
         if (platformUserId) ids.push({ platformUserId });
 
@@ -72,7 +70,6 @@ export default class QuestSocialService implements IQuestService {
     }: {
         quest: TPointReward;
         account: TAccount;
-        wallet: WalletDocument;
         data: Partial<TQuestEntry>;
     }): Promise<TValidationResult> {
         try {

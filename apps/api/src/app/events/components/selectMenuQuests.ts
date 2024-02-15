@@ -61,7 +61,7 @@ async function createSelectMenuQuests(interaction: CommandInteraction | ButtonIn
         const questId = String(quest._id);
         const variant = quest.interaction ? questInteractionVariantMap[quest.interaction] : quest.variant;
         const value = JSON.stringify({ questId, variant });
-        const amount = await QuestService.getAmount(variant, quest, account, wallet);
+        const amount = await QuestService.getAmount(variant, quest, account);
         const options = new StringSelectMenuOptionBuilder()
             .setLabel(`[${amount}] ${quest.title}`)
             .setDescription(`${campaign.settings.title}`)

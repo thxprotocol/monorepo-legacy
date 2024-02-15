@@ -127,23 +127,10 @@ async function sendQuestPublishNotification(
     );
 }
 
-function formatAddress(address: string) {
-    return `${address.slice(0, 5)}...${address.slice(-3)}`;
-}
-
-async function sendQuestEntryNotification(
-    pool: AssetPoolDocument,
-    quest: TQuest,
-    account: TAccount,
-    wallet: TWallet,
-    amount: number,
-) {
+async function sendQuestEntryNotification(pool: AssetPoolDocument, quest: TQuest, account: TAccount, amount: number) {
     const index = Math.floor(Math.random() * celebratoryWords.length);
     const discord = account.tokens && account.tokens.find((a) => a.kind === 'discord');
-    const user =
-        discord && discord.userId
-            ? `<@${discord.userId}>`
-            : `**${account.username ? account.username : formatAddress(wallet.address)}**`;
+    const user = discord && discord.userId ? `<@${discord.userId}>` : `**${account.username}**`;
     const button = {
         customId: `${DiscordButtonVariant.QuestComplete}:${quest.variant}:${quest._id}`,
         label: 'Complete Quest',

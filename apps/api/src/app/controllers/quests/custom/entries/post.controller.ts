@@ -8,14 +8,13 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 
 const validation = [param('id').isMongoId()];
 
-const controller = async ({ params, account, wallet }: Request, res: Response) => {
+const controller = async ({ params, account }: Request, res: Response) => {
     const quest = await MilestoneReward.findById(params.id);
     if (!quest) throw new NotFoundError('Quest not found.');
 
     const { result, reason } = await QuestService.getValidationResult(quest.variant, {
         quest,
         account,
-        wallet,
         data: {},
     });
     if (!result) return res.json({ error: reason });
