@@ -191,9 +191,10 @@ describe('NFT Reward Payment', () => {
             expect(token.sub).toBe(sub);
         });
 
-        it('GET /point-balances', (done) => {
-            user.get(`/v1/point-balances`)
-                .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
+        it('GET /participants', (done) => {
+            user.get(`/v1/participants`)
+                .query({ poolId: pool._id })
+                .set({ Authorization: widgetAccessToken })
                 .expect(({ body }: request.Response) => {
                     expect(body.balance).toBe(Number(balance) - perk.pointPrice);
                 })
