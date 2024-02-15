@@ -1,5 +1,4 @@
 import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { PointBalance as PointBalanceDocument } from '@thxnetwork/api/models/PointBalance';
 import { Participant } from '../models/Participant';
 import { TAccount } from '@thxnetwork/common/lib/types/interfaces';
 
@@ -28,7 +27,5 @@ async function subtract(pool: AssetPoolDocument, account: TAccount, price: numbe
         { upsert: true },
     );
 }
-
-export const PointBalance = PointBalanceDocument;
 
 export default { add, subtract };

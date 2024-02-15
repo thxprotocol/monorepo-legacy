@@ -2,28 +2,22 @@ import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { Event } from '@thxnetwork/types/enums';
-import { Widget } from '@thxnetwork/api/models/Widget';
-import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
+import { Webhook } from '@thxnetwork/api/models/Webhook';
+import { CustomReward } from '@thxnetwork/api/models/CustomReward';
+import { CustomRewardPayment } from '@thxnetwork/api/models/CustomRewardPayment';
+import { Participant } from '@thxnetwork/api/models/Participant';
+import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import WebhookService from '@thxnetwork/api/services/WebhookService';
-import { Webhook } from '@thxnetwork/api/models/Webhook';
-import { CustomReward } from '@thxnetwork/api/models/CustomReward';
-import { CustomRewardPayment } from '@thxnetwork/api/models/CustomRewardPayment';
-import { Participant } from '@thxnetwork/api/models/Participant';
-import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 
 const validation = [param('uuid').exists()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Reward Payment']
-
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const widget = await Widget.findOne({ poolId: pool._id });
-
     const customReward = await CustomReward.findOne({ uuid: req.params.uuid });
     if (!customReward) throw new NotFoundError('Could not find this reward');
     if (!customReward.pointPrice) throw new NotFoundError('No point price for this reward has been set.');

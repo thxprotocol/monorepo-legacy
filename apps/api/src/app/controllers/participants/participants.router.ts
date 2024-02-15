@@ -1,4 +1,4 @@
-import { assertAccount, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
+import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import express from 'express';
 import ListParticipants from './get.controller';
 
@@ -8,7 +8,6 @@ router.get(
     '/',
     guard.check(['point_balances:read']),
     assertRequestInput(ListParticipants.validation),
-    assertAccount,
     ListParticipants.controller,
 );
 

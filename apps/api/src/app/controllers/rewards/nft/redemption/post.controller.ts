@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
-import PointBalanceService, { PointBalance } from '@thxnetwork/api/services/PointBalanceService';
+import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
@@ -10,7 +10,6 @@ import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721T
 import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import MailService from '@thxnetwork/api/services/MailService';
-import { Widget } from '@thxnetwork/api/models/Widget';
 import { ERC1155Token, ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
 import { ERC1155MetadataDocument } from '@thxnetwork/api/models/ERC1155Metadata';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
@@ -19,7 +18,6 @@ import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { Participant } from '@thxnetwork/api/models/Participant';
-import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 
 const validation = [param('uuid').exists()];
 
@@ -29,7 +27,6 @@ const controller = async (req: Request, res: Response) => {
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
     if (!safe) throw new NotFoundError('Could not find campaign wallet');
 
-    const widget = await Widget.findOne({ poolId: pool._id });
     const perk = await ERC721Perk.findOne({ uuid: req.params.uuid });
     if (!perk) throw new NotFoundError('Could not find this perk');
     if (!perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
