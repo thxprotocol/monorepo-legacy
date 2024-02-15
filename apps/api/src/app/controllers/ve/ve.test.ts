@@ -73,7 +73,7 @@ describe('VESytem', () => {
 
                 const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
                 await user
-                    .post('/v1/account/wallet/confirm')
+                    .post('/v1/account/wallets/confirm')
                     .set({ Authorization: widgetAccessToken })
                     .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);
@@ -101,7 +101,7 @@ describe('VESytem', () => {
 
                 const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
                 await user
-                    .post('/v1/account/wallet/confirm')
+                    .post('/v1/account/wallets/confirm')
                     .set({ Authorization: widgetAccessToken })
                     .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);
@@ -193,7 +193,7 @@ describe('VESytem', () => {
 
                 const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
                 await user
-                    .post('/v1/account/wallet/confirm')
+                    .post('/v1/account/wallets/confirm')
                     .set({ Authorization: widgetAccessToken })
                     .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);

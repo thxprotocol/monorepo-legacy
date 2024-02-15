@@ -161,7 +161,7 @@ describe('ERC721 Transfer', () => {
         const wallet = await SafeService.findPrimary(sub);
         const { signature } = await signTxHash(wallet.address, safeTxHash, userWalletPrivateKey);
         const res2 = await user
-            .post(`/v1/account/wallet/confirm`)
+            .post(`/v1/account/wallets/confirm`)
             .set({ Authorization: widgetAccessToken })
             .send({ chainId: ChainId.Hardhat, safeTxHash, signature });
 

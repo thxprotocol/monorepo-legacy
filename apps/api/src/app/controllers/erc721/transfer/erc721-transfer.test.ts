@@ -4,7 +4,6 @@ import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { sub, sub2, userWalletPrivateKey, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
-import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
@@ -22,7 +21,6 @@ describe('ERC721 Transfer', () => {
     let erc721: ERC721Document,
         erc721Token: ERC721TokenDocument,
         pool: AssetPoolDocument,
-        to = '',
         safeTxHash = '';
     const chainId = ChainId.Hardhat,
         name = 'Test Collection',
@@ -161,7 +159,7 @@ describe('ERC721 Transfer', () => {
         const wallet = await SafeService.findPrimary(sub);
         const { signature } = await signTxHash(wallet.address, safeTxHash, userWalletPrivateKey);
         const res2 = await user
-            .post(`/v1/account/wallet/confirm`)
+            .post(`/v1/account/wallets/confirm`)
             .set({ Authorization: widgetAccessToken })
             .send({ chainId: ChainId.Hardhat, safeTxHash, signature });
 
