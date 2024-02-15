@@ -10,7 +10,6 @@ export type TGitcoinQuestEntry = {
     poolId: string;
     questId: string;
     sub: string;
-    walletId: string;
     amount: number;
     address: string;
     createdAt: Date;

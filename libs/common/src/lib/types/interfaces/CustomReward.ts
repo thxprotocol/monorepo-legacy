@@ -8,7 +8,6 @@ export type TCustomReward = TBaseReward & {
 export type TCustomRewardPayment = {
     perkId: string;
     sub: string;
-    walletId: string;
     poolId: string;
     amount: number;
 };

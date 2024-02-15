@@ -28,11 +28,6 @@ export const perkBaseSchema = {
     isPromoted: { type: Boolean, default: false },
     isPublished: { type: Boolean, default: false },
     locks: { type: [{ questId: String, variant: Number }], default: [] },
-    // // Token Gating
-    // tokenGatingVariant: Number,
-    // tokenGatingContractAddress: String,
-    // tokenGatingAmount: Number,
-    // QR Codes
     claimAmount: Number,
     claimLimit: Number,
 };

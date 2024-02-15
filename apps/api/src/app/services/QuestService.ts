@@ -208,8 +208,7 @@ export default class QuestService {
         const accounts = await AccountProxy.find({ subs });
         const participants = await Participant.find({ poolId: quest.poolId });
         const promises = entries.map(async (entry) => {
-            const wallet = await Wallet.findById(entry.walletId);
-            const account = accounts.find((a) => a.sub === wallet.sub);
+            const account = accounts.find((a) => a.sub === entry.sub);
             const pointBalance = participants.find((p) => account.sub === String(p.sub));
             const tokens = await Promise.all(
                 account.tokens.map(async (token: TToken) => {
@@ -221,7 +220,6 @@ export default class QuestService {
             return {
                 ...entry.toJSON(),
                 account: { ...account, tokens },
-                wallet,
                 pointBalance: pointBalance ? pointBalance.balance : 0,
             };
         });

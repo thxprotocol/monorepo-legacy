@@ -6,7 +6,6 @@ export type TPointRewardClaim = {
     _id: string;
     questId: string;
     sub: string;
-    walletId: string;
     amount: string;
     poolId: string;
     platformUserId: string;

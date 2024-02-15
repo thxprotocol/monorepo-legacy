@@ -5,7 +5,6 @@ export type CouponRewardPaymentDocument = mongoose.Document & TCouponRewardPayme
 
 const schema = new mongoose.Schema(
     {
-        walletId: String,
         sub: String,
         perkId: String,
         couponCodeId: String,
