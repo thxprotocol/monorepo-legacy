@@ -22,7 +22,7 @@ export default async function main() {
             });
         }
 
-        // await Participant.bulkWrite(operations);
+        await Participant.bulkWrite(operations);
         console.log(new Date(), 'chunk', skip, operations.length, Object.values(checks).length);
     }
 }

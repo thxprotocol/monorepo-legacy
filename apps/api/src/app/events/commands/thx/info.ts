@@ -1,9 +1,7 @@
 import { ButtonStyle, CommandInteraction, Embed } from 'discord.js';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
-import { PointBalance } from '@thxnetwork/api/models/PointBalance';
 import { Participant } from '@thxnetwork/api/models/Participant';
 import { DiscordButtonVariant } from '../../InteractionCreated';
-import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { handleError } from '../error';
 import Brand from '@thxnetwork/api/models/Brand';
