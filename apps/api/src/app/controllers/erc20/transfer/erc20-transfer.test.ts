@@ -43,10 +43,11 @@ describe('ERC20 Transfer', () => {
 
     describe('GET /wallet and transfer erc20', () => {
         it('HTTP 201', (done) => {
-            user.get('/v1/wallets')
+            user.get('/v1/account/wallets')
                 .set({ Authorization: widgetAccessToken })
                 .send()
                 .expect(async ({ body }: request.Response) => {
+                    console.log(body);
                     expect(body[0].address).toBeDefined();
                     wallet = body[0];
                 })
@@ -82,7 +83,7 @@ describe('ERC20 Transfer', () => {
                 userWalletPrivateKey,
             );
             const res2 = await user
-                .post(`/v1/account/wallet/confirm`)
+                .post(`/v1/account/wallets/confirm`)
                 .set({ Authorization: widgetAccessToken })
                 .send({ chainId: ChainId.Hardhat, safeTxHash, signature });
 
