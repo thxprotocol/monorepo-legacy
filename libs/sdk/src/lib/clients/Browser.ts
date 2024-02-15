@@ -8,7 +8,6 @@ import QuestManager from '../managers/QuestManager';
 import RewardManager from '../managers/RewardManager';
 import ClaimsManager from '../managers/ClaimsManager';
 import PoolManager from '../managers/PoolManager';
-import PointBalanceManager from '../managers/PointBalanceManager';
 import { THXOIDCGrant } from '../managers/OIDCManager';
 import { THXBrowserClientOptions } from '../types';
 
@@ -24,7 +23,6 @@ export default class THXBrowserClient {
     rewards: RewardManager;
     claims: ClaimsManager;
     pools: PoolManager;
-    pointBalance: PointBalanceManager;
 
     constructor(options: THXBrowserClientOptions) {
         this.options = options;
@@ -38,7 +36,6 @@ export default class THXBrowserClient {
         this.rewards = new RewardManager(this);
         this.claims = new ClaimsManager(this);
         this.pools = new PoolManager(this);
-        this.pointBalance = new PointBalanceManager(this);
     }
 
     setCampaignId(campaignId: string) {
