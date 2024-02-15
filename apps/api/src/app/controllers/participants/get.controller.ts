@@ -4,8 +4,6 @@ import { query } from 'express-validator';
 import IdentityService from '@thxnetwork/api/services/IdentityService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 
-const CAMPAIGN_ID_FK = '642ef0056fdb0c824e4b4d04';
-
 const validation = [query('poolId').optional().isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
@@ -16,14 +14,11 @@ const controller = async (req: Request, res: Response) => {
     // Get all participants for the authenticated user and optionally filter by poolId
     const participants = await Participant.find(query);
 
-    // Do pool stuff related stuff
+    // Run pool specific operations
     if (poolId) {
-        // Check if this is the FK campaign
-        if (poolId === CAMPAIGN_ID_FK) {
-            const pool = await PoolService.getById(poolId);
-            // Force connect account address as identity might be available
-            await IdentityService.forceConnect(pool, req.account);
-        }
+        const pool = await PoolService.getById(poolId);
+        // Force connect account address as identity might be available
+        await IdentityService.forceConnect(pool, req.account);
 
         // If no participants were found, create a participant for the authenticated user
         if (!participants.length) {

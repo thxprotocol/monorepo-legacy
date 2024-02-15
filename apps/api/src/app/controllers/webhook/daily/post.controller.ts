@@ -2,7 +2,6 @@ import { DailyReward } from '@thxnetwork/api/models/DailyReward';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
-import { toChecksumAddress } from 'web3-utils';
 import { getIdentityForAddress, getIdentityForCode } from '../milestones/claim/post.controller';
 import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 import { Event } from '@thxnetwork/api/models/Event';
@@ -10,15 +9,11 @@ import { Event } from '@thxnetwork/api/models/Event';
 const validation = [
     param('uuid').isUUID('4'),
     body('code').optional().isUUID(4),
-    body('address')
-        .optional()
-        .isEthereumAddress()
-        .customSanitizer((address) => toChecksumAddress(address)),
+    body('address').optional().isEthereumAddress(),
 ];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Rewards']
-    const quest = await DailyReward.findOne({ uuid: req.params.uuid });
+    const quest = await DailyReward.findOne({ eventName: req.params.uuid });
     if (!quest) throw new NotFoundError('Could not find a daily reward for this token');
 
     const pool = await AssetPool.findById(quest.poolId);

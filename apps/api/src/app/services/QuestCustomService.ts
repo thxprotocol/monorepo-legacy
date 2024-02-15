@@ -60,6 +60,7 @@ export default class QuestCustomService implements IQuestService {
 
         return {
             ...quest,
+            eventName: '', // FK Deprecrates March 15th 2024
             isAvailable: isAvailable.result,
             pointsAvailable,
             entries,
