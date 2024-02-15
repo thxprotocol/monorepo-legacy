@@ -196,7 +196,7 @@ describe('NFT Reward Payment', () => {
                 .query({ poolId: pool._id })
                 .set({ Authorization: widgetAccessToken })
                 .expect(({ body }: request.Response) => {
-                    expect(body.balance).toBe(Number(balance) - perk.pointPrice);
+                    expect(body[0].balance).toBe(Number(balance) - perk.pointPrice);
                 })
                 .expect(200, done);
         });
