@@ -9,6 +9,7 @@ import { poll } from '@thxnetwork/api/util/polling';
 import { Job } from '@thxnetwork/api/models/Job';
 import { IJobParameters } from '@hokify/agenda';
 import { v4 } from 'uuid';
+import { Identity } from '@thxnetwork/api/models/Identity';
 
 const user = request.agent(app);
 
@@ -67,6 +68,8 @@ describe('Daily Rewards WebHooks', () => {
     });
 
     it('POST /quests/daily/:id/entries', async () => {
+        console.log(await Identity.find({}));
+
         const { status, body } = await user
             .post(`/v1/quests/daily/${dailyReward._id}/entries`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken4 })
@@ -90,6 +93,7 @@ describe('Daily Rewards WebHooks', () => {
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken4 })
             .send()
             .expect(({ body }: request.Response) => {
+                console.log(body);
                 expect(body.error).toBe('You have completed this quest within the last 24 hours.');
             })
             .expect(200, done);

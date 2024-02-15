@@ -21,6 +21,7 @@ import widgetRouter from './widget/widget.router';
 import questsRouter from './quests/quests.router';
 import rewardsRouter from './rewards/rewards.router';
 import leaderboardsRouter from './leaderboards/leaderboards.router';
+import webhookRouter from './webhook/webhook.router';
 import webhooksRouter from './webhooks/webhooks.router';
 import widgetsRouter from './widgets/widgets.router';
 import identityRouter from './identity/identity.router';
@@ -43,6 +44,7 @@ router.use('/widget', widgetRouter);
 router.use('/leaderboards', leaderboardsRouter); // TODO Partial refactor
 router.use('/quests', questsRouter); // TODO Refactor
 router.use('/rewards', rewardsRouter); // TODO Refactor
+router.use('/webhook', webhookRouter);
 
 router.use(checkJwt, corsHandler);
 router.use('/jobs', RouterJobs);

@@ -2,7 +2,7 @@ import db from '@thxnetwork/api/util/database';
 import { mockStart } from './mock';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant, WalletVariant } from '@thxnetwork/types/enums';
 import {
     sub,
     sub2,
@@ -72,6 +72,7 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
             chainId: ChainId.Hardhat,
             sub: sub4,
             address: userWalletAddress4,
+            variant: WalletVariant.WalletConnect,
         });
     }
 }
