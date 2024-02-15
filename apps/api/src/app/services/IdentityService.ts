@@ -1,7 +1,8 @@
-import { AccountVariant, TAccount } from '@thxnetwork/common/lib/types';
+import { TAccount, WalletVariant } from '@thxnetwork/common/lib/types';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { Identity } from '../models/Identity';
 import { uuidV1 } from '../util/uuid';
+import { Wallet } from '../models/Wallet';
 
 export default class IdentityService {
     static getUUID(pool: AssetPoolDocument, salt: string) {
@@ -21,8 +22,14 @@ export default class IdentityService {
     }
 
     static async forceConnect(pool: AssetPoolDocument, account: TAccount) {
-        if (account.variant !== AccountVariant.Metamask) return;
-        const uuid = this.getUUID(pool, account.address);
-        await Identity.findOneAndUpdate({ uuid }, { sub: account.sub });
+        // Search for WalletConnect wallets for this sub
+        const wallets = await Wallet.find({ sub: account.sub, variant: WalletVariant.WalletConnect });
+        if (!wallets.length) return;
+
+        // Create a list of uuids for these wallets
+        const uuids = wallets.map((wallet) => this.getUUID(pool, wallet.address));
+
+        // Find any identity for these uuids and update
+        await Identity.findOneAndUpdate({ uuid: { $in: uuids } }, { sub: account.sub });
     }
 }

@@ -7,10 +7,10 @@ import WalletService from '@thxnetwork/api/services/WalletService';
 const validation = [body('variant').isString(), body('message').isString(), body('signature').isString()];
 
 const controller = async (req: Request, res: Response) => {
-    const { message, signature } = req.body;
+    const { message, signature, variant } = req.body;
     const address = recoverSigner(message, signature);
 
-    await WalletService.create(req.body.variant, {
+    await WalletService.create(variant, {
         sub: req.auth.sub,
         address,
         chainId: getChainId(),
