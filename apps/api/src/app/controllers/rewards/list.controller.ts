@@ -15,11 +15,10 @@ import { CouponRewardPayment } from '@thxnetwork/api/models/CouponRewardPayment'
 import { CouponCode } from '@thxnetwork/api/models/CouponCode';
 import { DiscordRoleReward } from '@thxnetwork/api/models/DiscordRoleReward';
 import { DiscordRoleRewardPayment } from '@thxnetwork/api/models/DiscordRoleRewardPayment';
-import { AccessTokenKind, ChainId } from '@thxnetwork/types/enums';
+import { AccessTokenKind } from '@thxnetwork/types/enums';
 import { TAccount } from '@thxnetwork/types/interfaces';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import LockService from '@thxnetwork/api/services/LockService';
-import IdentityService from '@thxnetwork/api/services/IdentityService';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks']

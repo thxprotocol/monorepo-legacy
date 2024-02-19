@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { param } from 'express-validator';
+import { body, param } from 'express-validator';
 import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
@@ -19,7 +19,7 @@ import PerkService from '@thxnetwork/api/services/PerkService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { Participant } from '@thxnetwork/api/models/Participant';
 
-const validation = [param('uuid').exists()];
+const validation = [param('uuid').exists(), body('walletId').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks Payment']
@@ -44,7 +44,9 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
 
-    const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
+    const wallet = await SafeService.findById(req.body.walletId);
+    if (!wallet) throw new BadRequestError('No wallet found for this reward payment request.');
+
     let token: ERC721TokenDocument | ERC1155TokenDocument, metadata: ERC721MetadataDocument | ERC1155MetadataDocument;
 
     // Mint a token if metadataId is present

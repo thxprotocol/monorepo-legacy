@@ -37,10 +37,9 @@ export default class WalletService {
     }
 
     static connect({ uuid, address }: Partial<TWallet>) {
-        console.log(uuid, address);
         return Wallet.findOneAndUpdate(
             { uuid, variant: WalletVariant.WalletConnect },
-            { uuid: undefined, address },
+            { uuid: null, address },
             { new: true },
         );
     }

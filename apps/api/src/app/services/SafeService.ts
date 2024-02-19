@@ -124,59 +124,8 @@ async function getWalletMigration(sub: string, chainId: ChainId) {
     });
 }
 
-async function migrateJob(job: Job) {
-    const { safeWalletId } = job.attrs.data as any;
-    if (!safeWalletId) return;
-
-    const safeWallet = await Wallet.findById(safeWalletId);
-    const client = new MongoClient(MONGODB_URI);
-
-    try {
-        await client.connect();
-
-        const db = client.db();
-        const walletsCollection = db.collection('wallets');
-        const wallets = await walletsCollection.find({ sub: safeWallet.sub }).toArray();
-        const walletIds = wallets.map((wallet) => String(wallet._id));
-
-        // No virtual wallet or old wallet exists so migration not required
-        if (walletIds.length < 2) return;
-
-        const models = [
-            'dailyrewardclaims',
-            'erc20perkpayments',
-            'erc20token',
-            'erc20transfers',
-            'erc721perkpayments',
-            'erc721token',
-            'erc721transfers',
-            'erc1155token',
-            'milestonerewardclaims',
-            'pointbalances',
-            'pointrewardclaims',
-            'poolsubscriptions',
-            'referralrewardclaims',
-            'withdrawals',
-        ];
-
-        for (const modelName of models) {
-            const modelCollection = db.collection(modelName);
-            await modelCollection.updateMany(
-                { walletId: { $in: walletIds } },
-                { $set: { walletId: String(safeWallet._id) } },
-            );
-        }
-
-        logger.debug('Migration completed.');
-    } catch (error) {
-        logger.error(`Error: ${String(error)}`);
-    } finally {
-        await client.close();
-    }
-}
-async function migrate(safeWallet: WalletDocument) {
-    if (!safeWallet) return;
-    await agenda.now(JobType.MigrateWallets, { safeWalletId: String(safeWallet._id) });
+function findById(id: string) {
+    return Wallet.findById(id);
 }
 
 function findOneByAddress(address: string) {
@@ -207,7 +156,7 @@ async function findOneByPool(pool: AssetPoolDocument, chainId: ChainId) {
     });
 }
 
-async function findOneByQuery(query: { sub?: string; chainId?: number }) {
+async function findOneByQuery(query: { sub?: string; chainId?: number; address?: string }) {
     return await Wallet.findOne(query);
 }
 
@@ -314,8 +263,7 @@ async function getTransaction(wallet: WalletDocument, safeTxHash: string): Promi
 export default {
     getWalletMigration,
     reset,
-    migrate,
-    migrateJob,
+    findById,
     createSwapOwnerTransaction,
     proposeTransaction,
     confirmTransaction,

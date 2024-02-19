@@ -13,27 +13,27 @@ router.get('/', ListRewards.controller);
 
 router.use(checkJwt, corsHandler);
 router.post(
-    '/coin/:uuid/redemption',
+    '/coin/:id/payment',
     assertRequestInput(CreateCoinRewardRedemption.validation),
     CreateCoinRewardRedemption.controller,
 );
 router.post(
-    '/nft/:uuid/redemption',
+    '/nft/:id/payment',
     assertRequestInput(CreateNFTRewardRedemption.validation),
     CreateNFTRewardRedemption.controller,
 );
 router.post(
-    '/custom/:uuid/redemption',
+    '/custom/:id/payment',
     assertRequestInput(CreateRewardCustomRedemption.validation),
     CreateRewardCustomRedemption.controller,
 );
 router.post(
-    '/coupon/:uuid/redemption',
+    '/coupon/:id/payment',
     assertRequestInput(CreateRewardCouponRedemption.validation),
     CreateRewardCouponRedemption.controller,
 );
 router.post(
-    '/discord-role/:uuid/redemption',
+    '/discord-role/:id/payment',
     assertRequestInput(CreateRewardDiscordRoleRedemption.validation),
     CreateRewardDiscordRoleRedemption.controller,
 );
