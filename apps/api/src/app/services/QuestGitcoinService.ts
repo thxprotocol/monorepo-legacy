@@ -81,7 +81,7 @@ export default class QuestGitcoinService implements IQuestService {
         if (score < quest.score) {
             return {
                 result: false,
-                reason: `Your score ${score || 0}/100 does not meet the minimum of ${quest.score}/100.`,
+                reason: `Your score ${score.toString() || 0}/100 does not meet the minimum of ${quest.score}/100.`,
             };
         }
         if (score >= quest.score) return { result: true, reason: '' };

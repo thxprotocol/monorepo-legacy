@@ -15,10 +15,11 @@ import { CouponRewardPayment } from '@thxnetwork/api/models/CouponRewardPayment'
 import { CouponCode } from '@thxnetwork/api/models/CouponCode';
 import { DiscordRoleReward } from '@thxnetwork/api/models/DiscordRoleReward';
 import { DiscordRoleRewardPayment } from '@thxnetwork/api/models/DiscordRoleRewardPayment';
-import { AccessTokenKind } from '@thxnetwork/types/enums';
+import { AccessTokenKind, ChainId } from '@thxnetwork/types/enums';
 import { TAccount } from '@thxnetwork/types/interfaces';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import LockService from '@thxnetwork/api/services/LockService';
+import IdentityService from '@thxnetwork/api/services/IdentityService';
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks']
@@ -78,12 +79,14 @@ const controller = async (req: Request, res: Response) => {
             erc20Perks.map(async (r) => {
                 const { isError } = await PerkService.validate({ perk: r, account, pool });
                 const defaults = await getRewardDefaults(r, ERC20PerkPayment);
+                const erc20 = await ERC20Service.getById(r.erc20Id);
                 return {
                     ...defaults,
+                    chainId: erc20.chainId,
                     amount: r.amount,
                     isDisabled: isError,
                     isOwned: false,
-                    erc20: await ERC20Service.getById(r.erc20Id),
+                    erc20,
                 };
             }),
         ),
@@ -99,9 +102,8 @@ const controller = async (req: Request, res: Response) => {
                     ...defaults,
                     nft,
                     metadata,
+                    chainId: nft.chainId,
                     erc1155Amount: r.erc1155Amount,
-                    price: r.price,
-                    priceCurrency: r.priceCurrency,
                     isDisabled: isError,
                     isOwned: false,
                 };
