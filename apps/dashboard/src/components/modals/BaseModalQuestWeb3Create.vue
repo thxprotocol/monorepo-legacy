@@ -71,7 +71,7 @@
 </template>
 
 <script lang="ts">
-import type { TInfoLink, TPool, TWeb3Quest } from '@thxnetwork/types/interfaces';
+import type { TInfoLink, TPool, TQuestLock, TWeb3Quest } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { isAddress } from 'web3-utils';
