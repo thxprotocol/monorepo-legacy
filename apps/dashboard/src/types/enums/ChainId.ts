@@ -5,4 +5,5 @@ export enum ChainId {
     Hardhat = 31337,
     Arbitrum = 42161,
     PolygonMumbai = 80001,
+    PolygonZK = 1101,
 }

@@ -6,6 +6,7 @@ export type WalletDocument = mongoose.Document & TWallet;
 const walletSchema = new mongoose.Schema(
     {
         uuid: String,
+        expiresAt: Date,
         poolId: String,
         address: String,
         sub: { type: String, index: 'hashed' },

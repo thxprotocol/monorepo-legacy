@@ -213,25 +213,6 @@ export const approve = async (erc20: ERC20Document, wallet: WalletDocument, amou
     );
 };
 
-async function migrate(fromWallet: WalletDocument, toWallet: WalletDocument, erc20Id: string) {
-    const erc20 = await ERC20.findById(erc20Id);
-    const balance = await erc20.contract.methods.balanceOf(fromWallet.address).call();
-    if (new BN(balance).eq(new BN(0))) return;
-
-    if (!(await ERC20Token.exists({ walletId: toWallet._id }))) {
-        // Create token if it does not exist for the receiving wallet
-        await createERC20Token(erc20, toWallet.sub);
-    }
-
-    await TransactionService.sendAsync(
-        fromWallet.contract.options.address,
-        fromWallet.contract.methods.transferERC20(erc20.address, toWallet.address, balance),
-        fromWallet.chainId,
-        true,
-        { type: 'transferFromCallBack', args: { erc20Id: String(erc20._id) } },
-    );
-}
-
 export const transferFrom = async (erc20: ERC20Document, wallet: WalletDocument, to: string, amountInWei: string) => {
     const erc20Transfer = await ERC20Transfer.create({
         erc20Id: erc20._id,
@@ -282,7 +263,6 @@ async function createERC20Token(erc20: ERC20Document, sub: string) {
 
 export default {
     findBySub,
-    migrate,
     createERC20Token,
     deploy,
     getAll,
