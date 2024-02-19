@@ -12,7 +12,6 @@ import { RelayerTransactionPayload } from '@openzeppelin/defender-relay-client';
 import { Contract } from 'web3-eth-contract';
 import { WalletDocument } from '../models/Wallet';
 import ERC721Service from './ERC721Service';
-import WithdrawalService from './WithdrawalService';
 import ERC1155Service from './ERC1155Service';
 import SafeService from './SafeService';
 
@@ -274,9 +273,6 @@ async function executeCallback(tx: TransactionDocument, receipt: TransactionRece
             break;
         case 'erc1155TokenMintCallback':
             await ERC1155Service.mintCallback(tx.callback.args, receipt);
-            break;
-        case 'withdrawForCallback':
-            await WithdrawalService.withdrawForCallback(tx.callback.args, receipt);
             break;
         case 'erc721nTransferFromCallback':
             await ERC721Service.transferFromCallback(tx.callback.args, receipt);

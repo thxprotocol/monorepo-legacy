@@ -1,12 +1,10 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { Widget } from '@thxnetwork/api/models/Widget';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import { DiscordRoleReward } from '@thxnetwork/api/models/DiscordRoleReward';
 import { DiscordRoleRewardPayment } from '@thxnetwork/api/models/DiscordRoleRewardPayment';
@@ -15,7 +13,7 @@ import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 import { AccessTokenKind } from '@thxnetwork/common/lib/types';
 import { Participant } from '@thxnetwork/api/models/Participant';
 
-const validation = [param('uuid').exists()];
+const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.header('X-PoolId'));
@@ -56,12 +54,10 @@ const controller = async (req: Request, res: Response) => {
 
     await member.roles.add(role);
 
-    const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
     const payment = await DiscordRoleRewardPayment.create({
         perkId: reward._id,
         discordRoleId: reward.discordRoleId,
         sub: req.auth.sub,
-        walletId: wallet._id,
         poolId: reward.poolId,
         amount: reward.pointPrice,
     });

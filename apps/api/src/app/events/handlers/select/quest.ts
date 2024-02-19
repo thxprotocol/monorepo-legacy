@@ -3,15 +3,13 @@ import { JobType, QuestVariant } from '@thxnetwork/common/lib/types/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import QuestService from '@thxnetwork/api/services/QuestService';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import { handleError } from '../../commands/error';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
 import { DiscordButtonVariant } from '../../InteractionCreated';
 import Brand from '@thxnetwork/api/models/Brand';
 import { Widget } from '@thxnetwork/api/models/Widget';
-import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import { agenda } from '@thxnetwork/api/util/agenda';
-import { DiscordDisconnected, DiscordSafeNotFound } from '@thxnetwork/api/util/errors';
+import { DiscordDisconnected } from '@thxnetwork/api/util/errors';
 import { TPointReward } from '@thxnetwork/common/lib/types';
 import { serviceMap } from '@thxnetwork/api/services/interfaces/IQuestService';
 
@@ -27,9 +25,6 @@ export async function completeQuest(
         const Quest = serviceMap[variant].models.quest;
         const quest = await Quest.findById(questId);
         if (!quest) throw new Error('Could not find this quest.');
-
-        const wallet = await SafeService.findPrimary(account.sub);
-        if (!wallet) throw new DiscordSafeNotFound();
 
         const pool = await PoolService.getById(quest.poolId);
         if (!pool) throw new Error('Could not find this campaign.');
@@ -79,9 +74,6 @@ export async function onSelectQuestComplete(interaction: StringSelectMenuInterac
 
         const account = await AccountProxy.getByDiscordId(interaction.user.id);
         if (!account) throw new DiscordDisconnected();
-
-        const wallet = await SafeService.findPrimary(account.sub);
-        if (!wallet) throw new DiscordSafeNotFound();
 
         const quest = await QuestService.findById(variant, questId);
         if (!quest) throw new Error('Could not find this quest.');

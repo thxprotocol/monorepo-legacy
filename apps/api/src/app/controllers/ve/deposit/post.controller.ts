@@ -1,17 +1,18 @@
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
 import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { ChainId } from '@thxnetwork/common/lib/types/enums';
 import { BigNumber } from 'ethers';
-import SafeService from '@thxnetwork/api/services/SafeService';
-import VoteEscrowService from '@thxnetwork/api/services/VoteEscrowService';
 import { BPT_ADDRESS, VE_ADDRESS } from '@thxnetwork/api/config/secrets';
 import { getProvider } from '@thxnetwork/api/util/network';
+import { getChainId } from '@thxnetwork/api/services/ContractService';
+import SafeService from '@thxnetwork/api/services/SafeService';
+import VoteEscrowService from '@thxnetwork/api/services/VoteEscrowService';
 
 export const validation = [body('amountInWei').isString(), body('lockEndTimestamp').isInt()];
 
 export const controller = async (req: Request, res: Response) => {
-    const wallet = await SafeService.findPrimary(req.auth.sub, ChainId.Hardhat);
+    const chainId = getChainId();
+    const wallet = await SafeService.findOne({ sub: req.auth.sub, chainId });
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
     // Check sufficient BPT approval

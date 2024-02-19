@@ -6,6 +6,7 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { BigNumber } from 'ethers';
+import { getChainId } from '@thxnetwork/api/services/ContractService';
 
 export const validation = [
     body('tokenAddress').isEthereumAddress(),
@@ -14,7 +15,8 @@ export const validation = [
 ];
 
 export const controller = async (req: Request, res: Response) => {
-    const wallet = await SafeService.findPrimary(req.auth.sub);
+    const chainId = getChainId();
+    const wallet = await SafeService.findOne({ sub: req.auth.sub, chainId });
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
     const { web3 } = getProvider();

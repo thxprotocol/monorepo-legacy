@@ -21,7 +21,6 @@ import { Identity } from '@thxnetwork/api/models/Identity';
 import LockService from '@thxnetwork/api/services/LockService';
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Perks']
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const [erc20Perks, erc721Perks, customRewards, couponRewards, discordRoleRewards] = await Promise.all([
         ERC20Perk.find({

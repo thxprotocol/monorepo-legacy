@@ -2,9 +2,9 @@ import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { TAccount, TWallet } from '@thxnetwork/common/lib/types';
 import { TransactionState, WalletVariant } from '@thxnetwork/types/enums';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
-import SafeService from './SafeService';
 import { getChainId, safeVersion } from './ContractService';
 import { v4 } from 'uuid';
+import SafeService from './SafeService';
 
 export default class WalletService {
     static async list(account: TAccount) {
@@ -28,8 +28,17 @@ export default class WalletService {
         );
     }
 
-    static findOne({ uuid }: { uuid: string }) {
+    static findById(id: string) {
+        if (!id) return;
+        return Wallet.findById(id);
+    }
+
+    static findByUUID({ uuid }: { uuid: string }) {
         return Wallet.findOne({ uuid, expiresAt: { $gt: new Date(Date.now()) } });
+    }
+
+    static findOne(query: Partial<TWallet>) {
+        return Wallet.findOne(query);
     }
 
     static formatAddress(address: string) {
@@ -54,7 +63,7 @@ export default class WalletService {
     }
 
     static async createSafe({ sub, address, chainId }) {
-        const safeWallet = await SafeService.findPrimary(sub);
+        const safeWallet = await SafeService.findOne({ sub });
         // An account can have max 1 Safe
         if (safeWallet) throw new Error('Already has a Safe.');
 

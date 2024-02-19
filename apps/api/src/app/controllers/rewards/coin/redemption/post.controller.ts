@@ -16,7 +16,7 @@ import SafeService from '@thxnetwork/api/services/SafeService';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import { Participant } from '@thxnetwork/api/models/Participant';
 
-const validation = [param('uuid').exists(), body('walletId').isMongoId()];
+const validation = [param('id').isMongoId(), body('walletId').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.header('X-PoolId'));

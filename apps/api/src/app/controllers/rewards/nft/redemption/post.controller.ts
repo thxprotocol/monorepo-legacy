@@ -19,7 +19,7 @@ import PerkService from '@thxnetwork/api/services/PerkService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { Participant } from '@thxnetwork/api/models/Participant';
 
-const validation = [param('uuid').exists(), body('walletId').isMongoId()];
+const validation = [param('id').isMongoId(), body('walletId').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks Payment']

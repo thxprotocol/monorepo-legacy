@@ -8,10 +8,11 @@ import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
 export const validation = [
-    body('erc1155Id').exists().isMongoId(),
-    body('erc1155TokenId').exists().isMongoId(),
-    body('erc1155Amount').exists().isInt(),
-    body('to').exists().isString(),
+    body('walletId').isMongoId(),
+    body('erc1155Id').isMongoId(),
+    body('erc1155TokenId').isMongoId(),
+    body('erc1155Amount').isInt(),
+    body('to').isString(),
 ];
 
 export const controller = async (req: Request, res: Response) => {
@@ -21,7 +22,7 @@ export const controller = async (req: Request, res: Response) => {
     const erc1155Token = await ERC1155Token.findById(req.body.erc1155TokenId);
     if (!erc1155Token) throw new NotFoundError('Could not find token for wallet');
 
-    const wallet = await SafeService.findPrimary(req.auth.sub, erc1155.chainId);
+    const wallet = await SafeService.findById(req.body.walletId);
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
     const balance = await erc1155.contract.methods.balanceOf(wallet.address, erc1155Token.tokenId).call();

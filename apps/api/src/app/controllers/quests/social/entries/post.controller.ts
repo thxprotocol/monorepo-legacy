@@ -11,7 +11,7 @@ import { logger } from '@thxnetwork/api/util/logger';
 
 const validation = [param('id').isMongoId()];
 
-const controller = async ({ params, account, wallet }: Request, res: Response) => {
+const controller = async ({ params, account }: Request, res: Response) => {
     // Get the quest document
     const quest = await PointReward.findById(params.id);
     if (!quest) throw new NotFoundError('Quest not found');

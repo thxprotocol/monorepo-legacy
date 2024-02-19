@@ -5,14 +5,13 @@ import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import { CouponReward } from '@thxnetwork/api/models/CouponReward';
 import { CouponCode } from '@thxnetwork/api/models/CouponCode';
 import { CouponRewardPayment } from '@thxnetwork/api/models/CouponRewardPayment';
 import { Participant } from '@thxnetwork/api/models/Participant';
 
-const validation = [param('uuid').exists()];
+const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.header('X-PoolId'));
@@ -34,13 +33,10 @@ const controller = async (req: Request, res: Response) => {
     const couponCode = await CouponCode.findOne({ couponRewardId: String(reward._id), sub: { $exists: false } });
     if (!couponCode) throw new BadRequestError('Not enough coupon codes left.');
 
-    const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
-
     const payment = await CouponRewardPayment.create({
         couponCodeId: couponCode._id,
         perkId: reward.id,
         sub: req.auth.sub,
-        walletId: wallet._id,
         poolId: reward.poolId,
         amount: reward.pointPrice,
     });

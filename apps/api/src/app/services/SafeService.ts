@@ -4,7 +4,6 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { getChainId, safeVersion } from '@thxnetwork/api/services/ContractService';
 import { toChecksumAddress } from 'web3-utils';
-import { MONGODB_URI } from '@thxnetwork/api/config/secrets';
 import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit';
 import SafeApiKit from '@safe-global/api-kit';
 import {
@@ -16,7 +15,6 @@ import { logger } from '@thxnetwork/api/util/logger';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import AccountProxy from '../proxies/AccountProxy';
 import { agenda, JobType } from '@thxnetwork/api/util/agenda';
-import { MongoClient } from 'mongodb';
 import { Job } from '@hokify/agenda';
 import { AssetPool, AssetPoolDocument } from '../models/AssetPool';
 import { Transaction } from '../models/Transaction';
@@ -128,24 +126,28 @@ function findById(id: string) {
     return Wallet.findById(id);
 }
 
+function findOne(query) {
+    return Wallet.findOne({ ...query, safeVersion, poolId: { $exists: false } });
+}
+
 function findOneByAddress(address: string) {
     return Wallet.findOne({ address: toChecksumAddress(address) });
 }
 
-async function findPrimary(sub: string, chainId?: ChainId) {
-    if (!chainId) chainId = getChainId();
-    const account = await AccountProxy.findById(sub);
-    const isMetamask = account.variant === AccountVariant.Metamask;
-    return await Wallet.findOne({
-        sub,
-        chainId,
-        poolId: { $exists: false },
-        address: { $exists: true, $ne: '' },
-        ...(isMetamask
-            ? { version: { $exists: false }, safeVersion: { $exists: false } }
-            : { address: { $exists: true, $ne: '' }, safeVersion: '1.3.0' }),
-    });
-}
+// async function findPrimary(sub: string, chainId?: ChainId) {
+//     if (!chainId) chainId = getChainId();
+//     const account = await AccountProxy.findById(sub);
+//     const isMetamask = account.variant === AccountVariant.Metamask;
+//     return await Wallet.findOne({
+//         sub,
+//         chainId,
+//         poolId: { $exists: false },
+//         address: { $exists: true, $ne: '' },
+//         ...(isMetamask
+//             ? { version: { $exists: false }, safeVersion: { $exists: false } }
+//             : { address: { $exists: true, $ne: '' }, safeVersion: '1.3.0' }),
+//     });
+// }
 
 async function findOneByPool(pool: AssetPoolDocument, chainId: ChainId) {
     return await Wallet.findOne({
@@ -154,14 +156,6 @@ async function findOneByPool(pool: AssetPoolDocument, chainId: ChainId) {
         poolId: String(pool._id),
         safeVersion,
     });
-}
-
-async function findOneByQuery(query: { sub?: string; chainId?: number; address?: string }) {
-    return await Wallet.findOne(query);
-}
-
-async function findByQuery(query: { sub?: string; chainId?: number }) {
-    return await Wallet.find(query);
 }
 
 async function getOwners(wallet: WalletDocument) {
@@ -270,12 +264,10 @@ export default {
     confirm,
     getLastPendingTransactions,
     getOwners,
-    findPrimary,
     create,
     createJob,
     findOneByAddress,
-    findByQuery,
-    findOneByQuery,
+    findOne,
     getTransaction,
     executeTransaction,
     findOneByPool,

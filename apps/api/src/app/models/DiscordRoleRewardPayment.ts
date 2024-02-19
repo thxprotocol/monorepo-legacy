@@ -6,7 +6,6 @@ export type DiscordRoleRewardPaymentDocument = mongoose.Document & TDiscordRoleR
 const schema = new mongoose.Schema(
     {
         perkId: String,
-        walletId: String,
         sub: String,
         discordRoleId: String,
         poolId: String,

@@ -10,11 +10,10 @@ import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import WebhookService from '@thxnetwork/api/services/WebhookService';
 
-const validation = [param('uuid').exists()];
+const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.header('X-PoolId'));
@@ -41,12 +40,10 @@ const controller = async (req: Request, res: Response) => {
         data: { customRewardId: reward._id, metadata: reward.metadata },
     });
 
-    const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
     const payment = await CustomRewardPayment.create({
         perkId: reward.id,
-        sub: req.auth.sub,
-        walletId: wallet._id,
         poolId: reward.poolId,
+        sub: req.auth.sub,
         amount: reward.pointPrice,
     });
 

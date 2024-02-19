@@ -21,6 +21,7 @@ import PoolService from './PoolService';
 import TransactionService from './TransactionService';
 import IPFSService from './IPFSService';
 import SafeService from './SafeService';
+import WalletService from './WalletService';
 
 const contractName = 'NonFungibleToken';
 
@@ -212,7 +213,7 @@ export async function transferFrom(
     to: string,
     erc721Token: ERC721TokenDocument,
 ): Promise<ERC721TokenDocument> {
-    const toWallet = await SafeService.findOneByAddress(to);
+    const toWallet = await WalletService.findOne({ address: to, chainId: erc721.chainId });
     const tx = await TransactionService.sendSafeAsync(
         wallet,
         erc721.address,
@@ -222,7 +223,7 @@ export async function transferFrom(
             args: {
                 erc721Id: String(erc721._id),
                 erc721TokenId: String(erc721Token._id),
-                sub: toWallet && toWallet.sub,
+                walletId: toWallet && toWallet._id,
             },
         },
     );
@@ -237,18 +238,18 @@ export async function transferFrom(
 }
 
 export async function transferFromCallback(args: TERC721TransferFromCallBackArgs, receipt: TransactionReceipt) {
-    const { erc721TokenId, sub } = args;
+    const { erc721TokenId, walletId } = args;
     const erc721Token = await ERC721Token.findById(erc721TokenId);
     const erc721 = await ERC721.findById(erc721Token.erc721Id);
     const events = parseLogs(erc721.contract.options.jsonInterface, receipt.logs);
     const event = assertEvent('Transfer', events);
-    const wallet = sub && (await SafeService.findPrimary(sub, erc721.chainId));
+    const wallet = await WalletService.findById(walletId);
 
     await erc721Token.updateOne({
-        sub,
         state: ERC721TokenState.Transferred,
         tokenId: Number(event.args.tokenId),
         recipient: event.args.to,
+        sub: wallet && wallet.sub,
         walletId: wallet && String(wallet._id),
     });
 }
