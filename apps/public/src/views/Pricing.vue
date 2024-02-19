@@ -25,13 +25,6 @@
                                 <strong>&euro; 0</strong>
                                 / month
                             </p>
-                            <p>
-                                <i>
-                                    <a href="https://docs.thx.network/pricing" target="_blank" class="text-muted mt-2">
-                                        2,5% fee on rewards
-                                    </a>
-                                </i>
-                            </p>
                             <b-button
                                 block
                                 to="/signup"
@@ -63,13 +56,6 @@
                                 <strong>&euro; 89</strong>
                                 / month
                             </p>
-                            <p>
-                                <i>
-                                    <a href="https://docs.thx.network/pricing" target="_blank" class="text-dark mt-2">
-                                        2,5% fee on rewards
-                                    </a>
-                                </i>
-                            </p>
                             <b-button
                                 block
                                 to="/signup?signup_plan=1"
@@ -91,13 +77,6 @@
                             <p class="pricing-costs mt-4">
                                 <strong>&euro; 449</strong>
                                 / month
-                            </p>
-                            <p>
-                                <i>
-                                    <a href="https://docs.thx.network/pricing" target="_blank" class="text-muted mt-2">
-                                        2,5% fee on rewards
-                                    </a>
-                                </i>
                             </p>
                             <b-button
                                 block
