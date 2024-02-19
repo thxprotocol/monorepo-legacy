@@ -8,7 +8,12 @@ import { v4 } from 'uuid';
 
 export default class WalletService {
     static async list(account: TAccount) {
-        const wallets = await Wallet.find({ sub: account.sub, address: { $exists: true, $ne: null } });
+        // List all wallets owned by the account but filter out wallets used for the campaign
+        const wallets = await Wallet.find({
+            sub: account.sub,
+            address: { $exists: true, $ne: null },
+            poolId: { $exists: false },
+        });
 
         return await Promise.all(
             wallets.map(async (wallet) => {
