@@ -27,6 +27,12 @@ const chainList: { [chainId: number]: ChainInfo } = {
         blockExplorer: 'https://polygonscan.com',
         rpc: 'https://polygon-rpc.com',
     },
+    [ChainId.PolygonZK]: {
+        chainId: ChainId.PolygonZK,
+        name: 'Polygon zkEVM',
+        blockExplorer: 'https://zkevm.polygonscan.com',
+        rpc: 'https://zkevm-rpc.com',
+    },
 };
 
 if (process.env['NODE_ENV'] !== 'production') {

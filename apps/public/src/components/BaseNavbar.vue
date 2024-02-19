@@ -35,7 +35,10 @@
                             <i class="fas fa-caret-down" />
                         </template>
                         <b-dropdown-item :title="TITLES.TOKEN" to="/token">$THX Token</b-dropdown-item>
-                        <b-dropdown-item target="_blank" href="https://offsetra.com/profile/THX_Network">
+                        <b-dropdown-item
+                            target="_blank"
+                            href="https://opensea.io/assets/matic/0x804ad6f73c17bcb4e87cbc7cdf7e05fc6e4469b5/5"
+                        >
                             Carbon Offset
                         </b-dropdown-item>
                     </b-nav-item-dropdown>
