@@ -7,16 +7,13 @@ import { BadRequestError } from '@thxnetwork/api/util/errors';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
-const validation = [query('walletId').optional().isMongoId(), query('recipient').optional().isEthereumAddress()];
+const validation = [query('walletId').isMongoId()];
 
 export const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findById(req.query.walletId as string);
     if (!wallet) throw new BadRequestError('Wallet not found');
 
-    // We check for the recipient search param here which is used to fetch tokens for a safe in the import flow
-    const tokens = req.query.recipient
-        ? await ERC721Token.find({ recipient: req.query.recipient })
-        : await ERC721Token.find({ walletId: String(wallet._id) });
+    const tokens = await ERC721Token.find({ walletId: wallet.id });
     const result = await Promise.all(
         tokens.map(async (token: ERC721TokenDocument) => {
             const erc721 = await ERC721Service.findById(token.erc721Id);

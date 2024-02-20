@@ -18,7 +18,7 @@ const validation = [param('id').isMongoId()];
 const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.header('X-PoolId'));
 
-    const reward = await DiscordRoleReward.findOne({ uuid: req.params.uuid });
+    const reward = await DiscordRoleReward.findById(req.params.id);
     if (!reward) throw new NotFoundError('Could not find this reward');
     if (!reward.pointPrice) throw new NotFoundError('No point price for this reward has been set.');
 

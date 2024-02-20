@@ -32,7 +32,7 @@ const controller = async (req: Request, res: Response) => {
         }
     }
 
-    return res.json(participants);
+    res.json(participants);
 };
 
 export default { controller, validation };

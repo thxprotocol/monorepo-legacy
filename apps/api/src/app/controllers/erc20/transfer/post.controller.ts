@@ -8,10 +8,10 @@ import ERC20 from '@thxnetwork/api/models/ERC20';
 
 export const validation = [
     body('walletId').isMongoId(),
-    body('erc20Id').exists().isMongoId(),
-    body('to').exists().isString(),
-    body('amount').exists().isString(),
-    body('chainId').exists().isNumeric(),
+    body('erc20Id').isMongoId(),
+    body('to').isString(),
+    body('amount').isString(),
+    body('chainId').isNumeric(),
 ];
 
 export const controller = async (req: Request, res: Response) => {

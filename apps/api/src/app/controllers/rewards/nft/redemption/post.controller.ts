@@ -27,7 +27,7 @@ const controller = async (req: Request, res: Response) => {
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
     if (!safe) throw new NotFoundError('Could not find campaign wallet');
 
-    const perk = await ERC721Perk.findOne({ uuid: req.params.uuid });
+    const perk = await ERC721Perk.findById(req.params.id);
     if (!perk) throw new NotFoundError('Could not find this perk');
     if (!perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
 

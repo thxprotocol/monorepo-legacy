@@ -17,7 +17,7 @@ const controller = async (req: Request, res: Response) => {
     if (!metadata) throw new NotFoundError('ERC1155Metadata not found');
 
     const wallet = await SafeService.findById(req.query.walletId as string);
-    if (!wallet) throw new NotFoundError('Safe not found for account');
+    if (!wallet) throw new NotFoundError('Wallet not found for account');
 
     const balance = await erc1155.contract.methods.balanceOf(wallet.address, metadata.tokenId).call();
     const tokenUri = token.tokenId ? await erc1155.contract.methods.uri(token.tokenId).call() : '';

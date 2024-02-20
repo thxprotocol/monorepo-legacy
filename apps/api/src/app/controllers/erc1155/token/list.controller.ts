@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ERC1155Token, ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
+import { ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
 import { query } from 'express-validator';
 import { BadRequestError } from '@thxnetwork/api/util/errors';
 import type { TERC1155, TERC1155Token } from '@thxnetwork/types/interfaces';
@@ -12,9 +12,7 @@ export const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findById(req.query.walletId as string);
     if (!wallet) throw new BadRequestError('Wallet not found');
 
-    const tokens = req.query.recipient
-        ? await ERC1155Token.find({ recipient: req.query.recipient })
-        : await ERC1155Service.findTokensByWallet(wallet);
+    const tokens = await ERC1155Service.findTokensByWallet(wallet);
     const result = await Promise.all(
         tokens.map(async (token: ERC1155TokenDocument) => {
             const erc1155 = await ERC1155Service.findById(token.erc1155Id);
