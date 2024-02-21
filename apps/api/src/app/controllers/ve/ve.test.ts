@@ -29,7 +29,7 @@ describe('VESytem', () => {
         scthx!: Contract;
 
     it('Deploy Tokens', async () => {
-        safeWallet = await SafeService.findPrimary(sub);
+        safeWallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
         expect(safeWallet.address).toBeDefined();
 
         testBPT = new ethers.Contract(BPT_ADDRESS, contractArtifacts['BPTToken'].abi, signer);

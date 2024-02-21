@@ -124,7 +124,7 @@ describe('ERC721 Transfer', () => {
             1000,
         );
 
-        const wallet = await SafeService.findPrimary(sub);
+        const wallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
 
         // Mint a token for metadata
         erc721Token = await ERC721Service.mint(safe, erc721, wallet, metadata);
@@ -156,7 +156,7 @@ describe('ERC721 Transfer', () => {
     });
 
     it('Confirm tx', async () => {
-        const wallet = await SafeService.findPrimary(sub);
+        const wallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
         const { signature } = await signTxHash(wallet.address, safeTxHash, userWalletPrivateKey);
         const res2 = await user
             .post(`/v1/account/wallets/confirm`)

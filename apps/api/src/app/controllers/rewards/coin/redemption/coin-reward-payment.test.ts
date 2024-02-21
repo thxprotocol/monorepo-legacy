@@ -53,7 +53,7 @@ describe('Coin Reward Payment', () => {
     });
 
     it('POST /pools', async () => {
-        wallet = await SafeService.findPrimary(sub, ChainId.Hardhat);
+        wallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
         await user
             .post('/v1/pools')
             .set('Authorization', dashboardAccessToken)

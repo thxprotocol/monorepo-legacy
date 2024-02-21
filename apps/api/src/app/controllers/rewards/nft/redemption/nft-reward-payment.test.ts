@@ -158,7 +158,7 @@ describe('NFT Reward Payment', () => {
         let erc721TokenId;
 
         beforeAll(async () => {
-            wallet = await SafeService.findPrimary(sub, ChainId.Hardhat);
+            wallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
             // Add some points for the subs wallet
             await PointBalanceService.add(pool as AssetPoolDocument, account as TAccount, 500);
         });
@@ -203,7 +203,7 @@ describe('NFT Reward Payment', () => {
 
         it('Wait for ownerOf', async () => {
             const { contract } = await ERC721.findById(perk.erc721Id);
-            const safe = await SafeService.findPrimary(sub, ChainId.Hardhat);
+            const safe = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
 
             await poll(
                 async () => (await ERC721Token.findById(erc721TokenId)).tokenId,

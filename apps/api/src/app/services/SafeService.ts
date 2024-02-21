@@ -134,21 +134,6 @@ function findOneByAddress(address: string) {
     return Wallet.findOne({ address: toChecksumAddress(address) });
 }
 
-// async function findPrimary(sub: string, chainId?: ChainId) {
-//     if (!chainId) chainId = getChainId();
-//     const account = await AccountProxy.findById(sub);
-//     const isMetamask = account.variant === AccountVariant.Metamask;
-//     return await Wallet.findOne({
-//         sub,
-//         chainId,
-//         poolId: { $exists: false },
-//         address: { $exists: true, $ne: '' },
-//         ...(isMetamask
-//             ? { version: { $exists: false }, safeVersion: { $exists: false } }
-//             : { address: { $exists: true, $ne: '' }, safeVersion: '1.3.0' }),
-//     });
-// }
-
 async function findOneByPool(pool: AssetPoolDocument, chainId: ChainId) {
     return await Wallet.findOne({
         chainId,
