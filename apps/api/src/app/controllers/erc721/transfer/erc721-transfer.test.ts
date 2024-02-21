@@ -14,6 +14,7 @@ import SafeService, { Wallet } from '@thxnetwork/api/services/SafeService';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 
 const user = request.agent(app);
 
@@ -21,6 +22,7 @@ describe('ERC721 Transfer', () => {
     let erc721: ERC721Document,
         erc721Token: ERC721TokenDocument,
         pool: AssetPoolDocument,
+        wallet: WalletDocument,
         safeTxHash = '';
     const chainId = ChainId.Hardhat,
         name = 'Test Collection',
@@ -124,7 +126,7 @@ describe('ERC721 Transfer', () => {
             1000,
         );
 
-        const wallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
+        wallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
 
         // Mint a token for metadata
         erc721Token = await ERC721Service.mint(safe, erc721, wallet, metadata);
@@ -143,11 +145,15 @@ describe('ERC721 Transfer', () => {
 
     it('Transfer ERC721 ownership', async () => {
         const receiver = await Wallet.findOne({ sub: sub2, safeVersion });
-        const { status, body } = await user.post('/v1/erc721/transfer').set({ Authorization: widgetAccessToken }).send({
-            erc721Id: erc721._id,
-            erc721TokenId: erc721Token._id,
-            to: receiver.address,
-        });
+        const { status, body } = await user
+            .post('/v1/erc721/transfer')
+            .query({ walletId: wallet._id })
+            .set({ Authorization: widgetAccessToken })
+            .send({
+                erc721Id: erc721._id,
+                erc721TokenId: erc721Token._id,
+                to: receiver.address,
+            });
 
         expect(status).toBe(201);
         expect(body.safeTxHash).toBeDefined();

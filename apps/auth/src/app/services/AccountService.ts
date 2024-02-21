@@ -37,13 +37,15 @@ export class AccountService {
         }
 
         // Send verification email when changing email
-        if (data.email && account.email !== data.email) {
-            const isUsed = await Account.exists({
-                email: data.email,
-                _id: { $ne: String(account._id), $exists: true },
-            });
-            if (isUsed) throw new BadRequestError('Email already in use.');
-
+        if (data.email) {
+            // Only check if email is different than the current one
+            if (account.email !== data.email) {
+                const isUsed = await Account.exists({
+                    email: data.email,
+                    _id: { $ne: String(account._id), $exists: true },
+                });
+                if (isUsed) throw new BadRequestError('Email already in use.');
+            }
             await MailService.sendVerificationEmail(account, data.email, WIDGET_URL);
 
             // Set isEmailVerified to false to force user to confirm the e-mail

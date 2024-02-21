@@ -47,7 +47,6 @@ describe('ERC20 Transfer', () => {
                 .set({ Authorization: widgetAccessToken })
                 .send()
                 .expect(async ({ body }: request.Response) => {
-                    console.log(body);
                     expect(body[0].address).toBeDefined();
                     wallet = body[0];
                 })
@@ -67,6 +66,7 @@ describe('ERC20 Transfer', () => {
         it('HTTP 201', async () => {
             const res = await user
                 .post('/v1/erc20/transfer')
+                .query({ walletId: wallet._id })
                 .set({ Authorization: widgetAccessToken })
                 .send({
                     erc20Id: erc20._id,
