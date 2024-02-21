@@ -28,6 +28,7 @@ async function decorate(account: AccountDocument) {
         lastName: account.lastName,
         website: account.website,
         organisation: account.organisation,
+        isEmailVerified: account.isEmailVerified,
         plan: account.plan,
         email: account.email,
         variant: account.variant,

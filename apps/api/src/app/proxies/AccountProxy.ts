@@ -43,6 +43,7 @@ export default class AccountProxy {
     }
 
     static update(sub: string, updates: TAccount): Promise<TAccount> {
+        console.log('updates', updates);
         return this.request({
             method: 'PATCH',
             url: `/accounts/${sub}`,
