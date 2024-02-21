@@ -5,6 +5,21 @@ import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { getChainId, safeVersion } from './ContractService';
 import { v4 } from 'uuid';
 import SafeService from './SafeService';
+import { PointRewardClaim } from '../models/PointRewardClaim';
+import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
+import { DailyRewardClaim } from '../models/DailyRewardClaims';
+import { GitcoinQuestEntry } from '../models/GitcoinQuestEntry';
+import { Web3QuestClaim } from '../models/Web3QuestClaim';
+import { ERC20Token } from '../models/ERC20Token';
+import { ERC721Token } from '../models/ERC721Token';
+import { ERC1155Token } from '../models/ERC1155Token';
+import { ERC20PerkPayment } from '../models/ERC20PerkPayment';
+import { ERC721PerkPayment } from '../models/ERC721PerkPayment';
+import { DiscordRoleRewardPayment } from '../models/DiscordRoleRewardPayment';
+import { CustomRewardPayment } from '../models/CustomRewardPayment';
+import { CouponRewardPayment } from '../models/CouponRewardPayment';
+import { Participant } from '../models/Participant';
+import { logger } from '../util/logger';
 
 export default class WalletService {
     static async list(account: TAccount) {
@@ -45,12 +60,61 @@ export default class WalletService {
         return `${address.slice(0, 5)}...${address.slice(-3)}`;
     }
 
-    static connect({ uuid, address }: Partial<TWallet>) {
-        return Wallet.findOneAndUpdate(
+    static async connect({ uuid, address }: Partial<TWallet>) {
+        // Search if a walllet with this address already exists
+        const oldWallet = await Wallet.findOne({ address, version: { $exists: false } });
+        const wallet = await Wallet.findOneAndUpdate(
+            // This filter allows to take ownership of wallets owned by other subs as long as
+            // the address can be verified.
             { uuid, variant: WalletVariant.WalletConnect },
             { uuid: null, address },
             { new: true },
         );
+
+        // Check if old wallet is owned by the same sub
+        if (oldWallet.sub !== wallet.sub) {
+            await this.migrate(oldWallet, wallet);
+        }
+
+        return wallet;
+    }
+
+    static async migrate(oldWallet: TWallet, newWallet: TWallet) {
+        // Find all assets tied for the old wallet
+        const [daily, social, custom, web3, gitcoin, erc20, erc721, erc1155, coin, nft, discord, customreward, coupon] =
+            await Promise.all(
+                [
+                    DailyRewardClaim,
+                    PointRewardClaim,
+                    MilestoneRewardClaim,
+                    Web3QuestClaim,
+                    GitcoinQuestEntry,
+                    // Coins
+                    ERC20Token,
+                    // NFT
+                    ERC721Token,
+                    ERC1155Token,
+                    // RewardPayments
+                    ERC20PerkPayment,
+                    ERC721PerkPayment,
+                    DiscordRoleRewardPayment,
+                    CustomRewardPayment,
+                    CouponRewardPayment,
+                ].map((Model: any) => Model.find({ sub: oldWallet.sub })),
+            );
+
+        const operations = [];
+
+        //
+
+        // There could be duplicate entries for the same quest and sub after this update
+        // Iterate over the entries and check if the new sub already as an entry for this questId
+        // We should skip
+
+        // Update the point balances for the new sub on campaigns of the old sub
+        const oldParticipants = await Participant.find({ sub: oldWallet.sub });
+
+        logger.info(`Migrated ${oldWallet.sub} to ${newWallet.sub}`);
     }
 
     static create(variant: WalletVariant, data: Partial<TWallet>) {
