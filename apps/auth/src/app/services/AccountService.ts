@@ -91,10 +91,10 @@ export class AccountService {
         // Checking for non checksummed as well in order to avoid issues with existing data in db
         const account = await Account.findOne({ $or: [{ address: checksummedAddress }, { address }] });
         if (account) return account;
-        return await Account.create({
-            variant: AccountVariant.Metamask,
-            plan: AccountPlanType.Free,
-            address,
-        });
+        // return await Account.create({
+        //     variant: AccountVariant.Metamask,
+        //     plan: AccountPlanType.Free,
+        //     address,
+        // });
     }
 }

@@ -75,7 +75,7 @@
     text-decoration: none;
   }
 </style>
-<div class="<%- (params.isSignup) ? 'col-md-10 col-xl-8 offset-md-1 offset-xl-2' : 'col-md-6 offset-md-3 col-xl-4 offset-xl-4' %>  fade-in"
+<div class="<%- (params.isSignup) ? 'col-md-10 col-xl-10 offset-md-1 offset-xl-2' : 'col-md-8 offset-md-2 col-xl-4 offset-xl-4' %>  fade-in"
      @vue:mounted="onMounted" :class="{ 'is-mounted': isMounted }">
 
   <div class="text-center pb-4 pt-3">
@@ -276,6 +276,17 @@
           <% } %>
 
           <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post">
+            <% if (params.authRequestMessage && params.metaMaskEnabled) { %>
+            <div class="alert alert-primary">
+              <p>
+                On March 1st 2024 we are removing the Metamask login method.
+              </p>
+              <a href="https://docs.thx.network/faq/metamask-login" target="_blank">
+                <i class="fas fa-info-circle mr-1"></i>
+                Learn how to migrate your data
+              </a>
+            </div>
+            <% } %>
 
             <% if(params.emailPasswordEnabled) { %>
             <p class="text-muted">

@@ -7,21 +7,6 @@
             <strong class="h3 d-block text-dark mb-4">
                 Oops, a wild issue appeared!
             </strong>
-            <p>
-                Please use the buttons below to find your way back.
-            </p>
-            <a class="btn rounded-pill btn-light btn-sm btn-block" href="<%= dashboardUrl %>">
-                Dashboard
-                <i class="fas fa-chevron-right" aria-hidden="true"></i>
-            </a>
-            <a class="btn rounded-pill btn-light btn-sm btn-block" href="<%= publicUrl %>">
-                Website
-                <i class="fas fa-chevron-right" aria-hidden="true"></i>
-            </a>
-            <a class="btn rounded-pill btn-light btn-sm btn-block" href="https://docs.thx.network">
-                Docs
-                <i class="fas fa-chevron-right" aria-hidden="true"></i>
-            </a>
 
             <% if (locals.alert && alert.message) { %>
             <div class="alert alert-<%= alert.variant %> mt-4 py-1 px-2">
@@ -29,6 +14,20 @@
                 <%= alert.message %>
             </div>
             <% } %>
+
+            <p>Please use the buttons below to find your way back.</p>
+            <a class="btn rounded-pill btn-light btn-sm btn-block" href="<%= widgetUrl %>" target="_blank">
+                Campaigns
+                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            </a>
+            <a class="btn rounded-pill btn-light btn-sm btn-block" href="<%= publicUrl %>" target="_blank">
+                Website
+                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            </a>
+            <a class="btn rounded-pill btn-light btn-sm btn-block" href="https://docs.thx.network" target="_blank">
+                Docs
+                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            </a>
 
             <% if (returnUrl) { %>
             <input type="hidden" name="returnUrl" value="<%= returnUrl %>" />
