@@ -10,7 +10,7 @@ import db from './util/database';
 import morgan from './middlewares/morgan';
 import morganBody from 'morgan-body';
 import { xssProtection } from 'lusca';
-import { DASHBOARD_URL, GTM, MONGODB_URI, NODE_ENV, PORT, PUBLIC_URL, WALLET_URL } from './config/secrets';
+import { DASHBOARD_URL, GTM, MONGODB_URI, NODE_ENV, PORT, PUBLIC_URL, WALLET_URL, WIDGET_URL } from './config/secrets';
 import RouterRoot from './controllers';
 import { corsHandler, errorLogger, errorNormalizer, errorOutput, notFoundHandler } from './middlewares';
 import { helmetInstance } from './util/helmet';
@@ -50,7 +50,7 @@ app.use(errorOutput);
 app.locals = Object.assign(app.locals, {
     gtm: GTM,
     dashboardUrl: DASHBOARD_URL,
-    walletUrl: WALLET_URL,
+    widgetUrl: WIDGET_URL,
     publicUrl: PUBLIC_URL,
     deployedAt: String(Date.now()),
 });

@@ -16,7 +16,7 @@ async function controller(req: Request, res: Response) {
         if (!address) throw new UnauthorizedError('Could not recover address from signed message.');
 
         const account = await AccountService.findAccountForAddress(address);
-        if (!account) throw new UnauthorizedError('Could not find an account for this address.');
+        if (!account) throw new UnauthorizedError('We no longer support new accounts created using Metamask.');
 
         await oidc.interactionFinished(req, res, { login: { accountId: String(account._id) } });
     }
