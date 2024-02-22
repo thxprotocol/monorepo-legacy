@@ -111,7 +111,6 @@ describe('Coin Reward Payment', () => {
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();
-                perkUuid = res.body.uuid;
                 perk = res.body;
             })
             .expect(201, done);
