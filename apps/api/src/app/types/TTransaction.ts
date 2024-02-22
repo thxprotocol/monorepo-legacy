@@ -184,7 +184,7 @@ type ERC721TransferFromCallBack = {
 export type TERC721TransferFromCallBackArgs = {
     erc721Id: string;
     erc721TokenId: string;
-    sub: string;
+    walletId: string;
 };
 
 // This is used for non pool transfers
@@ -209,7 +209,7 @@ type ERC1155TransferFromCallback = {
 export type TERC1155TransferFromCallbackArgs = {
     erc1155Id: string;
     erc1155TokenId: string;
-    sub: string;
+    walletId: string;
 };
 
 // This is used for non pool transfers

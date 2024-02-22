@@ -4,7 +4,6 @@ import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { sub, sub2, userWalletPrivateKey, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
-import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
@@ -15,6 +14,7 @@ import SafeService, { Wallet } from '@thxnetwork/api/services/SafeService';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 
 const user = request.agent(app);
 
@@ -22,7 +22,7 @@ describe('ERC721 Transfer', () => {
     let erc721: ERC721Document,
         erc721Token: ERC721TokenDocument,
         pool: AssetPoolDocument,
-        to = '',
+        wallet: WalletDocument,
         safeTxHash = '';
     const chainId = ChainId.Hardhat,
         name = 'Test Collection',
@@ -126,7 +126,7 @@ describe('ERC721 Transfer', () => {
             1000,
         );
 
-        const wallet = await SafeService.findPrimary(sub);
+        wallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
 
         // Mint a token for metadata
         erc721Token = await ERC721Service.mint(safe, erc721, wallet, metadata);
@@ -145,11 +145,15 @@ describe('ERC721 Transfer', () => {
 
     it('Transfer ERC721 ownership', async () => {
         const receiver = await Wallet.findOne({ sub: sub2, safeVersion });
-        const { status, body } = await user.post('/v1/erc721/transfer').set({ Authorization: widgetAccessToken }).send({
-            erc721Id: erc721._id,
-            erc721TokenId: erc721Token._id,
-            to: receiver.address,
-        });
+        const { status, body } = await user
+            .post('/v1/erc721/transfer')
+            .set({ Authorization: widgetAccessToken })
+            .send({
+                walletId: String(wallet._id),
+                erc721Id: erc721._id,
+                erc721TokenId: erc721Token._id,
+                to: receiver.address,
+            });
 
         expect(status).toBe(201);
         expect(body.safeTxHash).toBeDefined();
@@ -158,10 +162,10 @@ describe('ERC721 Transfer', () => {
     });
 
     it('Confirm tx', async () => {
-        const wallet = await SafeService.findPrimary(sub);
+        const wallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
         const { signature } = await signTxHash(wallet.address, safeTxHash, userWalletPrivateKey);
         const res2 = await user
-            .post(`/v1/account/wallet/confirm`)
+            .post(`/v1/account/wallets/confirm`)
             .set({ Authorization: widgetAccessToken })
             .send({ chainId: ChainId.Hardhat, safeTxHash, signature });
 

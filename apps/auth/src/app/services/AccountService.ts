@@ -4,7 +4,7 @@ import { generateUsername } from 'unique-username-generator';
 import { toChecksumAddress } from 'web3-utils';
 import { BadRequestError } from '../util/errors';
 import { MailService } from './MailService';
-import { DASHBOARD_URL } from '../config/secrets';
+import { WIDGET_URL } from '../config/secrets';
 import { accountVariantProviderMap } from '@thxnetwork/common/lib/types/maps/oauth';
 import { AccountVariant } from '@thxnetwork/common/lib/types';
 import TokenService from './TokenService';
@@ -37,14 +37,19 @@ export class AccountService {
         }
 
         // Send verification email when changing email
-        if (data.email && account.email !== data.email) {
-            const isUsed = await Account.exists({
-                email: data.email,
-                _id: { $ne: String(account._id), $exists: true },
-            });
-            if (isUsed) throw new BadRequestError('Email already in use.');
+        if (data.email) {
+            // Only check if email is different than the current one
+            if (account.email !== data.email) {
+                const isUsed = await Account.exists({
+                    email: data.email,
+                    _id: { $ne: String(account._id), $exists: true },
+                });
+                if (isUsed) throw new BadRequestError('Email already in use.');
+            }
+            await MailService.sendVerificationEmail(account, data.email, WIDGET_URL);
 
-            await MailService.sendVerificationEmail(account, data.email, data.returnUrl || DASHBOARD_URL);
+            // Set isEmailVerified to false to force user to confirm the e-mail
+            data.isEmailVerified = false;
         }
 
         return await Account.findByIdAndUpdate(account._id, data, { new: true });
@@ -89,7 +94,10 @@ export class AccountService {
     static async findAccountForAddress(address: string) {
         const checksummedAddress = toChecksumAddress(address);
         // Checking for non checksummed as well in order to avoid issues with existing data in db
-        const account = await Account.findOne({ $or: [{ address: checksummedAddress }, { address }] });
+        const account = await Account.findOne({
+            $or: [{ address: checksummedAddress }, { address }],
+            variant: AccountVariant.Metamask,
+        });
         if (account) return account;
         // return await Account.create({
         //     variant: AccountVariant.Metamask,

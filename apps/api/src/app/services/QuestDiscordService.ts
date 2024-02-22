@@ -6,7 +6,6 @@ import {
     QuestSocialRequirement,
     TPointRewardClaim,
 } from '@thxnetwork/common/lib/types';
-import { WalletDocument } from '../models/Wallet';
 import { PointRewardClaim } from '../models/PointRewardClaim';
 import { PointReward } from '../models/PointReward';
 import { IQuestService } from './interfaces/IQuestService';
@@ -30,12 +29,10 @@ export default class QuestDiscordService implements IQuestService {
     async decorate({
         quest,
         account,
-        wallet,
         data,
     }: {
         quest: TPointReward;
         account: TAccount;
-        wallet?: WalletDocument;
         data: Partial<TPointRewardClaim>;
     }): Promise<
         TPointReward & {
@@ -45,8 +42,8 @@ export default class QuestDiscordService implements IQuestService {
             isAvailable: boolean;
         }
     > {
-        const amount = await this.getAmount({ quest, account, wallet });
-        const isAvailable = await this.isAvailable({ quest, wallet, account, data });
+        const amount = await this.getAmount({ quest, account });
+        const isAvailable = await this.isAvailable({ quest, account, data });
         const interactionMap = {
             [QuestSocialRequirement.DiscordMessage]: this.getDiscordMessageParams.bind(this),
             [QuestSocialRequirement.DiscordGuildJoined]: this.getDiscordParams.bind(this),
@@ -64,11 +61,9 @@ export default class QuestDiscordService implements IQuestService {
 
     async isAvailable({
         quest,
-        wallet,
         account,
     }: {
         quest: TPointReward;
-        wallet?: WalletDocument;
         account?: TAccount;
         data: Partial<TPointRewardClaim>;
     }): Promise<TValidationResult> {
@@ -76,51 +71,34 @@ export default class QuestDiscordService implements IQuestService {
             [QuestSocialRequirement.DiscordMessage]: this.isAvailableMessage.bind(this),
             [QuestSocialRequirement.DiscordGuildJoined]: this.isAvailableDefault.bind(this),
         };
-        return await map[quest.interaction]({ quest, wallet, account });
+        return await map[quest.interaction]({ quest, account });
     }
 
     private async isAvailableDefault({
         quest,
-        wallet,
         account,
         data,
     }: {
         quest: TPointReward;
-        wallet?: WalletDocument;
         account?: TAccount;
         data: Partial<TPointRewardClaim>;
     }) {
-        if (!wallet || !account) return { result: true, reason: '' };
+        if (!account) return { result: true, reason: '' };
 
         // We use the default more generic QuestSocialService here since we want to
         // validate for provider userIds as well
-        return await new QuestSocialService().isAvailable({ quest, wallet, account, data });
+        return await new QuestSocialService().isAvailable({ quest, account, data });
     }
 
-    private async isAvailableMessage({
-        quest,
-        account,
-        wallet,
-    }: {
-        quest: TPointReward;
-        wallet?: WalletDocument;
-        account?: TAccount;
-    }) {
-        const amount = await this.getAmount({ quest, account, wallet });
+    private async isAvailableMessage({ quest, account }: { quest: TPointReward; account?: TAccount }) {
+        const amount = await this.getAmount({ quest, account });
         const isAvailable = amount > 0;
         if (isAvailable) return { result: true, reason: '' };
 
         return { result: false, reason: 'You have not earned any points with messages yet.' };
     }
 
-    async getAmount({
-        account,
-        quest,
-    }: {
-        quest: TPointReward;
-        wallet?: WalletDocument;
-        account?: TAccount;
-    }): Promise<number> {
+    async getAmount({ account, quest }: { quest: TPointReward; account?: TAccount }): Promise<number> {
         if (!account) return 0;
 
         const interactionMap = {
@@ -134,7 +112,6 @@ export default class QuestDiscordService implements IQuestService {
     async getValidationResult(options: {
         quest: TPointReward;
         account: TAccount;
-        wallet: WalletDocument;
         data: Partial<TPointRewardClaim>;
     }): Promise<TValidationResult> {
         if (!options.quest.interaction) return { result: false, reason: '' };

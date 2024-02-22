@@ -1,10 +1,9 @@
 import { Wallet as WalletModel, WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId, WalletVariant } from '@thxnetwork/types/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
-import { getChainId, safeVersion } from '@thxnetwork/api/services/ContractService';
+import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { toChecksumAddress } from 'web3-utils';
-import { MONGODB_URI } from '@thxnetwork/api/config/secrets';
 import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit';
 import SafeApiKit from '@safe-global/api-kit';
 import {
@@ -13,10 +12,7 @@ import {
     SafeVersion,
 } from '@safe-global/safe-core-sdk-types';
 import { logger } from '@thxnetwork/api/util/logger';
-import { AccountVariant } from '@thxnetwork/types/interfaces';
-import AccountProxy from '../proxies/AccountProxy';
 import { agenda, JobType } from '@thxnetwork/api/util/agenda';
-import { MongoClient } from 'mongodb';
 import { Job } from '@hokify/agenda';
 import { AssetPool, AssetPoolDocument } from '../models/AssetPool';
 import { Transaction } from '../models/Transaction';
@@ -41,7 +37,7 @@ async function create(
 ) {
     const { safeVersion, chainId, sub, address, poolId } = data;
     const { defaultAccount } = getProvider(chainId);
-    const wallet = await Wallet.create({ sub, chainId, address, safeVersion, poolId });
+    const wallet = await Wallet.create({ variant: WalletVariant.Safe, sub, chainId, address, safeVersion, poolId });
 
     // Concerns a Metamask account so we do not deploy and return early
     if (!safeVersion && address) return wallet;
@@ -124,78 +120,16 @@ async function getWalletMigration(sub: string, chainId: ChainId) {
     });
 }
 
-async function migrateJob(job: Job) {
-    const { safeWalletId } = job.attrs.data as any;
-    if (!safeWalletId) return;
-
-    const safeWallet = await Wallet.findById(safeWalletId);
-    const client = new MongoClient(MONGODB_URI);
-
-    try {
-        await client.connect();
-
-        const db = client.db();
-        const walletsCollection = db.collection('wallets');
-        const wallets = await walletsCollection.find({ sub: safeWallet.sub }).toArray();
-        const walletIds = wallets.map((wallet) => String(wallet._id));
-
-        // No virtual wallet or old wallet exists so migration not required
-        if (walletIds.length < 2) return;
-
-        const models = [
-            'dailyrewardclaims',
-            'erc20perkpayments',
-            'erc20token',
-            'erc20transfers',
-            'erc721perkpayments',
-            'erc721token',
-            'erc721transfers',
-            'erc1155token',
-            'milestonerewardclaims',
-            'pointbalances',
-            'pointrewardclaims',
-            'poolsubscriptions',
-            'referralrewardclaims',
-            'withdrawals',
-        ];
-
-        for (const modelName of models) {
-            const modelCollection = db.collection(modelName);
-            await modelCollection.updateMany(
-                { walletId: { $in: walletIds } },
-                { $set: { walletId: String(safeWallet._id) } },
-            );
-        }
-
-        logger.debug('Migration completed.');
-    } catch (error) {
-        logger.error(`Error: ${String(error)}`);
-    } finally {
-        await client.close();
-    }
+function findById(id: string) {
+    return Wallet.findById(id);
 }
-async function migrate(safeWallet: WalletDocument) {
-    if (!safeWallet) return;
-    await agenda.now(JobType.MigrateWallets, { safeWalletId: String(safeWallet._id) });
+
+function findOne(query) {
+    return Wallet.findOne({ ...query, safeVersion, poolId: { $exists: false } });
 }
 
 function findOneByAddress(address: string) {
     return Wallet.findOne({ address: toChecksumAddress(address) });
-}
-
-async function findPrimary(sub: string, chainId?: ChainId) {
-    if (!chainId) chainId = getChainId();
-    const account = await AccountProxy.findById(sub);
-    const isMetamask = account.variant === AccountVariant.Metamask;
-    return await Wallet.findOne({
-        sub,
-        chainId,
-        poolId: { $exists: false },
-        address: { $exists: true, $ne: '' },
-        ...(isMetamask
-            ? { version: { $exists: false }, safeVersion: { $exists: false } }
-            : { address: { $exists: true, $ne: '' }, safeVersion: '1.3.0' }),
-    });
 }
 
 async function findOneByPool(pool: AssetPoolDocument, chainId: ChainId) {
@@ -205,14 +139,6 @@ async function findOneByPool(pool: AssetPoolDocument, chainId: ChainId) {
         poolId: String(pool._id),
         safeVersion,
     });
-}
-
-async function findOneByQuery(query: { sub?: string; chainId?: number }) {
-    return await Wallet.findOne(query);
-}
-
-async function findByQuery(query: { sub?: string; chainId?: number }) {
-    return await Wallet.find(query);
 }
 
 async function getOwners(wallet: WalletDocument) {
@@ -314,20 +240,17 @@ async function getTransaction(wallet: WalletDocument, safeTxHash: string): Promi
 export default {
     getWalletMigration,
     reset,
-    migrate,
-    migrateJob,
+    findById,
     createSwapOwnerTransaction,
     proposeTransaction,
     confirmTransaction,
     confirm,
     getLastPendingTransactions,
     getOwners,
-    findPrimary,
     create,
     createJob,
     findOneByAddress,
-    findByQuery,
-    findOneByQuery,
+    findOne,
     getTransaction,
     executeTransaction,
     findOneByPool,

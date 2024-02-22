@@ -2,7 +2,6 @@ import { DailyRewardClaimState } from '@thxnetwork/types/enums/DailyRewardClaimS
 export type TDailyRewardClaim = {
     questId: string;
     sub: string;
-    walletId: string;
     uuid: string;
     amount: string;
     poolId: string;

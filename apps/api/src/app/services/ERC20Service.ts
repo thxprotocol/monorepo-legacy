@@ -19,6 +19,7 @@ import BN from 'bn.js';
 import { ERC20Perk } from '../models/ERC20Perk';
 import SafeService, { Wallet } from './SafeService';
 import PoolService from './PoolService';
+import { TWallet } from '@thxnetwork/common/lib/types';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     const { defaultAccount } = getProvider(erc20.chainId);
@@ -111,10 +112,10 @@ const addMinter = async (erc20: ERC20Document, address: string) => {
     assertEvent('RoleGranted', parseLogs(erc20.contract.options.jsonInterface, receipt.logs));
 };
 
-const addToken = async (sub: string, erc20: ERC20Document) => {
-    const query = { sub, erc20Id: erc20._id };
+const addToken = async (wallet: WalletDocument, erc20: ERC20Document) => {
+    const query = { sub: wallet.sub, walletId: wallet.id, erc20Id: erc20._id };
     if (!(await ERC20Token.exists(query))) {
-        await createERC20Token(erc20, sub);
+        await createERC20Token(erc20, wallet);
     }
 };
 
@@ -127,7 +128,7 @@ export const getTokensForSub = (sub: string) => {
 };
 
 export const getTokensForWallet = (wallet: WalletDocument) => {
-    return ERC20Token.find({ walletId: wallet._id });
+    return ERC20Token.find({ walletId: wallet.id });
 };
 
 export const getById = async (id: string) => {
@@ -146,44 +147,19 @@ export const findBy = (query: { address: string; chainId: ChainId; sub?: string 
     return ERC20.findOne(query);
 };
 
-export const findOrImport = async (pool: AssetPoolDocument, address: string) => {
-    let erc20 = await findBy({ chainId: pool.chainId, address, sub: pool.sub });
-    if (erc20) return erc20;
-
-    const contract = getContractFromName(pool.chainId, 'LimitedSupplyToken', address);
-    const [name, symbol] = await Promise.all([
-        contract.methods.name().call(),
-        contract.methods.symbol().call(),
-        contract.methods.totalSupply().call(),
-    ]);
-
-    erc20 = await ERC20.create({
-        name,
-        symbol,
-        address,
-        chainId: pool.chainId,
-        type: ERC20Type.Unknown,
-        sub: pool.sub,
-    });
-
-    await pool.updateOne({ erc20Id: erc20._id });
-    await addTokenForSub(erc20, pool.sub);
-
-    return erc20;
-};
-
-export const addTokenForSub = async (erc20: ERC20Document, sub: string) => {
+export const addTokenForWallet = async (erc20: ERC20Document, wallet: WalletDocument) => {
     const hasToken = await ERC20Token.exists({
-        sub,
-        erc20Id: String(erc20._id),
+        sub: wallet.sub,
+        walletId: wallet.id,
+        erc20Id: erc20.id,
     });
 
     if (!hasToken) {
-        await createERC20Token(erc20, sub);
+        await createERC20Token(erc20, wallet);
     }
 };
 
-export const importToken = async (chainId: number, address: string, sub: string, logoImgUrl: string) => {
+export const importToken = async (chainId: number, address: string, wallet: WalletDocument, logoImgUrl: string) => {
     const contract = getContractFromName(chainId, 'LimitedSupplyToken', address);
     const [name, symbol] = await Promise.all([contract.methods.name().call(), contract.methods.symbol().call()]);
     const erc20 = await ERC20.create({
@@ -192,11 +168,11 @@ export const importToken = async (chainId: number, address: string, sub: string,
         address: toChecksumAddress(address),
         chainId,
         type: ERC20Type.Unknown,
-        sub,
+        sub: wallet.sub,
         logoImgUrl,
     });
 
-    await addTokenForSub(erc20, sub);
+    await addTokenForWallet(erc20, wallet);
 
     return erc20;
 };
@@ -213,25 +189,6 @@ export const approve = async (erc20: ERC20Document, wallet: WalletDocument, amou
     );
 };
 
-async function migrate(fromWallet: WalletDocument, toWallet: WalletDocument, erc20Id: string) {
-    const erc20 = await ERC20.findById(erc20Id);
-    const balance = await erc20.contract.methods.balanceOf(fromWallet.address).call();
-    if (new BN(balance).eq(new BN(0))) return;
-
-    if (!(await ERC20Token.exists({ walletId: toWallet._id }))) {
-        // Create token if it does not exist for the receiving wallet
-        await createERC20Token(erc20, toWallet.sub);
-    }
-
-    await TransactionService.sendAsync(
-        fromWallet.contract.options.address,
-        fromWallet.contract.methods.transferERC20(erc20.address, toWallet.address, balance),
-        fromWallet.chainId,
-        true,
-        { type: 'transferFromCallBack', args: { erc20Id: String(erc20._id) } },
-    );
-}
-
 export const transferFrom = async (erc20: ERC20Document, wallet: WalletDocument, to: string, amountInWei: string) => {
     const erc20Transfer = await ERC20Transfer.create({
         erc20Id: erc20._id,
@@ -245,7 +202,7 @@ export const transferFrom = async (erc20: ERC20Document, wallet: WalletDocument,
     // Check if an erc20Token exists for a known receiving wallet and create one if not
     const toWallet = await Wallet.findOne({ chainId: wallet.chainId, address: toChecksumAddress(to) });
     if (toWallet && !(await ERC20Token.exists({ walletId: toWallet._id, erc20Id: erc20._id }))) {
-        await createERC20Token(erc20, toWallet.sub);
+        await createERC20Token(erc20, toWallet);
     }
 
     const tx = await TransactionService.sendSafeAsync(
@@ -271,18 +228,16 @@ async function isMinter(erc20: ERC20Document, address: string) {
     return await erc20.contract.methods.hasRole(keccak256(toUtf8Bytes('MINTER_ROLE')), address).call();
 }
 
-async function createERC20Token(erc20: ERC20Document, sub: string) {
-    const wallet = await SafeService.findPrimary(sub, erc20.chainId);
+async function createERC20Token(erc20: ERC20Document, wallet: TWallet) {
     await ERC20Token.create({
-        sub,
+        sub: wallet.sub,
+        walletId: String(wallet._id),
         erc20Id: String(erc20._id),
-        walletId: wallet && String(wallet._id),
     });
 }
 
 export default {
     findBySub,
-    migrate,
     createERC20Token,
     deploy,
     getAll,
@@ -291,7 +246,6 @@ export default {
     addToken,
     addMinter,
     isMinter,
-    findOrImport,
     importToken,
     getTokensForSub,
     getTokenById,

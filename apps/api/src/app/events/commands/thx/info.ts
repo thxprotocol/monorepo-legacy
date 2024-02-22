@@ -4,11 +4,10 @@ import { Participant } from '@thxnetwork/api/models/Participant';
 import { DiscordButtonVariant } from '../../InteractionCreated';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { handleError } from '../error';
+import { getDiscordGuild } from './points';
 import Brand from '@thxnetwork/api/models/Brand';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
-import { getDiscordGuild } from './points';
 
 export const onSubcommandInfo = async (interaction: CommandInteraction) => {
     try {
@@ -20,9 +19,6 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
 
         const pool = await AssetPool.findById(discordGuild.poolId);
         if (!pool) throw new Error('Could not find connected campaign.');
-
-        const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
-        if (!wallet) throw new Error('Could not find your wallet.');
 
         const participant = await Participant.findOne({ poolId: pool._id, sub: account.sub });
         if (!participant) throw new Error('You have not participated in the campaign yet.');

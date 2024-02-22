@@ -213,16 +213,10 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
 
     participants.results = await Promise.all(
         participants.results.map(async (participant) => {
-            let wallet: WalletDocument, account: TAccount, subscription: PoolSubscriptionDocument;
+            let account: TAccount, subscription: PoolSubscriptionDocument;
 
             try {
-                wallet = await SafeService.findPrimary(participant.sub, pool.chainId);
-            } catch (error) {
-                logger.error(error);
-            }
-
-            try {
-                account = accounts.find((a) => a.sub === wallet.sub);
+                account = accounts.find((a) => a.sub === participant.sub);
                 account.tokens = await Promise.all(
                     account.tokens.map(async (token: TToken) => {
                         const user = await TwitterUser.findOne({ userId: token.userId });
@@ -253,7 +247,6 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                     variant: account.variant,
                     tokens: account.tokens,
                 },
-                wallet,
                 subscription,
                 pointBalance: participant.balance,
             };

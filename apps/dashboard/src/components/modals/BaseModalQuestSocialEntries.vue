@@ -37,7 +37,6 @@
                     <template #head(account)> Username </template>
                     <template #head(email)> E-mail</template>
                     <template #head(tokens)> Connected </template>
-                    <template #head(walletAddress)> Wallet </template>
                     <template #head(pointBalance)> Point Balance </template>
                     <template #head(amount)> Amount </template>
                     <template #head(duration)> Duration </template>
@@ -57,9 +56,6 @@
                             :key="key"
                             v-for="(a, key) in item.tokens"
                         />
-                    </template>
-                    <template #cell(wallet)="{ item }">
-                        <BaseParticipantWallet :wallet="item.wallet" />
                     </template>
                     <template #cell(pointBalance)="{ item }">
                         <strong class="text-primary">{{ item.pointBalance }}</strong>
@@ -90,7 +86,6 @@ import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCard
 import BaseModal from './BaseModal.vue';
 import { getAddressURL } from '../../utils/chains';
 import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
-import BaseParticipantWallet, { parseWallet } from '@thxnetwork/dashboard/components/BaseParticipantWallet.vue';
 import BaseParticipantConnectedAccount, {
     parseConnectedAccounts,
 } from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
@@ -125,7 +120,6 @@ function formatDuration(durationInMilliseconds) {
         BaseModal,
         BaseCardTableHeader,
         BaseParticipantAccount,
-        BaseParticipantWallet,
         BaseParticipantConnectedAccount,
     },
     computed: mapGetters({
@@ -162,7 +156,6 @@ export default class BaseModalQuestSocialEntries extends Vue {
                 account: parseAccount({ id: entry._id, account: entry.account }),
                 email: entry.account && entry.account.email,
                 tokens: entry.account && parseConnectedAccounts(entry.account),
-                wallet: parseWallet(entry.wallet),
                 pointBalance: entry.pointBalance,
                 amount: entry.amount,
                 duration: this.getDuration(this.quest, entry),

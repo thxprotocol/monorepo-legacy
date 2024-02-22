@@ -5,13 +5,15 @@ import { contractArtifacts } from '@thxnetwork/contracts/exports';
 import { getProvider } from '@thxnetwork/api/util/network';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { VE_ADDRESS } from '@thxnetwork/api/config/secrets';
+import { getChainId } from '@thxnetwork/api/services/ContractService';
 
 export const validation = [];
 
 const parseMs = (s) => Number(s) * 1000;
 
 export const controller = async (req: Request, res: Response) => {
-    const wallet = await SafeService.findPrimary(req.auth.sub, ChainId.Hardhat);
+    const chainId = getChainId();
+    const wallet = await SafeService.findOne({ sub: req.auth.sub, chainId });
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
     const { web3 } = getProvider(ChainId.Hardhat);

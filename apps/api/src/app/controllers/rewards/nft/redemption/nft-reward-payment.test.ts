@@ -153,19 +153,20 @@ describe('NFT Reward Payment', () => {
         });
     });
 
-    describe('POST /rewards/nft/:uuid/redemption', () => {
+    describe('POST /rewards/nft/:id/payments', () => {
         const balance = 500;
         let erc721TokenId;
 
         beforeAll(async () => {
-            wallet = await SafeService.findPrimary(sub, ChainId.Hardhat);
+            wallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
             // Add some points for the subs wallet
             await PointBalanceService.add(pool as AssetPoolDocument, account as TAccount, 500);
         });
 
-        it('POST /rewards/nft/:uuid/redemption', (done) => {
-            user.post(`/v1/rewards/nft/${perk.uuid}/redemption`)
+        it('POST /rewards/nft/:id/payments', (done) => {
+            user.post(`/v1/rewards/nft/${perk._id}/payments`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
+                .send({ walletId: String(wallet._id) })
                 .expect(({ body }: request.Response) => {
                     expect(body.erc721PerkPayment).toBeDefined();
                     expect(body.erc721PerkPayment.perkId).toBe(perk._id);
@@ -203,7 +204,7 @@ describe('NFT Reward Payment', () => {
 
         it('Wait for ownerOf', async () => {
             const { contract } = await ERC721.findById(perk.erc721Id);
-            const safe = await SafeService.findPrimary(sub, ChainId.Hardhat);
+            const safe = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
 
             await poll(
                 async () => (await ERC721Token.findById(erc721TokenId)).tokenId,

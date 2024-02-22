@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import ERC20, { ERC20Document } from '@thxnetwork/api/models/ERC20';
-import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
+import { ChainId, ERC20Type, WalletVariant } from '@thxnetwork/types/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import {
     dashboardAccessToken,
@@ -42,13 +42,14 @@ describe('ERC20 Transfer', () => {
     });
 
     describe('GET /wallet and transfer erc20', () => {
-        it('HTTP 201', (done) => {
-            user.get('/v1/wallets')
+        it('HTTP 200', (done) => {
+            user.get('/v1/account/wallets')
                 .set({ Authorization: widgetAccessToken })
                 .send()
                 .expect(async ({ body }: request.Response) => {
-                    expect(body[0].address).toBeDefined();
-                    wallet = body[0];
+                    wallet = body.find((w: WalletDocument) => w.variant === WalletVariant.Safe);
+                    expect(wallet).toBeDefined();
+                    expect(wallet.address).toBeDefined();
                 })
                 .expect(200, done);
         });
@@ -68,6 +69,7 @@ describe('ERC20 Transfer', () => {
                 .post('/v1/erc20/transfer')
                 .set({ Authorization: widgetAccessToken })
                 .send({
+                    walletId: String(wallet._id),
                     erc20Id: erc20._id,
                     to: userWalletAddress2,
                     amount: toWei('1', 'ether'),
@@ -82,7 +84,7 @@ describe('ERC20 Transfer', () => {
                 userWalletPrivateKey,
             );
             const res2 = await user
-                .post(`/v1/account/wallet/confirm`)
+                .post(`/v1/account/wallets/confirm`)
                 .set({ Authorization: widgetAccessToken })
                 .send({ chainId: ChainId.Hardhat, safeTxHash, signature });
 

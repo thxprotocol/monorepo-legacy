@@ -1,18 +1,17 @@
-import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { TQuestLock } from '@thxnetwork/common/lib/types';
+import { TAccount, TQuestLock } from '@thxnetwork/common/lib/types';
 import { serviceMap } from './interfaces/IQuestService';
 
-async function getIsUnlocked(lock: TQuestLock, wallet: WalletDocument): Promise<boolean> {
+async function getIsUnlocked(lock: TQuestLock, account: TAccount): Promise<boolean> {
     const Entry = serviceMap[lock.variant].models.entry;
-    const exists = await Entry.exists({ questId: lock.questId, walletId: wallet._id });
+    const exists = await Entry.exists({ questId: lock.questId, sub: account.sub });
     return !!exists;
 }
 
-async function getIsLocked(locks: TQuestLock[], wallet: WalletDocument) {
-    if (!locks.length || !wallet) return false;
+async function getIsLocked(locks: TQuestLock[], account: TAccount) {
+    if (!locks.length || !account) return false;
 
     // Check if there are entries for the remaining quests
-    const promises = locks.map((lock) => getIsUnlocked(lock, wallet));
+    const promises = locks.map((lock) => getIsUnlocked(lock, account));
     const results = await Promise.allSettled(promises);
     const anyRejected = results.some((result) => result.status === 'rejected');
     if (anyRejected) return true;

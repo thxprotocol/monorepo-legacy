@@ -10,47 +10,44 @@ import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import WebhookService from '@thxnetwork/api/services/WebhookService';
 
-const validation = [param('uuid').exists()];
+const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.header('X-PoolId'));
-    const customReward = await CustomReward.findOne({ uuid: req.params.uuid });
-    if (!customReward) throw new NotFoundError('Could not find this reward');
-    if (!customReward.pointPrice) throw new NotFoundError('No point price for this reward has been set.');
+    const reward = await CustomReward.findById(req.params.id);
+    if (!reward) throw new NotFoundError('Could not find this reward');
+    if (!reward.pointPrice) throw new NotFoundError('No point price for this reward has been set.');
 
     const account = await AccountProxy.findById(req.auth.sub);
     const participant = await Participant.findOne({ sub: account.sub, poolId: pool._id });
-    if (!participant || Number(participant.balance) < Number(customReward.pointPrice)) {
+    if (!participant || Number(participant.balance) < Number(reward.pointPrice)) {
         throw new BadRequestError('Not enough points on this account for this payment');
     }
 
-    const redeemValidationResult = await PerkService.validate({ perk: customReward, sub: req.auth.sub, pool });
+    const redeemValidationResult = await PerkService.validate({ perk: reward, account, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
 
-    const webhook = await Webhook.findById(customReward.webhookId);
+    const webhook = await Webhook.findById(reward.webhookId);
     if (!webhook) throw new NotFoundError('Could not find the webhook for this reward');
 
     await WebhookService.create(webhook, req.auth.sub, {
         type: Event.RewardCustomPayment,
-        data: { customRewardId: customReward._id, metadata: customReward.metadata },
+        data: { customRewardId: reward._id, metadata: reward.metadata },
     });
 
-    const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
-    const customRewardPayment = await CustomRewardPayment.create({
-        perkId: customReward.id,
+    const payment = await CustomRewardPayment.create({
+        perkId: reward.id,
+        poolId: reward.poolId,
         sub: req.auth.sub,
-        walletId: wallet._id,
-        poolId: customReward.poolId,
-        amount: customReward.pointPrice,
+        amount: reward.pointPrice,
     });
 
-    await PointBalanceService.subtract(pool, account, customReward.pointPrice);
+    await PointBalanceService.subtract(pool, account, reward.pointPrice);
 
     let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
     html += `<p>Your point redemption has been received and a custom reward has been created for you!</p>`;
@@ -58,7 +55,7 @@ const controller = async (req: Request, res: Response) => {
 
     await MailService.send(account.email, `🎁 Custom Reward Received!"`, html);
 
-    res.status(201).json({ customRewardPayment });
+    res.status(201).json({ customRewardPayment: payment });
 };
 
 export default { controller, validation };

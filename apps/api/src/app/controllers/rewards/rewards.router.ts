@@ -11,45 +11,31 @@ const router = express.Router();
 
 router.get('/', ListRewards.controller);
 
-router
-    .use(checkJwt)
-    .use(corsHandler)
-    .post(
-        '/coin/:uuid/redemption',
-        assertRequestInput(CreateCoinRewardRedemption.validation),
-        CreateCoinRewardRedemption.controller,
-    );
-router
-    .use(checkJwt)
-    .use(corsHandler)
-    .post(
-        '/nft/:uuid/redemption',
-        assertRequestInput(CreateNFTRewardRedemption.validation),
-        CreateNFTRewardRedemption.controller,
-    );
-router
-    .use(checkJwt)
-    .use(corsHandler)
-    .post(
-        '/custom/:uuid/redemption',
-        assertRequestInput(CreateRewardCustomRedemption.validation),
-        CreateRewardCustomRedemption.controller,
-    );
-router
-    .use(checkJwt)
-    .use(corsHandler)
-    .post(
-        '/coupon/:uuid/redemption',
-        assertRequestInput(CreateRewardCouponRedemption.validation),
-        CreateRewardCouponRedemption.controller,
-    );
-router
-    .use(checkJwt)
-    .use(corsHandler)
-    .post(
-        '/discord-role/:uuid/redemption',
-        assertRequestInput(CreateRewardDiscordRoleRedemption.validation),
-        CreateRewardDiscordRoleRedemption.controller,
-    );
+router.use(checkJwt, corsHandler);
+router.post(
+    '/coin/:id/payments',
+    assertRequestInput(CreateCoinRewardRedemption.validation),
+    CreateCoinRewardRedemption.controller,
+);
+router.post(
+    '/nft/:id/payments',
+    assertRequestInput(CreateNFTRewardRedemption.validation),
+    CreateNFTRewardRedemption.controller,
+);
+router.post(
+    '/custom/:id/payments',
+    assertRequestInput(CreateRewardCustomRedemption.validation),
+    CreateRewardCustomRedemption.controller,
+);
+router.post(
+    '/coupon/:id/payments',
+    assertRequestInput(CreateRewardCouponRedemption.validation),
+    CreateRewardCouponRedemption.controller,
+);
+router.post(
+    '/discord-role/:id/payments',
+    assertRequestInput(CreateRewardDiscordRoleRedemption.validation),
+    CreateRewardDiscordRoleRedemption.controller,
+);
 
 export default router;

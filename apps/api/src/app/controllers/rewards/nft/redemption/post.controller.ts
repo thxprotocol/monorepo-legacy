@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { param } from 'express-validator';
+import { body, param } from 'express-validator';
 import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
@@ -19,7 +19,7 @@ import PerkService from '@thxnetwork/api/services/PerkService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { Participant } from '@thxnetwork/api/models/Participant';
 
-const validation = [param('uuid').exists()];
+const validation = [param('id').isMongoId(), body('walletId').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Perks Payment']
@@ -27,7 +27,7 @@ const controller = async (req: Request, res: Response) => {
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
     if (!safe) throw new NotFoundError('Could not find campaign wallet');
 
-    const perk = await ERC721Perk.findOne({ uuid: req.params.uuid });
+    const perk = await ERC721Perk.findById(req.params.id);
     if (!perk) throw new NotFoundError('Could not find this perk');
     if (!perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
 
@@ -39,12 +39,14 @@ const controller = async (req: Request, res: Response) => {
     if (!participant || Number(participant.balance) < Number(perk.pointPrice))
         throw new BadRequestError('Not enough points on this account for this perk.');
 
-    const redeemValidationResult = await PerkService.validate({ perk, sub: req.auth.sub, pool });
+    const redeemValidationResult = await PerkService.validate({ perk, account, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
 
-    const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
+    const wallet = await SafeService.findById(req.body.walletId);
+    if (!wallet) throw new BadRequestError('No wallet found for this reward payment request.');
+
     let token: ERC721TokenDocument | ERC1155TokenDocument, metadata: ERC721MetadataDocument | ERC1155MetadataDocument;
 
     // Mint a token if metadataId is present

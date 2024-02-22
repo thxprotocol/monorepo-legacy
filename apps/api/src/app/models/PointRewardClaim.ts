@@ -7,7 +7,6 @@ const schema = new mongoose.Schema(
     {
         questId: String,
         sub: { type: String, index: 'hashed' },
-        walletId: { type: String, index: 'hashed' },
         amount: Number,
         poolId: String,
         platformUserId: String,

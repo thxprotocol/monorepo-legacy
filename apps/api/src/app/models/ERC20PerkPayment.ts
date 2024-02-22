@@ -7,7 +7,6 @@ const schema = new mongoose.Schema(
     {
         perkId: String,
         sub: String,
-        walletId: { type: String, index: 'hashed' },
         poolId: String,
         amount: Number,
     },

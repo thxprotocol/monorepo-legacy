@@ -3,7 +3,6 @@ import { TAccount, TQuest, TQuestEntry, TToken, TValidationResult } from '@thxne
 import { v4 } from 'uuid';
 import { AssetPoolDocument } from '../models/AssetPool';
 import { agenda } from '../util/agenda';
-import { WalletDocument } from '../models/Wallet';
 import { logger } from '../util/logger';
 import { Job } from '@hokify/agenda';
 import { serviceMap } from './interfaces/IQuestService';
@@ -13,7 +12,6 @@ import NotificationService from './NotificationService';
 import PointBalanceService from './PointBalanceService';
 import LockService from './LockService';
 import ImageService from './ImageService';
-import SafeService, { Wallet } from './SafeService';
 import AccountProxy from '../proxies/AccountProxy';
 import { tokenInteractionMap } from './maps/quests';
 import { TwitterUser } from '../models/TwitterUser';
@@ -23,12 +21,10 @@ export default class QuestService {
     static async list({
         pool,
         data,
-        wallet,
         account,
     }: {
         pool: AssetPoolDocument;
         data: Partial<TQuestEntry>;
-        wallet?: WalletDocument;
         account?: TAccount;
     }) {
         const questVariants = Object.keys(QuestVariant).filter((v) => !isNaN(Number(v)));
@@ -50,8 +46,8 @@ export default class QuestService {
                 quests.map(async (q) => {
                     try {
                         const quest = q.toJSON() as TQuest;
-                        const decorated = await serviceMap[variant].decorate({ quest, wallet, account, data });
-                        const isLocked = await LockService.getIsLocked(quest.locks, wallet);
+                        const decorated = await serviceMap[variant].decorate({ quest, account, data });
+                        const isLocked = await LockService.getIsLocked(quest.locks, account);
                         const isExpired = this.isExpired(quest);
                         return { ...decorated, isLocked, isExpired };
                     } catch (error) {
@@ -105,8 +101,8 @@ export default class QuestService {
         return Quest.findByIdAndUpdate(questId, options, { new: true });
     }
 
-    static getAmount(variant: QuestVariant, quest: TQuest, account: TAccount, wallet: WalletDocument) {
-        return serviceMap[variant].getAmount({ quest, account, wallet });
+    static getAmount(variant: QuestVariant, quest: TQuest, account: TAccount) {
+        return serviceMap[variant].getAmount({ quest, account });
     }
 
     static isExpired(quest: TQuest) {
@@ -117,7 +113,6 @@ export default class QuestService {
         variant: QuestVariant,
         options: {
             quest: TQuest;
-            wallet?: WalletDocument;
             account?: TAccount;
             data: Partial<TQuestEntry & { rpc: string }>;
         },
@@ -129,7 +124,7 @@ export default class QuestService {
         const isExpired = this.isExpired(options.quest);
         if (isExpired) return { result: false, reason: 'Quest has expired.' };
 
-        const isLocked = await LockService.getIsLocked(options.quest.locks, options.wallet);
+        const isLocked = await LockService.getIsLocked(options.quest.locks, options.account);
         if (isLocked) return { result: false, reason: 'Quest is locked.' };
 
         return await serviceMap[variant].isAvailable(options);
@@ -140,7 +135,6 @@ export default class QuestService {
         options: {
             quest: TQuest;
             account: TAccount;
-            wallet: WalletDocument;
             data: Partial<TQuestEntry & { rpc: string }>;
         },
     ) {
@@ -155,14 +149,13 @@ export default class QuestService {
             const { variant, questId, sub, data } = job.attrs.data as any;
             const Entry = serviceMap[Number(variant)].models.entry;
             const account = await AccountProxy.findById(sub);
-            const wallet = await SafeService.findPrimary(sub);
             const quest = await this.findById(variant, questId);
             const pool = await PoolService.getById(quest.poolId);
-            const amount = await this.getAmount(variant, quest, account, wallet);
+            const amount = await this.getAmount(variant, quest, account);
 
             // Test availabily of quest once more as it could be completed by a job that was scheduled already
             // if the jobs were created in parallel.
-            const isAvailable = await this.isAvailable(variant, { quest, account, wallet, data });
+            const isAvailable = await this.isAvailable(variant, { quest, account, data });
             if (!isAvailable.result) throw new Error(isAvailable.reason);
 
             // Create the quest entry
@@ -170,7 +163,6 @@ export default class QuestService {
                 ...data,
                 sub: account.sub,
                 amount,
-                walletId: wallet._id,
                 questId: String(quest._id),
                 poolId: pool._id,
                 uuid: v4(),
@@ -179,7 +171,7 @@ export default class QuestService {
 
             // Should make sure quest entry is properly created
             await PointBalanceService.add(pool, account, amount);
-            await NotificationService.sendQuestEntryNotification(pool, quest, account, wallet, amount);
+            await NotificationService.sendQuestEntryNotification(pool, quest, account, amount);
 
             // Update participant ranks async
             agenda.now(JobType.UpdateParticipantRanks, { poolId: pool._id });
@@ -208,8 +200,7 @@ export default class QuestService {
         const accounts = await AccountProxy.find({ subs });
         const participants = await Participant.find({ poolId: quest.poolId });
         const promises = entries.map(async (entry) => {
-            const wallet = await Wallet.findById(entry.walletId);
-            const account = accounts.find((a) => a.sub === wallet.sub);
+            const account = accounts.find((a) => a.sub === entry.sub);
             const pointBalance = participants.find((p) => account.sub === String(p.sub));
             const tokens = await Promise.all(
                 account.tokens.map(async (token: TToken) => {
@@ -221,7 +212,6 @@ export default class QuestService {
             return {
                 ...entry.toJSON(),
                 account: { ...account, tokens },
-                wallet,
                 pointBalance: pointBalance ? pointBalance.balance : 0,
             };
         });

@@ -30,7 +30,6 @@ agenda.define(JobType.CreateTwitterQuests, createTwitterQuests);
 agenda.define(JobType.CreateQuestEntry, (job: Job) => QuestService.createEntryJob(job));
 agenda.define(JobType.DeploySafe, (job: Job) => SafeService.createJob(job));
 agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
-agenda.define(JobType.MigrateWallets, (job: Job) => SafeService.migrateJob(job));
 agenda.define(JobType.RequestAttemp, (job: Job) => WebhookService.requestAttemptJob(job));
 agenda.define(JobType.UpdateTwitterLikeCache, (job: Job) => TwitterCacheService.updateLikeCacheJob(job));
 agenda.define(JobType.UpdateTwitterRepostCache, (job: Job) => TwitterCacheService.updateRepostCacheJob(job));

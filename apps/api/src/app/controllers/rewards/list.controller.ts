@@ -4,14 +4,11 @@ import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
 import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
 import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
-import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import PerkService from '@thxnetwork/api/services/PerkService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { CustomReward } from '@thxnetwork/api/models/CustomReward';
-import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { CustomRewardPayment } from '@thxnetwork/api/models/CustomRewardPayment';
 import { CouponReward } from '@thxnetwork/api/models/CouponReward';
 import { CouponRewardPayment } from '@thxnetwork/api/models/CouponRewardPayment';
@@ -21,9 +18,9 @@ import { DiscordRoleRewardPayment } from '@thxnetwork/api/models/DiscordRoleRewa
 import { AccessTokenKind } from '@thxnetwork/types/enums';
 import { TAccount } from '@thxnetwork/types/interfaces';
 import { Identity } from '@thxnetwork/api/models/Identity';
+import LockService from '@thxnetwork/api/services/LockService';
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Perks']
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const [erc20Perks, erc721Perks, customRewards, couponRewards, discordRoleRewards] = await Promise.all([
         ERC20Perk.find({
@@ -48,7 +45,7 @@ const controller = async (req: Request, res: Response) => {
         }),
     ]);
 
-    let wallet: WalletDocument, account: TAccount, sub: string;
+    let account: TAccount, sub: string;
 
     // This endpoint is public so we do not get req.auth populated and decode the token ourselves
     // when the request is made with an authorization header to obtain the sub.
@@ -57,7 +54,6 @@ const controller = async (req: Request, res: Response) => {
         const token: { sub: string } = jwt_decode(authHeader.split(' ')[1]);
         sub = token.sub;
         account = await AccountProxy.findById(sub);
-        wallet = await SafeService.findPrimary(sub, pool.chainId);
     }
 
     const getRewardDefaults = async (r, Model) => {
@@ -71,7 +67,7 @@ const controller = async (req: Request, res: Response) => {
             isPromoted: r.isPromoted,
             expiry: await PerkService.getExpiry(r),
             progress: await PerkService.getProgress(r, Model),
-            isLocked: await PerkService.getIsLockedForWallet(r, wallet),
+            isLocked: await LockService.getIsLocked(r.locks, account),
             tokenGatingContractAddress: r.tokenGatingContractAddress,
         };
     };
@@ -79,20 +75,22 @@ const controller = async (req: Request, res: Response) => {
     res.json({
         coin: await Promise.all(
             erc20Perks.map(async (r) => {
-                const { isError } = await PerkService.validate({ perk: r, sub, pool });
+                const { isError } = await PerkService.validate({ perk: r, account, pool });
                 const defaults = await getRewardDefaults(r, ERC20PerkPayment);
+                const erc20 = await ERC20Service.getById(r.erc20Id);
                 return {
                     ...defaults,
+                    chainId: erc20.chainId,
                     amount: r.amount,
                     isDisabled: isError,
                     isOwned: false,
-                    erc20: await ERC20Service.getById(r.erc20Id),
+                    erc20,
                 };
             }),
         ),
         nft: await Promise.all(
             erc721Perks.map(async (r) => {
-                const { isError } = await PerkService.validate({ perk: r, sub, pool });
+                const { isError } = await PerkService.validate({ perk: r, account, pool });
                 const nft = await PerkService.getNFT(r);
                 const token = !r.metadataId && r.tokenId ? await PerkService.getToken(r) : null;
                 const metadata = await PerkService.getMetadata(r, token);
@@ -102,9 +100,8 @@ const controller = async (req: Request, res: Response) => {
                     ...defaults,
                     nft,
                     metadata,
+                    chainId: nft.chainId,
                     erc1155Amount: r.erc1155Amount,
-                    price: r.price,
-                    priceCurrency: r.priceCurrency,
                     isDisabled: isError,
                     isOwned: false,
                 };
@@ -112,10 +109,10 @@ const controller = async (req: Request, res: Response) => {
         ),
         custom: await Promise.all(
             customRewards.map(async (r) => {
-                const { isError } = await PerkService.validate({ perk: r, sub, pool });
+                const { isError } = await PerkService.validate({ perk: r, account, pool });
                 const defaults = await getRewardDefaults(r, CustomRewardPayment);
                 // @dev Having an Identity for this pool is required in order for the external system to target the right user
-                const identities = sub ? await Identity.find({ poolId: pool._id, sub }) : [];
+                const identities = sub ? await Identity.find({ poolId: pool._id, account }) : [];
                 return {
                     ...defaults,
                     isDisabled: isError || !identities.length,
@@ -130,7 +127,7 @@ const controller = async (req: Request, res: Response) => {
                 const codes = await CouponCode.find({ couponRewardId: String(r._id) });
                 r.limit = codes.length;
 
-                const { isError, errorMessage } = await PerkService.validate({ perk: r, sub, pool });
+                const { isError, errorMessage } = await PerkService.validate({ perk: r, account, pool });
                 const defaults = await getRewardDefaults(r, CouponRewardPayment);
 
                 return { ...defaults, isDisabled: isError, errorMessage, isOwned: false };
@@ -138,7 +135,7 @@ const controller = async (req: Request, res: Response) => {
         ),
         discordRole: await Promise.all(
             discordRoleRewards.map(async (r) => {
-                const { isError, errorMessage } = await PerkService.validate({ perk: r, sub, pool });
+                const { isError, errorMessage } = await PerkService.validate({ perk: r, account, pool });
                 const defaults = await getRewardDefaults(r, DiscordRoleRewardPayment);
                 const token = account && account.tokens.find(({ kind }) => kind === AccessTokenKind.Discord);
 

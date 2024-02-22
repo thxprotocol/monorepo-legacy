@@ -9,7 +9,6 @@ export type TCouponReward = TBaseReward & {
 export type TCouponRewardPayment = {
     perkId: string;
     couponCodeId: string;
-    walletId: string;
     sub: string;
     poolId: string;
     amount: number;

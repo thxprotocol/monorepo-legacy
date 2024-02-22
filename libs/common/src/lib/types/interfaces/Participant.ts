@@ -6,4 +6,5 @@ export type TParticipant = {
     score: number;
     questEntryCount: number;
     balance: number;
+    updatedAt: Date;
 };

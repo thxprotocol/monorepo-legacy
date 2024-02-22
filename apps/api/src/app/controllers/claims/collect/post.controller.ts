@@ -6,11 +6,12 @@ import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
-import { Claim } from '@thxnetwork/api/models/Claim';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import WalletService from '@thxnetwork/api/services/WalletService';
+import { Claim } from '@thxnetwork/api/models/Claim';
 import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 
-const validation = [param('uuid').exists().isString(), query('forceSync').optional().isBoolean()];
+const validation = [param('uuid').isUUID(4), query('walletId').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Claims']
@@ -31,7 +32,7 @@ const controller = async (req: Request, res: Response) => {
     if (perk.pointPrice > 0) throw new ForbiddenError('This perk should be redeemed with points.');
 
     // Find wallet for the authenticated user
-    const wallet = await SafeService.findPrimary(req.auth.sub, pool.chainId);
+    const wallet = await WalletService.findById(req.query.walletId as string);
     if (!wallet) throw new NotFoundError('No wallet found for this user');
 
     // Mint an NFT token if the erc721 and metadata for the claim exists.

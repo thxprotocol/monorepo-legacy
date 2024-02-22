@@ -32,6 +32,11 @@ export const timeTravel = async (seconds: number) => {
     await (web3 as any).increaseTime(seconds);
 };
 
+export const signMessage = (privateKey: string, message: string) => {
+    const wallet = createWallet(privateKey);
+    return wallet.sign(message).signature;
+};
+
 export async function signTxHash(safeAddress: string, safeTxHash: string, privateKey: string) {
     const provider = new ethers.providers.JsonRpcProvider(HARDHAT_RPC);
     const signer = new ethers.Wallet(privateKey, provider);

@@ -1,21 +1,22 @@
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
 import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { ChainId } from '@thxnetwork/common/lib/types/enums';
 import { contractArtifacts } from '@thxnetwork/contracts/exports';
 import { getProvider } from '@thxnetwork/api/util/network';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { BigNumber } from 'ethers';
 import { BPT_ADDRESS } from '@thxnetwork/api/config/secrets';
+import { getChainId } from '@thxnetwork/api/services/ContractService';
 
 export const validation = [body('spender').isEthereumAddress(), body('amountInWei').isString()];
 
 export const controller = async (req: Request, res: Response) => {
-    const wallet = await SafeService.findPrimary(req.auth.sub, ChainId.Hardhat);
+    const chainId = getChainId();
+    const wallet = await SafeService.findOne({ sub: req.auth.sub, chainId });
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
-    const { web3 } = getProvider(ChainId.Hardhat);
+    const { web3 } = getProvider(chainId);
 
     // Check sufficient BPT Balance
     const bpt = new web3.eth.Contract(contractArtifacts['BPTToken'].abi, BPT_ADDRESS);

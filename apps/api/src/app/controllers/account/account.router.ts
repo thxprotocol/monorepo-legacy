@@ -1,6 +1,8 @@
 import express from 'express';
 import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 
+import RouterWallet from './wallet/wallets.router';
+
 // Account
 import ReadAccount from './get.controller';
 import UpdateAccount from './patch.controller';
@@ -15,27 +17,14 @@ import CreateTwitterTweet from './twitter/tweet/post.controller';
 import CreateTwitterUser from './twitter/user/post.controller';
 import CreateTwitterUserByUsername from './twitter/user/by/username/post.controller';
 
-// Wallet
-import ReadAccountWallet from './wallet/list.controller';
-import CreateWalletConfirm from './wallet/confirm/post.controller';
-
 const router = express.Router();
+
+router.use('/wallets', RouterWallet);
 
 router.get('/', guard.check(['account:read']), ReadAccount.controller);
 router.patch('/', guard.check(['account:read', 'account:write']), UpdateAccount.controller);
 router.delete('/', guard.check(['account:write']), DeleteAccount.controller);
-router.get(
-    '/wallet',
-    guard.check(['account:read']),
-    assertRequestInput(ReadAccountWallet.validation),
-    ReadAccountWallet.controller,
-);
-router.post(
-    '/wallet/confirm',
-    guard.check(['account:read', 'account:write']),
-    assertRequestInput(CreateWalletConfirm.validation),
-    CreateWalletConfirm.controller,
-);
+
 router.post(
     '/disconnect',
     guard.check(['account:read', 'account:write']),

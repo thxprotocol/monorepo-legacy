@@ -12,18 +12,18 @@ export default class AccountManager extends BaseManager {
     }
 
     async patch(body: any) {
-        return await this.client.request.patch('/v1/account', { data: JSON.stringify(body) });
+        return await this.client.request.patch('/v1/account', { data: body });
     }
 
-    wallet = {
-        list: async (chainId: number) => {
-            return await this.client.request.post(`/v1/account/wallet?chainId=${chainId}`);
+    wallets = {
+        list: async () => {
+            return await this.client.request.get('/v1/account/wallets');
         },
-        connect: async (body: { chainId: number }) => {
-            return await this.client.request.post(`/v1/account/wallet/connect`, { data: JSON.stringify(body) });
+        create: async (body: { chainId: number }) => {
+            return await this.client.request.post('/v1/account/wallets', { data: body });
         },
         confirm: async (body: { chainId: number }) => {
-            return await this.client.request.post(`/v1/account/wallet/confirm`, { data: JSON.stringify(body) });
+            return await this.client.request.post(`/v1/account/wallets/confirm`, { data: body });
         },
     };
 }

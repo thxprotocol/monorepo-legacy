@@ -345,7 +345,7 @@ class ERC721Module extends VuexModule {
         const { data } = await axios({
             method: 'GET',
             url: '/erc721/token',
-            params: { chainId: pool.chainId, recipient: pool.safeAddress },
+            params: { walletId: pool.safe._id },
         });
 
         data.forEach((token: TERC721Token & { nft: TERC721 }) => {

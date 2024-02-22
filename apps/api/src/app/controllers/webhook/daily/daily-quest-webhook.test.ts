@@ -9,6 +9,7 @@ import { poll } from '@thxnetwork/api/util/polling';
 import { Job } from '@thxnetwork/api/models/Job';
 import { IJobParameters } from '@hokify/agenda';
 import { v4 } from 'uuid';
+import { Identity } from '@thxnetwork/api/models/Identity';
 
 const user = request.agent(app);
 
@@ -71,7 +72,6 @@ describe('Daily Rewards WebHooks', () => {
             .post(`/v1/quests/daily/${dailyReward._id}/entries`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken4 })
             .send();
-        console.log(body);
         expect(body.jobId).toBeDefined();
         expect(status).toBe(200);
 

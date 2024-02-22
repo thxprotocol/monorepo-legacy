@@ -63,8 +63,6 @@ export class MailService {
             html,
             verifyURL.toString(),
         );
-
-        await account.save();
     }
 
     static async sendOTPMail(account: AccountDocument) {

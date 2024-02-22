@@ -186,7 +186,7 @@ export async function transferFrom(
     amount: string,
     erc1155Token: ERC1155TokenDocument,
 ): Promise<ERC1155TokenDocument> {
-    const toWallet = await SafeService.findOneByAddress(to);
+    const toWallet = await SafeService.findOne({ address: to, chainId: erc1155.chainId });
     const tx = await TransactionService.sendSafeAsync(
         wallet,
         erc1155.address,
@@ -196,7 +196,7 @@ export async function transferFrom(
             args: {
                 erc1155Id: String(erc1155._id),
                 erc1155TokenId: String(erc1155Token._id),
-                sub: toWallet && toWallet.sub,
+                walletId: toWallet && toWallet.id,
             },
         },
     );
@@ -230,19 +230,18 @@ export async function transferFrom(
 }
 
 export async function transferFromCallback(args: TERC1155TransferFromCallbackArgs, receipt: TransactionReceipt) {
-    const { erc1155Id, erc1155TokenId, sub } = args;
-    const { chainId } = await ERC1155.findById(erc1155Id);
+    const { erc1155TokenId, walletId } = args;
     const abi = getAbiForContractName('THX_ERC1155');
     const events = parseLogs(abi, receipt.logs);
     const event = assertEvent('TransferSingle', events);
-    const wallet = sub && (await SafeService.findPrimary(sub, chainId));
+    const wallet = await SafeService.findById(walletId);
 
     await ERC1155Token.findByIdAndUpdate(erc1155TokenId, {
-        sub,
         state: ERC1155TokenState.Transferred,
         tokenId: event.args.id,
         recipient: event.args.to,
-        walletId: wallet && String(wallet._id),
+        sub: wallet && wallet.sub,
+        walletId: wallet && wallet.id,
     });
 }
 

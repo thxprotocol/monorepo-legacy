@@ -53,6 +53,7 @@ const controller = async (req: Request, res: Response) => {
                         externalUrl: rawMetadata.external_url,
                     });
                     const erc721Token = await ERC721Token.create({
+                        walletId: String(pool.safe._id),
                         erc721Id: String(erc721._id),
                         recipient: pool.safeAddress,
                         state: ERC721TokenState.Minted,

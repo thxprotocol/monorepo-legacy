@@ -11,7 +11,6 @@ export type TWeb3Quest = TBaseQuest & {
 export type TWeb3QuestClaim = {
     questId: string;
     sub: string;
-    walletId: string;
     amount: number;
     poolId: string;
     chainId: ChainId;

@@ -29,7 +29,7 @@ describe('VESytem', () => {
         scthx!: Contract;
 
     it('Deploy Tokens', async () => {
-        safeWallet = await SafeService.findPrimary(sub);
+        safeWallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
         expect(safeWallet.address).toBeDefined();
 
         testBPT = new ethers.Contract(BPT_ADDRESS, contractArtifacts['BPTToken'].abi, signer);
@@ -73,7 +73,7 @@ describe('VESytem', () => {
 
                 const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
                 await user
-                    .post('/v1/account/wallet/confirm')
+                    .post('/v1/account/wallets/confirm')
                     .set({ Authorization: widgetAccessToken })
                     .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);
@@ -101,7 +101,7 @@ describe('VESytem', () => {
 
                 const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
                 await user
-                    .post('/v1/account/wallet/confirm')
+                    .post('/v1/account/wallets/confirm')
                     .set({ Authorization: widgetAccessToken })
                     .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);
@@ -193,7 +193,7 @@ describe('VESytem', () => {
 
                 const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
                 await user
-                    .post('/v1/account/wallet/confirm')
+                    .post('/v1/account/wallets/confirm')
                     .set({ Authorization: widgetAccessToken })
                     .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);

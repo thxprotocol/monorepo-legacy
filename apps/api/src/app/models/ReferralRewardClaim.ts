@@ -7,7 +7,6 @@ const schema = new mongoose.Schema(
     {
         referralRewardId: String,
         sub: { type: String, index: 'hashed' },
-        walletId: { type: String, index: 'hashed' },
         uuid: String,
         amount: String,
         isApproved: Boolean,

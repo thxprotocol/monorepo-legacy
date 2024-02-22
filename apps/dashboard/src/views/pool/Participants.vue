@@ -31,9 +31,6 @@
                     <BaseBtnSort @click="onClickSort('email', $event)">E-mail</BaseBtnSort>
                 </template>
                 <template #head(tokens)> Connected </template>
-                <template #head(wallet)>
-                    <BaseBtnSort @click="onClickSort('wallet', $event)">Wallet</BaseBtnSort>
-                </template>
                 <template #head(pointBalance)>
                     <BaseBtnSort @click="onClickSort('pointBalance', $event)">Point Balance</BaseBtnSort>
                 </template>
@@ -53,9 +50,6 @@
                 <template #cell(email)="{ item }"> {{ item.email }} </template>
                 <template #cell(tokens)="{ item }">
                     <BaseParticipantConnectedAccount :account="token" :key="key" v-for="(token, key) in item.tokens" />
-                </template>
-                <template #cell(wallet)="{ item }">
-                    <BaseParticipantWallet :wallet="item.wallet" />
                 </template>
                 <template #cell(pointBalance)="{ item }">
                     <strong class="text-primary">{{ item.pointBalance }}</strong>
@@ -96,7 +90,6 @@ import { mapGetters } from 'vuex';
 import BaseBtnSort from '@thxnetwork/dashboard/components/buttons/BaseBtnSort.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
-import BaseParticipantWallet, { parseWallet } from '@thxnetwork/dashboard/components/BaseParticipantWallet.vue';
 import BaseModalParticipant from '@thxnetwork/dashboard/components/modals/BaseModalParticipant.vue';
 import BaseParticipantConnectedAccount, {
     parseConnectedAccounts,
@@ -109,7 +102,6 @@ import { IPools, TParticipantState } from '@thxnetwork/dashboard/store/modules/p
         BaseBtnSort,
         BaseCardTableHeader,
         BaseParticipantAccount,
-        BaseParticipantWallet,
         BaseParticipantConnectedAccount,
         BaseModalParticipant,
     },
@@ -148,13 +140,6 @@ export default class ViewParticipants extends Vue {
             if (emailA > emailB) return 1;
             return 0;
         },
-        wallet: (a, b) => {
-            const addressA = a.wallet && a.wallet.address.toLowerCase();
-            const addressB = b.wallet && b.wallet.address.toLowerCase();
-            if (addressA < addressB) return -1;
-            if (addressA > addressB) return 1;
-            return 0;
-        },
         pointBalance: (a, b) => b.pointBalance - a.pointBalance,
         subscription: (a, b) => {
             const dateA: any = a.subscription && new Date(a.subscription.createdAt);
@@ -183,7 +168,6 @@ export default class ViewParticipants extends Vue {
             account: parseAccount({ id: p._id, account: p.account }),
             email: p.account && p.account.email,
             tokens: p.account && parseConnectedAccounts(p.account),
-            wallet: parseWallet(p.wallet),
             pointBalance: p.pointBalance,
             subscription: p.subscription,
             createdAt: p.createdAt,
