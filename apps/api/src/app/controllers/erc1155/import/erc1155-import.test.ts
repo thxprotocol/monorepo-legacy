@@ -88,13 +88,11 @@ describe('ERC1155 import', () => {
 
     describe('GET /erc1155/token', () => {
         it('HTTP 200', (done) => {
-            console.log({ walletId: pool.safe._id });
             user.get(`/v1/erc1155/token`)
                 .query({ walletId: pool.safe._id })
                 .set('Authorization', dashboardAccessToken)
                 .send()
                 .expect(({ body }: request.Response) => {
-                    console.log(body);
                     expect(body.length).toBe(1);
                     expect(body[0].sub).toBe(sub);
                     expect(body[0].erc1155Id).toBe(erc1155._id);
