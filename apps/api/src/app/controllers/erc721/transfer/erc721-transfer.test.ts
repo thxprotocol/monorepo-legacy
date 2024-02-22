@@ -147,9 +147,9 @@ describe('ERC721 Transfer', () => {
         const receiver = await Wallet.findOne({ sub: sub2, safeVersion });
         const { status, body } = await user
             .post('/v1/erc721/transfer')
-            .query({ walletId: wallet._id })
             .set({ Authorization: widgetAccessToken })
             .send({
+                walletId: String(wallet._id),
                 erc721Id: erc721._id,
                 erc721TokenId: erc721Token._id,
                 to: receiver.address,
