@@ -65,7 +65,6 @@ describe('Account Wallets', () => {
 
                     const safe = res.body.find((wallet: any) => wallet.variant === WalletVariant.Safe);
                     const wallet = res.body.find((wallet: any) => wallet.variant === WalletVariant.WalletConnect);
-                    console.log(safe, wallet);
                     expect(safe.sub).toEqual(sub);
                     expect(safe.chainId).toEqual(ChainId.Hardhat);
                     expect(safe.variant).toBe(WalletVariant.Safe);

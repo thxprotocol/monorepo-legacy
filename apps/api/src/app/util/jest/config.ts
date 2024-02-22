@@ -54,6 +54,7 @@ export async function beforeAllCallback(options = { skipWalletCreation: false })
                 safeVersion,
                 address: safeAddress,
                 chainId,
+                variant: WalletVariant.Safe,
             });
 
             try {

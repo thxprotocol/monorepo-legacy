@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant, WalletVariant } from '@thxnetwork/types/enums';
 import { sub, dashboardAccessToken, widgetAccessToken, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ClaimDocument } from '@thxnetwork/api/models/Claim';
@@ -15,6 +15,7 @@ import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { poll } from '@thxnetwork/api/util/polling';
+import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 
 const user = request.agent(app);
 
@@ -23,6 +24,7 @@ describe('QR Codes', () => {
         pool: AssetPoolDocument,
         erc721: ERC721Document,
         metadata: ERC721MetadataDocument,
+        wallet: WalletDocument,
         claims: ClaimDocument[];
     const claimAmount = 10,
         config = {
@@ -68,6 +70,7 @@ describe('QR Codes', () => {
             description: 'Lorem ipsum dolor sit amet',
             externalUrl: 'https://example.com',
         });
+        wallet = await SafeService.findOne({ sub });
     });
     afterAll(afterAllCallback);
 
@@ -97,6 +100,7 @@ describe('QR Codes', () => {
 
         it('should return a 403 for claim', (done) => {
             user.post(`/v1/claims/${claims[0].uuid}/collect`)
+                .query({ walletId: String(wallet._id) })
                 .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
                 .expect((res: request.Response) => {
                     expect(res.body.error.message).toBe('This perk should be redeemed with points.');
@@ -139,6 +143,7 @@ describe('QR Codes', () => {
 
         it('First attempt claim should succeed', (done) => {
             user.post(`/v1/claims/${claims[0].uuid}/collect`)
+                .query({ walletId: String(wallet._id) })
                 .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
                 .expect(({ body }: request.Response) => {
                     expect(body.erc721).toBeDefined();
@@ -168,6 +173,7 @@ describe('QR Codes', () => {
 
         it('Second attempt same claim should fail.', (done) => {
             user.post(`/v1/claims/${claims[0].uuid}/collect`)
+                .query({ walletId: String(wallet._id) })
                 .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
                 .expect(({ body }: request.Response) => {
                     expect(body.error.message).toBe('This NFT is claimed already.');
@@ -177,6 +183,7 @@ describe('QR Codes', () => {
 
         it('First attempt other account should also fail', (done) => {
             user.post(`/v1/claims/${claims[0].uuid}/collect`)
+                .query({ walletId: String(wallet._id) })
                 .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
                 .expect(({ body }: request.Response) => {
                     expect(body.error.message).toBe('This NFT is claimed already.');
@@ -186,6 +193,7 @@ describe('QR Codes', () => {
 
         it('First attempt other claim for other account should succeed', (done) => {
             user.post(`/v1/claims/${claims[1].uuid}/collect`)
+                .query({ walletId: String(wallet._id) })
                 .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
                 .expect(({ body }: request.Response) => {
                     expect(body.erc721).toBeDefined();
