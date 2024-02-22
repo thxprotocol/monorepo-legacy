@@ -17,7 +17,6 @@ const controller = async (req: Request, res: Response) => {
     const chainId = Number(req.body.chainId) as ChainId;
     const contractAddress = toChecksumAddress(req.body.contractAddress);
     const pool = await PoolService.getById(req.header('X-PoolId'));
-
     const ownedNfts = await getNFTsForOwner(pool.safeAddress, contractAddress);
     if (!ownedNfts.length) throw new NotFoundError('Could not find NFT tokens for this contract address');
 
@@ -73,6 +72,7 @@ const controller = async (req: Request, res: Response) => {
                         },
                         { upsert: true, new: true },
                     );
+                    const walletId = String(pool.safe._id);
                     const erc1155Token = await ERC1155Token.findOneAndUpdate(
                         {
                             erc1155Id,
@@ -83,6 +83,7 @@ const controller = async (req: Request, res: Response) => {
                         {
                             erc1155Id,
                             tokenId,
+                            walletId,
                             tokenUri: tokenUri.raw,
                             sub: req.auth.sub,
                             recipient: pool.safeAddress,

@@ -2,7 +2,7 @@ import { Wallet as WalletModel, WalletDocument } from '@thxnetwork/api/models/Wa
 import { ChainId, WalletVariant } from '@thxnetwork/types/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
-import { getChainId, safeVersion } from '@thxnetwork/api/services/ContractService';
+import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { toChecksumAddress } from 'web3-utils';
 import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit';
 import SafeApiKit from '@safe-global/api-kit';
@@ -12,8 +12,6 @@ import {
     SafeVersion,
 } from '@safe-global/safe-core-sdk-types';
 import { logger } from '@thxnetwork/api/util/logger';
-import { AccountVariant } from '@thxnetwork/types/interfaces';
-import AccountProxy from '../proxies/AccountProxy';
 import { agenda, JobType } from '@thxnetwork/api/util/agenda';
 import { Job } from '@hokify/agenda';
 import { AssetPool, AssetPoolDocument } from '../models/AssetPool';

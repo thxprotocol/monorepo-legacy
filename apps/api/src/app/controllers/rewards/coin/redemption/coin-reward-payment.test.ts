@@ -23,12 +23,7 @@ import { TAccount } from '@thxnetwork/common/lib/types';
 const user = request.agent(app);
 
 describe('Coin Reward Payment', () => {
-    let erc20: ERC20Document,
-        poolId: string,
-        perkUuid: string,
-        perk: any,
-        wallet: WalletDocument,
-        campaignSafe: WalletDocument;
+    let erc20: ERC20Document, poolId: string, perk: any, wallet: WalletDocument, campaignSafe: WalletDocument;
     const totalSupply = toWei('100000'),
         amount = 500;
 
@@ -147,9 +142,10 @@ describe('Coin Reward Payment', () => {
             })
             .expect(200, done);
     });
-    it('POST /rewards/coin/:uuid/redemption', (done) => {
-        user.post(`/v1/rewards/coin/${perkUuid}/redemption`)
+    it('POST /rewards/coin/:id/payments', (done) => {
+        user.post(`/v1/rewards/coin/${perk._id}/payments`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
+            .send({ walletId: String(wallet._id) })
             .expect((res: request.Response) => {
                 expect(res.body.erc20PerkPayment).toBeDefined();
                 expect(res.body.erc20PerkPayment.poolId).toBe(poolId);

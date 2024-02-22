@@ -153,7 +153,7 @@ describe('NFT Reward Payment', () => {
         });
     });
 
-    describe('POST /rewards/nft/:uuid/redemption', () => {
+    describe('POST /rewards/nft/:id/payments', () => {
         const balance = 500;
         let erc721TokenId;
 
@@ -163,8 +163,8 @@ describe('NFT Reward Payment', () => {
             await PointBalanceService.add(pool as AssetPoolDocument, account as TAccount, 500);
         });
 
-        it('POST /rewards/nft/:uuid/redemption', (done) => {
-            user.post(`/v1/rewards/nft/${perk.uuid}/redemption`)
+        it('POST /rewards/nft/:id/payments', (done) => {
+            user.post(`/v1/rewards/nft/${perk._id}/payments`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
                 .expect(({ body }: request.Response) => {
                     expect(body.erc721PerkPayment).toBeDefined();
