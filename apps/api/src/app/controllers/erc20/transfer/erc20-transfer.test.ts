@@ -67,9 +67,9 @@ describe('ERC20 Transfer', () => {
         it('HTTP 201', async () => {
             const res = await user
                 .post('/v1/erc20/transfer')
-                .query({ walletId: String(wallet._id) })
                 .set({ Authorization: widgetAccessToken })
                 .send({
+                    walletId: String(wallet._id),
                     erc20Id: erc20._id,
                     to: userWalletAddress2,
                     amount: toWei('1', 'ether'),
