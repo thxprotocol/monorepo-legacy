@@ -1,5 +1,4 @@
 import 'express-async-errors';
-import '@thxnetwork/api/config/openapi';
 import axios from 'axios';
 import axiosBetterStacktrace from 'axios-better-stacktrace';
 import compression from 'compression';

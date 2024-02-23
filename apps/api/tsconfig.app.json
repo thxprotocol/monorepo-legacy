@@ -20,7 +20,6 @@
         "scripts/**/*.ts",
         "src/**/*.ts",
         "../../package.json",
-        "./src/openapi.json",
         "./package.json",
         "../../libs/common/**/*",
         "../../libs/contracts/**/*",
