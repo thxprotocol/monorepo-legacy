@@ -32,12 +32,11 @@ async function controller(req: Request, res: Response) {
         const token = await TokenService.getToken(account, AccessTokenKind.Auth);
         if (token.expiry < Date.now()) throw new Error('One-time password expired');
 
-        await account.updateOne({
-            isEmailVerified: true,
-            active: true,
-        });
+        await account.updateOne({ isEmailVerified: true });
 
         await AuthService.getReturnUrl(account, req.interaction);
+
+        console.log('Success', account, String(account._id));
 
         return await oidc.interactionFinished(req, res, { login: { accountId: String(account._id) } });
     } catch (error) {

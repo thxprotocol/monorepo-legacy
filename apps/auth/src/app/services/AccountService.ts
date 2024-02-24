@@ -99,10 +99,10 @@ export class AccountService {
             variant: AccountVariant.Metamask,
         });
         if (account) return account;
-        // return await Account.create({
-        //     variant: AccountVariant.Metamask,
-        //     plan: AccountPlanType.Free,
-        //     address,
-        // });
+        return await Account.create({
+            variant: AccountVariant.Metamask,
+            plan: AccountPlanType.Free,
+            address,
+        });
     }
 }

@@ -1,8 +1,8 @@
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { Account, AccountDocument } from '../models/Account';
 import { SUCCESS_SIGNUP_COMPLETED } from '../util/messages';
 import { TInteraction, AccountVariant, TToken } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind, AccountPlanType } from '@thxnetwork/types/enums';
+import { AccessTokenKind, AccountPlanType, OAuthRequiredScopes } from '@thxnetwork/types/enums';
 import bcrypt from 'bcrypt';
 import { AccountService } from './AccountService';
 import { Token } from '../models/Token';
@@ -12,6 +12,7 @@ import { hubspot } from '@thxnetwork/auth/util/hubspot';
 import { DASHBOARD_URL } from '@thxnetwork/auth/config/secrets';
 import { MailService } from './MailService';
 import TokenService from './TokenService';
+import EthereumService from './EthereumService';
 
 export default class AuthService {
     static async connect(interaction: TInteraction, tokenInfo: Partial<TToken>, variant: AccountVariant) {
@@ -61,7 +62,54 @@ export default class AuthService {
         return await account.save();
     }
 
-    static async redirectOTP(req: Request, email: string) {
+    static async redirectSSO(_req: Request, res: Response, { uid, variant }: { uid: string; variant: AccountVariant }) {
+        const map = {
+            [AccountVariant.SSOGoogle]: {
+                kind: AccessTokenKind.Google,
+                scopes: OAuthRequiredScopes.GoogleAuth,
+            },
+            [AccountVariant.SSODiscord]: {
+                kind: AccessTokenKind.Discord,
+                scopes: OAuthRequiredScopes.DiscordAuth,
+            },
+            [AccountVariant.SSOTwitter]: {
+                kind: AccessTokenKind.Twitter,
+                scopes: OAuthRequiredScopes.TwitterAuth,
+            },
+            [AccountVariant.SSOTwitch]: {
+                kind: AccessTokenKind.Twitch,
+                scopes: OAuthRequiredScopes.TwitchAuth,
+            },
+            [AccountVariant.SSOGithub]: {
+                kind: AccessTokenKind.Github,
+                scopes: OAuthRequiredScopes.GithubAuth,
+            },
+        };
+        const { kind, scopes } = map[variant];
+
+        const url = TokenService.getLoginURL({ uid, kind, scopes });
+
+        return res.redirect(url);
+    }
+    static async redirectWalletConnect(
+        req: Request,
+        res: Response,
+        { message, signature }: { message: string; signature: string },
+    ) {
+        // If signed auth request is available recover the address from the signature and lookup user
+        if (!message || !signature) {
+            throw new UnauthorizedError('Signed message and signature are required for Metamask login.');
+        }
+
+        const address = EthereumService.recoverSigner(decodeURIComponent(message), signature);
+        if (!address) throw new UnauthorizedError('Could not recover address from signed message.');
+
+        const account = await AccountService.findAccountForAddress(address);
+        if (!account) throw new UnauthorizedError('Account not found or created.');
+
+        return await oidc.interactionFinished(req, res, { login: { accountId: String(account._id) } });
+    }
+    static async redirectOTP(req: Request, res: Response, { email }: { email: string }) {
         const { params } = req.interaction;
         let account = await AccountService.findAccountForEmail(email);
 
@@ -83,7 +131,9 @@ export default class AuthService {
         // Interaction TTL is set to 10min and will expire after
         await req.interaction.save(Date.now() + 10 * 60 * 1000);
 
-        return req;
+        const redirectURL = `/oidc/${req.params.uid}/signin/otp`;
+
+        return res.redirect(redirectURL);
     }
 
     static async isOTPValid(account: AccountDocument, otp: string): Promise<boolean> {

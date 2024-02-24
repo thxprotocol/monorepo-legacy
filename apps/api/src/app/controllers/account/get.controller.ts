@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
-import { TToken } from '@thxnetwork/types/interfaces';
+import { AccountVariant, TToken } from '@thxnetwork/types/interfaces';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
+import WalletService from '@thxnetwork/api/services/WalletService';
+import { WalletVariant } from '@thxnetwork/common/lib/types';
+import { getChainId } from '@thxnetwork/api/services/ContractService';
 
 const validation = [];
 
@@ -13,6 +16,18 @@ const controller = async (req: Request, res: Response) => {
         scopes,
         metadata,
     })) as TToken[];
+
+    // If account variant is metamask and no wallet is found then create it
+    if (account.variant === AccountVariant.Metamask) {
+        const wallet = await WalletService.findOne({ sub: req.auth.sub, variant: WalletVariant.WalletConnect });
+        if (!wallet) {
+            await WalletService.createWalletConnect({
+                sub: req.auth.sub,
+                address: account.address,
+                chainId: getChainId(),
+            });
+        }
+    }
 
     res.json(account);
 };

@@ -276,14 +276,6 @@
           <% } %>
 
           <form id="form-signin" action="/oidc/<%= uid %>/signin" method="post">
-            <% if (params.authRequestMessage && params.metaMaskEnabled) { %>
-            <div class="alert alert-primary">
-              <a href="https://docs.thx.network/faq/metamask-login" target="_blank">On March 30 2024
-                we are removing the Metamask login method. <strong>Please change your login method!</strong>
-              </a>
-            </div>
-            <% } %>
-
             <% if(params.emailPasswordEnabled) { %>
             <p class="text-muted">
               <%- (params.isSignup) ? 'Use your work e-mail' : 'Use your e-mail' %>
@@ -302,11 +294,6 @@
             <input class="form-control mb-4" required name="code">
             <% } %>
 
-            <% if (params.authRequestMessage) { %>
-            <input type="hidden" name="authRequestMessage" value="<%= params.authRequestMessage %>" />
-            <input type="hidden" name="authRequestSignature" value="" />
-            <% } %>
-
             <input type="hidden" name="signupEmail" value="<%= params.signup_email %>" />
             <input type="hidden" name="returnUrl" value="<%= params.return_url %>" />
             <input type="hidden" name="isWidget" value="<%= params.isWidget %>" />
@@ -317,21 +304,6 @@
               <%- (params.isSignup) ? 'Continue with e-mail' : 'Send one-time password'%>
               <i class="fas fa-chevron-right" aria-hidden="true"></i><br />
             </button>
-            <% } %>
-
-            <% if(params.emailPasswordEnabled && params.metaMaskEnabled) { %>
-            <hr />
-            <% } %>
-
-            <% if (params.authRequestMessage && params.metaMaskEnabled) { %>
-            <a class="d-flex align-items-center justify-content-start btn btn-light rounded-pill"
-               style="padding: 0.75rem 1.2rem" @click="onClickSigninMetamask">
-              <img v-if="!isDisabledMetamask" width="20" src="/img/mm-logo.svg" class="mr-2" alt="Metamask logo" />
-              <div v-else class="spinner-border spinner-primary spinner-border-sm mr-2" role="status">
-                <span class="sr-only">Loading...</span>
-              </div>
-              Continue with Metamask
-            </a>
             <% } %>
 
           </form>

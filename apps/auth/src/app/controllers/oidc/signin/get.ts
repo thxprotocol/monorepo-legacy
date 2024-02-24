@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { AUTH_URL, DASHBOARD_URL, WIDGET_URL } from '../../../config/secrets';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
-import { OAuthScope, AccessTokenKind, OAuthGoogleScope, OAuthRequiredScopes } from '@thxnetwork/common/lib/types';
+import { AccessTokenKind, OAuthRequiredScopes } from '@thxnetwork/common/lib/types';
 import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
 import PoolProxy from '@thxnetwork/auth/proxies/PoolProxy';

@@ -1,3 +1,4 @@
+import { arrayify, computeAddress, hashMessage, recoverPublicKey } from 'ethers/lib/utils';
 import { SignTypedDataVersion, recoverTypedSignature } from '@metamask/eth-sig-util';
 
 export const AUTH_REQUEST_TYPED_MESSAGE =
@@ -36,5 +37,9 @@ export default class EthereumService {
             signature,
             version: 'V3' as SignTypedDataVersion,
         });
+    }
+
+    static recoverSigner(message: string, signature: string) {
+        return computeAddress(recoverPublicKey(arrayify(hashMessage(message)), signature));
     }
 }
