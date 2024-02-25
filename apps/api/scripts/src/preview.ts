@@ -19,8 +19,8 @@ const defaultBackgroundImgPath = path.resolve(assetsPath, 'bg.png');
 const defaultLogoImgPath = path.resolve(assetsPath, 'logo.png');
 
 // ENV
-// const widgetBaseUrl = 'https://dev-campaign.thx.network';
-const widgetBaseUrl = 'https://campaign.thx.network';
+// const widgetBaseUrl = 'https://dev-app.thx.network';
+const widgetBaseUrl = 'https://app.thx.network';
 
 registerFont(fontPath, { family, style: 'normal', weight: '900' });
 

@@ -119,10 +119,8 @@
                         <b-form-checkbox @change="onChangeSettings" v-model="isPublished" class="mr-3">
                             <strong>Public Campaign</strong><br />
                             <span class="text-muted">
-                                List your campaign on
-                                <b-link href="https://campaign.thx.network" target="_blank">
-                                    campaign.thx.network
-                                </b-link>
+                                List your campaign in
+                                <b-link :href="widgetUrl" target="_blank"> Campaign Discovery </b-link>
                                 <i
                                     v-b-tooltip
                                     title="Campaigns must contain at least 1 quest and 1 reward."
