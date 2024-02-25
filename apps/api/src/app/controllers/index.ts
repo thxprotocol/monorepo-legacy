@@ -29,7 +29,6 @@ import eventsRouter from './events/events.router';
 import dataRouter from './data/data.router';
 import RouterVoteEscrow from './ve/ve.router';
 import RouterJobs from './jobs/jobs.router';
-import RouterConnect from './connect/connect.router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 
 const router = express.Router({ mergeParams: true });
@@ -46,7 +45,6 @@ router.use('/leaderboards', leaderboardsRouter); // TODO Partial refactor
 router.use('/quests', questsRouter); // TODO Refactor
 router.use('/rewards', rewardsRouter); // TODO Refactor
 router.use('/webhook', webhookRouter);
-router.use('/connect', RouterConnect);
 
 router.use(checkJwt, corsHandler);
 router.use('/jobs', RouterJobs);

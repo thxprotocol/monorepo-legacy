@@ -125,7 +125,7 @@ function findById(id: string) {
 }
 
 function findOne(query) {
-    return Wallet.findOne({ ...query, safeVersion, poolId: { $exists: false } });
+    return Wallet.findOne({ ...query, variant: WalletVariant.Safe, poolId: { $exists: false } });
 }
 
 function findOneByAddress(address: string) {
