@@ -10,6 +10,7 @@ export default class WalletService {
         // List all wallets owned by the account but filter out wallets used for the campaign
         const wallets = await Wallet.find({
             sub: account.sub,
+            variant: { $in: [WalletVariant.Safe, WalletVariant.WalletConnect] },
             address: { $exists: true, $ne: null },
             poolId: { $exists: false },
         });
