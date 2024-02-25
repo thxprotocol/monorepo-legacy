@@ -11,6 +11,7 @@ const participantSchema = new mongoose.Schema(
         score: Number,
         balance: { type: Number, default: 0 },
         questEntryCount: Number,
+        isSubscribed: { type: Boolean, default: false },
     },
     { timestamps: true },
 );

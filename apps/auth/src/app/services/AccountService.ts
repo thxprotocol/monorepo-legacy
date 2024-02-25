@@ -39,17 +39,20 @@ export class AccountService {
         // Send verification email when changing email
         if (data.email) {
             // Only check if email is different than the current one
-            if (account.email !== data.email) {
-                const isUsed = await Account.exists({
+            if (account.email && data.email !== account.email) {
+                const isUsed = await Account.findOne({
                     email: data.email,
                     _id: { $ne: String(account._id), $exists: true },
                 });
+                console.log({ isUsed });
                 if (isUsed) throw new BadRequestError('Email already in use.');
             }
+
+            // Always send mail in case this is a retry
             await MailService.sendVerificationEmail(account, data.email, WIDGET_URL);
 
             // Set isEmailVerified to false to force user to confirm the e-mail
-            data.isEmailVerified = false;
+            if (data.email !== account.email) data.isEmailVerified = false;
         }
 
         return await Account.findByIdAndUpdate(account._id, data, { new: true });

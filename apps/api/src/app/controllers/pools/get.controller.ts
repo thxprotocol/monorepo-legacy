@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { currentVersion } from '@thxnetwork/contracts/exports';
 import { Widget } from '@thxnetwork/api/services/WidgetService';
-import { PoolSubscription } from '@thxnetwork/api/models/PoolSubscription';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
 import { Event } from '@thxnetwork/api/models/Event';
 import { Identity } from '@thxnetwork/api/models/Identity';
@@ -11,6 +10,7 @@ import { logger } from '@thxnetwork/api/util/logger';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import { Participant } from '@thxnetwork/api/models/Participant';
 
 export const validation = [param('id').isMongoId()];
 
@@ -37,7 +37,7 @@ export const controller = async (req: Request, res: Response) => {
         PoolService.findOwner(pool),
         Event.find({ poolId: pool._id }).distinct('name'), // Seperate list (many)
         Identity.find({ poolId: pool._id }), // Seperate list (many)
-        PoolSubscription.countDocuments({ poolId: req.params.id }),
+        Participant.countDocuments({ poolId: req.params.id, isSubscribed: true }),
     ]);
 
     res.json({

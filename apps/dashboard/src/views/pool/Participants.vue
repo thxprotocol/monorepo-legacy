@@ -56,7 +56,7 @@
                 </template>
                 <template #cell(subscription)="{ item }">
                     <small class="text-muted">
-                        {{ item.subscription ? format(new Date(item.subscription.createdAt), 'dd-MM-yyyy HH:mm') : '' }}
+                        {{ item.subscription }}
                     </small>
                 </template>
                 <template #cell(createdAt)="{ item }">
@@ -168,8 +168,8 @@ export default class ViewParticipants extends Vue {
             account: parseAccount({ id: p._id, account: p.account }),
             email: p.account && p.account.email,
             tokens: p.account && parseConnectedAccounts(p.account),
-            pointBalance: p.pointBalance,
-            subscription: p.subscription,
+            pointBalance: p.balance,
+            subscription: p.isSubscribed ? 'Yes' : 'No',
             createdAt: p.createdAt,
             participant: p,
         }));

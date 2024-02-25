@@ -1,5 +1,4 @@
 import { AssetPoolDocument } from '../models/AssetPool';
-import { PoolSubscription } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
 import { sleep } from '../util';
 import { QuestVariant, TAccount, TBrand, TNotification, TQuest, TWallet, TWidget } from '@thxnetwork/common/lib/types';
@@ -14,6 +13,7 @@ import { DiscordButtonVariant } from '../events/InteractionCreated';
 import { ButtonStyle } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
 import { celebratoryWords } from '../util/dictionaries';
+import { Participant } from '../models/Participant';
 
 const MAIL_CHUNK_SIZE = 600;
 
@@ -21,8 +21,8 @@ async function send(
     pool: AssetPoolDocument,
     { subjectId, subject, message, link }: Partial<TNotification> & { link?: { src: string; text: string } },
 ) {
-    const poolSubs = await PoolSubscription.find({ poolId: pool._id });
-    const subs = poolSubs.map((x) => x.sub);
+    const participants = await Participant.find({ poolId: pool._id, isSubscribed: true });
+    const subs = participants.map((p) => p.sub);
     const accounts = (await AccountProxy.find({ subs })).filter((a) => a.email);
 
     // Create chunks for bulk email sending to avoid hitting Sendgrit rate limits

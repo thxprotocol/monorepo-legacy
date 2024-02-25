@@ -5,6 +5,7 @@ export type TParticipant = {
     rank: number;
     score: number;
     questEntryCount: number;
+    isSubscribed: boolean;
     balance: number;
     updatedAt: Date;
 };

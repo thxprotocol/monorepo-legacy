@@ -1,7 +1,6 @@
 import { AccessTokenKind, ChainId, CollaboratorInviteState, OAuthDiscordScope } from '@thxnetwork/types/enums';
 import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { currentVersion } from '@thxnetwork/contracts/exports';
-import { PoolSubscription, PoolSubscriptionDocument } from '../models/PoolSubscription';
 import { logger } from '../util/logger';
 import { TAccount, TToken } from '@thxnetwork/types/interfaces';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
@@ -18,7 +17,6 @@ import { CustomReward } from '../models/CustomReward';
 import { Participant } from '../models/Participant';
 import { Collaborator, CollaboratorDocument } from '../models/Collaborator';
 import { DASHBOARD_URL } from '../config/secrets';
-import { WalletDocument } from '../models/Wallet';
 import { Widget } from '../models/Widget';
 import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
 import AccountProxy from '../proxies/AccountProxy';
@@ -213,7 +211,7 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
 
     participants.results = await Promise.all(
         participants.results.map(async (participant) => {
-            let account: TAccount, subscription: PoolSubscriptionDocument;
+            let account: TAccount;
 
             try {
                 account = accounts.find((a) => a.sub === participant.sub);
@@ -232,12 +230,6 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                 logger.error(error);
             }
 
-            try {
-                subscription = await PoolSubscription.findOne({ poolId: pool._id, sub: account.sub });
-            } catch (error) {
-                logger.error(error);
-            }
-
             return {
                 ...participant,
                 account: account && {
@@ -247,8 +239,6 @@ async function findParticipants(pool: AssetPoolDocument, page: number, limit: nu
                     variant: account.variant,
                     tokens: account.tokens,
                 },
-                subscription,
-                pointBalance: participant.balance,
             };
         }),
     );

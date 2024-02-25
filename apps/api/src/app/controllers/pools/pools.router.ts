@@ -7,7 +7,6 @@ import CreateController from './post.controller';
 import UpdateController from './patch.controller';
 import DeleteController from './delete.controller';
 
-import RouterSubscriptions from './subscriptions/subscriptions.router';
 import RouterCollaborators from './collaborators/collaborators.router';
 import RouterParticipants from './participants/participants.router';
 import RouterAnalytics from './analytics/analytics.router';
@@ -50,7 +49,7 @@ router.delete(
     assertRequestInput(DeleteController.validation),
     DeleteController.controller,
 );
-router.use('/:id/subscription', RouterSubscriptions); // TODO Should not be in /pools but root resource instead
+
 router.use('/:id/collaborators', RouterCollaborators);
 router.use('/:id/participants', RouterParticipants);
 router.use('/:id/analytics', RouterAnalytics);
