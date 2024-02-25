@@ -62,8 +62,6 @@ export default class WalletService {
     static async createWalletConnect({ sub, address, chainId }) {
         const data: Partial<TWallet> = { variant: WalletVariant.WalletConnect, sub, address, chainId };
 
-        // This filter allows to take ownership of wallets owned by other subs as long as
-        // the address can be verified.
-        await Wallet.findOneAndUpdate({ address, chainId }, data, { upsert: true });
+        await Wallet.findOneAndUpdate({ sub, address, chainId }, data, { upsert: true });
     }
 }
