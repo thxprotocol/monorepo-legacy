@@ -19,20 +19,20 @@
                 <div class="col-md-4 col-lg-3 mb-5 mb-lg-0">
                     <b-card class="h-100" bg-variant="light" body-class="p-sm-4">
                         <div class="text-center">
-                            <h2 class="h3 text-uppercase font-weight-bold text-dark">Starter</h2>
-                            <p class="font-weight-light">Best for individual users</p>
+                            <h2 class="h3 text-uppercase font-weight-bold text-dark">Lite</h2>
+                            <p class="font-weight-light">Best for growth hackers and marketers</p>
                             <p class="pricing-costs mt-4">
-                                <strong>&euro; 0</strong>
+                                <strong>&euro; 19</strong>
                                 / month
                             </p>
                             <b-button
                                 block
-                                to="/signup"
+                                to="/signup?signup_plan=1"
                                 variant="dark"
                                 class="rounded-pill mt-3 mb-3"
                                 :title="TITLES.PRICING_SIGN_UP"
                             >
-                                Start now
+                                Start <strong>free</strong> trial
                                 <i class="fas fa-chevron-right"></i>
                             </b-button>
                         </div>
@@ -50,40 +50,18 @@
                             <b-badge variant="primary" class="p-2">POPULAR</b-badge>
                         </template>
                         <div class="text-center text-dark">
-                            <h2 class="h3 text-uppercase font-weight-bold text-dark">Basic</h2>
-                            <p class="font-weight-light">Best for growth hackers and marketers</p>
-                            <p class="pricing-costs mt-4">
-                                <strong>&euro; 89</strong>
-                                / month
-                            </p>
-                            <b-button
-                                block
-                                to="/signup?signup_plan=1"
-                                variant="primary"
-                                class="rounded-pill mt-3 mb-3"
-                                :title="TITLES.PRICING_SIGN_UP"
-                            >
-                                Start <strong>free</strong> trial
-                                <i class="fas fa-chevron-right"></i>
-                            </b-button>
-                        </div>
-                    </b-card>
-                </div>
-                <div class="col-md-4 col-lg-3 mb-5 mb-lg-0">
-                    <b-card class="h-100" bg-variant="light" body-class="text-dark p-sm-4" style="z-index: 0">
-                        <div class="text-center">
-                            <h2 class="h3 text-uppercase text-dark font-weight-bold">Premium</h2>
+                            <h2 class="h3 text-uppercase font-weight-bold text-dark">Premium</h2>
                             <p class="font-weight-light">Best for growth teams and game studios</p>
                             <p class="pricing-costs mt-4">
-                                <strong>&euro; 449</strong>
+                                <strong>&euro; 489</strong>
                                 / month
                             </p>
                             <b-button
                                 block
                                 to="/signup?signup_plan=2"
-                                variant="dark"
+                                variant="primary"
                                 class="rounded-pill mt-3 mb-3"
-                                :title="TITLES.CONTACT_US"
+                                :title="TITLES.PRICING_SIGN_UP"
                             >
                                 Start <strong>free</strong> trial
                                 <i class="fas fa-chevron-right"></i>
@@ -97,29 +75,19 @@
                     <div>Trusted by</div>
                 </div>
                 <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
-                    <b-link href="https://www.humandivergence.com" target="_blank">
+                    <b-link href="https://www.ape.bond" target="_blank">
                         <b-img
-                            :src="require('../../public/assets/img/logo-hd.png')"
-                            width="120"
+                            :src="require('../../public/assets/img/logo-apebond.png')"
+                            width="100"
                             alt=""
                             class="mx-md-5"
                         />
                     </b-link>
                 </div>
                 <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
-                    <b-link href="https://www.tryhards.io" target="_blank">
+                    <b-link href="https://gala.com" target="_blank">
                         <b-img
-                            :src="require('../../public/assets/img/logo-tryhards.png')"
-                            width="120"
-                            alt=""
-                            class="mx-md-5"
-                        />
-                    </b-link>
-                </div>
-                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
-                    <b-link href="https://apeswap.finance/liquidity-health" target="_blank">
-                        <b-img
-                            :src="require('../../public/assets/img/logo-apeswap.png')"
+                            :src="require('../../public/assets/img/logo-gala.png')"
                             width="120"
                             alt=""
                             class="mx-md-5"
@@ -137,10 +105,20 @@
                     </b-link>
                 </div>
                 <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
-                    <b-link href="https://2tokens.org" target="_blank">
+                    <b-link href="https://www.thedustland.com" target="_blank">
                         <b-img
-                            :src="require('../../public/assets/img/logo-2tokens.webp')"
+                            :src="require('../../public/assets/img/logo-dustland.png')"
                             width="120"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
+                </div>
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://titanborn.gg" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-titanborn.png')"
+                            width="100"
                             alt=""
                             class="mx-md-5"
                         />
@@ -149,19 +127,30 @@
             </div>
             <div class="row mt-3 mt-sm-5 justify-content-center">
                 <div class="col-md-10 col-lg-10 mb-5 mb-lg-0">
-                    <b-card class="bg-light shadow-lg" body-class="px-0">
-                        <div class="lead text-center pb-3">Detailed plan comparison</div>
+                    <b-card class="bg-light shadow-lg" body-class="p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover mt-3">
+                            <table class="table table-hover">
                                 <thead>
                                     <tr>
                                         <th></th>
-                                        <th>Starter</th>
-                                        <th>Basic</th>
-                                        <th>Premium</th>
+                                        <th>Lite</th>
+                                        <th>
+                                            Premium
+                                            <b-badge variant="primary" class="p-2">POPULAR</b-badge>
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td><strong>&euro; 19</strong></td>
+                                        <td><strong>&euro; 489,-</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td class="text-muted small">Best for growth hackers and marketers</td>
+                                        <td class="text-muted small">Best for growth teams and game studios</td>
+                                    </tr>
                                     <tr>
                                         <td>
                                             Smart Wallets<br />
@@ -169,7 +158,6 @@
                                                 Polygon smart contract wallets ideal for non-crypto natives
                                             </span>
                                         </td>
-                                        <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
@@ -180,8 +168,7 @@
                                                 Qualify users for custom quests even before account sign up
                                             </span>
                                         </td>
-                                        <td><i class="fas fa-times-circle"></i></td>
-                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
                                     <tr>
@@ -193,16 +180,65 @@
                                         </td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
-                                        <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Performance Monitoring<br />
+                                            Performance Analytics<br />
                                             <span class="text-gray small">
                                                 Keep an eye on the performance of your quests
                                             </span>
                                         </td>
                                         <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="bg-dark text-white" colspan="4">
+                                            <strong>Services</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Dedicated Campaign Manager<br />
+                                            <span class="text-gray small">
+                                                Opt-in campaign manager during the first three months of your campaign.
+                                            </span>
+                                        </td>
+                                        <td></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Unlimited Technical Support<br />
+                                            <span class="text-gray small">
+                                                Opt-in technical support for webhook integrations.
+                                            </span>
+                                        </td>
+                                        <td></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="bg-dark text-white" colspan="4">
+                                            <strong>Integrations</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Discord Bot
+                                            <br />
+                                            <span class="text-gray small">
+                                                Create quests for Discord server activity
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Twitter Automation<br />
+                                            <span class="text-gray small">
+                                                Automate social quest creation with hashtag filters
+                                            </span>
+                                        </td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
@@ -227,19 +263,17 @@
                                         </td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
-                                        <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
-                                    <tr>
+                                    <!-- <tr>
                                         <td>
                                             Invite<br />
                                             <span class="text-gray small">
                                                 Empower your players to earn points for referrals
                                             </span>
                                         </td>
-                                        <td><i class="fas fa-times-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
-                                    </tr>
+                                    </tr> -->
                                     <tr>
                                         <td>
                                             Social<br />
@@ -250,7 +284,6 @@
                                         </td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
-                                        <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
                                     <tr>
                                         <td>
@@ -259,7 +292,6 @@
                                                 Use smart contracts to reward a wallet's coin balance or NFT ownership.
                                             </span>
                                         </td>
-                                        <td><i class="fas fa-times-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
@@ -271,8 +303,17 @@
                                                 application
                                             </span>
                                         </td>
-                                        <td><i class="fas fa-times-circle"></i></td>
-                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Gitcoin<br />
+                                            <span class="text-gray small">
+                                                Fight bots with privacy respecting proof of humanity.
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
                                     <tr>
@@ -294,7 +335,6 @@
                                         </td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
-                                        <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
                                     <tr>
                                         <td>
@@ -306,17 +346,37 @@
                                         </td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Coupon<br />
+                                            <span class="text-gray small">
+                                                Use your own coupon codes to reward your players with whatever they are
+                                                worth.
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Custom Webhooks<br />
+                                            Discord Role<br />
+                                            <span class="text-gray small">
+                                                Use THX Bot to assign Discord Roles in your server to users that buy
+                                                this reward.
+                                            </span>
+                                        </td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Custom<br />
                                             <span class="text-gray small">
                                                 Use inbound webhooks to reward with a feature in your application
                                             </span>
                                         </td>
-                                        <td><i class="fas fa-times-circle"></i></td>
-                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td><i class="fas fa-check-circle"></i></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
                                     <tr>
@@ -326,160 +386,44 @@
                                                 Use QR codes to distribute your rewards in offline environments
                                             </span>
                                         </td>
-                                        <td><i class="fas fa-times-circle"></i></td>
-                                        <td><i class="fas fa-times-circle"></i></td>
+                                        <td></td>
                                         <td><i class="fas fa-check-circle"></i></td>
                                     </tr>
                                     <tr>
                                         <td class="bg-dark text-white" colspan="4">
-                                            <strong>Integrations</strong>
+                                            <strong>Limits</strong>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Discord Bot
-                                            <br />
+                                            Monthly Active Participants<br />
                                             <span class="text-gray small">
-                                                Create quests for Discord server activity
+                                                Monthly active campaign participants (MAP) with at least one quests
+                                                completed.
                                             </span>
                                         </td>
-                                        <td><i class="fas fa-times-circle"></i></td>
-                                        <td><i class="fas fa-check-circle"></i></td>
-                                        <td><i class="fas fa-check-circle"></i></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Twitter Automation<br />
-                                            <span class="text-gray small">
-                                                Automate social quest creation with hashtag filters
-                                            </span>
-                                        </td>
-                                        <td><i class="fas fa-times-circle"></i></td>
-                                        <td><i class="fas fa-check-circle"></i></td>
-                                        <td><i class="fas fa-check-circle"></i></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Payment Methods<br />
-                                            <span class="text-gray small">
-                                                Sell rewards with crypto, credit Card &amp; local payment providers
-                                            </span>
-                                        </td>
-                                        <td><i class="fas fa-times-circle"></i></td>
-                                        <td><i class="fas fa-times-circle"></i></td>
-                                        <td><i class="fas fa-check-circle"></i></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="bg-dark text-white" colspan="4">
-                                            <strong>Services</strong>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Dedicated Campaign Manager<br />
-                                            <span class="text-gray small">
-                                                Opt-in campaign manager during the first three months of your campaign.
-                                            </span>
-                                        </td>
-                                        <td><i class="fas fa-times-circle"></i></td>
-                                        <td><i class="fas fa-times-circle"></i></td>
-                                        <td><i class="fas fa-check-circle"></i></td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Unlimited Technical Support<br />
-                                            <span class="text-gray small">
-                                                Opt-in technical support for webhook integrations.
-                                            </span>
-                                        </td>
-                                        <td><i class="fas fa-times-circle"></i></td>
-                                        <td><i class="fas fa-times-circle"></i></td>
-                                        <td><i class="fas fa-check-circle"></i></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="bg-dark text-white" colspan="4">
-                                            <strong>Costs</strong>
-                                            <b-link
-                                                target="_blank"
-                                                href="https://docs.thx.network/fundamentals/pricing"
-                                                class="ml-1"
-                                            >
-                                                <sup class="fas fa-question-circle text-gray"> </sup>
-                                            </b-link>
-                                        </td>
-                                    </tr>
-                                    <!-- <tr>
-                                        <td>
-                                            Quest Completions
-                                            <br />
-                                            <span class="text-gray small">
-                                                Increase participation thresholds to never reach these limits.
-                                            </span>
-                                        </td>
-                                        <td>250</td>
-                                        <td>Unlimited</td>
-                                        <td>Unlimited</td>
-                                    </tr> -->
-                                    <tr>
-                                        <td>
-                                            Rewards
-                                            <br />
-                                            <span class="text-gray small">
-                                                Accurate point pricing will help never reach these limits
-                                            </span>
-                                        </td>
-                                        <td>50</td>
-                                        <td>500</td>
+                                        <td>100</td>
                                         <td>5000</td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            Collaborators<br />
+                                            Additional Participants<br />
+                                            <span class="text-gray small">
+                                                Additional costs per month when exceeding the MAP limit.
+                                            </span>
+                                        </td>
+                                        <td>&euro; 0,08</td>
+                                        <td>&euro; 0,05</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            Team members<br />
                                             <span class="text-gray small">
                                                 Add a team members to help manage your campaign.
                                             </span>
                                         </td>
-                                        <td>
-                                            0
-                                            <b-link
-                                                class="ml-1"
-                                                v-b-tooltip
-                                                title="Add more for €19,- per collaborator per month"
-                                            >
-                                                <sup class="fas fa-question-circle text-gray"> </sup>
-                                            </b-link>
-                                        </td>
-                                        <td>
-                                            0
-                                            <b-link
-                                                class="ml-1"
-                                                v-b-tooltip
-                                                title="Add more for €19,- per collaborator per month"
-                                            >
-                                                <sup class="fas fa-question-circle text-gray"> </sup>
-                                            </b-link>
-                                        </td>
-                                        <td>
-                                            3
-                                            <b-link
-                                                class="ml-1"
-                                                v-b-tooltip
-                                                title="Add more for €19,- per collaborator per month"
-                                            >
-                                                <sup class="fas fa-question-circle text-gray"> </sup>
-                                            </b-link>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            Transactions<br />
-                                            <span class="text-gray small">
-                                                We cover all costs for required web3 transactions!
-                                            </span>
-                                        </td>
-                                        <td>Free</td>
-                                        <td>Free</td>
-                                        <td>Free</td>
+                                        <td>Unlimited</td>
+                                        <td>Unlimited</td>
                                     </tr>
                                     <tr>
                                         <td>
@@ -489,17 +433,11 @@
                                                 Pay in crypto, credit card, Google + Apple Pay or SEPA transfer.
                                             </span>
                                         </td>
-                                        <td><strong>&euro; 0,-</strong></td>
-                                        <td><strong>&euro; 89</strong></td>
-                                        <td><strong>&euro; 449,-</strong></td>
+                                        <td><strong>&euro; 19</strong></td>
+                                        <td><strong>&euro; 489,-</strong></td>
                                     </tr>
                                     <tr>
                                         <td></td>
-                                        <td>
-                                            <b-button to="/signup" variant="primary" class="rounded-pill">
-                                                Start now <i class="fas fa-chevron-right"></i>
-                                            </b-button>
-                                        </td>
                                         <td>
                                             <b-button to="/signup?signup_plan=1" variant="primary" class="rounded-pill">
                                                 Start <strong>free</strong> trial
@@ -517,6 +455,61 @@
                             </table>
                         </div>
                     </b-card>
+                </div>
+            </div>
+            <div class="row mt-md-5 justify-content-center px-5 customers">
+                <div class="col-md-12 text-center text-muted pt-md-5 pb-3">
+                    <div>Trusted by</div>
+                </div>
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://www.ape.bond" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-apebond.png')"
+                            width="100"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
+                </div>
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://gala.com" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-gala.png')"
+                            width="120"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
+                </div>
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://www.forestknight.io" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-forest-knight.png')"
+                            width="120"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
+                </div>
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://www.thedustland.com" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-dustland.png')"
+                            width="120"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
+                </div>
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://titanborn.gg" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-titanborn.png')"
+                            width="100"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
                 </div>
             </div>
         </div>
