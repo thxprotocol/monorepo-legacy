@@ -457,6 +457,61 @@
                     </b-card>
                 </div>
             </div>
+            <div class="row mt-md-5 justify-content-center px-5 customers">
+                <div class="col-md-12 text-center text-muted pt-md-5 pb-3">
+                    <div>Trusted by</div>
+                </div>
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://www.ape.bond" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-apebond.png')"
+                            width="100"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
+                </div>
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://gala.com" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-gala.png')"
+                            width="120"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
+                </div>
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://www.forestknight.io" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-forest-knight.png')"
+                            width="120"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
+                </div>
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://www.thedustland.com" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-dustland.png')"
+                            width="120"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
+                </div>
+                <div class="col-6 col-md-2 text-center d-flex align-items-center justify-content-center">
+                    <b-link href="https://titanborn.gg" target="_blank">
+                        <b-img
+                            :src="require('../../public/assets/img/logo-titanborn.png')"
+                            width="100"
+                            alt=""
+                            class="mx-md-5"
+                        />
+                    </b-link>
+                </div>
+            </div>
         </div>
         <base-features />
         <base-partners />
