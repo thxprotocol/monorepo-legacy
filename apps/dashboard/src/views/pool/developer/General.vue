@@ -51,24 +51,6 @@
                 </b-form-group>
             </b-col>
         </b-form-row>
-        <hr />
-        <b-form-row>
-            <b-col md="4">
-                <strong>Authentication</strong>
-                <div class="text-muted">Enable the available login methods for your widget.</div>
-            </b-col>
-            <b-col md="8">
-                <b-form-checkbox-group
-                    disabled
-                    v-model="selectedAuthenticationMethods"
-                    :options="authenticationMethods"
-                    value-field="key"
-                    text-field="text"
-                    @change="onChangeSettings"
-                >
-                </b-form-checkbox-group>
-            </b-col>
-        </b-form-row>
     </div>
 </template>
 

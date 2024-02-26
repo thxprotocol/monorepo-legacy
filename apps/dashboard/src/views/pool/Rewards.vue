@@ -320,10 +320,6 @@ export default class RewardsView extends Vue {
         this.listRewards();
     }
 
-    onChecked(checked: boolean) {
-        this.selectedItems = checked ? (this.rewardsByPage.map((r) => r.id) as string[]) : [];
-    }
-
     onChangePage(page: number) {
         this.page = page;
         this.listRewards();

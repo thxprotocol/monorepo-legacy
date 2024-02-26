@@ -1,5 +1,5 @@
 <template>
-    <base-modal
+    <BaseModal
         @show="$emit('show')"
         size="xl"
         :title="(quest ? 'Update ' : 'Create ') + variant"
@@ -98,7 +98,7 @@
                 </template>
             </b-button>
         </template>
-    </base-modal>
+    </BaseModal>
 </template>
 
 <script lang="ts">
@@ -119,7 +119,6 @@ import BaseCardQuestLocks from '@thxnetwork/dashboard/components/cards/BaseCardQ
 })
 export default class ModalQuestCreate extends Vue {
     imageFile: File | null = null;
-    error = '';
     image = '';
     expirationDate: Date | null = null;
     expirationTime = '00:00:00';
@@ -132,6 +131,7 @@ export default class ModalQuestCreate extends Vue {
     @Prop() disabled!: boolean;
     @Prop() published!: boolean;
     @Prop() infoLinks!: TInfoLink[];
+    @Prop() error!: string;
 
     mounted() {
         if (this.quest && this.quest.expiryDate) {
