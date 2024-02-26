@@ -35,7 +35,6 @@ export default class Redirect extends Vue {
             const { poolId, collaboratorRequestToken } = this.user.state as any;
             if (poolId && collaboratorRequestToken) {
                 this.updateCollaborator(poolId, collaboratorRequestToken);
-                return this.$router.push('/pools');
             }
         }
 
