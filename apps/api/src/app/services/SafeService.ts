@@ -173,10 +173,10 @@ async function proposeTransaction(wallet: WalletDocument, safeTransactionData: S
     const safeTransaction = await safeSdk.createTransaction({ safeTransactionData });
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
     const senderSignature = await safeSdk.signTransactionHash(safeTxHash);
-    const safeSDK = getSafeSDK(wallet.chainId);
+    const safeAPIKit = getSafeSDK(wallet.chainId);
 
     try {
-        await safeSDK.proposeTransaction({
+        await safeAPIKit.proposeTransaction({
             safeAddress: wallet.address,
             safeTxHash,
             safeTransactionData: safeTransaction.data as any,
