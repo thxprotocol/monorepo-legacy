@@ -73,7 +73,7 @@ import BaseCardClaimAmount from '../cards/BaseCardClaimAmount.vue';
         erc1155Tokens: 'erc1155/erc1155Tokens',
     }),
 })
-export default class ModalRewardERC721Create extends Vue {
+export default class ModalRewardNFTCreate extends Vue {
     NFTVariant = NFTVariant;
     isLoading = false;
     error = '';

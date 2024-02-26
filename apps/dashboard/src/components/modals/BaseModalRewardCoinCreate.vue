@@ -22,18 +22,12 @@ import type { TBaseReward, TERC20, TERC20Perk, TPool } from '@thxnetwork/types/i
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IERC20s, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
-import BaseModal from './BaseModal.vue';
-import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
-import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
 
 @Component({
     components: {
-        BaseModal,
         BaseModalRewardCreate,
-        BaseCardRewardExpiry,
-        BaseCardRewardLimits,
         BaseDropdownSelectERC20,
     },
     computed: mapGetters({
@@ -41,7 +35,7 @@ import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
         erc20BalanceList: 'erc20/balances',
     }),
 })
-export default class ModalRewardERC20Create extends Vue {
+export default class ModalRewardCoinCreate extends Vue {
     isLoading = false;
     error = '';
     amount = '0';

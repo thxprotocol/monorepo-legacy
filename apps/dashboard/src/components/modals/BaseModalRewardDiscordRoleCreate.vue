@@ -33,8 +33,6 @@ import BaseDropdownDiscordRole from '../dropdowns/BaseDropdownDiscordRole.vue';
         BaseDropdownDiscordRole,
     },
     computed: mapGetters({
-        pools: 'pools/all',
-        profile: 'account/profile',
         guildsList: 'pools/guilds',
     }),
 })

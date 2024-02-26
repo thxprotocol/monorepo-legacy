@@ -132,8 +132,8 @@ import {
     AccessTokenKind,
 } from '@thxnetwork/types/index';
 import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
-import BaseModalRewardERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC20Create.vue';
-import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC721Create.vue';
+import BaseModalRewardCoinCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCoinCreate.vue';
+import BaseModalRewardNFTCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardNFTCreate.vue';
 import BaseModalRewardCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCustomCreate.vue';
 import BaseModalRewardCouponCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCouponCreate.vue';
 import BaseModalRewardDiscordRoleCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardDiscordRoleCreate.vue';
@@ -196,8 +196,8 @@ export const contentRewards = {
 
 @Component({
     components: {
-        BaseModalRewardERC20Create,
-        BaseModalRewardERC721Create,
+        BaseModalRewardCoinCreate,
+        BaseModalRewardNFTCreate,
         BaseModalRewardCustomCreate,
         BaseModalRewardCouponCreate,
         BaseModalRewardDiscordRoleCreate,
@@ -224,8 +224,8 @@ export default class RewardsView extends Vue {
     selectedItems: string[] = [];
     RewardVariant = RewardVariant;
     rewardModalComponentMap = {
-        [RewardVariant.Coin]: 'BaseModalRewardERC20Create',
-        [RewardVariant.NFT]: 'BaseModalRewardERC721Create',
+        [RewardVariant.Coin]: 'BaseModalRewardCoinCreate',
+        [RewardVariant.NFT]: 'BaseModalRewardNFTCreate',
         [RewardVariant.Custom]: 'BaseModalRewardCustomCreate',
         [RewardVariant.Coupon]: 'BaseModalRewardCouponCreate',
         [RewardVariant.DiscordRole]: 'BaseModalRewardDiscordRoleCreate',

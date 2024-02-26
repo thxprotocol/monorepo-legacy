@@ -56,26 +56,15 @@
 <script lang="ts">
 import type { TPool, TCouponReward, TBaseReward } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
-import BaseModal from './BaseModal.vue';
-import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
-import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
-import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
 import { RewardVariant } from '@thxnetwork/types/enums';
 import { CSVParser } from '../../utils/csv';
 import { format } from 'date-fns';
+import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
 
 @Component({
     components: {
-        BaseModal,
-        BaseCardRewardExpiry,
-        BaseCardRewardLimits,
         BaseModalRewardCreate,
     },
-    computed: mapGetters({
-        pools: 'pools/all',
-        profile: 'account/profile',
-    }),
 })
 export default class ModalRewardCustomCreate extends Vue {
     isLoading = false;
