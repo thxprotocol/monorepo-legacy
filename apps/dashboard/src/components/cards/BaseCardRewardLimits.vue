@@ -27,17 +27,12 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
-@Component({
-    watch: {
-        claimAmount: 'onInputClaimAmount',
-    },
-})
+@Component({})
 export default class BaseCardRewardLimits extends Vue {
     isVisible = false;
     selectedRewardLimit = 0;
 
     @Prop() limit!: number;
-    @Prop() claimAmount!: number;
 
     mounted() {
         this.selectedRewardLimit = this.limit ? this.limit : 0;

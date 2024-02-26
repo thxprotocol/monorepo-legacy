@@ -29,7 +29,6 @@ import { mapGetters } from 'vuex';
 
 @Component({
     computed: mapGetters({
-        gateList: 'pools/gates',
         questList: 'pools/quests',
     }),
 })
@@ -60,7 +59,6 @@ export default class BaseCardQuestLocks extends Vue {
     }
 
     async mounted() {
-        // await this.getQuests();
         this.selectedLocks = this.locks.map((lock: TQuestLock) => {
             const quest = this.quests.find((q) => q._id === lock.questId);
             return { variant: quest.variant, questId: quest._id };
