@@ -65,6 +65,7 @@ const controller = async (req: Request, res: Response) => {
             image: r.image,
             pointPrice: r.pointPrice,
             isPromoted: r.isPromoted,
+            locks: r.locks,
             expiry: await PerkService.getExpiry(r),
             progress: await PerkService.getProgress(r, Model),
             isLocked: await LockService.getIsLocked(r.locks, account),

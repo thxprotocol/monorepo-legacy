@@ -290,6 +290,16 @@ export default class RewardsView extends Vue {
 
     mounted() {
         this.listRewards();
+        this.listQuests();
+    }
+
+    async listQuests() {
+        await this.$store.dispatch('pools/listQuests', {
+            pool: this.pool,
+            isPublished: true,
+            page: 1,
+            limit: 50,
+        });
     }
 
     async listRewards() {
