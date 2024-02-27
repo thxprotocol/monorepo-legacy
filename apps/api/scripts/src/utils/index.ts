@@ -1,7 +1,7 @@
 import fs from 'fs';
 import csvParser from 'csv-parser';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
+import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/common/contants';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { v4 } from 'uuid';
 import { twitterClient } from '@thxnetwork/api/util/twitter';

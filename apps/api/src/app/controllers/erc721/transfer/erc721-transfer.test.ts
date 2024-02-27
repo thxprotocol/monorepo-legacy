@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant } from '@thxnetwork/common/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { sub, sub2, userWalletPrivateKey, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
@@ -13,7 +13,7 @@ import { signTxHash } from '@thxnetwork/api/util/jest/network';
 import SafeService, { Wallet } from '@thxnetwork/api/services/SafeService';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { Pool, PoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 
 const user = request.agent(app);
@@ -21,7 +21,7 @@ const user = request.agent(app);
 describe('ERC721 Transfer', () => {
     let erc721: ERC721Document,
         erc721Token: ERC721TokenDocument,
-        pool: AssetPoolDocument,
+        pool: PoolDocument,
         wallet: WalletDocument,
         safeTxHash = '';
     const chainId = ChainId.Hardhat,
@@ -88,7 +88,7 @@ describe('ERC721 Transfer', () => {
     });
 
     it('Add ERC721 minter', async () => {
-        pool = await AssetPool.findById(pool._id);
+        pool = await Pool.findById(pool._id);
 
         const safe = await SafeService.findOneByPool(pool, pool.chainId);
         erc721 = await ERC721.findById(erc721._id);

@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import type { TERC721Metadata } from '@thxnetwork/types/interfaces';
 
 export type ERC721MetadataDocument = mongoose.Document & TERC721Metadata;
 

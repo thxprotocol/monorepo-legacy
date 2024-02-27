@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TWallet } from '@thxnetwork/types/interfaces';
 
 export type WalletDocument = mongoose.Document & TWallet;
 

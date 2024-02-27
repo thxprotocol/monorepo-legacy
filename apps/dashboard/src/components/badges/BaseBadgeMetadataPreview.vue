@@ -31,7 +31,7 @@
 <script lang="ts">
 import { IERC1155Metadatas, IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
 import { IERC721Metadatas, IERC721s, TERC721 } from '@thxnetwork/dashboard/types/erc721';
-import { NFTVariant } from '@thxnetwork/types/enums';
+import { NFTVariant } from '@thxnetwork/common/enums';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 

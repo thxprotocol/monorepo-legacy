@@ -1,19 +1,19 @@
 import { Request, Response } from 'express';
-import { PointReward } from '@thxnetwork/api/models/PointReward';
 import { param } from 'express-validator';
-import { JobType, questInteractionVariantMap } from '@thxnetwork/common/lib/types';
-import { agenda } from '@thxnetwork/api/util/agenda';
+import { JobType, agenda } from '@thxnetwork/api/util/agenda';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import { QuestVariant } from '@thxnetwork/sdk/types/enums';
 import { TwitterUser } from '@thxnetwork/api/models/TwitterUser';
 import { logger } from '@thxnetwork/api/util/logger';
+import { questInteractionVariantMap } from '@thxnetwork/common/maps';
+import { QuestSocial } from '@thxnetwork/api/models';
 
 const validation = [param('id').isMongoId()];
 
 const controller = async ({ params, account }: Request, res: Response) => {
     // Get the quest document
-    const quest = await PointReward.findById(params.id);
+    const quest = await QuestSocial.findById(params.id);
     if (!quest) throw new NotFoundError('Quest not found');
 
     // Get quest variant based on quest interaction variant

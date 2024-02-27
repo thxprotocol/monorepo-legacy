@@ -120,14 +120,14 @@
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { TERC20PerkState } from '@thxnetwork/dashboard/store/modules/erc20Perks';
+import { TRewardCoinState } from '@thxnetwork/dashboard/store/modules/erc20Perks';
 import { TERC721RewardState } from '@thxnetwork/dashboard/store/modules/erc721Perks';
 import {
     QuestSocialRequirement,
-    TERC20Perk,
+    TRewardCoin,
     RewardVariant,
-    TERC721Perk,
-    TCustomReward,
+    TRewardNFT,
+    TRewardCustom,
     TBaseReward,
     AccessTokenKind,
 } from '@thxnetwork/types/index';
@@ -140,10 +140,10 @@ import BaseModalRewardDiscordRoleCreate from '@thxnetwork/dashboard/components/m
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalQRCodes from '@thxnetwork/dashboard/components/modals/BaseModalQRCodes.vue';
 import { hasPremiumAccess } from '@thxnetwork/common';
-import { type TCouponRewardState } from '@thxnetwork/dashboard/store/modules/couponRewards';
-import { type TCustomRewardState } from '@thxnetwork/dashboard/store/modules/rewards';
+import { type TRewardCouponState } from '@thxnetwork/dashboard/store/modules/couponRewards';
+import { type TRewardCustomState } from '@thxnetwork/dashboard/store/modules/rewards';
 import { format } from 'date-fns';
-import { TDiscordRoleRewardState } from '@thxnetwork/dashboard/store/modules/discordRoleRewards';
+import { TRewardDiscordRoleState } from '@thxnetwork/dashboard/store/modules/discordRoleRewards';
 
 export const contentRewards = {
     'coin-reward': {
@@ -241,11 +241,11 @@ export default class RewardsView extends Vue {
     pools!: IPools;
     totals!: { [poolId: string]: number };
 
-    coinRewards!: TERC20PerkState;
+    coinRewards!: TRewardCoinState;
     nftRewards!: TERC721RewardState;
-    customRewards!: TCustomRewardState;
-    couponRewards!: TCouponRewardState;
-    discordRoleRewards!: TDiscordRoleRewardState;
+    customRewards!: TRewardCustomState;
+    couponRewards!: TRewardCouponState;
+    discordRoleRewards!: TRewardDiscordRoleState;
 
     erc721s!: IERC721s;
 
@@ -275,7 +275,7 @@ export default class RewardsView extends Vue {
 
     get rewardsByPage() {
         return this.allRewards
-            .filter((reward: TERC20Perk | TERC721Perk | TCustomReward | any) => reward.page === this.page)
+            .filter((reward: TRewardCoin | TRewardNFT | TRewardCustom | any) => reward.page === this.page)
             .sort((a: any, b: any) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
             .map((r: any) => ({
                 title: r.title,

@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TParticipant } from '@thxnetwork/types/index';
 
 export type ParticipantDocument = mongoose.Document & TParticipant;
 

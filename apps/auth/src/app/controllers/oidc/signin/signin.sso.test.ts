@@ -4,7 +4,7 @@ import request from 'supertest';
 import { AccountVariant } from '@thxnetwork/types/interfaces';
 import app from '../../../app';
 import { AccountService } from '../../../services/AccountService';
-import { AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountPlanType } from '@thxnetwork/common/enums';
 import db from '../../../util/database';
 import { accountEmail } from '../../../util/jest';
 import { mockWalletProxy } from '../../../util/jest/mock';

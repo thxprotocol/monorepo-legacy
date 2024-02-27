@@ -1,5 +1,5 @@
 import { ButtonInteraction } from 'discord.js';
-import { QuestVariant } from '@thxnetwork/common/lib/types/enums';
+import { QuestVariant } from '@thxnetwork/common/enums';
 import { completeQuest } from '@thxnetwork/api/events/handlers/select/quest';
 import { handleError } from '../../commands/error';
 import { createSelectMenuQuests } from '../../components';

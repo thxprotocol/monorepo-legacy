@@ -32,7 +32,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import type { TBaseReward, TCustomReward, TPool, TWebhook } from '@thxnetwork/types/interfaces';
+import type { TBaseReward, TRewardCustom, TPool, TWebhook } from '@thxnetwork/types/interfaces';
 import { TWebhookState } from '@thxnetwork/dashboard/store/modules/webhooks';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
 
@@ -55,7 +55,7 @@ export default class ModalRewardCustomCreate extends Vue {
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TCustomReward;
+    @Prop({ required: false }) reward!: TRewardCustom;
 
     get webhookList() {
         if (!this.webhooks[this.pool._id]) return [];

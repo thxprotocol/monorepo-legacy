@@ -2,18 +2,18 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { RewardVariant, type TPool } from '@thxnetwork/types/index';
-import { type TERC20Perk } from '@thxnetwork/types/index';
+import { type TRewardCoin } from '@thxnetwork/types/index';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { track } from '@thxnetwork/mixpanel';
 
 export type RewardByPage = {
-    [page: number]: TERC20Perk[];
+    [page: number]: TRewardCoin[];
 };
 
-export type TERC20PerkState = {
+export type TRewardCoinState = {
     [poolId: string]: {
-        [id: string]: TERC20Perk & { erc20: TERC20 };
+        [id: string]: TRewardCoin & { erc20: TERC20 };
     };
 };
 
@@ -23,13 +23,13 @@ export type RewardListProps = {
     limit: number;
 };
 
-type TERC20PerkInputData = TERC20Perk & {
+type TRewardCoinInputData = TRewardCoin & {
     file?: any;
 };
 
 @Module({ namespaced: true })
-class ERC20PerkModule extends VuexModule {
-    _all: TERC20PerkState = {};
+class RewardCoinModule extends VuexModule {
+    _all: TRewardCoinState = {};
     _totals: { [poolId: string]: number } = {};
 
     get all() {
@@ -41,14 +41,14 @@ class ERC20PerkModule extends VuexModule {
     }
 
     @Mutation
-    set({ pool, reward }: { reward: TERC20Perk & { _id: string }; pool: TPool }) {
+    set({ pool, reward }: { reward: TRewardCoin & { _id: string }; pool: TPool }) {
         if (!this._all[pool._id]) Vue.set(this._all, pool._id, {});
         reward.variant = RewardVariant.Coin;
         Vue.set(this._all[pool._id], reward._id, reward);
     }
 
     @Mutation
-    unset(reward: TERC20Perk) {
+    unset(reward: TRewardCoin) {
         Vue.delete(this._all[reward.poolId], reward._id as string);
     }
 
@@ -71,14 +71,14 @@ class ERC20PerkModule extends VuexModule {
 
         this.context.commit('setTotal', { pool, total: data.total });
 
-        data.results.forEach((reward: TERC20Perk) => {
+        data.results.forEach((reward: TRewardCoin) => {
             reward.page = page;
             this.context.commit('set', { pool, reward });
         });
     }
 
     @Action({ rawError: true })
-    async create({ pool, payload }: { pool: TPool; payload: TERC20PerkInputData }) {
+    async create({ pool, payload }: { pool: TPool; payload: TRewardCoinInputData }) {
         const formData = prepareFormDataForUpload(payload);
         const { data } = await axios({
             method: 'POST',
@@ -93,7 +93,7 @@ class ERC20PerkModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async update({ pool, reward, payload }: { pool: TPool; reward: TERC20Perk; payload: TERC20PerkInputData }) {
+    async update({ pool, reward, payload }: { pool: TPool; reward: TRewardCoin; payload: TRewardCoinInputData }) {
         const formData = prepareFormDataForUpload(payload);
         const { data } = await axios({
             method: 'PATCH',
@@ -109,7 +109,7 @@ class ERC20PerkModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async delete(reward: TERC20Perk) {
+    async delete(reward: TRewardCoin) {
         await axios({
             method: 'DELETE',
             url: `/erc20-perks/${reward._id}`,
@@ -119,4 +119,4 @@ class ERC20PerkModule extends VuexModule {
     }
 }
 
-export default ERC20PerkModule;
+export default RewardCoinModule;

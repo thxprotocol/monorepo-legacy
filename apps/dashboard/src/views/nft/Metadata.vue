@@ -101,7 +101,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import type { IERC721Metadatas, IERC721s, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
 import type { IERC1155Metadatas, IERC1155s } from '@thxnetwork/dashboard/types/erc1155';
-import { NFTVariant } from '@thxnetwork/types/enums';
+import { NFTVariant } from '@thxnetwork/common/enums';
 import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import BaseCardErc721Metadata from '@thxnetwork/dashboard/components/cards/BaseCardERC721Metadata.vue';
 import BaseModalErc721MetadataCreate from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataCreate.vue';

@@ -5,10 +5,10 @@ import AccountStore from './modules/account';
 import PoolStore from './modules/pools';
 import WidgetStore from './modules/widgets';
 import ERC20Store from './modules/erc20';
-import ERC20PerksStore from './modules/erc20Perks';
+import RewardCoinsStore from './modules/erc20Perks';
 import ERC721Store from './modules/erc721';
 import ERC1155Store from './modules/erc1155';
-import ERC721PerksStore from './modules/erc721Perks';
+import RewardNFTsStore from './modules/erc721Perks';
 import ClientStore from './modules/clients';
 import BrandStore from './modules/brands';
 import WebhookStore from './modules/webhooks';
@@ -27,13 +27,13 @@ const modules = {
     pools: PoolStore,
     widgets: WidgetStore,
     erc20: ERC20Store,
-    erc20Perks: ERC20PerksStore,
+    erc20Perks: RewardCoinsStore,
     rewards: RewardsStore,
     couponRewards: CouponRewardsStore,
     discordRoleRewards: DiscordRoleRewardsStore,
     erc721: ERC721Store,
     erc1155: ERC1155Store,
-    erc721Perks: ERC721PerksStore,
+    erc721Perks: RewardNFTsStore,
     clients: ClientStore,
     brands: BrandStore,
     webhooks: WebhookStore,

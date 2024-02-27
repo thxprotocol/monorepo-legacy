@@ -1,19 +1,22 @@
-import { TAccount, TMilestoneRewardClaim, TValidationResult } from '@thxnetwork/types/index';
-import { MilestoneReward, MilestoneRewardDocument } from '../models/MilestoneReward';
-import { Identity, IdentityDocument } from '../models/Identity';
-import { Event } from '../models/Event';
-import { MilestoneRewardClaim } from '../models/MilestoneRewardClaims';
-import { WalletDocument } from '../models/Wallet';
+import {
+    QuestCustom,
+    QuestCustomDocument,
+    QuestCustomEntry,
+    Identity,
+    IdentityDocument,
+    Event,
+    WalletDocument,
+} from '@thxnetwork/api/models';
 import { IQuestService } from './interfaces/IQuestService';
 
 export default class QuestCustomService implements IQuestService {
     models = {
-        quest: MilestoneReward,
-        entry: MilestoneRewardClaim,
+        quest: QuestCustom,
+        entry: QuestCustomEntry,
     };
 
-    async findEntryMetadata({ quest }: { quest: MilestoneRewardDocument }) {
-        const uniqueParticipantIds = await MilestoneRewardClaim.countDocuments({
+    async findEntryMetadata({ quest }: { quest: QuestCustomDocument }) {
+        const uniqueParticipantIds = await QuestCustomEntry.countDocuments({
             questId: String(quest._id),
         }).distinct('sub');
 
@@ -24,7 +27,7 @@ export default class QuestCustomService implements IQuestService {
         quest,
         account,
     }: {
-        quest: MilestoneRewardDocument;
+        quest: QuestCustomDocument;
         wallet?: WalletDocument;
         account?: TAccount;
         data: Partial<TMilestoneRewardClaim>;
@@ -37,7 +40,7 @@ export default class QuestCustomService implements IQuestService {
         return { result: true, reason: '' };
     }
 
-    async getAmount({ quest }: { quest: MilestoneRewardDocument; wallet: WalletDocument; account: TAccount }) {
+    async getAmount({ quest }: { quest: QuestCustomDocument; wallet: WalletDocument; account: TAccount }) {
         return quest.amount;
     }
 
@@ -46,7 +49,7 @@ export default class QuestCustomService implements IQuestService {
         account,
         data,
     }: {
-        quest: MilestoneRewardDocument;
+        quest: QuestCustomDocument;
         account?: TAccount;
         data: Partial<TMilestoneRewardClaim>;
     }) {
@@ -70,7 +73,7 @@ export default class QuestCustomService implements IQuestService {
         quest,
         account,
     }: {
-        quest: MilestoneRewardDocument;
+        quest: QuestCustomDocument;
         account: TAccount;
         data: Partial<TMilestoneRewardClaim>;
     }): Promise<{ reason: string; result: boolean }> {
@@ -98,7 +101,7 @@ export default class QuestCustomService implements IQuestService {
         if (entries.length < events.length) return { result: true, reason: '' };
     }
 
-    private async findAllEntries({ quest, account }: { quest: MilestoneRewardDocument; account: TAccount }) {
+    private async findAllEntries({ quest, account }: { quest: QuestCustomDocument; account: TAccount }) {
         if (!account) return [];
         return await this.models.entry.find({
             questId: quest._id,
@@ -107,18 +110,12 @@ export default class QuestCustomService implements IQuestService {
         });
     }
 
-    private async findIdentities({ quest, account }: { quest: MilestoneRewardDocument; account: TAccount }) {
+    private async findIdentities({ quest, account }: { quest: QuestCustomDocument; account: TAccount }) {
         if (!account || !account.sub) return [];
         return await Identity.find({ poolId: quest.poolId, sub: account.sub });
     }
 
-    private async findEvents({
-        quest,
-        identities,
-    }: {
-        quest: MilestoneRewardDocument;
-        identities: IdentityDocument[];
-    }) {
+    private async findEvents({ quest, identities }: { quest: QuestCustomDocument; identities: IdentityDocument[] }) {
         if (!identities.length) return [];
         return await Event.find({
             identityId: { $in: identities.map(({ _id }) => String(_id)) },

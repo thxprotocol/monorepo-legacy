@@ -1,18 +1,18 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
+import { ChainId, ERC20Type } from '@thxnetwork/common/enums';
 import { dashboardAccessToken, tokenName, tokenSymbol } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
-import { ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
+import { RewardCoinDocument } from '@thxnetwork/api/models/RewardCoin';
 
 const user = request.agent(app);
 
 describe('Coin Rewards', () => {
-    let poolId: string, erc20: ERC20Document, perk: ERC20PerkDocument;
+    let poolId: string, erc20: ERC20Document, perk: RewardCoinDocument;
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);

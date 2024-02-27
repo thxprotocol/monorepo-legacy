@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TJob } from '@thxnetwork/types/interfaces';
 
 export type JobDocument = mongoose.Document & TJob;
 

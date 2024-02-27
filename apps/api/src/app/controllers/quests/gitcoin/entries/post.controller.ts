@@ -2,15 +2,15 @@ import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { recoverSigner } from '@thxnetwork/api/util/network';
-import { JobType, QuestVariant } from '@thxnetwork/common/lib/types';
-import { GitcoinQuest } from '@thxnetwork/api/models/GitcoinQuest';
+import { JobType, QuestVariant } from '@thxnetwork/common/enums';
+import { QuestGitcoin } from '@thxnetwork/api/models';
 import { agenda } from '@thxnetwork/api/util/agenda';
 import QuestService from '@thxnetwork/api/services/QuestService';
 
 const validation = [param('id').isMongoId(), body('signature').isString(), body('chainId').isInt()];
 
 const controller = async ({ account, body, params }: Request, res: Response) => {
-    const quest = await GitcoinQuest.findById(params.id);
+    const quest = await QuestGitcoin.findById(params.id);
     if (!quest) throw new NotFoundError('Quest not found');
 
     const address = recoverSigner(body.message, body.signature);

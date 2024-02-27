@@ -1,7 +1,6 @@
-import { TAccount } from '@thxnetwork/types/interfaces';
 import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
 import { BadRequestError } from '../util/errors';
-import { AccessTokenKind, OAuthScope } from '@thxnetwork/common/lib/types/enums';
+import { AccessTokenKind, OAuthScope } from '@thxnetwork/common/enums';
 import { AxiosRequestConfig } from 'axios';
 
 export default class AccountProxy {

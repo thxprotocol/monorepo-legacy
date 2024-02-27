@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
-import { TERC20 } from '@thxnetwork/types/interfaces';
 import { getAbiForContractName } from '@thxnetwork/api/services/ContractService';
-import { ERC20Type } from '@thxnetwork/types/enums';
+import { ERC20Type } from '@thxnetwork/common/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
 
 export type ERC20Document = mongoose.Document & TERC20;
@@ -36,8 +35,4 @@ function getContractName(type: ERC20Type) {
     return type === ERC20Type.Unlimited ? 'UnlimitedSupplyToken' : 'LimitedSupplyToken';
 }
 
-export interface IERC20Updates {
-    archived?: boolean;
-}
-
-export default mongoose.model<ERC20Document>('ERC20', erc20Schema);
+export const ERC20 = mongoose.model<ERC20Document>('ERC20', erc20Schema);

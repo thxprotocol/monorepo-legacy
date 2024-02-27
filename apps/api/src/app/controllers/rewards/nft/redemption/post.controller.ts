@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
-import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
+import { RewardNFT } from '@thxnetwork/api/models/RewardNFT';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
@@ -8,14 +8,14 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
-import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
+import { RewardNFTPayment } from '@thxnetwork/api/models/RewardNFTPayment';
 import MailService from '@thxnetwork/api/services/MailService';
 import { ERC1155Token, ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
 import { ERC1155MetadataDocument } from '@thxnetwork/api/models/ERC1155Metadata';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC1155Document } from '@thxnetwork/api/models/ERC1155';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
-import PerkService from '@thxnetwork/api/services/PerkService';
+import RewardService from '@thxnetwork/api/services/RewardService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { Participant } from '@thxnetwork/api/models/Participant';
 
@@ -27,19 +27,19 @@ const controller = async (req: Request, res: Response) => {
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
     if (!safe) throw new NotFoundError('Could not find campaign wallet');
 
-    const perk = await ERC721Perk.findById(req.params.id);
-    if (!perk) throw new NotFoundError('Could not find this perk');
-    if (!perk.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
+    const reward = await RewardNFT.findById(req.params.id);
+    if (!reward) throw new NotFoundError('Could not find this perk');
+    if (!reward.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
 
-    const nft = await PerkService.getNFT(perk);
+    const nft = await RewardService.getNFT(reward);
     if (!nft) throw new NotFoundError('Could not find the nft for this perk');
 
     const account = await AccountProxy.findById(req.auth.sub);
     const participant = await Participant.findOne({ sub: account.sub, poolId: pool._id });
-    if (!participant || Number(participant.balance) < Number(perk.pointPrice))
+    if (!participant || Number(participant.balance) < Number(reward.pointPrice))
         throw new BadRequestError('Not enough points on this account for this perk.');
 
-    const redeemValidationResult = await PerkService.validate({ perk, account, pool });
+    const redeemValidationResult = await RewardService.validate({ reward, account, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
@@ -50,31 +50,31 @@ const controller = async (req: Request, res: Response) => {
     let token: ERC721TokenDocument | ERC1155TokenDocument, metadata: ERC721MetadataDocument | ERC1155MetadataDocument;
 
     // Mint a token if metadataId is present
-    if (perk.metadataId) {
+    if (reward.metadataId) {
         // Handle erc721 mints
-        if (perk.erc721Id) {
-            metadata = await PerkService.getMetadata(perk);
+        if (reward.erc721Id) {
+            metadata = await RewardService.getMetadata(reward);
             token = await ERC721Service.mint(safe, nft as ERC721Document, wallet, metadata as ERC721MetadataDocument);
         }
 
         // Handle erc1155 mints
-        if (perk.erc1155Id) {
-            metadata = await PerkService.getMetadata(perk);
+        if (reward.erc1155Id) {
+            metadata = await RewardService.getMetadata(reward);
             token = await ERC1155Service.mint(
                 safe,
                 nft as ERC1155Document,
                 wallet,
                 metadata as ERC1155MetadataDocument,
-                String(perk.erc1155Amount),
+                String(reward.erc1155Amount),
             );
         }
     }
 
     // Transfer a token if tokenId is present
-    if (perk.tokenId) {
+    if (reward.tokenId) {
         // Handle erc721 transfer
-        if (perk.erc721Id) {
-            token = await ERC721Token.findById(perk.tokenId);
+        if (reward.erc721Id) {
+            token = await ERC721Token.findById(reward.tokenId);
             token = await ERC721Service.transferFrom(
                 nft as ERC721Document,
                 safe,
@@ -84,28 +84,28 @@ const controller = async (req: Request, res: Response) => {
         }
 
         // Handle erc1155 transfer
-        if (perk.erc1155Id) {
-            token = await ERC1155Token.findById(perk.tokenId);
+        if (reward.erc1155Id) {
+            token = await ERC1155Token.findById(reward.tokenId);
             token = await ERC1155Service.transferFrom(
                 nft as ERC1155Document,
                 safe,
                 wallet.address,
-                String(perk.erc1155Amount),
+                String(reward.erc1155Amount),
                 token as ERC1155TokenDocument,
             );
         }
-        metadata = await PerkService.getMetadata(perk, token);
+        metadata = await RewardService.getMetadata(reward, token);
     }
 
-    const erc721PerkPayment = await ERC721PerkPayment.create({
-        perkId: perk._id,
+    const erc721PerkPayment = await RewardNFTPayment.create({
+        rewardId: reward._id,
         sub: req.auth.sub,
         walletId: wallet._id,
         poolId: pool._id,
-        amount: perk.pointPrice,
+        amount: reward.pointPrice,
     });
 
-    await PointBalanceService.subtract(pool, account, perk.pointPrice);
+    await PointBalanceService.subtract(pool, account, reward.pointPrice);
 
     let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
     html += `<p>Your payment has been received and <strong>${

@@ -57,7 +57,6 @@ import { mapGetters } from 'vuex';
 import { TEventState } from '@thxnetwork/dashboard/store/modules/pools';
 import { format } from 'date-fns';
 import BaseCode from '@thxnetwork/dashboard/components/BaseCode.vue';
-import { TEvent } from '@thxnetwork/common/lib/types/interfaces';
 
 const exampleCode = `await thx.events.create({
     event: 'sign_up',

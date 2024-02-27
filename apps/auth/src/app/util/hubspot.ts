@@ -1,7 +1,7 @@
 import * as Hubspot from '@hubspot/api-client';
 import { HUBSPOT_ACCESS_TOKEN, NODE_ENV } from '../config/secrets';
 import { PublicObjectSearchRequest } from '@hubspot/api-client/lib/codegen/crm/contacts';
-import { AccountPlanType, Goal, Role } from '@thxnetwork/types/enums';
+import { AccountPlanType, Goal, Role } from '@thxnetwork/common/enums';
 import { roleLabelMap, goalLabelMap } from '@thxnetwork/types/contants';
 
 const hubspotClient = new Hubspot.Client({ accessToken: HUBSPOT_ACCESS_TOKEN });

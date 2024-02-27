@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TTwitterLike } from '@thxnetwork/types/interfaces';
 
 export type TwitterLikeDocument = mongoose.Document & TTwitterLike;
 

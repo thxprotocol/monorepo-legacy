@@ -1,4 +1,4 @@
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { PoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { TQuest } from '@thxnetwork/common/lib/types';
 declare global {
     namespace Express {
@@ -7,7 +7,7 @@ declare global {
             auth?: any;
             rawBody?: string;
             account?: TAccount;
-            campaign?: AssetPoolDocument;
+            campaign?: PoolDocument;
             quest?: TQuest;
         }
     }

@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TERC20Token } from '@thxnetwork/types/interfaces';
 
 export type ERC20TokenDocument = mongoose.Document & TERC20Token;
 

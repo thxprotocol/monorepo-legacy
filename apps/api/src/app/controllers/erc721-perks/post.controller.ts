@@ -1,21 +1,22 @@
 import { body } from 'express-validator';
 import { Request, Response } from 'express';
-import { createERC721Perk } from '@thxnetwork/api/util/rewards';
-import { TERC721Perk } from '@thxnetwork/types/interfaces/ERC721Perk';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
-import { ERC721Document } from '@thxnetwork/api/models/ERC721';
-import { ERC1155Document } from '@thxnetwork/api/models/ERC1155';
-import { NFTVariant } from '@thxnetwork/types/enums';
-import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
-import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
+import { NFTVariant } from '@thxnetwork/common/enums';
 import { defaults } from '@thxnetwork/api/util/validation';
+import { createRewardNFT } from '@thxnetwork/api/util/rewards';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
+import {
+    ERC1155Document,
+    ERC721Document,
+    ERC721Metadata,
+    ERC721Token,
+    PoolDocument,
+    RewardNFTDocument,
+} from '@thxnetwork/api/models';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
-import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
+import RewardNFTService from '@thxnetwork/api/services/RewardNFTService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validation = [
@@ -29,11 +30,11 @@ const validation = [
     body('redirectUrl').optional().isURL({ require_tld: false }),
 ];
 
-type ERC721PerkResponse = ERC721PerkDocument & any;
+type RewardNFTResponse = RewardNFTDocument & any;
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC721 Rewards']
-    let perks: ERC721PerkResponse[], nft;
+    let perks: RewardNFTResponse[], nft;
     const { metadataIds, tokenId, erc721Id, erc1155Id } = req.body;
 
     const pool = await PoolService.getById(req.header('X-PoolId'));
@@ -91,9 +92,9 @@ const controller = async (req: Request, res: Response) => {
 };
 
 async function createPerksForMetadataIdList(
-    pool: AssetPoolDocument,
+    pool: PoolDocument,
     nft: ERC721Document | ERC1155Document,
-    config: TERC721Perk,
+    config: TRewardNFT,
     metadataIdList: string[],
 ) {
     return await Promise.all(
@@ -101,21 +102,17 @@ async function createPerksForMetadataIdList(
             const metadata = await getMetadataForNFTVariant(nft.variant, metadataId);
             if (!metadata) throw new NotFoundError('Could not find the metadata for this ID');
 
-            const { perk, claims } = await createERC721Perk(pool, { ...config, metadataId });
+            const { perk, claims } = await createRewardNFT(pool, { ...config, metadataId });
             return { ...perk.toJSON(), nft, claims };
         }),
     );
 }
 
-async function createPerkForTokenId(
-    pool: AssetPoolDocument,
-    nft: ERC721Document | ERC1155Document,
-    config: TERC721Perk,
-) {
+async function createPerkForTokenId(pool: PoolDocument, nft: ERC721Document | ERC1155Document, config: TRewardNFT) {
     const token = await getTokenForNFTVariant(nft.variant, config.tokenId);
     if (!token) throw new NotFoundError('Could not find the token for this ID');
 
-    const perk = await ERC721PerkService.create(pool, config);
+    const perk = await RewardNFTService.create(pool, config);
     return [{ ...perk.toJSON(), nft }];
 }
 

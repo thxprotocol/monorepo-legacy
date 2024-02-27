@@ -1,18 +1,18 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { account, dashboardAccessToken, sub, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { ERC721TokenState, TAccount } from '@thxnetwork/types/interfaces';
 import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { deployERC721, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/erc721';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { PoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Contract } from 'web3-eth-contract';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { addMinutes } from 'date-fns';
 import { createImage } from '@thxnetwork/api/util/jest/images';
-import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
+import { RewardNFTDocument } from '@thxnetwork/api/models/RewardNFT';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { poll } from '@thxnetwork/api/util/polling';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
@@ -24,10 +24,10 @@ const user = request.agent(app);
 
 describe('NFT Reward Payment', () => {
     let erc721: ERC721Document,
-        pool: AssetPoolDocument,
+        pool: PoolDocument,
         nftContract: Contract,
         erc721Token: ERC721Document,
-        perk: ERC721PerkDocument,
+        perk: RewardNFTDocument,
         wallet: WalletDocument;
 
     const chainId = ChainId.Hardhat,
@@ -160,7 +160,7 @@ describe('NFT Reward Payment', () => {
         beforeAll(async () => {
             wallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
             // Add some points for the subs wallet
-            await PointBalanceService.add(pool as AssetPoolDocument, account as TAccount, 500);
+            await PointBalanceService.add(pool as PoolDocument, account as TAccount, 500);
         });
 
         it('POST /rewards/nft/:id/payments', (done) => {
@@ -169,7 +169,7 @@ describe('NFT Reward Payment', () => {
                 .send({ walletId: String(wallet._id) })
                 .expect(({ body }: request.Response) => {
                     expect(body.erc721PerkPayment).toBeDefined();
-                    expect(body.erc721PerkPayment.perkId).toBe(perk._id);
+                    expect(body.erc721PerkPayment.rewardId).toBe(perk._id);
                     expect(body.erc721PerkPayment.poolId).toBe(pool._id);
                     expect(body.erc721Token).toBeDefined();
                     expect(body.erc721Token.state).toBe(ERC721TokenState.Transferring);

@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TWidget } from '@thxnetwork/types/interfaces/Widget';
 
 export type WidgetDocument = mongoose.Document & TWidget;
 

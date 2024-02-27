@@ -1,20 +1,20 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { RewardVariant } from '@thxnetwork/types/enums';
-import type { TCouponReward, TPool } from '@thxnetwork/types/interfaces';
+import { RewardVariant } from '@thxnetwork/common/enums';
+import type { TRewardCoupon, TPool } from '@thxnetwork/types/interfaces';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { track } from '@thxnetwork/mixpanel';
 
-export type TCouponRewardState = {
+export type TRewardCouponState = {
     [poolId: string]: {
-        [id: string]: TCouponReward;
+        [id: string]: TRewardCoupon;
     };
 };
 
 @Module({ namespaced: true })
 class CouponRewardModule extends VuexModule {
-    _couponRewards: TCouponRewardState = {};
+    _couponRewards: TRewardCouponState = {};
     _totals: { [poolId: string]: number } = {};
 
     get all() {
@@ -22,14 +22,14 @@ class CouponRewardModule extends VuexModule {
     }
 
     @Mutation
-    set(reward: TCouponReward) {
+    set(reward: TRewardCoupon) {
         if (!this._couponRewards[reward.poolId]) Vue.set(this._couponRewards, reward.poolId, {});
         reward.variant = RewardVariant.Coupon;
         Vue.set(this._couponRewards[reward.poolId], String(reward._id), reward);
     }
 
     @Mutation
-    unset(reward: TCouponReward) {
+    unset(reward: TRewardCoupon) {
         Vue.delete(this._couponRewards[reward.poolId], reward._id as string);
     }
 
@@ -52,14 +52,14 @@ class CouponRewardModule extends VuexModule {
 
         this.context.commit('setTotal', { pool, total: data.total });
 
-        data.results.forEach((reward: TCouponReward) => {
+        data.results.forEach((reward: TRewardCoupon) => {
             reward.page = page;
             this.context.commit('set', reward);
         });
     }
 
     @Action({ rawError: true })
-    async create(reward: Partial<TCouponReward>) {
+    async create(reward: Partial<TRewardCoupon>) {
         const formData = prepareFormDataForUpload(reward);
         const { data } = await axios({
             method: 'POST',
@@ -75,7 +75,7 @@ class CouponRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async update(reward: Partial<TCouponReward>) {
+    async update(reward: Partial<TRewardCoupon>) {
         const formData = prepareFormDataForUpload(reward);
         const { data } = await axios({
             method: 'PATCH',
@@ -88,7 +88,7 @@ class CouponRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async delete(reward: Partial<TCouponReward>) {
+    async delete(reward: Partial<TRewardCoupon>) {
         await axios({
             method: 'DELETE',
             url: `/coupon-rewards/${reward._id}`,
@@ -98,7 +98,7 @@ class CouponRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async deleteCode({ pool, reward, couponCodeId }: { pool: TPool; reward: TCouponReward; couponCodeId: string }) {
+    async deleteCode({ pool, reward, couponCodeId }: { pool: TPool; reward: TRewardCoupon; couponCodeId: string }) {
         await axios({
             method: 'DELETE',
             url: `/coupon-rewards/${reward._id}/codes/${couponCodeId}`,

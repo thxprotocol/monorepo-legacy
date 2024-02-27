@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TWebhook } from '@thxnetwork/types/interfaces';
 
 export type WebhookDocument = mongoose.Document & TWebhook;
 

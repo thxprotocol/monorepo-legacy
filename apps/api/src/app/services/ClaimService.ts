@@ -1,6 +1,5 @@
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { PoolDocument } from '@thxnetwork/api/models';
 import { Claim } from '@thxnetwork/api/models/Claim';
-import { TBaseReward } from '@thxnetwork/types/interfaces';
 import db from '@thxnetwork/api/util/database';
 import AccountProxy from '../proxies/AccountProxy';
 
@@ -14,11 +13,11 @@ function create(
 function findByUuid(uuid: string) {
     return Claim.findOne({ uuid });
 }
-function findByPool(pool: AssetPoolDocument) {
+function findByPool(pool: PoolDocument) {
     return Claim.find({ poolId: String(pool._id) });
 }
-async function findByPerk(perk: TBaseReward) {
-    const claims = await Claim.find({ rewardUuid: perk.uuid, poolId: perk.poolId });
+async function findByPerk(reward: TReward) {
+    const claims = await Claim.find({ rewardUuid: reward.uuid, poolId: reward.poolId });
     const subs = claims.filter((c) => c.sub).map(({ sub }) => sub);
     const accounts = await AccountProxy.find({ subs });
 

@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TNotification } from '@thxnetwork/types/interfaces';
 
 export type NotificationDocument = mongoose.Document & TNotification;
 

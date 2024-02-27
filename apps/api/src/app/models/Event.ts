@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TEvent } from '@thxnetwork/types/interfaces';
 
 export type EventDocument = mongoose.Document & TEvent;
 

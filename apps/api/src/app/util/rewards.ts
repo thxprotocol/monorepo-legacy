@@ -1,38 +1,40 @@
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { TERC721Perk } from '@thxnetwork/types/interfaces';
-import { ERC20Perk, ERC20PerkDocument } from '@thxnetwork/api/models/ERC20Perk';
-import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
-import { PerkDocument } from '@thxnetwork/api/services/PerkService';
-import { CustomRewardDocument } from '@thxnetwork/api/models/CustomReward';
-import { CouponRewardDocument } from '@thxnetwork/api/models/CouponReward';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
-import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
-import { DiscordRoleRewardDocument } from '../models/DiscordRoleReward';
+import RewardNFTService from '@thxnetwork/api/services/RewardNFTService';
+import {
+    RewardCoin,
+    RewardCoinDocument,
+    RewardNFT,
+    RewardNFTDocument,
+    PoolDocument,
+    RewardDiscordRoleDocument,
+    RewardCustomDocument,
+    RewardCouponDocument,
+} from '@thxnetwork/api/models';
 
 export async function findRewardByUuid(uuid: string) {
-    const erc20Perk = await ERC20Perk.findOne({ uuid });
-    const erc721Perk = await ERC721Perk.findOne({ uuid });
+    const erc20Perk = await RewardCoin.findOne({ uuid });
+    const erc721Perk = await RewardNFT.findOne({ uuid });
     return erc20Perk || erc721Perk;
 }
 
-export function isTERC20Perk(perk: PerkDocument): perk is ERC20PerkDocument {
-    return (perk as ERC20PerkDocument).erc20Id !== undefined;
+export function isTRewardCoin(perk: TReward): perk is RewardCoinDocument {
+    return (perk as RewardCoinDocument).erc20Id !== undefined;
 }
 
-export function isTERC721Perk(perk: PerkDocument): perk is ERC721PerkDocument {
-    return (perk as ERC721PerkDocument).erc721Id !== undefined || (perk as ERC721PerkDocument).erc1155Id !== undefined;
+export function isTRewardNFT(perk: TReward): perk is RewardNFTDocument {
+    return (perk as RewardNFTDocument).erc721Id !== undefined || (perk as RewardNFTDocument).erc1155Id !== undefined;
 }
 
-export function isCustomReward(reward: PerkDocument): reward is CustomRewardDocument {
-    return (reward as CustomRewardDocument).webhookId !== undefined;
+export function isCustomReward(reward: TReward): reward is RewardCustomDocument {
+    return (reward as RewardCustomDocument).webhookId !== undefined;
 }
 
-export function isCouponReward(reward: PerkDocument): reward is CouponRewardDocument {
-    return (reward as CouponRewardDocument).webshopURL !== undefined;
+export function isCouponReward(reward: TReward): reward is RewardCouponDocument {
+    return (reward as RewardCouponDocument).webshopURL !== undefined;
 }
 
-export function isDiscordRoleReward(reward: PerkDocument): reward is DiscordRoleRewardDocument {
-    return (reward as DiscordRoleRewardDocument).discordRoleId !== undefined;
+export function isDiscordRoleReward(reward: TReward): reward is RewardDiscordRoleDocument {
+    return (reward as RewardDiscordRoleDocument).discordRoleId !== undefined;
 }
 
 export function addMinutes(date: Date, minutes: number) {
@@ -54,8 +56,8 @@ export function formatDate(date: Date) {
     return yyyy + '-' + mm + '-' + dd;
 }
 
-export const createERC721Perk = async (pool: AssetPoolDocument, config: TERC721Perk) => {
-    const perk = await ERC721PerkService.create(pool, config);
+export const createRewardNFT = async (pool: PoolDocument, config: TRewardNFT) => {
+    const perk = await RewardNFTService.create(pool, config);
     const claims = await ClaimService.create(
         {
             poolId: config.poolId,

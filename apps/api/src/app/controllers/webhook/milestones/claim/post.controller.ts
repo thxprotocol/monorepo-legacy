@@ -2,10 +2,7 @@ import { Request, Response } from 'express';
 import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { body, param } from 'express-validator';
 import { toChecksumAddress } from 'web3-utils';
-import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
-import { Identity } from '@thxnetwork/api/models/Identity';
-import { Event } from '@thxnetwork/api/models/Event';
+import { Pool, PoolDocument, Identity, Event, QuestCustom } from '@thxnetwork/api/models';
 import IdentityService from '@thxnetwork/api/services/IdentityService';
 
 const validation = [
@@ -18,11 +15,10 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Rewards']
-    const customQuest = await MilestoneReward.findOne({ uuid: req.params.uuid });
+    const customQuest = await QuestCustom.findOne({ uuid: req.params.uuid });
     if (!customQuest) throw new NotFoundError('Could not find a milestone reward for this token');
 
-    const pool = await AssetPool.findById(customQuest.poolId);
+    const pool = await Pool.findById(customQuest.poolId);
     if (!pool) throw new NotFoundError('Could not find a campaign pool for this reward.');
 
     if (!req.body.code && !req.body.address) {
@@ -38,7 +34,7 @@ const controller = async (req: Request, res: Response) => {
     res.status(201).end();
 };
 
-export function getIdentityForCode(pool: AssetPoolDocument, code: string) {
+export function getIdentityForCode(pool: PoolDocument, code: string) {
     return Identity.findOne({ poolId: pool._id, uuid: code });
 }
 
@@ -46,7 +42,7 @@ export function getIdentityForCode(pool: AssetPoolDocument, code: string) {
 // This function should deprecate as soon as clients implement the wallet onboarding webhook
 // Defaulting into identity derivation for the provided address. This will require FK to present derived
 // identity uuids in their client in order to connect the identity to their account.
-export function getIdentityForAddress(pool: AssetPoolDocument, address: string) {
+export function getIdentityForAddress(pool: PoolDocument, address: string) {
     return IdentityService.getIdentityForSalt(pool, address);
 }
 

@@ -1,20 +1,20 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { RewardVariant } from '@thxnetwork/types/enums';
-import type { TDiscordRoleReward, TPool } from '@thxnetwork/types/interfaces';
+import { RewardVariant } from '@thxnetwork/common/enums';
+import type { TRewardDiscordRole, TPool } from '@thxnetwork/types/interfaces';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { track } from '@thxnetwork/mixpanel';
 
-export type TDiscordRoleRewardState = {
+export type TRewardDiscordRoleState = {
     [poolId: string]: {
-        [id: string]: TDiscordRoleReward;
+        [id: string]: TRewardDiscordRole;
     };
 };
 
 @Module({ namespaced: true })
 class DiscordRoleRewardModule extends VuexModule {
-    _discordRoleRewards: TDiscordRoleRewardState = {};
+    _discordRoleRewards: TRewardDiscordRoleState = {};
     _totals: { [poolId: string]: number } = {};
 
     get all() {
@@ -22,14 +22,14 @@ class DiscordRoleRewardModule extends VuexModule {
     }
 
     @Mutation
-    set(reward: TDiscordRoleReward) {
+    set(reward: TRewardDiscordRole) {
         if (!this._discordRoleRewards[reward.poolId]) Vue.set(this._discordRoleRewards, reward.poolId, {});
         reward.variant = RewardVariant.DiscordRole;
         Vue.set(this._discordRoleRewards[reward.poolId], String(reward._id), reward);
     }
 
     @Mutation
-    unset(reward: TDiscordRoleReward) {
+    unset(reward: TRewardDiscordRole) {
         Vue.delete(this._discordRoleRewards[reward.poolId], reward._id as string);
     }
 
@@ -52,14 +52,14 @@ class DiscordRoleRewardModule extends VuexModule {
 
         this.context.commit('setTotal', { pool, total: data.total });
 
-        data.results.forEach((reward: TDiscordRoleReward) => {
+        data.results.forEach((reward: TRewardDiscordRole) => {
             reward.page = page;
             this.context.commit('set', reward);
         });
     }
 
     @Action({ rawError: true })
-    async create(reward: Partial<TDiscordRoleReward>) {
+    async create(reward: Partial<TRewardDiscordRole>) {
         const formData = prepareFormDataForUpload(reward);
         const { data } = await axios({
             method: 'POST',
@@ -75,7 +75,7 @@ class DiscordRoleRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async update(reward: Partial<TDiscordRoleReward>) {
+    async update(reward: Partial<TRewardDiscordRole>) {
         const formData = prepareFormDataForUpload(reward);
         const { data } = await axios({
             method: 'PATCH',
@@ -88,7 +88,7 @@ class DiscordRoleRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async delete(reward: Partial<TDiscordRoleReward>) {
+    async delete(reward: Partial<TRewardDiscordRole>) {
         await axios({
             method: 'DELETE',
             url: `/discord-role-rewards/${reward._id}`,

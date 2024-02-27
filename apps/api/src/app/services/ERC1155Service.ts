@@ -1,33 +1,31 @@
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
+import { ChainId, TransactionState, ERC1155TokenState } from '@thxnetwork/common/enums';
 import {
     getAbiForContractName,
     getByteCodeForContractName,
     getContractFromName,
 } from '@thxnetwork/api/services/ContractService';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { ERC1155, ERC1155Document, IERC1155Updates } from '@thxnetwork/api/models/ERC1155';
-import { ERC1155Metadata, ERC1155MetadataDocument } from '@thxnetwork/api/models/ERC1155Metadata';
-import { ERC1155Token, ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
-import { Transaction } from '@thxnetwork/api/models/Transaction';
-import { ChainId, TransactionState } from '@thxnetwork/types/enums';
-import { ERC1155TokenState } from '@thxnetwork/types/interfaces';
-import {
-    TERC1155DeployCallbackArgs,
-    TERC1155TokenMintCallbackArgs,
-    TERC1155TransferFromCallbackArgs,
-} from '@thxnetwork/api/types/TTransaction';
-import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
-import PoolService from './PoolService';
+import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
+import { API_URL, VERSION } from '../config/secrets';
 import TransactionService from './TransactionService';
-import type { TAccount, TERC1155, TERC1155Metadata, TERC1155Token } from '@thxnetwork/types/interfaces';
-import { WalletDocument } from '../models/Wallet';
+import PoolService from './PoolService';
 import IPFSService from './IPFSService';
 import SafeService from './SafeService';
-import { API_URL, VERSION } from '../config/secrets';
-import { ERC721Perk } from '../models/ERC721Perk';
+import {
+    Transaction,
+    ERC1155Document,
+    ERC1155,
+    PoolDocument,
+    RewardNFT,
+    ERC1155MetadataDocument,
+    ERC1155Metadata,
+    WalletDocument,
+    ERC1155TokenDocument,
+    ERC1155Token,
+} from '@thxnetwork/api/models';
 
 const contractName = 'THX_ERC1155';
 
@@ -78,7 +76,7 @@ function getBaseURL(erc1155: ERC1155Document) {
     return `${API_URL}/${VERSION}/metadata/erc1155/${String(erc1155._id)}/{id}`;
 }
 
-const initialize = async (pool: AssetPoolDocument, address: string) => {
+const initialize = async (pool: PoolDocument, address: string) => {
     const erc1155 = await findByQuery({ address, chainId: pool.chainId });
     await addMinter(erc1155, pool.safeAddress);
 };
@@ -92,7 +90,7 @@ export async function findById(id: string): Promise<ERC1155Document> {
 
 export async function findBySub(sub: string): Promise<ERC1155Document[]> {
     const pools = await PoolService.getAllBySub(sub);
-    const nftRewards = await ERC721Perk.find({ poolId: pools.map((p) => String(p._id)) });
+    const nftRewards = await RewardNFT.find({ poolId: pools.map((p) => String(p._id)) });
     const erc1155Ids = nftRewards.map((c) => c.erc1155Id);
     const erc1155s = await ERC1155.find({ sub });
 
@@ -314,7 +312,7 @@ async function findByQuery(query: { poolAddress?: string; address?: string; chai
     return ERC1155.findOne(query);
 }
 
-export const update = (erc1155: ERC1155Document, updates: IERC1155Updates) => {
+export const update = (erc1155: ERC1155Document, updates: Partial<TERC1155>) => {
     return ERC1155.findByIdAndUpdate(erc1155._id, updates, { new: true });
 };
 

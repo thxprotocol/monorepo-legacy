@@ -1,45 +1,45 @@
 import express from 'express';
 import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
-import CreateERC721Perk from './post.controller';
-import ReadERC721Perk from './get.controller';
-import UpdateERC721Perk from './patch.controller';
-import ListERC721Perk from './list.controller';
-import DeleteERC721Perk from './delete.controller';
+import CreateRewardNFT from './post.controller';
+import ReadRewardNFT from './get.controller';
+import UpdateRewardNFT from './patch.controller';
+import ListRewardNFT from './list.controller';
+import DeleteRewardNFT from './delete.controller';
 import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
 
-router.get('/', guard.check(['erc721_rewards:read']), assertPoolAccess, ListERC721Perk.controller);
+router.get('/', guard.check(['erc721_rewards:read']), assertPoolAccess, ListRewardNFT.controller);
 
 router.get(
     '/:id',
     guard.check(['erc721_rewards:read']),
     assertPoolAccess,
-    assertRequestInput(ReadERC721Perk.validation),
-    ReadERC721Perk.controller,
+    assertRequestInput(ReadRewardNFT.validation),
+    ReadRewardNFT.controller,
 );
 router.post(
     '/',
     upload.single('file'),
     guard.check(['erc721_rewards:write', 'erc721_rewards:read']),
     assertPoolAccess,
-    assertRequestInput(CreateERC721Perk.validation),
-    CreateERC721Perk.controller,
+    assertRequestInput(CreateRewardNFT.validation),
+    CreateRewardNFT.controller,
 );
 router.patch(
     '/:id',
     upload.single('file'),
     guard.check(['erc721_rewards:write', 'erc721_rewards:read']),
     assertPoolAccess,
-    assertRequestInput(UpdateERC721Perk.validation),
-    UpdateERC721Perk.controller,
+    assertRequestInput(UpdateRewardNFT.validation),
+    UpdateRewardNFT.controller,
 );
 router.delete(
     '/:id',
     guard.check(['erc721_rewards:write', 'erc721_rewards:read']),
     assertPoolAccess,
-    assertRequestInput(DeleteERC721Perk.validation),
-    DeleteERC721Perk.controller,
+    assertRequestInput(DeleteRewardNFT.validation),
+    DeleteRewardNFT.controller,
 );
 
 export default router;

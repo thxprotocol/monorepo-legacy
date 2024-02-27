@@ -1,19 +1,19 @@
-import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
+import { RewardCoin } from '@thxnetwork/api/models/RewardCoin';
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import { toWei } from 'web3-utils';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { getContractFromName } from '@thxnetwork/api/services/ContractService';
 import { BigNumber } from 'ethers';
-import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
-import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
+import { RewardCoinPayment } from '@thxnetwork/api/models/RewardCoinPayment';
+import { ChainId, ERC20Type } from '@thxnetwork/common/enums';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import MailService from '@thxnetwork/api/services/MailService';
 import SafeService from '@thxnetwork/api/services/SafeService';
-import PerkService from '@thxnetwork/api/services/PerkService';
+import RewardService from '@thxnetwork/api/services/RewardService';
 import { Participant } from '@thxnetwork/api/models/Participant';
 
 const validation = [param('id').isMongoId(), body('walletId').isMongoId()];
@@ -23,7 +23,7 @@ const controller = async (req: Request, res: Response) => {
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
     if (!safe) throw new NotFoundError('Could not find campaign wallet');
 
-    const reward = await ERC20Perk.findById(req.params.id);
+    const reward = await RewardCoin.findById(req.params.id);
     if (!reward) throw new NotFoundError('Could not find this perk');
     if (!reward.pointPrice) throw new NotFoundError('No point price for this perk has been set.');
 
@@ -36,7 +36,7 @@ const controller = async (req: Request, res: Response) => {
         throw new BadRequestError('Not enough points on this account for this payment');
     }
 
-    const redeemValidationResult = await PerkService.validate({ perk: reward, account, pool });
+    const redeemValidationResult = await RewardService.validate({ reward, account, pool });
     if (redeemValidationResult.isError) {
         throw new ForbiddenError(redeemValidationResult.errorMessage);
     }
@@ -64,10 +64,9 @@ const controller = async (req: Request, res: Response) => {
         );
     }
     const tx = await ERC20Service.transferFrom(erc20, safe, wallet.address, amount);
-    const payment = await ERC20PerkPayment.create({
-        perkId: reward.id,
+    const payment = await RewardCoinPayment.create({
+        rewardId: reward.id,
         sub: req.auth.sub,
-        walletId: reward._id,
         poolId: reward.poolId,
         amount: reward.pointPrice,
     });

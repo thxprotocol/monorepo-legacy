@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TTwitterRepost } from '@thxnetwork/types/interfaces';
 
 export type TwitterRepostDocument = mongoose.Document & TTwitterRepost;
 

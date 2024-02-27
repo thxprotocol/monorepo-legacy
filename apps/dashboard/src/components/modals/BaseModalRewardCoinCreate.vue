@@ -18,7 +18,7 @@
 </template>
 
 <script lang="ts">
-import type { TBaseReward, TERC20, TERC20Perk, TPool } from '@thxnetwork/types/interfaces';
+import type { TBaseReward, TERC20, TRewardCoin, TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IERC20s, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
@@ -45,7 +45,7 @@ export default class ModalRewardCoinCreate extends Vue {
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TERC20Perk;
+    @Prop({ required: false }) reward!: TRewardCoin;
 
     get erc20() {
         return this.erc20List[this.erc20Id];

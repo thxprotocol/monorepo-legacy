@@ -1,4 +1,4 @@
-import { AccessTokenKind, OAuthRequiredScopes, OAuthScope, QuestSocialRequirement } from '@thxnetwork/types/enums';
+import { AccessTokenKind, OAuthRequiredScopes, OAuthScope, QuestSocialRequirement } from '@thxnetwork/common/enums';
 
 export const getInteraction = (type: QuestSocialRequirement) => {
     return providerInteractionList.find((a) => a.type === type);

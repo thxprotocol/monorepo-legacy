@@ -1,4 +1,4 @@
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { NoDataAtAddressError } from '@thxnetwork/api/util/errors';
 

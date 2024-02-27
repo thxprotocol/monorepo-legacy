@@ -3,7 +3,7 @@ import app from '@thxnetwork/api/';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { BigNumber, Contract, ethers } from 'ethers';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { contractArtifacts } from '@thxnetwork/contracts/exports';
 import { sub, userWalletPrivateKey, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import SafeService from '@thxnetwork/api/services/SafeService';

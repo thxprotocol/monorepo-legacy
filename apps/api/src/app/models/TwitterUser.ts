@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TTwitterUser } from '@thxnetwork/types/interfaces';
 
 export type TwitterUserDocument = mongoose.Document & TTwitterUser;
 

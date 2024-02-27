@@ -1,13 +1,12 @@
 import axios from 'axios';
-import { AssetPool } from '@thxnetwork/api/models/AssetPool';
+import { Pool } from '@thxnetwork/api/models';
 import { Webhook, WebhookDocument } from '@thxnetwork/api/models/Webhook';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import { WebhookRequest, WebhookRequestDocument } from '@thxnetwork/api/models/WebhookRequest';
 import { Job } from '@hokify/agenda';
 import { agenda } from '@thxnetwork/api/util/agenda';
-import { JobType } from '@thxnetwork/types/enums';
 import { signPayload } from '@thxnetwork/api/util/signingsecret';
-import { Event, WebhookRequestState } from '@thxnetwork/types/enums';
+import { JobType, Event, WebhookRequestState } from '@thxnetwork/common/enums';
 
 async function create(webhook: WebhookDocument, sub: string, payload: { type: Event; data: any & { metadata: any } }) {
     const identities = (await Identity.find({ poolId: webhook.poolId, sub })).map((i) => i.uuid);
@@ -25,7 +24,7 @@ async function requestAttemptJob(job: Job) {
 
     try {
         const { webhookRequestId, poolId } = job.attrs.data as any;
-        const { signingSecret } = await AssetPool.findById(poolId);
+        const { signingSecret } = await Pool.findById(poolId);
         if (!signingSecret) throw new Error('No signing secret found');
 
         webhookRequest = await WebhookRequest.findById(webhookRequestId);

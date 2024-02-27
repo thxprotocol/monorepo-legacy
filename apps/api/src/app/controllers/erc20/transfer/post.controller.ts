@@ -2,9 +2,9 @@ import { Request, Response } from 'express';
 import { body } from 'express-validator';
 import { InsufficientBalanceError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { BN } from 'bn.js';
+import { ERC20 } from '@thxnetwork/api/models';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
-import ERC20 from '@thxnetwork/api/models/ERC20';
 
 export const validation = [
     body('walletId').isMongoId(),

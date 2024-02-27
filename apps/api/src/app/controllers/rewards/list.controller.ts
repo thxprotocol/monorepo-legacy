@@ -1,45 +1,42 @@
 import { Request, Response } from 'express';
 import jwt_decode from 'jwt-decode';
-import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
-import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
-import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
-import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
+import { RewardCoin } from '@thxnetwork/api/models/RewardCoin';
+import { RewardNFT } from '@thxnetwork/api/models/RewardNFT';
+import { RewardNFTPayment } from '@thxnetwork/api/models/RewardNFTPayment';
+import { RewardCoinPayment } from '@thxnetwork/api/models/RewardCoinPayment';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import PerkService from '@thxnetwork/api/services/PerkService';
+import RewardService from '@thxnetwork/api/services/RewardService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import { CustomReward } from '@thxnetwork/api/models/CustomReward';
-import { CustomRewardPayment } from '@thxnetwork/api/models/CustomRewardPayment';
-import { CouponReward } from '@thxnetwork/api/models/CouponReward';
-import { CouponRewardPayment } from '@thxnetwork/api/models/CouponRewardPayment';
+import { RewardCustomPayment } from '@thxnetwork/api/models/RewardCustomPayment';
+import { RewardCouponPayment } from '@thxnetwork/api/models/RewardCouponPayment';
 import { CouponCode } from '@thxnetwork/api/models/CouponCode';
-import { DiscordRoleReward } from '@thxnetwork/api/models/DiscordRoleReward';
-import { DiscordRoleRewardPayment } from '@thxnetwork/api/models/DiscordRoleRewardPayment';
-import { AccessTokenKind } from '@thxnetwork/types/enums';
-import { TAccount } from '@thxnetwork/types/interfaces';
+import { RewardDiscordRolePayment } from '@thxnetwork/api/models/RewardDiscordRolePayment';
+import { AccessTokenKind } from '@thxnetwork/common/enums';
 import { Identity } from '@thxnetwork/api/models/Identity';
 import LockService from '@thxnetwork/api/services/LockService';
+import { RewardCustom, RewardCoupon, RewardDiscordRole } from '@thxnetwork/api/models';
 
 const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.header('X-PoolId'));
     const [erc20Perks, erc721Perks, customRewards, couponRewards, discordRoleRewards] = await Promise.all([
-        ERC20Perk.find({
+        RewardCoin.find({
             poolId: String(pool._id),
             pointPrice: { $exists: true, $gt: 0 },
         }),
-        ERC721Perk.find({
+        RewardNFT.find({
             poolId: String(pool._id),
             $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
         }),
-        CustomReward.find({
+        RewardCustom.find({
             poolId: String(pool._id),
             $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
         }),
-        CouponReward.find({
+        RewardCoupon.find({
             poolId: String(pool._id),
             $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
         }),
-        DiscordRoleReward.find({
+        RewardDiscordRole.find({
             poolId: String(pool._id),
             $or: [{ pointPrice: { $exists: true, $gt: 0 } }, { price: { $exists: true, $gt: 0 } }],
         }),
@@ -66,8 +63,8 @@ const controller = async (req: Request, res: Response) => {
             pointPrice: r.pointPrice,
             isPromoted: r.isPromoted,
             locks: r.locks,
-            expiry: await PerkService.getExpiry(r),
-            progress: await PerkService.getProgress(r, Model),
+            expiry: await RewardService.getExpiry(r),
+            progress: await RewardService.getProgress(r, Model),
             isLocked: await LockService.getIsLocked(r.locks, account),
             tokenGatingContractAddress: r.tokenGatingContractAddress,
         };
@@ -76,8 +73,8 @@ const controller = async (req: Request, res: Response) => {
     res.json({
         coin: await Promise.all(
             erc20Perks.map(async (r) => {
-                const { isError } = await PerkService.validate({ perk: r, account, pool });
-                const defaults = await getRewardDefaults(r, ERC20PerkPayment);
+                const { isError } = await RewardService.validate({ reward: r, account, pool });
+                const defaults = await getRewardDefaults(r, RewardCoinPayment);
                 const erc20 = await ERC20Service.getById(r.erc20Id);
                 return {
                     ...defaults,
@@ -91,11 +88,11 @@ const controller = async (req: Request, res: Response) => {
         ),
         nft: await Promise.all(
             erc721Perks.map(async (r) => {
-                const { isError } = await PerkService.validate({ perk: r, account, pool });
-                const nft = await PerkService.getNFT(r);
-                const token = !r.metadataId && r.tokenId ? await PerkService.getToken(r) : null;
-                const metadata = await PerkService.getMetadata(r, token);
-                const defaults = await getRewardDefaults(r, ERC721PerkPayment);
+                const { isError } = await RewardService.validate({ reward: r, account, pool });
+                const nft = await RewardService.getNFT(r);
+                const token = !r.metadataId && r.tokenId ? await RewardService.getToken(r) : null;
+                const metadata = await RewardService.getMetadata(r, token);
+                const defaults = await getRewardDefaults(r, RewardNFTPayment);
 
                 return {
                     ...defaults,
@@ -110,8 +107,8 @@ const controller = async (req: Request, res: Response) => {
         ),
         custom: await Promise.all(
             customRewards.map(async (r) => {
-                const { isError } = await PerkService.validate({ perk: r, account, pool });
-                const defaults = await getRewardDefaults(r, CustomRewardPayment);
+                const { isError } = await RewardService.validate({ reward: r, account, pool });
+                const defaults = await getRewardDefaults(r, RewardCustomPayment);
                 // @dev Having an Identity for this pool is required in order for the external system to target the right user
                 const identities = sub ? await Identity.find({ poolId: pool._id, account }) : [];
                 return {
@@ -128,16 +125,16 @@ const controller = async (req: Request, res: Response) => {
                 const codes = await CouponCode.find({ couponRewardId: String(r._id) });
                 r.limit = codes.length;
 
-                const { isError, errorMessage } = await PerkService.validate({ perk: r, account, pool });
-                const defaults = await getRewardDefaults(r, CouponRewardPayment);
+                const { isError, errorMessage } = await RewardService.validate({ reward: r, account, pool });
+                const defaults = await getRewardDefaults(r, RewardCouponPayment);
 
                 return { ...defaults, isDisabled: isError, errorMessage, isOwned: false };
             }),
         ),
         discordRole: await Promise.all(
             discordRoleRewards.map(async (r) => {
-                const { isError, errorMessage } = await PerkService.validate({ perk: r, account, pool });
-                const defaults = await getRewardDefaults(r, DiscordRoleRewardPayment);
+                const { isError, errorMessage } = await RewardService.validate({ reward: r, account, pool });
+                const defaults = await getRewardDefaults(r, RewardDiscordRolePayment);
                 const token = account && account.tokens.find(({ kind }) => kind === AccessTokenKind.Discord);
 
                 return { ...defaults, isDisabled: !token || isError, errorMessage, isOwned: false };

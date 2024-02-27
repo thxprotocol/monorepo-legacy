@@ -1,13 +1,11 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import type { TAccount, TDiscordButton, TDiscordEmbed, TToken } from '@thxnetwork/types/interfaces';
 import { client, PermissionFlagsBits } from '../../discord';
-import { AssetPoolDocument } from '../models/AssetPool';
+import { DiscordGuild, DiscordGuildDocument, PoolDocument } from '@thxnetwork/api/models';
 import { ActionRowBuilder, ButtonBuilder, Guild } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
 import { logger } from '../util/logger';
-import { AccessTokenKind, OAuthRequiredScopes } from '@thxnetwork/common/lib/types/enums';
-import { DISCORD_API_ENDPOINT } from '@thxnetwork/common/lib/types/contants';
-import DiscordGuild, { DiscordGuildDocument } from '../models/DiscordGuild';
+import { AccessTokenKind, OAuthRequiredScopes } from '@thxnetwork/common/enums';
+import { DISCORD_API_ENDPOINT } from '@thxnetwork/common/contants';
 import AccountProxy from './AccountProxy';
 
 export enum NotificationVariant {
@@ -31,7 +29,7 @@ export async function discordClient(config: AxiosRequestConfig) {
 
 export default class DiscordDataProxy {
     static async sendChannelMessage(
-        pool: AssetPoolDocument,
+        pool: PoolDocument,
         content: string,
         embeds: TDiscordEmbed[] = [],
         buttons?: TDiscordButton[],

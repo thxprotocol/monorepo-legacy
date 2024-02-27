@@ -1,4 +1,4 @@
-import { TransactionState, TransactionType } from '@thxnetwork/types/enums';
+import { TransactionState, TransactionType } from '@thxnetwork/common/enums';
 import { Transaction, TransactionDocument } from '@thxnetwork/api/models/Transaction';
 import { Wallet } from '../models/Wallet';
 import TransactionService from '@thxnetwork/api/services/TransactionService';

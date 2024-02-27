@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TDiscordReaction } from '@thxnetwork/types/interfaces';
 
 export type DiscordReactionDocument = mongoose.Document & TDiscordReaction;
 
@@ -15,4 +14,8 @@ const discordReactionSchema = new mongoose.Schema(
     },
 );
 
-export default mongoose.model<DiscordReactionDocument>('DiscordReaction', discordReactionSchema, 'discordreactions');
+export const DiscordReaction = mongoose.model<DiscordReactionDocument>(
+    'DiscordReaction',
+    discordReactionSchema,
+    'discordreactions',
+);

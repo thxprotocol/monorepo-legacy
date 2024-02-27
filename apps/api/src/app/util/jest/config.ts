@@ -2,7 +2,7 @@ import db from '@thxnetwork/api/util/database';
 import { mockStart } from './mock';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { ChainId, NFTVariant, WalletVariant } from '@thxnetwork/types/enums';
+import { ChainId, WalletVariant } from '@thxnetwork/common/enums';
 import {
     sub,
     sub2,

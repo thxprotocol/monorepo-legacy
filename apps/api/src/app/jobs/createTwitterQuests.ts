@@ -1,6 +1,5 @@
-import { AccessTokenKind, QuestVariant, QuestSocialRequirement, OAuthRequiredScopes } from '@thxnetwork/types/enums';
-import { AssetPool } from '../models/AssetPool';
-import { PointReward } from '../models/PointReward';
+import { AccessTokenKind, QuestVariant, QuestSocialRequirement, OAuthRequiredScopes } from '@thxnetwork/common/enums';
+import { Pool, QuestSocial } from '@thxnetwork/api/models';
 import { logger } from '../util/logger';
 import { DASHBOARD_URL } from '../config/secrets';
 import TwitterDataProxy from '../proxies/TwitterDataProxy';
@@ -9,7 +8,7 @@ import MailService from '../services/MailService';
 import QuestService from '../services/QuestService';
 
 export async function createTwitterQuests() {
-    for await (const pool of AssetPool.find({ 'settings.isTwitterSyncEnabled': true })) {
+    for await (const pool of Pool.find({ 'settings.isTwitterSyncEnabled': true })) {
         try {
             const { hashtag, title, description, amount, locks, isPublished } =
                 pool.settings.defaults.conditionalRewards;
@@ -36,7 +35,7 @@ export async function createTwitterQuests() {
             logger.info(JSON.stringify(tweets));
 
             const promises = tweets.map(async (tweet: any) => {
-                const isExistingQuest = !!(await PointReward.exists({
+                const isExistingQuest = !!(await QuestSocial.exists({
                     poolId: String(pool._id),
                     content: tweet.id,
                 }));

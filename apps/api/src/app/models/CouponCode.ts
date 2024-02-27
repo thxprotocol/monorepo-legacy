@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TCouponCode } from '@thxnetwork/types/interfaces';
 
 export type CouponCodeDocument = mongoose.Document & TCouponCode;
 

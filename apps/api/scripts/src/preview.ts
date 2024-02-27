@@ -1,10 +1,8 @@
-import Brand from '@thxnetwork/api/models/Brand';
-import db from '@thxnetwork/api/util/database';
 import puppeteer from 'puppeteer';
 import fs from 'fs';
-import { Widget } from '@thxnetwork/api/models/Widget';
+import db from '@thxnetwork/api/util/database';
+import { Brand, Widget } from '@thxnetwork/api/models';
 import { createCanvas, loadImage, registerFont } from 'canvas';
-import { TBrand } from '@thxnetwork/common/lib/types';
 import { assetsPath } from '@thxnetwork/api/util/path';
 import path from 'path';
 import CanvasService from '@thxnetwork/api/services/CanvasService';

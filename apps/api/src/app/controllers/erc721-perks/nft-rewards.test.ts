@@ -1,19 +1,19 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes } from '@thxnetwork/api/util/rewards';
 import { createImage } from '@thxnetwork/api/util/jest/images';
-import { ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
+import { RewardNFTDocument } from '@thxnetwork/api/models/RewardNFT';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 
 const user = request.agent(app);
 
 describe('NFT Rewards', () => {
-    let poolId: string, erc721metadata: ERC721MetadataDocument, erc721: ERC721Document, perk: ERC721PerkDocument;
+    let poolId: string, erc721metadata: ERC721MetadataDocument, erc721: ERC721Document, perk: RewardNFTDocument;
     const name = 'Planets of the Galaxy',
         symbol = 'GLXY',
         description = 'description';

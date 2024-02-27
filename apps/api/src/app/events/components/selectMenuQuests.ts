@@ -6,27 +6,30 @@ import {
     StringSelectMenuOptionBuilder,
 } from 'discord.js';
 import { DiscordStringSelectMenuVariant } from '../InteractionCreated';
-import { DailyReward } from '@thxnetwork/api/models/DailyReward';
-import { PointReward } from '@thxnetwork/api/models/PointReward';
-import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
-import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
-import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
-import { questInteractionVariantMap } from '@thxnetwork/common/lib/types/maps';
-import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { QuestInvite } from '@thxnetwork/api/models/QuestInvite';
+import { QuestWeb3 } from '@thxnetwork/api/models/QuestWeb3';
+import { questInteractionVariantMap } from '@thxnetwork/common/maps';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
-import { GitcoinQuest } from '@thxnetwork/api/models/GitcoinQuest';
+import {
+    DiscordGuild,
+    Pool,
+    PoolDocument,
+    QuestCustom,
+    QuestDaily,
+    QuestGitcoin,
+    QuestSocial,
+} from '@thxnetwork/api/models';
 
-async function findQuests(campaigns: AssetPoolDocument[]) {
+async function findQuests(campaigns: PoolDocument[]) {
     const poolId = campaigns.map(({ _id }) => String(_id));
     return await Promise.all([
-        DailyReward.find({ poolId, isPublished: true }),
-        ReferralReward.find({ poolId, isPublished: true }),
-        PointReward.find({ poolId, isPublished: true }),
-        MilestoneReward.find({ poolId, isPublished: true }),
-        Web3Quest.find({ poolId, isPublished: true }),
-        GitcoinQuest.find({ poolId, isPublished: true }),
+        QuestDaily.find({ poolId, isPublished: true }),
+        QuestInvite.find({ poolId, isPublished: true }),
+        QuestSocial.find({ poolId, isPublished: true }),
+        QuestCustom.find({ poolId, isPublished: true }),
+        QuestWeb3.find({ poolId, isPublished: true }),
+        QuestGitcoin.find({ poolId, isPublished: true }),
     ]);
 }
 
@@ -35,7 +38,7 @@ async function createSelectMenuQuests(interaction: CommandInteraction | ButtonIn
     if (!discordGuilds.length) throw new Error('Could not find server.');
 
     const poolId = discordGuilds.map((g) => g.poolId);
-    const campaigns = await AssetPool.find({ _id: poolId });
+    const campaigns = await Pool.find({ _id: poolId });
     if (!campaigns.length) throw new Error('No campaigns found for this server.');
 
     const select = new StringSelectMenuBuilder();

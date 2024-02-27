@@ -3,7 +3,6 @@ import { Participant } from '@thxnetwork/api/models/Participant';
 import { body, param } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import { TAccount } from '@thxnetwork/common/lib/types';
 
 const validation = [
     param('id').isMongoId(),

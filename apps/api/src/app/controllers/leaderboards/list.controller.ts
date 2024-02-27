@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
-import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { Pool, PoolDocument, Brand } from '@thxnetwork/api/models';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { query } from 'express-validator';
-import Brand from '@thxnetwork/api/models/Brand';
 import { Participant } from '@thxnetwork/api/models/Participant';
 
 const matchTitle = (search) => {
@@ -23,8 +22,8 @@ export const paginatedResults = async (page: number, limit: number, search: stri
         'settings.isPublished': true,
         ...(search && { 'settings.title': matchTitle(search) }),
     };
-    const total = await AssetPool.countDocuments($match);
-    const results = await AssetPool.find($match).sort({ rank: 1 }).skip(startIndex).limit(limit);
+    const total = await Pool.countDocuments($match);
+    const results = await Pool.find($match).sort({ rank: 1 }).skip(startIndex).limit(limit);
 
     return { page, total, limit, results };
 };
@@ -35,8 +34,8 @@ const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const { page, limit, search } = req.query;
     const result = await paginatedResults(Number(page), Number(limit), search ? String(search) : '');
-    const widgets = await Widget.find({ poolId: result.results.map((p: AssetPoolDocument) => p._id) });
-    const brands = await Brand.find({ poolId: result.results.map((p: AssetPoolDocument) => p._id) });
+    const widgets = await Widget.find({ poolId: result.results.map((p: PoolDocument) => p._id) });
+    const brands = await Brand.find({ poolId: result.results.map((p: PoolDocument) => p._id) });
 
     result.results = (await Promise.all(
         result.results.map(async (pool) => {

@@ -63,6 +63,7 @@ router.use('/erc20', erc20Router);
 router.use('/erc721', erc721Router);
 router.use('/erc1155', erc1155Router);
 
+// Below should move to /pools/:id/rewards CRUD
 router.use('/erc20-perks', erc20PerksRouter);
 router.use('/erc721-perks', erc721PerksRouter);
 router.use('/custom-rewards', customRewardsRouter);

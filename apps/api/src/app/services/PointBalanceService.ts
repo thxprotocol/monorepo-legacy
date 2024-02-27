@@ -1,8 +1,6 @@
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { Participant } from '../models/Participant';
-import { TAccount } from '@thxnetwork/common/lib/types/interfaces';
+import { Participant, PoolDocument } from '@thxnetwork/api/models';
 
-async function add(pool: AssetPoolDocument, account: TAccount, amount: number) {
+async function add(pool: PoolDocument, account: TAccount, amount: number) {
     const participant = await Participant.findOne({ poolId: pool._id, sub: account.sub });
     const balance = participant ? Number(participant.balance) + Number(amount) : Number(amount);
 
@@ -13,7 +11,7 @@ async function add(pool: AssetPoolDocument, account: TAccount, amount: number) {
     );
 }
 
-async function subtract(pool: AssetPoolDocument, account: TAccount, price: number) {
+async function subtract(pool: PoolDocument, account: TAccount, price: number) {
     if (!price) return;
 
     const participant = await Participant.findOne({ poolId: pool._id, sub: account.sub });

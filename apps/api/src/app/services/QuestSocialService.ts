@@ -1,17 +1,15 @@
-import { PointReward, PointRewardDocument } from '@thxnetwork/api/models/PointReward';
-import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
+import { QuestSocial, QuestSocialDocument, QuestSocialEntry } from '@thxnetwork/api/models';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { TPointReward, TAccount, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
 import { IQuestService } from './interfaces/IQuestService';
 import { requirementMap } from './maps/quests';
 import { logger } from '../util/logger';
 import QuestService from './QuestService';
-import { QuestVariant } from '@thxnetwork/common/lib/types';
+import { QuestVariant } from '@thxnetwork/common/enums';
 
 export default class QuestSocialService implements IQuestService {
     models = {
-        quest: PointReward,
-        entry: PointRewardClaim,
+        quest: QuestSocial,
+        entry: QuestSocialEntry,
     };
 
     async decorate({
@@ -19,10 +17,10 @@ export default class QuestSocialService implements IQuestService {
         account,
         data,
     }: {
-        quest: TPointReward;
+        quest: TQuestSocial;
         account?: TAccount;
         data: Partial<TQuestEntry>;
-    }): Promise<TPointReward & { isAvailable: boolean }> {
+    }): Promise<TQuestSocial & { isAvailable: boolean }> {
         const isAvailable = await this.isAvailable({ quest, account, data });
 
         return {
@@ -36,7 +34,7 @@ export default class QuestSocialService implements IQuestService {
         quest,
         account,
     }: {
-        quest: TPointReward;
+        quest: TQuestSocial;
         account: TAccount;
         data: Partial<TQuestEntry>;
     }): Promise<TValidationResult> {
@@ -51,7 +49,7 @@ export default class QuestSocialService implements IQuestService {
         if (platformUserId) ids.push({ platformUserId });
 
         // If no entry exist the quest is available
-        const isCompleted = await PointRewardClaim.exists({
+        const isCompleted = await QuestSocialEntry.exists({
             questId: quest._id,
             $or: ids,
         });
@@ -60,7 +58,7 @@ export default class QuestSocialService implements IQuestService {
         return { result: false, reason: 'You have completed this quest with this (connected) account already.' };
     }
 
-    async getAmount({ quest }: { quest: TPointReward; wallet: WalletDocument; account: TAccount }): Promise<number> {
+    async getAmount({ quest }: { quest: TQuestSocial; wallet: WalletDocument; account: TAccount }): Promise<number> {
         return quest.amount;
     }
 
@@ -68,7 +66,7 @@ export default class QuestSocialService implements IQuestService {
         quest,
         account,
     }: {
-        quest: TPointReward;
+        quest: TQuestSocial;
         account: TAccount;
         data: Partial<TQuestEntry>;
     }): Promise<TValidationResult> {
@@ -82,19 +80,19 @@ export default class QuestSocialService implements IQuestService {
         }
     }
 
-    async findEntryMetadata({ quest }: { quest: PointRewardDocument }) {
+    async findEntryMetadata({ quest }: { quest: QuestSocialDocument }) {
         const reachTotal = await this.getTwitterFollowerCount(quest);
-        const uniqueParticipantIds = await PointRewardClaim.find({
+        const uniqueParticipantIds = await QuestSocialEntry.find({
             questId: String(quest._id),
         }).distinct('sub');
 
         return { reachTotal, participantCount: uniqueParticipantIds.length };
     }
 
-    async getTwitterFollowerCount(quest: PointRewardDocument) {
+    async getTwitterFollowerCount(quest: QuestSocialDocument) {
         if (quest.variant !== QuestVariant.Twitter) return;
 
-        const [result] = await PointRewardClaim.aggregate([
+        const [result] = await QuestSocialEntry.aggregate([
             { $match: { questId: String(quest._id) } },
             { $group: { _id: null, totalFollowersCount: { $sum: '$publicMetrics.followersCount' } } },
         ]);

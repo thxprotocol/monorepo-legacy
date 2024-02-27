@@ -1,5 +1,5 @@
 import type { TAccount } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind, AccountPlanType, OAuthScope } from '@thxnetwork/types/enums';
+import { AccessTokenKind, AccountPlanType, OAuthScope } from '@thxnetwork/common/enums';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { SigninRedirectArgs, User, UserManager } from 'oidc-client-ts';

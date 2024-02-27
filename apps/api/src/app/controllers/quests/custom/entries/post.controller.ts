@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
+import { QuestCustom } from '@thxnetwork/api/models';
 import { param } from 'express-validator';
-import { JobType, QuestVariant } from '@thxnetwork/common/lib/types';
+import { JobType, QuestVariant } from '@thxnetwork/common/enums';
 import { agenda } from '@thxnetwork/api/util/agenda';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
@@ -9,7 +9,7 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 const validation = [param('id').isMongoId()];
 
 const controller = async ({ params, account }: Request, res: Response) => {
-    const quest = await MilestoneReward.findById(params.id);
+    const quest = await QuestCustom.findById(params.id);
     if (!quest) throw new NotFoundError('Quest not found.');
 
     const { result, reason } = await QuestService.getValidationResult(quest.variant, {

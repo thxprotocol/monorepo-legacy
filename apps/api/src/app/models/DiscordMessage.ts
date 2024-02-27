@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TDiscordMessage } from '@thxnetwork/types/interfaces';
 
 export type DiscordMessageDocument = mongoose.Document & TDiscordMessage;
 
@@ -14,4 +13,8 @@ const discordMessageSchema = new mongoose.Schema(
     },
 );
 
-export default mongoose.model<DiscordMessageDocument>('DiscordMessage', discordMessageSchema, 'discordmessages');
+export const DiscordMessage = mongoose.model<DiscordMessageDocument>(
+    'DiscordMessage',
+    discordMessageSchema,
+    'discordmessages',
+);

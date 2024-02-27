@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TERC721Transfer } from '@thxnetwork/types/interfaces';
 
 export type ERC721TransferDocument = mongoose.Document & TERC721Transfer;
 
@@ -16,4 +15,4 @@ const erc721TransferSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
-export default mongoose.model<ERC721TransferDocument>('ERC721Transfer', erc721TransferSchema);
+export const ERC721Transfer = mongoose.model<ERC721TransferDocument>('ERC721Transfer', erc721TransferSchema);

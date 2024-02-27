@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { Account } from 'web3-core';
 import { isAddress } from 'web3-utils';
 import { createWallet } from '@thxnetwork/api/util/jest/network';

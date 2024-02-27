@@ -1,6 +1,6 @@
 import { API_URL, MINIMUM_GAS_LIMIT, VERSION } from '@thxnetwork/api/config/secrets';
 import ContractService from '@thxnetwork/api/services/ContractService';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { getProvider } from '../network';
 
 export async function deployERC721(nftName: string, nftSymbol: string) {

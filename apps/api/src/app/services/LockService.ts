@@ -1,4 +1,3 @@
-import { TAccount, TQuestLock } from '@thxnetwork/common/lib/types';
 import { serviceMap } from './interfaces/IQuestService';
 
 async function getIsUnlocked(lock: TQuestLock, account: TAccount): Promise<boolean> {

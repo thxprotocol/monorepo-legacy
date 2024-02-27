@@ -47,10 +47,10 @@
 <script lang="ts">
 import { mapGetters } from 'vuex';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TERC1155Token, TERC721Token, TPool, TERC721Perk, TBaseReward } from '@thxnetwork/types/interfaces';
+import type { TERC1155Token, TERC721Token, TPool, TRewardNFT, TBaseReward } from '@thxnetwork/types/interfaces';
 import type { IERC721s, IERC721Tokens, TERC721, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
 import type { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
-import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant } from '@thxnetwork/common/enums';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
@@ -94,7 +94,7 @@ export default class ModalRewardNFTCreate extends Vue {
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TERC721Perk;
+    @Prop({ required: false }) reward!: TRewardNFT;
     @Prop({ required: false, default: () => [] }) selectedMetadataIds!: string[];
 
     get chainId() {

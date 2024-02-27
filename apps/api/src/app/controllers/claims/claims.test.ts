@@ -1,16 +1,16 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, NFTVariant, WalletVariant } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant, WalletVariant } from '@thxnetwork/common/enums';
 import { sub, dashboardAccessToken, widgetAccessToken, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ClaimDocument } from '@thxnetwork/api/models/Claim';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { PoolDocument } from '@thxnetwork/api/models/AssetPool';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
-import { TERC721Perk } from '@thxnetwork/types/interfaces';
+import { TRewardNFT } from '@thxnetwork/types/interfaces';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { getProvider } from '@thxnetwork/api/util/network';
@@ -21,7 +21,7 @@ const user = request.agent(app);
 
 describe('QR Codes', () => {
     let poolId: string,
-        pool: AssetPoolDocument,
+        pool: PoolDocument,
         erc721: ERC721Document,
         metadata: ERC721MetadataDocument,
         wallet: WalletDocument,
@@ -32,7 +32,7 @@ describe('QR Codes', () => {
             description: '',
             pointPrice: 0,
             limit: 0,
-        } as TERC721Perk,
+        } as TRewardNFT,
         chainId = ChainId.Hardhat;
 
     beforeAll(async () => {

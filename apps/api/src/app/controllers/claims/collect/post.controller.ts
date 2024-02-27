@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
 import { param, query } from 'express-validator';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
-import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
+import { RewardNFT } from '@thxnetwork/api/models/RewardNFT';
+import { RewardNFTPayment } from '@thxnetwork/api/models/RewardNFTPayment';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
@@ -26,7 +26,7 @@ const controller = async (req: Request, res: Response) => {
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
     if (!safe) throw new BadRequestError('Could not find campaign Safe.');
 
-    const perk = await ERC721Perk.findOne({ uuid: claim.rewardUuid });
+    const perk = await RewardNFT.findOne({ uuid: claim.rewardUuid });
     if (!perk) throw new BadRequestError('The perk for this ID does not exist.');
     // Can be claimed only if point price is 0
     if (perk.pointPrice > 0) throw new ForbiddenError('This perk should be redeemed with points.');
@@ -46,9 +46,9 @@ const controller = async (req: Request, res: Response) => {
     const token = await ERC721Service.mint(safe, erc721, wallet, metadata);
 
     // Create a payment to register a completed claim.
-    const payment = await ERC721PerkPayment.create({
+    const payment = await RewardNFTPayment.create({
         sub: req.auth.sub,
-        perkId: perk._id,
+        rewardId: perk._id,
         amount: perk.pointPrice,
         poolId: pool._id,
     });

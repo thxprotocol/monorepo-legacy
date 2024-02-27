@@ -1,12 +1,12 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { dashboardAccessToken, sub } from '@thxnetwork/api/util/jest/constants';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { deployERC721, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/erc721';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { PoolDocument } from '@thxnetwork/api/models/AssetPool';
 import { Contract } from 'web3-eth-contract';
 import { getProvider } from '@thxnetwork/api/util/network';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
@@ -14,7 +14,7 @@ import TransactionService from '@thxnetwork/api/services/TransactionService';
 const user = request.agent(app);
 
 describe('ERC721 import', () => {
-    let erc721: ERC721Document, pool: AssetPoolDocument, nftContract: Contract;
+    let erc721: ERC721Document, pool: PoolDocument, nftContract: Contract;
     const chainId = ChainId.Hardhat,
         nftName = 'Test Collection',
         nftSymbol = 'TST';

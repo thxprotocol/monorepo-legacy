@@ -1,15 +1,14 @@
 import { Request, Response } from 'express';
-import { CouponRewardPayment } from '@thxnetwork/api/models/CouponRewardPayment';
 import { CouponCode } from '@thxnetwork/api/models/CouponCode';
-import { CouponReward } from '@thxnetwork/api/models/CouponReward';
+import { RewardCoupon, RewardCouponPayment } from '@thxnetwork/api/models';
 
 const validation = [];
 
 const controller = async (req: Request, res: Response) => {
-    const payments = await CouponRewardPayment.find({ sub: req.auth.sub });
+    const payments = await RewardCouponPayment.find({ sub: req.auth.sub });
     const promises = payments.map(async (p) => {
         const couponCode = await CouponCode.findById(p.couponCodeId);
-        const reward = couponCode ? await CouponReward.findById(couponCode.couponRewardId) : null;
+        const reward = couponCode ? await RewardCoupon.findById(couponCode.couponRewardId) : null;
         return { ...p.toJSON(), code: couponCode.code, webshopURL: reward && reward.webshopURL };
     });
     const results = await Promise.allSettled(promises);

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { ERC20Type } from '@thxnetwork/types/enums';
-import ERC20PerkService from '@thxnetwork/api/services/ERC20PerkService';
+import { ERC20Type } from '@thxnetwork/common/enums';
+import RewardCoinService from '@thxnetwork/api/services/RewardCoinService';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
@@ -31,7 +31,7 @@ const controller = async (req: Request, res: Response) => {
         if (!isMinter) await ERC20Service.addMinter(erc20, safe.address);
     }
 
-    const perk = await ERC20PerkService.create(pool, { ...req.body, image });
+    const perk = await RewardCoinService.create(pool, { ...req.body, image });
 
     res.status(201).json({ ...perk.toJSON(), erc20 });
 };

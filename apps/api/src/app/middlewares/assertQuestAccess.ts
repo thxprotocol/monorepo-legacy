@@ -1,5 +1,5 @@
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
-import { QuestVariant } from '@thxnetwork/common/lib/types';
+import { QuestVariant } from '@thxnetwork/common/enums';
 import { Response, Request, NextFunction } from 'express';
 import { serviceMap } from '../services/interfaces/IQuestService';
 

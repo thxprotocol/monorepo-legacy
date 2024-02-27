@@ -1,17 +1,15 @@
 import { ButtonInteraction, ButtonStyle, StringSelectMenuInteraction } from 'discord.js';
-import { JobType, QuestVariant } from '@thxnetwork/common/lib/types/enums';
+import { JobType, QuestVariant } from '@thxnetwork/common/enums';
+import { handleError } from '../../commands/error';
+import { DiscordButtonVariant } from '../../InteractionCreated';
+import { Widget, Brand } from '@thxnetwork/api/models';
+import { agenda } from '@thxnetwork/api/util/agenda';
+import { DiscordDisconnected } from '@thxnetwork/api/util/errors';
+import { serviceMap } from '@thxnetwork/api/services/interfaces/IQuestService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import QuestService from '@thxnetwork/api/services/QuestService';
-import { handleError } from '../../commands/error';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
-import { DiscordButtonVariant } from '../../InteractionCreated';
-import Brand from '@thxnetwork/api/models/Brand';
-import { Widget } from '@thxnetwork/api/models/Widget';
-import { agenda } from '@thxnetwork/api/util/agenda';
-import { DiscordDisconnected } from '@thxnetwork/api/util/errors';
-import { TPointReward } from '@thxnetwork/common/lib/types';
-import { serviceMap } from '@thxnetwork/api/services/interfaces/IQuestService';
 
 export async function completeQuest(
     interaction: ButtonInteraction | StringSelectMenuInteraction,
@@ -29,7 +27,7 @@ export async function completeQuest(
         const pool = await PoolService.getById(quest.poolId);
         if (!pool) throw new Error('Could not find this campaign.');
 
-        const { interaction: questInteraction } = quest as TPointReward;
+        const { interaction: questInteraction } = quest as TQuestSocial;
         const platformUserId = questInteraction && QuestService.findUserIdForInteraction(account, questInteraction);
 
         const data = {

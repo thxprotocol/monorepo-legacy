@@ -1,4 +1,3 @@
-import { TCollaborator } from '@thxnetwork/types/interfaces';
 import mongoose from 'mongoose';
 
 export type CollaboratorDocument = mongoose.Document & TCollaborator;

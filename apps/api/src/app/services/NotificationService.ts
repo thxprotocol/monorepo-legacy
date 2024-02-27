@@ -1,24 +1,22 @@
-import { AssetPoolDocument } from '../models/AssetPool';
+import { QuestVariant } from '@thxnetwork/common/enums';
+import { PoolDocument } from '@thxnetwork/api/models';
 import { logger } from '../util/logger';
 import { sleep } from '../util';
-import { QuestVariant, TAccount, TBrand, TNotification, TQuest, TWallet, TWidget } from '@thxnetwork/common/lib/types';
-import { Notification } from '@thxnetwork/api/models/Notification';
-import AccountProxy from '../proxies/AccountProxy';
-import MailService from './MailService';
-import PoolService from './PoolService';
-import BrandService from './BrandService';
-import { Widget } from '../models/Widget';
-import DiscordDataProxy from '../proxies/DiscordDataProxy';
+import { Notification, Widget, Participant } from '@thxnetwork/api/models';
 import { DiscordButtonVariant } from '../events/InteractionCreated';
 import { ButtonStyle } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
 import { celebratoryWords } from '../util/dictionaries';
-import { Participant } from '../models/Participant';
+import AccountProxy from '../proxies/AccountProxy';
+import MailService from './MailService';
+import PoolService from './PoolService';
+import BrandService from './BrandService';
+import DiscordDataProxy from '../proxies/DiscordDataProxy';
 
 const MAIL_CHUNK_SIZE = 600;
 
 async function send(
-    pool: AssetPoolDocument,
+    pool: PoolDocument,
     { subjectId, subject, message, link }: Partial<TNotification> & { link?: { src: string; text: string } },
 ) {
     const participants = await Participant.find({ poolId: pool._id, isSubscribed: true });
@@ -62,7 +60,7 @@ async function notify(variant: QuestVariant, quest: TQuest) {
     sendQuestPublishNotification(pool, variant, quest as TQuest, widget, brand);
 }
 
-async function sendQuestPublishEmail(pool: AssetPoolDocument, variant: QuestVariant, quest: TQuest, widget: TWidget) {
+async function sendQuestPublishEmail(pool: PoolDocument, variant: QuestVariant, quest: TQuest, widget: TWidget) {
     const { amount, amounts } = quest as any;
     const subject = `🎁 New ${QuestVariant[variant]} Quest: Earn ${amount || amounts[0]} pts!"`;
     const message = `<p style="font-size: 18px">Earn ${amount || amounts[0]} points!🔔</p>
@@ -79,7 +77,7 @@ async function sendQuestPublishEmail(pool: AssetPoolDocument, variant: QuestVari
 }
 
 async function sendQuestPublishNotification(
-    pool: AssetPoolDocument,
+    pool: PoolDocument,
     variant: QuestVariant,
     quest: TQuest,
     widget: TWidget,
@@ -127,7 +125,7 @@ async function sendQuestPublishNotification(
     );
 }
 
-async function sendQuestEntryNotification(pool: AssetPoolDocument, quest: TQuest, account: TAccount, amount: number) {
+async function sendQuestEntryNotification(pool: PoolDocument, quest: TQuest, account: TAccount, amount: number) {
     const index = Math.floor(Math.random() * celebratoryWords.length);
     const discord = account.tokens && account.tokens.find((a) => a.kind === 'discord');
     const user = discord && discord.userId ? `<@${discord.userId}>` : `**${account.username}**`;

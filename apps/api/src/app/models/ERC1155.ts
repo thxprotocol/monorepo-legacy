@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TERC1155 } from '@thxnetwork/types/interfaces';
 import { getAbiForContractName } from '@thxnetwork/api/services/ContractService';
 import { getProvider } from '@thxnetwork/api/util/network';
 

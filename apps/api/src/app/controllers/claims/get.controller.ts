@@ -3,11 +3,16 @@ import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { param } from 'express-validator';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { Claim, ClaimDocument } from '@thxnetwork/api/models/Claim';
-import { ERC721Perk, ERC721PerkDocument } from '@thxnetwork/api/models/ERC721Perk';
-import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
-import { ERC721Document } from '@thxnetwork/api/models/ERC721';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import {
+    Claim,
+    ClaimDocument,
+    RewardNFT,
+    RewardNFTDocument,
+    ERC721Metadata,
+    ERC721MetadataDocument,
+    ERC721Document,
+    PoolDocument,
+} from '@thxnetwork/api/models';
 
 const validation = [
     param('uuid')
@@ -20,17 +25,9 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
-    /*
-    #swagger.tags = ['Claims']
-    #swagger.responses[200] = { 
-        description: 'Get a reward claim',
-        schema: { $ref: '#/definitions/Claim' } 
-    }
-    */
-
     let claim: ClaimDocument,
-        pool: AssetPoolDocument,
-        perk: ERC721PerkDocument,
+        pool: PoolDocument,
+        perk: RewardNFTDocument,
         erc721: ERC721Document,
         metadata: ERC721MetadataDocument;
 
@@ -41,7 +38,7 @@ const controller = async (req: Request, res: Response) => {
         pool = await PoolService.getById(claim.poolId);
         if (!pool) throw new NotFoundError('Could not find campaign for this claim URL');
 
-        perk = await ERC721Perk.findOne({ uuid: claim.rewardUuid });
+        perk = await RewardNFT.findOne({ uuid: claim.rewardUuid });
         if (!perk) throw new NotFoundError('Could not find configuration for this claim URL');
 
         erc721 = await ERC721Service.findById(claim.erc721Id);

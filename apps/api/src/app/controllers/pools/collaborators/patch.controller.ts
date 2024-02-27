@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { Collaborator } from '@thxnetwork/api/models/Collaborator';
-import { CollaboratorInviteState } from '@thxnetwork/types/enums';
+import { CollaboratorInviteState } from '@thxnetwork/common/enums';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 

@@ -54,9 +54,9 @@
 </template>
 
 <script lang="ts">
-import type { TPool, TCouponReward, TBaseReward } from '@thxnetwork/types/interfaces';
+import type { TPool, TRewardCoupon, TBaseReward } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { RewardVariant } from '@thxnetwork/types/enums';
+import { RewardVariant } from '@thxnetwork/common/enums';
 import { CSVParser } from '../../utils/csv';
 import { format } from 'date-fns';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
@@ -76,7 +76,7 @@ export default class ModalRewardCustomCreate extends Vue {
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TCouponReward;
+    @Prop({ required: false }) reward!: TRewardCoupon;
 
     get couponCodes() {
         if (!this.reward) return [];

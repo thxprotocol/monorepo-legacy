@@ -1,21 +1,21 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { RewardVariant } from '@thxnetwork/types/enums';
-import type { TCustomReward, TWebhook, TPool } from '@thxnetwork/types/interfaces';
+import { RewardVariant } from '@thxnetwork/common/enums';
+import type { TRewardCustom, TWebhook, TPool } from '@thxnetwork/types/interfaces';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { track } from '@thxnetwork/mixpanel';
 import {} from '@thxnetwork/types/interfaces/CustomReward';
 
-export type TCustomRewardState = {
+export type TRewardCustomState = {
     [poolId: string]: {
-        [id: string]: TCustomReward & { webhook: TWebhook };
+        [id: string]: TRewardCustom & { webhook: TWebhook };
     };
 };
 
 @Module({ namespaced: true })
 class CustomRewardModule extends VuexModule {
-    _customRewards: TCustomRewardState = {};
+    _customRewards: TRewardCustomState = {};
     _totals: { [poolId: string]: number } = {};
 
     get all() {
@@ -23,14 +23,14 @@ class CustomRewardModule extends VuexModule {
     }
 
     @Mutation
-    set(reward: TCustomReward) {
+    set(reward: TRewardCustom) {
         if (!this._customRewards[reward.poolId]) Vue.set(this._customRewards, reward.poolId, {});
         reward.variant = RewardVariant.Custom;
         Vue.set(this._customRewards[reward.poolId], String(reward._id), reward);
     }
 
     @Mutation
-    unset(reward: TCustomReward) {
+    unset(reward: TRewardCustom) {
         Vue.delete(this._customRewards[reward.poolId], reward._id as string);
     }
 
@@ -53,14 +53,14 @@ class CustomRewardModule extends VuexModule {
 
         this.context.commit('setTotal', { pool, total: data.total });
 
-        data.results.forEach((reward: TCustomReward) => {
+        data.results.forEach((reward: TRewardCustom) => {
             reward.page = page;
             this.context.commit('set', reward);
         });
     }
 
     @Action({ rawError: true })
-    async create(reward: TCustomReward) {
+    async create(reward: TRewardCustom) {
         const formData = prepareFormDataForUpload(reward);
         const { data } = await axios({
             method: 'POST',
@@ -76,7 +76,7 @@ class CustomRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async update(reward: TCustomReward) {
+    async update(reward: TRewardCustom) {
         const formData = prepareFormDataForUpload(reward);
         const { data } = await axios({
             method: 'PATCH',
@@ -89,7 +89,7 @@ class CustomRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async delete(reward: TCustomReward) {
+    async delete(reward: TRewardCustom) {
         await axios({
             method: 'DELETE',
             url: `/custom-rewards/${reward._id}`,

@@ -199,7 +199,7 @@ import { mapGetters } from 'vuex';
 import BaseNavbarNav from './BaseNavbarNav.vue';
 import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 import { TAccount, TPool } from '@thxnetwork/types/interfaces';
-import { AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountPlanType } from '@thxnetwork/common/enums';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { hasBasicAccess } from '@thxnetwork/common';
 

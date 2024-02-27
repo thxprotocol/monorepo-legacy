@@ -1,29 +1,29 @@
 import express from 'express';
 import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
-import CreateERC20Perk from './post.controller';
-import ReadERC20Perk from './get.controller';
-import UpdateERC20Perk from './patch.controller';
-import ListERC20Perk from './list.controller';
-import DeleteERC20Perk from './delete.controller';
+import CreateRewardCoin from './post.controller';
+import ReadRewardCoin from './get.controller';
+import UpdateRewardCoin from './patch.controller';
+import ListRewardCoin from './list.controller';
+import DeleteRewardCoin from './delete.controller';
 import { upload } from '@thxnetwork/api/util/multer';
 
 const router = express.Router();
 
-router.get('/', guard.check(['erc20_rewards:read']), assertPoolAccess, ListERC20Perk.controller);
+router.get('/', guard.check(['erc20_rewards:read']), assertPoolAccess, ListRewardCoin.controller);
 router.get(
     '/:id',
     guard.check(['erc20_rewards:read']),
     assertPoolAccess,
-    assertRequestInput(ReadERC20Perk.validation),
-    ReadERC20Perk.controller,
+    assertRequestInput(ReadRewardCoin.validation),
+    ReadRewardCoin.controller,
 );
 router.post(
     '/',
     upload.single('file'),
     guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
     assertPoolAccess,
-    assertRequestInput(CreateERC20Perk.validation),
-    CreateERC20Perk.controller,
+    assertRequestInput(CreateRewardCoin.validation),
+    CreateRewardCoin.controller,
 );
 
 router.patch(
@@ -31,16 +31,16 @@ router.patch(
     upload.single('file'),
     guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
     assertPoolAccess,
-    assertRequestInput(UpdateERC20Perk.validation),
-    UpdateERC20Perk.controller,
+    assertRequestInput(UpdateRewardCoin.validation),
+    UpdateRewardCoin.controller,
 );
 
 router.delete(
     '/:id',
     guard.check(['erc20_rewards:write', 'erc20_rewards:read']),
     assertPoolAccess,
-    assertRequestInput(DeleteERC20Perk.validation),
-    DeleteERC20Perk.controller,
+    assertRequestInput(DeleteRewardCoin.validation),
+    DeleteRewardCoin.controller,
 );
 
 export default router;

@@ -1,5 +1,4 @@
-import { AccountPlanType } from './types/enums';
-import { TAccount } from './types/interfaces';
+import { AccountPlanType } from './enums';
 
 function hasBasicAccess(owner: TAccount) {
     if (!owner) return false;

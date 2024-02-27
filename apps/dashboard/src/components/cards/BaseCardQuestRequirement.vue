@@ -59,7 +59,7 @@ import {
     TQuestSocialProvider,
     TQuestSocialInteraction,
 } from '@thxnetwork/dashboard/types/rewards';
-import { AccessTokenKind, QuestSocialRequirement } from '@thxnetwork/types/enums';
+import { AccessTokenKind, QuestSocialRequirement } from '@thxnetwork/common/enums';
 import { TAccount, TPool } from '@thxnetwork/types/interfaces';
 import BaseDropdownQuestProvider from '../dropdowns/BaseDropdownQuestProvider.vue';
 import BaseDropdownQuestProviderInteractions from '../dropdowns/BaseDropdownQuestProviderInteractions.vue';

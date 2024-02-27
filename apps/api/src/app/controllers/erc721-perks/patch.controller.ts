@@ -1,4 +1,4 @@
-import ERC721PerkService from '@thxnetwork/api/services/ERC721PerkService';
+import RewardNFTService from '@thxnetwork/api/services/RewardNFTService';
 import ImageService from '@thxnetwork/api/services/ImageService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
@@ -9,7 +9,7 @@ const validation = [param('id').isMongoId(), ...CreateController.validation];
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['RewardsNft']
-    let perk = await ERC721PerkService.get(req.params.id);
+    let perk = await RewardNFTService.get(req.params.id);
     if (!perk) throw new NotFoundError('Could not find the perk');
 
     const image = req.file && (await ImageService.upload(req.file));
@@ -20,7 +20,7 @@ const controller = async (req: Request, res: Response) => {
         image,
         metadataId: metadataIdList.length ? metadataIdList[0] : '',
     };
-    perk = await ERC721PerkService.update(perk, config);
+    perk = await RewardNFTService.update(perk, config);
 
     return res.json(perk);
 };

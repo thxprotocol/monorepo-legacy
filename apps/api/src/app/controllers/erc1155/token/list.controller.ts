@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import { ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
 import { query } from 'express-validator';
 import { BadRequestError } from '@thxnetwork/api/util/errors';
-import type { TERC1155, TERC1155Token } from '@thxnetwork/types/interfaces';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 

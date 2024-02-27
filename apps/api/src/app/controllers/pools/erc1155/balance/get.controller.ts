@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import { query } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { AssetPool } from '@thxnetwork/api/models/AssetPool';
 import ContractService from '@thxnetwork/api/services/ContractService';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import { Pool } from '@thxnetwork/api/models';
 
 const validation = [query('contractAddress').isEthereumAddress(), query('tokenId').isInt()];
 
 export const controller = async (req: Request, res: Response) => {
-    const pool = await AssetPool.findById(req.params.id);
+    const pool = await Pool.findById(req.params.id);
     if (!pool) throw new NotFoundError('Pool not found');
 
     const safe = await SafeService.findOneByPool(pool, pool.chainId);

@@ -1,5 +1,5 @@
 import { Account, AccountDocument } from '../models/Account';
-import { AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountPlanType } from '@thxnetwork/common/enums';
 import { generateUsername } from 'unique-username-generator';
 import { toChecksumAddress } from 'web3-utils';
 import { BadRequestError } from '../util/errors';

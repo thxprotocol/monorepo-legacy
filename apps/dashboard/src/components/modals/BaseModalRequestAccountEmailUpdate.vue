@@ -101,7 +101,7 @@
 
 <script lang="ts">
 import type { TAccount, TPool } from '@thxnetwork/types/interfaces';
-import { Goal, Role } from '@thxnetwork/types/enums';
+import { Goal, Role } from '@thxnetwork/common/enums';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { goalLabelMap, roleLabelMap } from '@thxnetwork/types/contants';

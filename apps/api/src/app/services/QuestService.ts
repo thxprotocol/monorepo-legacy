@@ -1,32 +1,20 @@
-import { JobType, QuestSocialRequirement, QuestVariant } from '@thxnetwork/types/enums';
-import { TAccount, TQuest, TQuestEntry, TToken, TValidationResult } from '@thxnetwork/types/interfaces';
+import { JobType, QuestSocialRequirement, QuestVariant } from '@thxnetwork/common/enums';
+import { PoolDocument, Participant, TwitterUser } from '@thxnetwork/api/models';
 import { v4 } from 'uuid';
-import { AssetPoolDocument } from '../models/AssetPool';
 import { agenda } from '../util/agenda';
 import { logger } from '../util/logger';
 import { Job } from '@hokify/agenda';
 import { serviceMap } from './interfaces/IQuestService';
-
+import { tokenInteractionMap } from './maps/quests';
 import PoolService from './PoolService';
 import NotificationService from './NotificationService';
 import PointBalanceService from './PointBalanceService';
 import LockService from './LockService';
 import ImageService from './ImageService';
 import AccountProxy from '../proxies/AccountProxy';
-import { tokenInteractionMap } from './maps/quests';
-import { TwitterUser } from '../models/TwitterUser';
-import { Participant } from '../models/Participant';
 
 export default class QuestService {
-    static async list({
-        pool,
-        data,
-        account,
-    }: {
-        pool: AssetPoolDocument;
-        data: Partial<TQuestEntry>;
-        account?: TAccount;
-    }) {
+    static async list({ pool, data, account }: { pool: PoolDocument; data: Partial<TQuestEntry>; account?: TAccount }) {
         const questVariants = Object.keys(QuestVariant).filter((v) => !isNaN(Number(v)));
         const callback: any = async (variant: QuestVariant) => {
             const Quest = serviceMap[variant].models.quest;

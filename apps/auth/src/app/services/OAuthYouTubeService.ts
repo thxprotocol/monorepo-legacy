@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { google } from 'googleapis';
-import { AccessTokenKind, OAuthGoogleScope } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccessTokenKind, OAuthGoogleScope } from '@thxnetwork/common/enums/AccessTokenKind';
 import { AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config/secrets';
 import { parseJwt } from '../util/jwt';
 import { Token, TokenDocument } from '../models/Token';

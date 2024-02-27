@@ -1,6 +1,5 @@
 import { body, check, validationResult } from 'express-validator';
 import { Response, Request, NextFunction } from 'express';
-import { TInfoLink } from '@thxnetwork/common/lib/types';
 import { isValidUrl } from './url';
 
 export const validate = (validations: any) => {

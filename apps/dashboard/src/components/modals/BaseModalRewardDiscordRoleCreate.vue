@@ -23,7 +23,7 @@
 import { mapGetters } from 'vuex';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TGuildState } from '@thxnetwork/dashboard/store/modules/pools';
-import type { TPool, TDiscordRoleReward, TBaseReward } from '@thxnetwork/types/interfaces';
+import type { TPool, TRewardDiscordRole, TBaseReward } from '@thxnetwork/types/interfaces';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
 import BaseDropdownDiscordRole from '../dropdowns/BaseDropdownDiscordRole.vue';
 
@@ -45,7 +45,7 @@ export default class ModalRewardCustomCreate extends Vue {
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TDiscordRoleReward;
+    @Prop({ required: false }) reward!: TRewardDiscordRole;
 
     get guilds() {
         if (!this.guildsList[this.pool._id]) return [];

@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
-import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { query } from 'express-validator';
-import { TERC721, TERC721Token } from '@thxnetwork/types/interfaces';
-import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
+import { ERC721Token, ERC721TokenDocument, ERC721Metadata } from '@thxnetwork/api/models';
 import { BadRequestError } from '@thxnetwork/api/util/errors';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import SafeService from '@thxnetwork/api/services/SafeService';

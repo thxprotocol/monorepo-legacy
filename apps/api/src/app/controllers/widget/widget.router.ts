@@ -2,7 +2,7 @@ import { assertRequestInput } from '@thxnetwork/api/middlewares';
 import express, { Request, Response, NextFunction } from 'express';
 import ReadWidget from './get.controller';
 import ReadWidgetScript from './js/get.controller';
-import { AssetPool } from '@thxnetwork/api/models/AssetPool';
+import { Pool } from '@thxnetwork/api/models';
 
 const router = express.Router();
 const isMongoId = (str: string) => {
@@ -14,7 +14,7 @@ router.get(
     '/:id',
     async (req: Request, res: Response, next: NextFunction) => {
         if (!isMongoId(req.params.id)) {
-            const pool = await AssetPool.findOne({ 'settings.slug': req.params.id });
+            const pool = await Pool.findOne({ 'settings.slug': req.params.id });
             req.params.id = String(pool._id);
         }
         next();

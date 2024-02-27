@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TIdentity } from '@thxnetwork/common/lib/types/interfaces/Identity';
 
 export type IdentityDocument = mongoose.Document & TIdentity;
 

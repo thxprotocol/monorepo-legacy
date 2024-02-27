@@ -79,7 +79,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TPointReward, TQuest, TQuestEntry } from '@thxnetwork/types/interfaces';
+import type { TQuestSocial, TQuest, TQuestEntry } from '@thxnetwork/types/interfaces';
 import { mapGetters } from 'vuex';
 import { format, differenceInMilliseconds } from 'date-fns';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
@@ -136,7 +136,7 @@ export default class BaseModalQuestSocialEntries extends Vue {
     page = 1;
 
     @Prop() id!: string;
-    @Prop() quest!: TPointReward;
+    @Prop() quest!: TQuestSocial;
 
     get questEntries(): {
         total: number;

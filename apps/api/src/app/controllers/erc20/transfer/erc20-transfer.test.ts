@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import ERC20, { ERC20Document } from '@thxnetwork/api/models/ERC20';
-import { ChainId, ERC20Type, WalletVariant } from '@thxnetwork/types/enums';
+import { ChainId, ERC20Type, WalletVariant } from '@thxnetwork/common/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import {
     dashboardAccessToken,

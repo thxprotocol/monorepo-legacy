@@ -1,13 +1,13 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { dashboardAccessToken, sub } from '@thxnetwork/api/util/jest/constants';
-import { ERC1155TokenState } from '@thxnetwork/types/interfaces';
+import { ERC1155TokenState } from '@thxnetwork/common/enums';
 import { ERC1155Document } from '@thxnetwork/api/models/ERC1155';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { deployERC1155, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/erc1155';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { PoolDocument } from '@thxnetwork/api/models';
 import { Contract } from 'web3-eth-contract';
 import { getProvider } from '@thxnetwork/api/util/network';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
@@ -16,7 +16,7 @@ import { ethers } from 'ethers';
 const user = request.agent(app);
 
 describe('ERC1155 import', () => {
-    let erc1155: ERC1155Document, pool: AssetPoolDocument, nftContract: Contract;
+    let erc1155: ERC1155Document, pool: PoolDocument, nftContract: Contract;
     const chainId = ChainId.Hardhat,
         nftName = 'Test Collection';
 

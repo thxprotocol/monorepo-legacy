@@ -1,7 +1,7 @@
 import { Guild } from 'discord.js';
 import { logger } from '@thxnetwork/api/util/logger';
 import { handleError } from './commands/error';
-import DiscordGuild from '../models/DiscordGuild';
+import { DiscordGuild } from '@thxnetwork/api/models';
 
 const onGuildDelete = async (guild: Guild) => {
     try {

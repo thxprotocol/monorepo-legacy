@@ -169,7 +169,7 @@ import BaseCardHome from '@thxnetwork/dashboard/components/cards/BaseCardHome.vu
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import { IPools } from '../store/modules/pools';
 import { NODE_ENV } from '@thxnetwork/dashboard/config/secrets';
-import { ChainId, QuestVariant } from '@thxnetwork/types/enums';
+import { ChainId, QuestVariant } from '@thxnetwork/common/enums';
 import { contentQuests } from './pool/Quests.vue';
 import { contentRewards } from './pool/Rewards.vue';
 

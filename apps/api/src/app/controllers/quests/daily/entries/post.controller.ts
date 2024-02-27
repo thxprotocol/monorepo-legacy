@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { JobType, QuestVariant } from '@thxnetwork/common/lib/types';
+import { JobType, QuestVariant } from '@thxnetwork/common/enums';
 import { agenda } from '@thxnetwork/api/util/agenda';
-import { DailyReward } from '@thxnetwork/api/models/DailyReward';
+import { QuestDaily } from '@thxnetwork/api/models';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import { getIP } from '@thxnetwork/api/util/ip';
 
@@ -11,7 +11,7 @@ const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     const { params, account } = req;
-    const quest = await DailyReward.findById(params.id);
+    const quest = await QuestDaily.findById(params.id);
     if (!quest) throw new NotFoundError('Could not find the Daily Reward');
 
     // Only do this is no event requirement is set

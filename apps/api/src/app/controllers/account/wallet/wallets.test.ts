@@ -2,7 +2,7 @@ import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { widgetAccessToken, sub, userWalletPrivateKey4 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { ChainId, WalletVariant } from '@thxnetwork/types/enums';
+import { ChainId, WalletVariant } from '@thxnetwork/common/enums';
 import { signMessage } from '@thxnetwork/api/util/jest/network';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
 

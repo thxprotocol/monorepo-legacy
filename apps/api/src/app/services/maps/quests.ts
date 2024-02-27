@@ -1,13 +1,11 @@
-import { TAccount, TPointReward, TValidationResult } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind, QuestSocialRequirement, OAuthScope, OAuthRequiredScopes } from '@thxnetwork/types/enums';
-
+import { AccessTokenKind, QuestSocialRequirement, OAuthScope, OAuthRequiredScopes } from '@thxnetwork/common/enums';
+import { logger } from '@thxnetwork/api/util/logger';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
 import TwitterDataProxy from '@thxnetwork/api/proxies/TwitterDataProxy';
 import YouTubeDataProxy from '@thxnetwork/api/proxies/YoutubeDataProxy';
-import { logger } from '@thxnetwork/api/util/logger';
 
 export const requirementMap: {
-    [interaction: number]: (account: TAccount, quest: TPointReward) => Promise<TValidationResult>;
+    [interaction: number]: (account: TAccount, quest: TQuestSocial) => Promise<TValidationResult>;
 } = {
     [QuestSocialRequirement.YouTubeLike]: async (account, quest) => {
         return await YouTubeDataProxy.validateLike(account, quest.content);

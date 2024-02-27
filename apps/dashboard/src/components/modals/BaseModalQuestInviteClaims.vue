@@ -84,13 +84,10 @@ import { type TPool } from '@thxnetwork/types/interfaces';
 import { mapGetters } from 'vuex';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
-import {
-    TReferralRewardClaimAccount,
-    TRewardClaimState,
-} from '@thxnetwork/dashboard/store/modules/referralRewardClaims';
+import { TQuestInviteEntryAccount, TRewardClaimState } from '@thxnetwork/dashboard/store/modules/referralRewardClaims';
 
 import BaseModal from './BaseModal.vue';
-import { type TReferralReward } from '@thxnetwork/types/interfaces/ReferralReward';
+import { type TQuestInvite } from '@thxnetwork/types/interfaces/QuestInvite';
 import { format } from 'date-fns';
 
 @Component({
@@ -104,7 +101,7 @@ import { format } from 'date-fns';
         referralRewardClaims: 'referralRewardClaims/all',
     }),
 })
-export default class ReferralRewardClaimsModal extends Vue {
+export default class QuestInviteEntrysModal extends Vue {
     format = format;
     isLoading = true;
     limit = 5;
@@ -116,7 +113,7 @@ export default class ReferralRewardClaimsModal extends Vue {
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop() reward!: TReferralReward;
+    @Prop() reward!: TQuestInvite;
 
     get total() {
         return this.totals[this.pool._id];
@@ -125,11 +122,9 @@ export default class ReferralRewardClaimsModal extends Vue {
     get rewardClaimsByPage() {
         if (!this.referralRewardClaims[this.pool._id]) return [];
         return Object.values(this.referralRewardClaims[this.pool._id])
-            .filter((claim: TReferralRewardClaimAccount) => claim.page === this.page)
-            .sort((a: TReferralRewardClaimAccount, b: TReferralRewardClaimAccount) =>
-                a.createdAt < b.createdAt ? 1 : -1,
-            )
-            .map((c: TReferralRewardClaimAccount) => ({
+            .filter((claim: TQuestInviteEntryAccount) => claim.page === this.page)
+            .sort((a: TQuestInviteEntryAccount, b: TQuestInviteEntryAccount) => (a.createdAt < b.createdAt ? 1 : -1))
+            .map((c: TQuestInviteEntryAccount) => ({
                 id: c._id,
                 firstName: c.firstName,
                 lastName: c.lastName,
@@ -186,7 +181,7 @@ export default class ReferralRewardClaimsModal extends Vue {
         }
     }
 
-    onClickApprove(claims: TReferralRewardClaimAccount[]) {
+    onClickApprove(claims: TQuestInviteEntryAccount[]) {
         this.$store.dispatch('referralRewardClaims/approveMany', {
             pool: this.pool,
             reward: this.reward,

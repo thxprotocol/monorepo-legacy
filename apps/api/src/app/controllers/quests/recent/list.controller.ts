@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { query } from 'express-validator';
-import { AssetPool } from '@thxnetwork/api/models/AssetPool';
+import { Pool } from '@thxnetwork/api/models';
 
 const validation = [query('page').isInt(), query('limit').isInt(), query('search').optional().isString()];
 
@@ -21,7 +21,7 @@ const controller = async (req: Request, res: Response) => {
         },
     }));
 
-    const decoratedPools = await AssetPool.aggregate([
+    const decoratedPools = await Pool.aggregate([
         {
             $addFields: {
                 poolId: {
