@@ -1,11 +1,10 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { RewardVariant, type TPool } from '@thxnetwork/types/index';
-import { type TRewardCoin } from '@thxnetwork/types/index';
+import { RewardVariant } from '@thxnetwork/common/enums';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
-import { track } from '@thxnetwork/mixpanel';
+import { track } from '@thxnetwork/common/mixpanel';
 
 export type RewardByPage = {
     [page: number]: TRewardCoin[];

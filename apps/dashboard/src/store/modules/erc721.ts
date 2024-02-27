@@ -1,7 +1,6 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { type TPool } from '@thxnetwork/types/index';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import type {
     TERC721,
@@ -14,7 +13,7 @@ import type {
     TERC721Token,
 } from '@thxnetwork/dashboard/types/erc721';
 import JSZip from 'jszip';
-import { track } from '@thxnetwork/mixpanel';
+import { track } from '@thxnetwork/common/mixpanel';
 
 @Module({ namespaced: true })
 class ERC721Module extends VuexModule {

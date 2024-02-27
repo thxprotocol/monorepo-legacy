@@ -28,8 +28,7 @@
 </template>
 
 <script lang="ts">
-import type { TAccount } from '@thxnetwork/types/interfaces';
-import { track } from '@thxnetwork/mixpanel';
+import { track } from '@thxnetwork/common/mixpanel';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 

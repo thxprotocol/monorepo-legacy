@@ -122,15 +122,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { TRewardCoinState } from '@thxnetwork/dashboard/store/modules/erc20Perks';
 import { TERC721RewardState } from '@thxnetwork/dashboard/store/modules/erc721Perks';
-import {
-    QuestSocialRequirement,
-    TRewardCoin,
-    RewardVariant,
-    TRewardNFT,
-    TRewardCustom,
-    TBaseReward,
-    AccessTokenKind,
-} from '@thxnetwork/types/index';
+import { QuestSocialRequirement, RewardVariant, AccessTokenKind } from '@thxnetwork/common/enums';
 import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import BaseModalRewardCoinCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCoinCreate.vue';
 import BaseModalRewardNFTCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardNFTCreate.vue';
@@ -139,7 +131,6 @@ import BaseModalRewardCouponCreate from '@thxnetwork/dashboard/components/modals
 import BaseModalRewardDiscordRoleCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardDiscordRoleCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalQRCodes from '@thxnetwork/dashboard/components/modals/BaseModalQRCodes.vue';
-import { hasPremiumAccess } from '@thxnetwork/common';
 import { type TRewardCouponState } from '@thxnetwork/dashboard/store/modules/couponRewards';
 import { type TRewardCustomState } from '@thxnetwork/dashboard/store/modules/rewards';
 import { format } from 'date-fns';
@@ -217,7 +208,6 @@ export const contentRewards = {
 export default class RewardsView extends Vue {
     AccessTokenKind = AccessTokenKind;
     QuestSocialRequirement = QuestSocialRequirement;
-    hasPremiumAccess = hasPremiumAccess;
     isLoading = true;
     limit = 10;
     page = 1;
@@ -325,7 +315,7 @@ export default class RewardsView extends Vue {
         this.listRewards();
     }
 
-    onClickDelete(reward: TBaseReward) {
+    onClickDelete(reward: TReward) {
         switch (reward.variant) {
             case RewardVariant.Coin:
                 return this.$store.dispatch('erc20Perks/delete', this.coinRewards[this.pool._id][reward._id]);

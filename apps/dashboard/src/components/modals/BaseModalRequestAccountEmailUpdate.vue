@@ -100,11 +100,10 @@
 </template>
 
 <script lang="ts">
-import type { TAccount, TPool } from '@thxnetwork/types/interfaces';
 import { Goal, Role } from '@thxnetwork/common/enums';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { goalLabelMap, roleLabelMap } from '@thxnetwork/types/contants';
+import { goalLabelMap, roleLabelMap } from '@thxnetwork/common/constants';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 

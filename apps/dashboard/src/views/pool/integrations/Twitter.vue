@@ -114,14 +114,7 @@
 import { IPools, TQuestState } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import {
-    AccessTokenKind,
-    OAuthRequiredScopes,
-    OAuthTwitterScope,
-    QuestSocialRequirement,
-    RewardConditionPlatform,
-} from '@thxnetwork/types/index';
-import type { TAccount, TQuest, TQuestLock } from '@thxnetwork/types/interfaces';
+import { AccessTokenKind, OAuthRequiredScopes, QuestSocialRequirement } from '@thxnetwork/common/enums';
 
 @Component({
     computed: {

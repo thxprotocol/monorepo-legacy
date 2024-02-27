@@ -5,7 +5,7 @@ import { ActionRowBuilder, ButtonBuilder, Guild } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
 import { logger } from '../util/logger';
 import { AccessTokenKind, OAuthRequiredScopes } from '@thxnetwork/common/enums';
-import { DISCORD_API_ENDPOINT } from '@thxnetwork/common/contants';
+import { DISCORD_API_ENDPOINT } from '@thxnetwork/common/constants';
 import AccountProxy from './AccountProxy';
 
 export enum NotificationVariant {

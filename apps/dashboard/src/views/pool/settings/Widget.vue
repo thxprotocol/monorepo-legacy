@@ -163,9 +163,9 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
+import { DEFAULT_ELEMENTS } from '@thxnetwork/common/constants';
 import BaseWidgetAlertPreview from '@thxnetwork/dashboard/components/widget/BaseWidgetAlertPreview.vue';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
-import { DEFAULT_ELEMENTS } from '@thxnetwork/types/contants';
 
 @Component({
     components: {

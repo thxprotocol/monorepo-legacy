@@ -53,8 +53,8 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { getPlatform, getUserUrl } from '../types/rewards';
-import { providerIconMap } from '@thxnetwork/common/lib/types/maps/oauth';
-import { AccessTokenKind, TToken, TTwitterUser } from '@thxnetwork/common/lib/types';
+import { providerIconMap } from '@thxnetwork/common/maps';
+import { AccessTokenKind } from '@thxnetwork/common/enums';
 
 export function parseConnectedAccounts(account: { tokens: TToken[] }) {
     if (!account.tokens.length) return [];

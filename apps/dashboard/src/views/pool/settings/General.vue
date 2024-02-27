@@ -174,8 +174,6 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import { hasBasicAccess } from '@thxnetwork/common';
-import type { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
 import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-items/BaseListItemCollaborator.vue';
 import BaseDateDuration, { parseDateTime } from '@thxnetwork/dashboard/components/form-group/BaseDateDuration.vue';
 import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
@@ -208,7 +206,6 @@ export default class SettingsView extends Vue {
     isPublished = false;
     startDate: Date | null = null;
     endDate: Date | null = null;
-    hasBasicAccess = hasBasicAccess;
     slugify = slugify;
     slug = '';
     isValidSlug: boolean | null = null;

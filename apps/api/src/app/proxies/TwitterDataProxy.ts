@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AccessTokenKind, OAuthRequiredScopes, OAuthTwitterScope } from '@thxnetwork/common/enums';
-import { TWITTER_API_ENDPOINT } from '@thxnetwork/common/contants';
+import { TWITTER_API_ENDPOINT } from '@thxnetwork/common/constants';
 import { formatDistance } from 'date-fns';
 import { logger } from '../util/logger';
 import { TwitterLike } from '../models/TwitterLike';

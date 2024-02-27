@@ -69,10 +69,9 @@
 <script lang="ts">
 import hljs from 'highlight.js/lib/core';
 import Shell from 'highlight.js/lib/languages/shell';
-import { QuestVariant, TQuestLock, type TQuestInvite } from '@thxnetwork/types/index';
+import { QuestVariant } from '@thxnetwork/common/enums';
 import { mapGetters } from 'vuex';
 import { UserProfile } from 'oidc-client-ts';
-import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';

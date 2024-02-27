@@ -36,9 +36,7 @@
 </template>
 
 <script lang="ts">
-import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TQuestSocial, TAccount, TQuestLock } from '@thxnetwork/types/interfaces';
 import { AccessTokenKind, QuestVariant, QuestSocialRequirement } from '@thxnetwork/common/enums';
 import { providerInteractionList, providerList } from '@thxnetwork/dashboard/types/rewards';
 import { mapGetters } from 'vuex';
@@ -47,7 +45,7 @@ import BaseModal from './BaseModal.vue';
 import BaseModalQuestCreate from './BaseModalQuestCreate.vue';
 import BaseCardQuestRequirement from '../cards/BaseCardQuestRequirement.vue';
 import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
-import { questInteractionVariantMap } from '@thxnetwork/common/lib/types';
+import { questInteractionVariantMap } from '@thxnetwork/common/maps';
 
 const requirementDefaultsMap = {
     [QuestVariant.Twitter]: {

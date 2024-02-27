@@ -23,7 +23,6 @@
 </template>
 
 <script lang="ts">
-import { TPool, TQuest, TQuestLock } from '@thxnetwork/common/lib/types';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 

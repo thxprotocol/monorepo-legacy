@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Exo+2:200,400,400i,700,700i,800,800i,900,900i');
 @import '~bootstrap/scss/mixins';
 @import '~bootstrap/scss/functions';
-@import '@thxnetwork/scss/_variables.scss';
+@import '@thxnetwork/common/scss/_variables.scss';
 
 // Required
 @import '~bootstrap/scss/variables';
@@ -36,23 +36,23 @@
 @import '~bootstrap/scss/dropdown';
 
 // Reset
-@import '@thxnetwork/scss/_root.scss';
-@import '@thxnetwork/scss/_utilities.scss';
+@import '@thxnetwork/common/scss/_root.scss';
+@import '@thxnetwork/common/scss/_utilities.scss';
 
 // Regions
-@import '@thxnetwork/scss/_jumbotron.scss';
-@import '@thxnetwork/scss/_card.scss';
-@import '@thxnetwork/scss/_contact.scss';
-@import '@thxnetwork/scss/_team.scss';
-@import '@thxnetwork/scss/_hooper.scss';
+@import '@thxnetwork/common/scss/_jumbotron.scss';
+@import '@thxnetwork/common/scss/_card.scss';
+@import '@thxnetwork/common/scss/_contact.scss';
+@import '@thxnetwork/common/scss/_team.scss';
+@import '@thxnetwork/common/scss/_hooper.scss';
 
 // UI Components
-@import '@thxnetwork/scss/_custom-switch.scss';
-@import '@thxnetwork/scss/_buttons.scss';
-@import '@thxnetwork/scss/_navbar.scss';
-@import '@thxnetwork/scss/_tab.scss';
-@import '@thxnetwork/scss/_number.scss';
-@import '@thxnetwork/scss/_token-distribution.scss';
+@import '@thxnetwork/common/scss/_custom-switch.scss';
+@import '@thxnetwork/common/scss/_buttons.scss';
+@import '@thxnetwork/common/scss/_navbar.scss';
+@import '@thxnetwork/common/scss/_tab.scss';
+@import '@thxnetwork/common/scss/_number.scss';
+@import '@thxnetwork/common/scss/_token-distribution.scss';
 
 // Bootstrap Vue
 @import '~bootstrap-vue/src/index.scss';

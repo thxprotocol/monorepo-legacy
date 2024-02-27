@@ -60,7 +60,6 @@ import {
     TQuestSocialInteraction,
 } from '@thxnetwork/dashboard/types/rewards';
 import { AccessTokenKind, QuestSocialRequirement } from '@thxnetwork/common/enums';
-import { TAccount, TPool } from '@thxnetwork/types/interfaces';
 import BaseDropdownQuestProvider from '../dropdowns/BaseDropdownQuestProvider.vue';
 import BaseDropdownQuestProviderInteractions from '../dropdowns/BaseDropdownQuestProviderInteractions.vue';
 import BaseDropdownYoutubeChannels from '../dropdowns/BaseDropdownYoutubeChannels.vue';
@@ -71,7 +70,7 @@ import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vu
 import BaseDropdownDiscordMessage from '../dropdowns/BaseDropdownDiscordMessage.vue';
 import BaseDropdownDiscordMessageReaction from '../dropdowns/BaseDropdownDiscordMessageReaction.vue';
 import BaseDropdownTwitterMessage from '../dropdowns/BaseDropdownTwitterMessage.vue';
-import { interactionComponentMap } from '@thxnetwork/common/lib/types/maps/oauth';
+import { interactionComponentMap } from '@thxnetwork/common/maps';
 
 @Component({
     components: {

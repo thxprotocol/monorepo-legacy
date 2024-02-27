@@ -3,7 +3,7 @@ import { currentVersion } from '@thxnetwork/contracts/exports';
 import { v4 } from 'uuid';
 import { AccountVariant } from '@thxnetwork/common/enums';
 import { DASHBOARD_URL } from '../config/secrets';
-import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/common/contants';
+import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/common/constants';
 import { logger } from '../util/logger';
 import { getsigningSecret } from '../util/signingsecret';
 import {

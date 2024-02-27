@@ -58,9 +58,8 @@
 </template>
 
 <script lang="ts">
-import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { QuestVariant, TQuestLock, type TMilestoneReward } from '@thxnetwork/types/index';
+import { QuestVariant } from '@thxnetwork/common/enums';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { Vue } from 'vue-property-decorator';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import type { TWidget, TPool } from '@thxnetwork/types/interfaces';
 
 export interface IWidgets {
     [poolId: string]: { [widgetUuid: string]: TWidget };

@@ -60,10 +60,9 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import type { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
-import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
-import { AccountVariant } from '@thxnetwork/dashboard/types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/common/enums';
+import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 
 @Component({
     components: {

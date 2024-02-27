@@ -163,7 +163,6 @@
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { TQuest } from '@thxnetwork/types/interfaces';
 import { QuestVariant } from '@thxnetwork/common/enums';
 import BaseModalQuestDailyCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestDailyCreate.vue';
 import BaseModalQuestSocialCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialCreate.vue';
@@ -174,7 +173,6 @@ import BaseModalQuestInviteClaims from '@thxnetwork/dashboard/components/modals/
 import BaseModalQuestGitcoinCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestGitcoinCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseBtnQuestEntries from '@thxnetwork/dashboard/components/buttons/BaseBtnQuestEntries.vue';
-import { hasPremiumAccess } from '@thxnetwork/common';
 import { TQuestState } from '@thxnetwork/dashboard/store/modules/pools';
 import { format } from 'date-fns';
 
@@ -282,7 +280,6 @@ export const contentQuests = {
     }),
 })
 export default class QuestsView extends Vue {
-    hasPremiumAccess = hasPremiumAccess;
     contentQuests = contentQuests;
     actions = [
         { label: 'Publish all', variant: 0 },
