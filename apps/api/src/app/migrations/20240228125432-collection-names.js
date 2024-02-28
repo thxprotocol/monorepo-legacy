@@ -5,12 +5,11 @@ module.exports = {
                 perkId: 'rewardId',
             },
         };
-        await db.collection('erc20perk').updateMany({}, operation);
         await db.collection('erc20perkpayments').updateMany({}, operation);
         await db.collection('erc721perkpayments').updateMany({}, operation);
-        await db.collection('discordrolerewardpayments').updateMany({}, operation);
         await db.collection('couponrewardpayments').updateMany({}, operation);
         await db.collection('customrewardpayments').updateMany({}, operation);
+        await db.collection('discordrolerewardpayments').updateMany({}, operation);
 
         const updates = [
             ['erc20perks', 'rewardcoin'],
