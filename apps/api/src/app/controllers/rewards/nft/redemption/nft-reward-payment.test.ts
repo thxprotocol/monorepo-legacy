@@ -167,6 +167,7 @@ describe('NFT Reward Payment', () => {
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken })
                 .send({ walletId: String(wallet._id) })
                 .expect(({ body }: request.Response) => {
+                    console.log(body);
                     expect(body.erc721PerkPayment).toBeDefined();
                     expect(body.erc721PerkPayment.rewardId).toBe(perk._id);
                     expect(body.erc721PerkPayment.poolId).toBe(pool._id);
