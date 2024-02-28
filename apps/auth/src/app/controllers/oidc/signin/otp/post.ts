@@ -36,8 +36,6 @@ async function controller(req: Request, res: Response) {
 
         await AuthService.getReturnUrl(account, req.interaction);
 
-        console.log('Success', account, String(account._id));
-
         return await oidc.interactionFinished(req, res, { login: { accountId: String(account._id) } });
     } catch (error) {
         return res.render('otp', {
