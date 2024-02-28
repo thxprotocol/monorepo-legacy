@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import { API_URL, DASHBOARD_URL, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { AccountService } from '../../../services/AccountService';
 import { mockWalletProxy } from '../../../util/jest/mock';
-import { AccessTokenKind } from '@thxnetwork/types/index';
+import { AccessTokenKind } from '@thxnetwork/common/enums';
 import TokenService from '@thxnetwork/auth/services/TokenService';
 
 const http = request.agent(app);

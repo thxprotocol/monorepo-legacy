@@ -1,14 +1,14 @@
 import { DASHBOARD_URL, GITHUB_API_ENDPOINT } from './../../../config/secrets';
 import nock from 'nock';
 import request from 'supertest';
-import { AccountVariant } from '@thxnetwork/types/interfaces';
+import { AccountVariant } from '@thxnetwork/common/enums';
 import app from '../../../app';
 import { AccountService } from '../../../services/AccountService';
 import { AccountPlanType } from '@thxnetwork/common/enums';
 import db from '../../../util/database';
 import { accountEmail } from '../../../util/jest';
 import { mockWalletProxy } from '../../../util/jest/mock';
-import { API_URL, INITIAL_ACCESS_TOKEN, TWITTER_API_ENDPOINT } from '../../../config/secrets';
+import { API_URL, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 
 const http = request.agent(app);
 

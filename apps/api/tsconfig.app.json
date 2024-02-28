@@ -13,10 +13,10 @@
         "skipLibCheck": true,
         "outDir": "../../dist/out-tsc",
         "module": "commonjs",
-        "types": ["node", "jest", "express"]
+        "types": ["node", "jest"]
     },
     "include": ["**/*.ts", "../../libs/common/**/*"],
-    "exclude": ["**/*.spec.ts"]
+    "exclude": []
     // "include": [
     //     "../../libs/common/**/*",
     //     "../../libs/contracts/**/*",
