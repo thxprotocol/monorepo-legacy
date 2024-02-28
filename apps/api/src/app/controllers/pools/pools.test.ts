@@ -17,7 +17,6 @@ import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { Contract } from 'web3-eth-contract';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { poll } from '@thxnetwork/api/util/polling';
-import { TWallet } from '@thxnetwork/common/lib/types/interfaces';
 
 const user = request.agent(app);
 

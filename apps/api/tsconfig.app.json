@@ -16,7 +16,7 @@
         "types": ["node", "jest", "express"]
     },
     "include": ["**/*.ts", "../../libs/common/**/*"],
-    "exclude": ["**/*.spec.ts", "**/*.test.ts"]
+    "exclude": ["**/*.spec.ts"]
     // "include": [
     //     "../../libs/common/**/*",
     //     "../../libs/contracts/**/*",

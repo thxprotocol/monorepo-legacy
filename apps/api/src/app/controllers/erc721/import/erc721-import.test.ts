@@ -1,13 +1,12 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
+import { Contract } from 'web3-eth-contract';
 import { ChainId } from '@thxnetwork/common/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { dashboardAccessToken, sub } from '@thxnetwork/api/util/jest/constants';
-import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { alchemy } from '@thxnetwork/api/util/alchemy';
 import { deployERC721, mockGetNftsForOwner } from '@thxnetwork/api/util/jest/erc721';
-import { PoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { Contract } from 'web3-eth-contract';
+import { ERC721Document, PoolDocument } from '@thxnetwork/api/models';
 import { getProvider } from '@thxnetwork/api/util/network';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 

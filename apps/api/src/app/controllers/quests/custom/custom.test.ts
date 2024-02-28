@@ -1,12 +1,11 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
+import { v4 } from 'uuid';
 import { QuestVariant } from '@thxnetwork/common/enums';
 import { dashboardAccessToken, userWalletAddress2, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { PoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { v4 } from 'uuid';
-import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
+import { PoolDocument, QuestCustom } from '@thxnetwork/api/models';
 
 const user = request.agent(app);
 
@@ -44,7 +43,7 @@ describe('Quests Custom ', () => {
                 expect(res.body.uuid).toBeDefined();
                 expect(res.body.amount).toBe(100);
                 milestoneReward = res.body;
-                await MilestoneReward.findByIdAndUpdate(milestoneReward._id, { eventName: milestoneReward.uuid });
+                await QuestCustom.findByIdAndUpdate(milestoneReward._id, { eventName: milestoneReward.uuid });
             })
             .expect(201, done);
     });

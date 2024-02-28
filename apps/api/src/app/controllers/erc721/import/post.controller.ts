@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { ERC721, ERC721Token, ERC721Metadata } from '@thxnetwork/api/models';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { getNFTsForOwner } from '@thxnetwork/api/util/alchemy';
-import { ChainId, NFTVariant } from '@thxnetwork/common/enums';
+import { ChainId, ERC721TokenState, NFTVariant } from '@thxnetwork/common/enums';
 import { toChecksumAddress } from 'web3-utils';
 import PoolService from '@thxnetwork/api/services/PoolService';
 

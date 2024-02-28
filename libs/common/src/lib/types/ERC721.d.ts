@@ -1,11 +1,3 @@
-enum ERC721TokenState {
-    Pending = 0,
-    Failed = 1,
-    Minted = 2,
-    Transferring = 3,
-    Transferred = 4,
-}
-
 type TERC721Token = {
     _id: string;
     sub: string;

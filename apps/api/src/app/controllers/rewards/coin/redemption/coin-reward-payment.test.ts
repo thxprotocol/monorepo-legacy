@@ -13,12 +13,10 @@ import { isAddress, toWei } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { addMinutes, subMinutes } from '@thxnetwork/api/util/rewards';
 import { poll } from '@thxnetwork/api/util/polling';
-import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import ERC20, { ERC20Document } from '@thxnetwork/api/models/ERC20';
+import { WalletDocument, ERC20, ERC20Document } from '@thxnetwork/api/models';
+import { getProvider } from '@thxnetwork/api/util/network';
 import PointBalanceService from '@thxnetwork/api/services/PointBalanceService';
 import SafeService from '@thxnetwork/api/services/SafeService';
-import { getProvider } from '@thxnetwork/api/util/network';
-import { TAccount } from '@thxnetwork/common/lib/types';
 
 const user = request.agent(app);
 

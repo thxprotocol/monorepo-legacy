@@ -1,21 +1,20 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, NFTVariant, WalletVariant } from '@thxnetwork/common/enums';
+import { ChainId, NFTVariant } from '@thxnetwork/common/enums';
 import { sub, dashboardAccessToken, widgetAccessToken, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { ClaimDocument } from '@thxnetwork/api/models/Claim';
 import { ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
-import { PoolDocument } from '@thxnetwork/api/models/AssetPool';
-import PoolService from '@thxnetwork/api/services/PoolService';
-import ERC721Service from '@thxnetwork/api/services/ERC721Service';
+import { PoolDocument } from '@thxnetwork/api/models';
 import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
-import { TRewardNFT } from '@thxnetwork/types/interfaces';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { poll } from '@thxnetwork/api/util/polling';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
+import PoolService from '@thxnetwork/api/services/PoolService';
+import ERC721Service from '@thxnetwork/api/services/ERC721Service';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const user = request.agent(app);
 

@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import ERC20, { ERC20Document } from '@thxnetwork/api/models/ERC20';
+import { WalletDocument, ERC20, ERC20Document } from '@thxnetwork/api/models';
 import { ChainId, ERC20Type, WalletVariant } from '@thxnetwork/common/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import {
@@ -10,7 +10,6 @@ import {
     widgetAccessToken,
 } from '@thxnetwork/api/util/jest/constants';
 import { toWei } from 'web3-utils';
-import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { poll } from '@thxnetwork/api/util/polling';
 import { signTxHash } from '@thxnetwork/api/util/jest/network';
 
