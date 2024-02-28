@@ -114,6 +114,21 @@ export interface IPoolAnalyticsMetrics {
     [id: string]: IPoolAnalyticMetrics;
 }
 
+export type TRewardState = {
+    [poolId: string]: {
+        total: number;
+        limit: number;
+        page: number;
+        results: TReward[];
+    };
+};
+
+export type TRewardPaymentState = {
+    [poolId: string]: {
+        [rewardId: string]: TPaginationResult & { results: TRewardPayment[] };
+    };
+};
+
 export type TQuestState = {
     [poolId: string]: {
         total: number;
@@ -155,6 +170,8 @@ class PoolModule extends VuexModule {
     _all: IPools = {};
     _quests: TQuestState = {};
     _entries: TQuestEntryState = {};
+    _rewards: TQuestState = {};
+    _payments: TQuestState = {};
     _guilds: TGuildState = {};
     _events: TEventState = {};
     _identities: TIdentityState = {};
@@ -173,6 +190,14 @@ class PoolModule extends VuexModule {
 
     get guilds() {
         return this._guilds;
+    }
+
+    get rewards() {
+        return this._rewards;
+    }
+
+    get payments() {
+        return this._payments;
     }
 
     get quests() {
@@ -234,6 +259,11 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
+    setRewards({ poolId, result }: { poolId: string; result: { results: TReward[] } & TPaginationResult }) {
+        Vue.set(this._rewards, poolId, result);
+    }
+
+    @Mutation
     setQuests({ poolId, result }: { poolId: string; result: { results: TQuest[] } & TPaginationResult }) {
         Vue.set(this._quests, poolId, result);
     }
@@ -263,9 +293,40 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
+    setRewardPayments({
+        poolId,
+        rewardId,
+        result,
+    }: {
+        poolId: string;
+        rewardId: string;
+        result: { results: TQuestEntry[] } & TPaginationResult;
+    }) {
+        if (!this._payments[poolId]) Vue.set(this._payments, poolId, {});
+        Vue.set(this._payments[poolId], rewardId, result);
+    }
+
+    @Mutation
     unsetIdentity(identity: TIdentity) {
         const index = this._identities[identity.poolId].results.findIndex((i) => i._id === identity._id);
         Vue.delete(this._identities[identity.poolId].results, index);
+    }
+
+    @Mutation
+    setReward(reward: TReward) {
+        if (!this._rewards[reward.poolId]) return;
+
+        const rewards = this._rewards[reward.poolId].results;
+        const index = rewards.findIndex((q) => q._id === reward._id);
+
+        Vue.set(this._rewards[reward.poolId].results, index, rewards);
+    }
+
+    @Mutation
+    unsetReward(reward: TReward) {
+        const rewards = this._rewards[reward.poolId].results;
+        const index = rewards.findIndex((q) => q._id === reward._id);
+        Vue.delete(this._rewards[reward.poolId].results, index);
     }
 
     @Mutation
@@ -408,6 +469,24 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async listRewards({ pool, page, limit, isPublished }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/rewards`,
+            headers: { 'X-PoolId': pool._id },
+            params: { page, limit, isPublished },
+        });
+
+        data.results = data.results.map((q) => {
+            q.delete = (reward) => this.context.dispatch('removeReward', reward);
+            q.update = (reward) => this.context.dispatch('updateReward', reward);
+            return q;
+        });
+
+        this.context.commit('setRewards', { poolId: pool._id, result: data });
+    }
+
+    @Action({ rawError: true })
     async listQuests({ pool, page, limit, isPublished }) {
         const { data } = await axios({
             method: 'GET',
@@ -460,6 +539,24 @@ class PoolModule extends VuexModule {
         this.context.commit('setQuestEntries', {
             poolId: payload.quest.poolId,
             questId: payload.quest._id,
+            result: data,
+        });
+    }
+
+    @Action({ rawError: true })
+    async listPayments(payload: { reward: TReward; limit: number; page: number }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${payload.reward.poolId}/rewards/${payload.reward._id}/payments/${payload.reward.variant}`,
+            headers: { 'X-PoolId': payload.reward.poolId },
+            params: {
+                page: payload.page,
+                limit: payload.limit,
+            },
+        });
+        this.context.commit('setRewardPayments', {
+            poolId: payload.reward.poolId,
+            rewardId: payload.reward._id,
             result: data,
         });
     }

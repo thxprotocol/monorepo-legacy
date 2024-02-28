@@ -6,6 +6,11 @@ import { PoolDocument, RewardCoinPayment } from '@thxnetwork/api/models';
 
 // export default class RewardCoinService implements IRewardService {
 export default class RewardCoinService {
+    models = {
+        reward: RewardCoin,
+        payment: RewardCoinPayment,
+    };
+
     static async findPayments(reward: RewardCoinDocument) {
         return RewardCoinPayment.find({ rewardId: reward._id });
     }

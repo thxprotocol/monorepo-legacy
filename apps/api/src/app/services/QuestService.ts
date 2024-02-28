@@ -12,6 +12,7 @@ import PointBalanceService from './PointBalanceService';
 import LockService from './LockService';
 import ImageService from './ImageService';
 import AccountProxy from '../proxies/AccountProxy';
+import ParticipantService from './ParticipantService';
 
 export default class QuestService {
     static async list({ pool, data, account }: { pool: PoolDocument; data: Partial<TQuestEntry>; account?: TAccount }) {
@@ -187,22 +188,7 @@ export default class QuestService {
         const subs = entries.map((entry) => entry.sub);
         const accounts = await AccountProxy.find({ subs });
         const participants = await Participant.find({ poolId: quest.poolId });
-        const promises = entries.map(async (entry) => {
-            const account = accounts.find((a) => a.sub === entry.sub);
-            const pointBalance = participants.find((p) => account.sub === String(p.sub));
-            const tokens = await Promise.all(
-                account.tokens.map(async (token: TToken) => {
-                    if (token.kind !== 'twitter') return token;
-                    const user = await TwitterUser.findOne({ userId: token.userId });
-                    return { ...token, user };
-                }),
-            );
-            return {
-                ...entry.toJSON(),
-                account: { ...account, tokens },
-                pointBalance: pointBalance ? pointBalance.balance : 0,
-            };
-        });
+        const promises = entries.map(async (entry) => ParticipantService.decorate(entry, { accounts, participants }));
         const results = await Promise.allSettled(promises);
         const meta = await serviceMap[variant].findEntryMetadata({ quest });
 

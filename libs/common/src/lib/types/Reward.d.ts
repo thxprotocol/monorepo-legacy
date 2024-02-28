@@ -7,6 +7,7 @@ type TQuestLock = { variant: QuestVariant; questId: string };
 
 type TReward = {
     _id: string;
+    variant: RewardVariant;
     uuid: string;
     poolId: string;
     title: string;
@@ -17,14 +18,14 @@ type TReward = {
     limit: number;
     pointPrice: number;
     image: string;
-    isPromoted: boolean;
-    page?: number;
-    variant?: RewardVariant;
-    createdAt?: string;
-    updatedAt?: string;
-    claims: [];
-    isPublished: boolean;
+    index: number;
     locks: TQuestLock[];
+    isPromoted: boolean;
+    isPublished: boolean;
+    createdAt: string;
+    updatedAt: string;
+    update: (payload: Partial<TReward>) => Promise<void>;
+    delete: (payload: Partial<TReward>) => Promise<void>;
 };
 
 type TRewardPayment = {
@@ -33,4 +34,5 @@ type TRewardPayment = {
     poolId: string;
     amount: number;
     sub: string;
+    createdAt: Date;
 };

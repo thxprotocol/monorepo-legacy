@@ -40,8 +40,11 @@
                             @change-date="expiryDate = $event"
                         />
                         <BaseCardRewardLimits class="mb-3" :limit="limit" @change-reward-limit="limit = $event" />
-                        <b-form-group>
+                        <b-form-group class="mb-0">
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
+                        </b-form-group>
+                        <b-form-group>
+                            <b-form-checkbox v-model="isPublished">Published</b-form-checkbox>
                         </b-form-group>
                     </b-col>
                 </b-row>
@@ -95,6 +98,7 @@ export default class ModalRewardERC20Create extends Vue {
     imageFile: File | null = null;
     image = '';
     isPromoted = false;
+    isPublished = false;
     locks: TQuestLock[] = [];
 
     @Prop() id!: string;
@@ -111,6 +115,8 @@ export default class ModalRewardERC20Create extends Vue {
         this.limit = this.reward ? this.reward.limit : 0;
         this.image = this.reward && this.reward.image ? this.reward.image : '';
         this.isPromoted = this.reward ? this.reward.isPromoted : this.isPromoted;
+        this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
+        this.locks = this.reward ? this.reward.locks : this.locks;
         this.$emit('show');
     }
 
@@ -125,6 +131,7 @@ export default class ModalRewardERC20Create extends Vue {
             file: this.imageFile,
             locks: this.locks,
             isPromoted: this.isPromoted,
+            isPublished: this.isPublished,
         });
     }
 }

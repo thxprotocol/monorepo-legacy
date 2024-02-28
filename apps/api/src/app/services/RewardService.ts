@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import { Document, Model } from 'mongoose';
 import { RewardVariant } from '@thxnetwork/common/enums';
 import {
     QRCodeEntryDocument,
@@ -7,39 +7,60 @@ import {
     ERC721Token,
     ERC721TokenDocument,
     PoolDocument,
-    RewardCoinDocument,
     RewardCoinPayment,
     RewardNFTDocument,
     RewardNFTPayment,
     RewardCustomPayment,
-    RewardCustomDocument,
-    RewardCouponDocument,
     RewardCouponPayment,
-    RewardDiscordRoleDocument,
     RewardDiscordRolePayment,
     ERC721Metadata,
     ERC1155Metadata,
+    Participant,
 } from '@thxnetwork/api/models';
 import ERC1155Service from './ERC1155Service';
 import RewardCoinService from './RewardCoinService';
 import ERC721Service from './ERC721Service';
 import LockService from './LockService';
 import { isCouponReward, isCustomReward, isDiscordRoleReward, isTRewardCoin, isTRewardNFT } from '../util/rewards';
-
-export type RewardDocument =
-    | RewardCoinDocument
-    | RewardNFTDocument
-    | RewardCustomDocument
-    | RewardCouponDocument
-    | RewardDiscordRoleDocument;
+import AccountProxy from '../proxies/AccountProxy';
+import ParticipantService from './ParticipantService';
 
 const serviceMap = {
     [RewardVariant.Coin]: new RewardCoinService(),
+    // [RewardVariant.NFT]: new RewardNFTService(),
+    // [RewardVariant.Coupon]: new RewardCouponService(),
+    // [RewardVariant.Custom]: new RewardCustomService(),
+    // [RewardVariant.DiscordRole]: new RewardDiscordRoleService(),
 };
 
 export default class RewardService {
-    static findPayments(variant: RewardVariant) {
-        return serviceMap[variant].findPayments(variant);
+    static async findPayments(
+        variant: RewardVariant,
+        { reward, page, limit }: { reward: TReward; page: number; limit: number },
+    ) {
+        const skip = (page - 1) * limit;
+        const Payment = serviceMap[variant].models.payment;
+        const total = await Payment.countDocuments({ rewardId: reward._id });
+        const payments = await Payment.find({ rewardId: reward._id }).limit(limit).skip(skip);
+        const subs = payments.map((entry) => entry.sub);
+        const accounts = await AccountProxy.find({ subs });
+        const participants = await Participant.find({ poolId: reward.poolId });
+        const promises = payments.map(async (payment: Document & TRewardPayment) =>
+            ParticipantService.decorate(payment, { accounts, participants }),
+        );
+        const results = await Promise.allSettled(promises);
+
+        return {
+            total,
+            limit,
+            page,
+            results: results.filter((result) => result.status === 'fulfilled').map((result: any) => result.value),
+        };
+    }
+
+    static findById(variant, rewardId) {
+        const Reward = serviceMap[variant].models.reward;
+        return Reward.findById(rewardId);
     }
 
     static async getMetadata(perk: RewardNFTDocument, token?: ERC721TokenDocument | ERC1155TokenDocument) {
@@ -84,7 +105,7 @@ export default class RewardService {
         };
     }
 
-    static getPaymentModel(reward: TReward): mongoose.Model<any> {
+    static getPaymentModel(reward: TReward): Model<any> {
         if (isTRewardCoin(reward)) {
             return RewardCoinPayment;
         }
@@ -107,7 +128,7 @@ export default class RewardService {
         pool,
         account,
     }: {
-        reward: RewardDocument;
+        reward: TReward;
         pool?: PoolDocument;
         claim?: QRCodeEntryDocument;
         account?: TAccount;

@@ -131,7 +131,7 @@ describe('NFT Rewards', () => {
         user.get('/v1/erc721-perks/' + perk._id)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .expect((res: request.Response) => {
-                expect(res.body.claims).toHaveLength(perk.claims.length);
+                expect(res.body.qrcodeentries).toHaveLength(0);
                 expect(res.body.payments).toHaveLength(0);
             })
             .expect(200, done);

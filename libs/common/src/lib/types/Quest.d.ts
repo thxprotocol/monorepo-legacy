@@ -14,20 +14,19 @@ type TValidationResult = {
 
 type TBaseQuest = {
     _id: string;
+    variant: QuestVariant;
     uuid: string;
     poolId: string;
     title: string;
     description: string;
+    index: number;
     image: string;
     infoLinks: TInfoLink[];
-    createdAt: string;
-    updatedAt: string;
-    page?: number;
-    variant?: QuestVariant;
-    index: number;
-    isPublished: boolean;
     expiryDate: Date;
     locks: TQuestLock[];
+    isPublished: boolean;
+    createdAt: string;
+    updatedAt: string;
     update: (payload: Partial<TQuest>) => Promise<void>;
     delete: (payload: Partial<TQuest>) => Promise<void>;
 };

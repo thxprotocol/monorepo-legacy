@@ -179,3 +179,36 @@ tbody {
         color: $primary !important;
     }
 }
+
+.btn-sort {
+    a {
+        line-height: 0;
+        display: flex;
+        height: 20px;
+        width: 40px;
+        padding: 0;
+        cursor: pointer;
+        color: var(--gray);
+        justify-content: center;
+
+        &:first-child {
+            align-items: end;
+        }
+
+        &:hover {
+            text-decoration: none;
+            color: var(--gray-dark);
+
+            &:active {
+                color: var(--gray);
+            }
+        }
+    }
+}
+
+#table-quests tr:first-child .btn-sort a:first-child,
+#table-quests tr:last-child .btn-sort a:last-child {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: var(--gray) !important;
+}

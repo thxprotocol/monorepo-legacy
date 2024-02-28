@@ -11,7 +11,6 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
-import type { TQuestSocial } from '@thxnetwork/common/lib/types';
 import { mapGetters } from 'vuex';
 import { TQuestEntryState } from '../../store/modules/pools';
 import BaseModalQuestSocialEntries from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialEntries.vue';

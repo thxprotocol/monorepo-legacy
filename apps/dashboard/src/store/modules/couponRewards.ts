@@ -38,26 +38,6 @@ class CouponRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list({ pool, page, limit }) {
-        const { data } = await axios({
-            method: 'GET',
-            url: '/coupon-rewards',
-            headers: { 'X-PoolId': pool._id },
-            params: {
-                page: String(page),
-                limit: String(limit),
-            },
-        });
-
-        this.context.commit('setTotal', { pool, total: data.total });
-
-        data.results.forEach((reward: TRewardCoupon) => {
-            reward.page = page;
-            this.context.commit('set', reward);
-        });
-    }
-
-    @Action({ rawError: true })
     async create(reward: Partial<TRewardCoupon>) {
         const formData = prepareFormDataForUpload(reward);
         const { data } = await axios({

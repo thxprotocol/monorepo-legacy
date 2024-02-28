@@ -40,33 +40,46 @@
                 :page="page"
                 :limit="limit"
                 :pool="pool"
-                :total-rows="totals[pool._id]"
+                :total-rows="total"
                 :selectedItems="[]"
                 :actions="[]"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
-            <BTable id="table-rewards" hover :busy="isLoading" :items="rewardsByPage" responsive="lg" show-empty>
+            <BTable id="table-rewards" hover :busy="isLoading" :items="allRewards" responsive="lg" show-empty>
                 <!-- Head formatting -->
-                <template #head(pointPrice)> Point Price </template>
+                <template #head(index)> &nbsp; </template>
+                <template #head(checkbox)>
+                    <b-form-checkbox :checked="isCheckedAll" @change="onChecked" />
+                </template>
                 <template #head(title)> Title </template>
-                <template #head(supply)> Supply </template>
+                <template #head(pointPrice)> Point Price </template>
+                <template #head(payments)> Payments </template>
                 <template #head(expiry)> Expiry </template>
                 <template #head(reward)> &nbsp; </template>
 
                 <!-- Cell formatting -->
+                <template #cell(index)="{ item, index }">
+                    <div class="btn btn-sort p-0">
+                        <b-link block @click="onClickUp(item.reward, index)">
+                            <i class="fas fa-caret-up ml-0"></i>
+                        </b-link>
+                        <b-link block @click="onClickDown(item.reward, index)">
+                            <i class="fas fa-caret-down ml-0"></i>
+                        </b-link>
+                    </div>
+                </template>
+                <template #cell(checkbox)="{ item }">
+                    <b-form-checkbox :value="item.reward" v-model="selectedItems" />
+                </template>
                 <template #cell(pointPrice)="{ item }">
                     <strong class="text-primary">{{ item.pointPrice }} </strong>
                 </template>
                 <template #cell(amount)="{ item }">
                     <strong class="text-primary">{{ item.amount.amount }} {{ item.amount.symbol }}</strong>
                 </template>
-                <template #cell(supply)="{ item }">
-                    {{
-                        item.supply.limit
-                            ? `${item.supply.progress}/${item.supply.limit}`
-                            : String(item.supply.progress) + '/&infin;'
-                    }}
+                <template #cell(payments)="{ item }">
+                    <BaseButtonRewardPayments :pool="pool" :reward="item.reward" />
                 </template>
                 <template #cell(title)="{ item }">
                     <b-badge variant="light" class="p-2 mr-2">
@@ -81,7 +94,7 @@
                     <small class="text-gray">{{ item.created }}</small>
                 </template>
                 <template #cell(reward)="{ item }">
-                    <b-dropdown variant="link" size="sm" no-caret right>
+                    <b-dropdown variant="link" size="sm" right no-caret>
                         <template #button-content>
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
@@ -100,15 +113,15 @@
                         :id="`modalQRCodes${item.reward._id}`"
                         :pool="pool"
                         :selectedItems="[item.reward._id]"
-                        :rewards="allRewards.filter((r) => r.variant == RewardVariant.NFT)"
+                        :rewards="rewards[$route.params.id].results.filter((r) => r.variant == RewardVariant.NFT)"
                     />
                     <component
-                        @submit="listRewards"
+                        @submit="listQuests"
                         :is="rewardModalComponentMap[item.reward.variant]"
                         :id="rewardModalComponentMap[item.reward.variant] + item.reward._id"
-                        :reward="allRewards.find((q) => q._id === item.reward._id)"
                         :pool="pool"
                         :total="allRewards.length"
+                        :reward="rewards[$route.params.id].results.find((q) => q._id === item.reward._id)"
                     />
                 </template>
             </BTable>
@@ -117,13 +130,12 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { IPools, TRewardState } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { TRewardCoinState } from '@thxnetwork/dashboard/store/modules/erc20Perks';
-import { TERC721RewardState } from '@thxnetwork/dashboard/store/modules/erc721Perks';
-import { QuestSocialRequirement, RewardVariant, AccessTokenKind } from '@thxnetwork/common/enums';
-import type { IERC721s } from '@thxnetwork/dashboard/types/erc721';
+import { RewardVariant } from '@thxnetwork/common/enums';
+import { format } from 'date-fns';
+import { contentRewards } from '@thxnetwork/common/constants';
 import BaseModalRewardCoinCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCoinCreate.vue';
 import BaseModalRewardNFTCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardNFTCreate.vue';
 import BaseModalRewardCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCustomCreate.vue';
@@ -131,62 +143,11 @@ import BaseModalRewardCouponCreate from '@thxnetwork/dashboard/components/modals
 import BaseModalRewardDiscordRoleCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardDiscordRoleCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalQRCodes from '@thxnetwork/dashboard/components/modals/BaseModalQRCodes.vue';
-import { type TRewardCouponState } from '@thxnetwork/dashboard/store/modules/couponRewards';
-import { type TRewardCustomState } from '@thxnetwork/dashboard/store/modules/rewards';
-import { format } from 'date-fns';
-import { TRewardDiscordRoleState } from '@thxnetwork/dashboard/store/modules/discordRoleRewards';
-
-export const contentRewards = {
-    'coin-reward': {
-        tag: 'Coin Reward',
-        title: 'Cashbacks with Coins',
-        description: 'Import your own ERC20 smart contract and let users redeem points for coins.',
-        list: ['Provide tangible value', 'Boost user retention', 'Incentivize spending'],
-        docsUrl: 'https://docs.thx.network/rewards/coins',
-        icon: 'fas fa-coins', // Suggested icon for coins
-        color: '#FFD700', // Suggested color for coins (Gold)
-    },
-    'nft-reward': {
-        tag: 'NFT Reward',
-        title: 'Exclusive NFTs',
-        description: 'Import your own ERC721 or ERC1155 smart contract and let users redeem points for exclusive NFTs.',
-        list: ['Offer unique collectibles', 'Enhance user engagement', 'Drive interest in NFTs'],
-        docsUrl: 'https://docs.thx.network/rewards/nft',
-        icon: 'fas fa-gem', // Suggested icon for gems or precious items
-        color: '#9370DB', // Suggested color for NFTs (Light Purple)
-    },
-    'custom-reward': {
-        tag: 'Custom Reward',
-        title: 'Flexible Rewards',
-        description: 'Use inbound webhooks to reward users with custom features in your application.',
-        list: ['Tailor rewards to user needs', 'Enhance user satisfaction', 'Drive app adoption'],
-        docsUrl: 'https://docs.thx.network/rewards',
-        icon: 'fas fa-cogs', // Suggested icon for customization or settings
-        color: '#808080', // Suggested color for customization (Gray)
-    },
-    'discord-role-reward': {
-        tag: 'Discord Role Reward',
-        title: 'Exclusive Discord Roles',
-        description:
-            'Grant users the ability to redeem points for exclusive Discord roles within your community server.',
-        list: ['Promote community status', 'Encourage active participation', 'Facilitate social interaction'],
-        docsUrl: 'https://docs.thx.network/rewards/discord-role',
-        icon: 'fab fa-discord', // Suggested icon for shield or protection
-        color: '#7289DA', // Suggested color for Discord roles (Discord Blue)
-    },
-    'qr-codes': {
-        tag: 'QR Codes',
-        title: 'Offline Reward Distribution',
-        description: 'Use QR codes to distribute rewards in offline environments.',
-        list: ['Expand reach to offline users', 'Facilitate in-person engagement', 'Enhance brand recognition'],
-        docsUrl: 'https://docs.thx.network',
-        icon: 'fas fa-qrcode', // Suggested icon for QR codes
-        color: '#000000', // Suggested color for QR codes (Black)
-    },
-};
+import BaseButtonRewardPayments from '@thxnetwork/dashboard/components/buttons/BaseButtonRewardPayments.vue';
 
 @Component({
     components: {
+        BaseButtonRewardPayments,
         BaseModalRewardCoinCreate,
         BaseModalRewardNFTCreate,
         BaseModalRewardCustomCreate,
@@ -197,21 +158,22 @@ export const contentRewards = {
     },
     computed: mapGetters({
         pools: 'pools/all',
+        rewards: 'pools/rewards',
         totals: 'erc20Perks/totals',
-        coinRewards: 'erc20Perks/all',
-        nftRewards: 'erc721Perks/all',
-        customRewards: 'rewards/all',
-        couponRewards: 'couponRewards/all',
-        discordRoleRewards: 'discordRoleRewards/all',
     }),
 })
 export default class RewardsView extends Vue {
-    AccessTokenKind = AccessTokenKind;
-    QuestSocialRequirement = QuestSocialRequirement;
+    actions = [
+        { label: 'Publish all', variant: 0 },
+        { label: 'Unpublish all', variant: 1 },
+        { label: 'Delete all', variant: 2 },
+    ];
     isLoading = true;
+    isPublished = true;
     limit = 10;
     page = 1;
-    selectedItems: string[] = [];
+    isCheckedAll = false;
+    selectedItems: TReward[] = [];
     RewardVariant = RewardVariant;
     rewardModalComponentMap = {
         [RewardVariant.Coin]: 'BaseModalRewardCoinCreate',
@@ -229,53 +191,29 @@ export default class RewardsView extends Vue {
     };
 
     pools!: IPools;
-    totals!: { [poolId: string]: number };
-
-    coinRewards!: TRewardCoinState;
-    nftRewards!: TERC721RewardState;
-    customRewards!: TRewardCustomState;
-    couponRewards!: TRewardCouponState;
-    discordRoleRewards!: TRewardDiscordRoleState;
-
-    erc721s!: IERC721s;
+    rewards!: TRewardState;
 
     get pool() {
         return this.pools[this.$route.params.id];
     }
 
     get total() {
-        return this.totals[this.$route.params.id];
+        if (!this.rewards[this.$route.params.id]) return 0;
+        return this.rewards[this.$route.params.id].total;
     }
 
     get allRewards() {
-        return [
-            ...(this.coinRewards[this.$route.params.id] ? Object.values(this.coinRewards[this.$route.params.id]) : []),
-            ...(this.nftRewards[this.$route.params.id] ? Object.values(this.nftRewards[this.$route.params.id]) : []),
-            ...(this.couponRewards[this.$route.params.id]
-                ? Object.values(this.couponRewards[this.$route.params.id])
-                : []),
-            ...(this.customRewards[this.$route.params.id]
-                ? Object.values(this.customRewards[this.$route.params.id])
-                : []),
-            ...(this.discordRoleRewards[this.$route.params.id]
-                ? Object.values(this.discordRoleRewards[this.$route.params.id])
-                : []),
-        ];
-    }
-
-    get rewardsByPage() {
-        return this.allRewards
-            .filter((reward: TRewardCoin | TRewardNFT | TRewardCustom | any) => reward.page === this.page)
-            .sort((a: any, b: any) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
-            .map((r: any) => ({
-                title: r.title,
-                pointPrice: r.pointPrice,
-                supply: { progress: r.payments ? r.payments.length : 0, limit: r.limit },
-                expiry: r.expiryDate ? format(new Date(r.expiryDate), 'dd-MM-yyyy HH:mm') : 'Never',
-                created: format(new Date(r.createdAt), 'dd-MM-yyyy HH:mm'),
-                reward: r,
-            }))
-            .slice(0, this.limit);
+        if (!this.rewards[this.$route.params.id]) return [];
+        return this.rewards[this.$route.params.id].results.map((reward: any) => ({
+            index: null,
+            checkbox: reward._id,
+            title: reward.title,
+            points: reward.pointPrice,
+            payments: reward.paymentCount,
+            expiry: reward.expiryDate ? format(new Date(reward.expiryDate), 'dd-MM-yyyy HH:mm') : 'Never',
+            created: format(new Date(reward.createdAt), 'dd-MM-yyyy HH:mm'),
+            reward,
+        }));
     }
 
     mounted() {
@@ -294,15 +232,43 @@ export default class RewardsView extends Vue {
 
     async listRewards() {
         this.isLoading = true;
-        // Call new API endpoint that returns all reward including the variant enum
-        await Promise.all([
-            this.$store.dispatch('erc20Perks/list', { page: this.page, pool: this.pool, limit: this.limit }),
-            this.$store.dispatch('erc721Perks/list', { page: this.page, pool: this.pool, limit: this.limit }),
-            this.$store.dispatch('rewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
-            this.$store.dispatch('couponRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
-            this.$store.dispatch('discordRoleRewards/list', { page: this.page, pool: this.pool, limit: this.limit }),
-        ]);
+        await this.$store.dispatch('pools/listRewards', {
+            page: this.page,
+            pool: this.pool,
+            limit: this.limit,
+            isPublished: this.isPublished,
+        });
         this.isLoading = false;
+    }
+
+    onClickUp(reward: TReward, i: number) {
+        const min = 0;
+        const targetIndex = i - 1;
+        const newIndex = targetIndex < min ? min : targetIndex;
+        const otherQuest = this.rewards[this.$route.params.id].results[newIndex];
+
+        this.move(reward, i, newIndex, otherQuest);
+    }
+
+    onClickDown(reward: TReward, i: number) {
+        const maxIndex = this.allRewards.length - 1;
+        const targetIndex = i + 1;
+        const newIndex = targetIndex > maxIndex ? maxIndex : targetIndex;
+        const otherQuest = this.rewards[this.$route.params.id].results[newIndex];
+
+        this.move(reward, i, newIndex, otherQuest);
+    }
+
+    async move(reward: TReward, currentIndex: number, newIndex: number, other: TReward) {
+        const p = [reward.update({ ...reward, index: newIndex })];
+        if (other) p.push(other.update({ ...other, index: currentIndex }));
+        await Promise.all(p);
+        this.listRewards();
+    }
+
+    onChecked(checked: boolean) {
+        this.selectedItems = checked ? this.rewards[this.$route.params.id].results : [];
+        this.isCheckedAll = checked;
     }
 
     onChangeLimit(limit: number) {
@@ -316,33 +282,19 @@ export default class RewardsView extends Vue {
     }
 
     onClickDelete(reward: TReward) {
-        switch (reward.variant) {
-            case RewardVariant.Coin:
-                return this.$store.dispatch('erc20Perks/delete', this.coinRewards[this.pool._id][reward._id]);
-            case RewardVariant.NFT:
-                return this.$store.dispatch('erc721Perks/delete', this.nftRewards[this.pool._id][reward._id]);
-            case RewardVariant.Custom:
-                return this.$store.dispatch('rewards/delete', this.customRewards[this.pool._id][reward._id]);
-            case RewardVariant.Coupon:
-                return this.$store.dispatch('couponRewards/delete', this.couponRewards[this.pool._id][reward._id]);
-            case RewardVariant.DiscordRole:
-                return this.$store.dispatch(
-                    'discordRoleRewards/delete',
-                    this.discordRoleRewards[this.pool._id][reward._id],
-                );
-        }
+        reward.delete(reward);
     }
 }
 </script>
 <style lang="scss">
 #table-rewards th:nth-child(1) {
-    width: auto;
+    width: 50px;
 }
 #table-rewards th:nth-child(2) {
-    width: 130px;
+    width: 70px;
 }
 #table-rewards th:nth-child(3) {
-    width: 150px;
+    width: auto;
 }
 #table-rewards th:nth-child(4) {
     width: 150px;
@@ -351,6 +303,15 @@ export default class RewardsView extends Vue {
     width: 150px;
 }
 #table-rewards th:nth-child(6) {
-    width: 100px;
+    width: 150px;
+}
+#table-rewards th:nth-child(7) {
+    width: 150px;
+}
+#table-rewards th:nth-child(8) {
+    width: 150px;
+}
+#table-rewards th:nth-child(9) {
+    width: 150px;
 }
 </style>

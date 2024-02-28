@@ -57,26 +57,6 @@ class RewardCoinModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list({ pool, page, limit }: RewardListProps) {
-        const { data } = await axios({
-            method: 'GET',
-            url: '/erc20-perks',
-            headers: { 'X-PoolId': pool._id },
-            params: {
-                page: String(page),
-                limit: String(limit),
-            },
-        });
-
-        this.context.commit('setTotal', { pool, total: data.total });
-
-        data.results.forEach((reward: TRewardCoin) => {
-            reward.page = page;
-            this.context.commit('set', { pool, reward });
-        });
-    }
-
-    @Action({ rawError: true })
     async create({ pool, payload }: { pool: TPool; payload: TRewardCoinInputData }) {
         const formData = prepareFormDataForUpload(payload);
         const { data } = await axios({

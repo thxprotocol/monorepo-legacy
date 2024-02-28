@@ -38,26 +38,6 @@ class CustomRewardModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list({ pool, page, limit }) {
-        const { data } = await axios({
-            method: 'GET',
-            url: '/custom-rewards',
-            headers: { 'X-PoolId': pool._id },
-            params: {
-                page: String(page),
-                limit: String(limit),
-            },
-        });
-
-        this.context.commit('setTotal', { pool, total: data.total });
-
-        data.results.forEach((reward: TRewardCustom) => {
-            reward.page = page;
-            this.context.commit('set', reward);
-        });
-    }
-
-    @Action({ rawError: true })
     async create(reward: TRewardCustom) {
         const formData = prepareFormDataForUpload(reward);
         const { data } = await axios({
