@@ -62,7 +62,7 @@ module.exports = {
             ['webhookrequests', 'webhookrequest'],
             ['discordmessages', 'discordmessage'],
             ['notifications', 'notification'],
-            ['jobs', 'job'],
+            ['jobs', 'jobs'],
             ['couponcodes', 'couponcode'],
             ['erc20swaps', ''],
             ['pointrewards', 'questsocial'],

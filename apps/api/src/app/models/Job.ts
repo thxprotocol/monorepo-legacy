@@ -14,5 +14,5 @@ export const Job = mongoose.model<JobDocument>(
         },
         { timestamps: true },
     ),
-    'job',
+    'jobs',
 );
