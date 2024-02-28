@@ -1,5 +1,17 @@
 module.exports = {
     async up(db, client) {
+        const operation = {
+            $rename: {
+                perkId: 'rewardId',
+            },
+        };
+        await db.collection('erc20perk').updateMany({}, operation);
+        await db.collection('erc20perkpayments').updateMany({}, operation);
+        await db.collection('erc721perkpayments').updateMany({}, operation);
+        await db.collection('discordrolerewardpayments').updateMany({}, operation);
+        await db.collection('couponrewardpayments').updateMany({}, operation);
+        await db.collection('customrewardpayments').updateMany({}, operation);
+
         const updates = [
             ['erc20perks', 'rewardcoin'],
             ['erc1155metadata', 'erc1155metadata'],
@@ -25,7 +37,7 @@ module.exports = {
             ['participants', 'participant'],
             ['twitterreposts', 'twitterrepost'],
             ['erc721token', 'erc721token'],
-            ['payments', 'payment'],
+            ['payments', ''],
             ['twitterlikes', 'twitterlike'],
             ['wallets', 'wallet'],
             ['poolsubscriptions', ''],
@@ -75,6 +87,10 @@ module.exports = {
         ];
 
         for (const [oldName, newName] of updates) {
+            console.log(oldName, newName);
+            if (!newName) continue;
+            const collections = await db.listCollections({ name: newName }).toArray();
+            if (collections.length) continue;
             await db.renameCollection(oldName, newName);
         }
     },
