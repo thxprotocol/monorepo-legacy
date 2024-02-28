@@ -47,4 +47,4 @@ schema.virtual('campaignURL').get(function (this: PoolDocument) {
     return url.toString();
 });
 
-export const Pool = mongoose.model<PoolDocument>('AssetPool', schema);
+export const Pool = mongoose.model<PoolDocument>('Pool', schema, 'pool');

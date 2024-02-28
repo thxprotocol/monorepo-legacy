@@ -20,20 +20,23 @@ export type TClientPayload = {
     redirect_uris?: string[];
     post_logout_redirect_uris?: string[];
 };
+
 export type ClientDocument = mongoose.Document & TClient;
 
-const clientSchema = new mongoose.Schema(
-    {
-        sub: String,
-        name: String,
-        poolId: String,
-        clientId: String,
-        clientSecret: String,
-        grantType: String,
-        registrationAccessToken: String,
-        origins: [String],
-    },
-    { timestamps: true },
+export const Client = mongoose.model<ClientDocument>(
+    'Client',
+    new mongoose.Schema(
+        {
+            sub: String,
+            name: String,
+            poolId: String,
+            clientId: String,
+            clientSecret: String,
+            grantType: String,
+            registrationAccessToken: String,
+            origins: [String],
+        },
+        { timestamps: true },
+    ),
+    'client',
 );
-
-export const Client = mongoose.model<ClientDocument>('Client', clientSchema, 'client');

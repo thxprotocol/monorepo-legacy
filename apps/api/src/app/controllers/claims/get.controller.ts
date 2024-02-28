@@ -4,8 +4,8 @@ import { param } from 'express-validator';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import {
-    Claim,
-    ClaimDocument,
+    QRCodeEntry,
+    QRCodeEntryDocument,
     RewardNFT,
     RewardNFTDocument,
     ERC721Metadata,
@@ -25,14 +25,14 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
-    let claim: ClaimDocument,
+    let claim: QRCodeEntryDocument,
         pool: PoolDocument,
         perk: RewardNFTDocument,
         erc721: ERC721Document,
         metadata: ERC721MetadataDocument;
 
     try {
-        claim = await Claim.findOne({ uuid: req.params.uuid });
+        claim = await QRCodeEntry.findOne({ uuid: req.params.uuid });
         if (!claim) throw new NotFoundError('Could not find this claim URL');
 
         pool = await PoolService.getById(claim.poolId);

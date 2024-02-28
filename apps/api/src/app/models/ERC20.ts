@@ -5,7 +5,7 @@ import { getProvider } from '@thxnetwork/api/util/network';
 
 export type ERC20Document = mongoose.Document & TERC20;
 
-const erc20Schema = new mongoose.Schema(
+const schema = new mongoose.Schema(
     {
         sub: String,
         type: Number,
@@ -20,11 +20,11 @@ const erc20Schema = new mongoose.Schema(
     { timestamps: true },
 );
 
-erc20Schema.virtual('contractName').get(function () {
+schema.virtual('contractName').get(function () {
     return getContractName(this.type);
 });
 
-erc20Schema.virtual('contract').get(function () {
+schema.virtual('contract').get(function () {
     if (!this.address) return;
     const { readProvider, defaultAccount } = getProvider(this.chainId);
     const abi = getAbiForContractName(getContractName(this.type));
@@ -35,4 +35,4 @@ function getContractName(type: ERC20Type) {
     return type === ERC20Type.Unlimited ? 'UnlimitedSupplyToken' : 'LimitedSupplyToken';
 }
 
-export const ERC20 = mongoose.model<ERC20Document>('ERC20', erc20Schema);
+export const ERC20 = mongoose.model<ERC20Document>('ERC20', schema, 'erc20');

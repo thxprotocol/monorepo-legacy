@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 
-export type TClaim = {
+export type TQRCodeEntry = {
     _id: string;
     sub?: string;
     uuid: string;
@@ -16,7 +16,7 @@ export type TClaim = {
     page: number;
 };
 
-export type TClaimURLData = TClaim & {
+export type TQRCodeEntryURLData = TQRCodeEntry & {
     chainId: ChainId;
     poolAddress: string;
     tokenSymbol: string;
@@ -25,7 +25,7 @@ export type TClaimURLData = TClaim & {
 };
 
 export interface IClaims {
-    [poolId: string]: { [id: string]: TClaim };
+    [poolId: string]: { [id: string]: TQRCodeEntry };
 }
 
 @Module({ namespaced: true })
@@ -37,14 +37,14 @@ class ClaimModule extends VuexModule {
     }
 
     @Mutation
-    setClaim(claim: TClaim) {
+    setClaim(claim: TQRCodeEntry) {
         if (!this._all[claim.poolId]) {
             Vue.set(this._all, claim.poolId, {});
         }
         Vue.set(this._all[claim.poolId], claim.uuid, claim);
     }
 
-    setClaimURLData(claim: TClaimURLData) {
+    setClaimURLData(claim: TQRCodeEntryURLData) {
         if (!this._all[claim.poolId]) {
             Vue.set(this._all, claim.poolId, {});
         }

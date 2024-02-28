@@ -1,16 +1,18 @@
 import mongoose from 'mongoose';
-import { questSchema } from './Quest';
+import { rewardSchema } from './Reward';
 import { RewardVariant } from '@thxnetwork/common/enums';
 
 export type RewardCouponDocument = mongoose.Document & TRewardCoupon;
 
-const schema = new mongoose.Schema(
-    {
-        ...questSchema,
-        variant: { type: Number, default: RewardVariant.Coupon },
-        webshopURL: String,
-    },
-    { timestamps: true },
+export const RewardCoupon = mongoose.model<RewardCouponDocument>(
+    'RewardCoupon',
+    new mongoose.Schema(
+        {
+            ...rewardSchema,
+            variant: { type: Number, default: RewardVariant.Coupon },
+            webshopURL: String,
+        },
+        { timestamps: true },
+    ),
+    'rewardcoupon',
 );
-
-export const RewardCoupon = mongoose.model<RewardCouponDocument>('couponrewards', schema);

@@ -1,5 +1,5 @@
 export { Brand } from './Brand';
-export { Claim, ClaimDocument } from './Claim';
+export { QRCodeEntry, QRCodeEntryDocument } from './QRCodeEntry';
 export { Client, ClientDocument } from './Client';
 export { Collaborator, CollaboratorDocument } from './Collaborator';
 export { CouponCode, CouponCodeDocument } from './CouponCode';

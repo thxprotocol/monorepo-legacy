@@ -1,9 +1,9 @@
-type TQuest = TDailyReward | TQuestInvite | TQuestSocial | TMilestoneReward | TQuestWeb3 | TGitcoinQuest;
+type TQuest = TDailyReward | TQuestInvite | TQuestSocial | TQuestCustom | TQuestWeb3 | TGitcoinQuest;
 type TQuestEntry =
     | TDailyRewardClaim
     | TQuestInviteEntry
     | TQuestSocialEntry
-    | TMilestoneRewardClaim
+    | TQuestCustomEntry
     | TQuestWeb3Entry
     | TGitcoinQuestEntry;
 

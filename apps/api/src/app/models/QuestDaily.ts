@@ -3,14 +3,15 @@ import { questSchema } from './Quest';
 
 export type QuestDailyDocument = mongoose.Document & TDailyReward;
 
-const schema = new mongoose.Schema(
-    {
-        ...questSchema,
-        amounts: [Number],
-        eventName: String,
-        isEnabledWebhookQualification: Boolean,
-    },
-    { timestamps: true },
+export const QuestDaily = mongoose.model<QuestDailyDocument>(
+    'QuestDaily',
+    new mongoose.Schema(
+        {
+            ...(questSchema as any),
+            amounts: [Number],
+            eventName: String,
+        },
+        { timestamps: true },
+    ),
+    'questdaily',
 );
-
-export const QuestDaily = mongoose.model<QuestDailyDocument>('DailyReward', schema, 'dailyrewards');

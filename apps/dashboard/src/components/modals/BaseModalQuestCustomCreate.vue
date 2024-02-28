@@ -92,7 +92,7 @@ export default class ModalQuestCustomCreate extends Vue {
     @Prop() id!: string;
     @Prop() total!: number;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TMilestoneReward;
+    @Prop({ required: false }) reward!: TQuestCustom;
 
     onShow() {
         this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;

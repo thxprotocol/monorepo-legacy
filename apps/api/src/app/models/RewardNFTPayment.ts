@@ -1,15 +1,15 @@
 import mongoose from 'mongoose';
+import { rewardSchema } from './Reward';
 
 export type RewardNFTPaymentDocument = mongoose.Document & TRewardCoinPayment;
 
-const schema = new mongoose.Schema(
-    {
-        rewardId: String,
-        sub: { type: String, index: 'hashed' },
-        poolId: String,
-        amount: Number,
-    },
-    { timestamps: true },
+export const RewardNFTPayment = mongoose.model<RewardNFTPaymentDocument>(
+    'RewardNFTPayment',
+    new mongoose.Schema(
+        {
+            ...rewardSchema,
+        },
+        { timestamps: true },
+    ),
+    'rewardnftpayment',
 );
-
-export const RewardNFTPayment = mongoose.model<RewardNFTPaymentDocument>('RewardNFTPayments', schema);

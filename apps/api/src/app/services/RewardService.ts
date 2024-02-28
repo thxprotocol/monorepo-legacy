@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { RewardVariant } from '@thxnetwork/common/enums';
 import {
-    ClaimDocument,
+    QRCodeEntryDocument,
     ERC1155Token,
     ERC1155TokenDocument,
     ERC721Token,
@@ -109,7 +109,7 @@ export default class RewardService {
     }: {
         reward: RewardDocument;
         pool?: PoolDocument;
-        claim?: ClaimDocument;
+        claim?: QRCodeEntryDocument;
         account?: TAccount;
     }): Promise<{ isError: boolean; errorMessage?: string }> {
         const model = this.getPaymentModel(reward);

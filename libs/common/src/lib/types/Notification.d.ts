@@ -3,5 +3,6 @@ type TNotification = {
     sub: string;
     subjectId: string;
     subject: string;
+    poolId: string;
     message: string;
 };

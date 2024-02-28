@@ -1,6 +1,6 @@
 export const questSchema = {
     uuid: String,
-    poolId: { type: String, index: 'hashed' },
+    poolId: String,
     variant: Number,
     title: String,
     description: String,

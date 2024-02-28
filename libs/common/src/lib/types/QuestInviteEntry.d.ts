@@ -1,5 +1,5 @@
 type TQuestInviteEntry = {
-    referralRewardId: string;
+    questId: string;
     sub: string;
     uuid: string;
     amount: string;

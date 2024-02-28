@@ -30,7 +30,7 @@ export default class QuestCustomService implements IQuestService {
         quest: QuestCustomDocument;
         wallet?: WalletDocument;
         account?: TAccount;
-        data: Partial<TMilestoneRewardClaim>;
+        data: Partial<TQuestCustomEntry>;
     }): Promise<TValidationResult> {
         const entries = await this.findAllEntries({ quest, account });
         if (quest.limit && entries.length >= quest.limit) {
@@ -51,7 +51,7 @@ export default class QuestCustomService implements IQuestService {
     }: {
         quest: QuestCustomDocument;
         account?: TAccount;
-        data: Partial<TMilestoneRewardClaim>;
+        data: Partial<TQuestCustomEntry>;
     }) {
         const entries = await this.findAllEntries({ quest, account });
         const identities = await this.findIdentities({ quest, account });
@@ -75,7 +75,7 @@ export default class QuestCustomService implements IQuestService {
     }: {
         quest: QuestCustomDocument;
         account: TAccount;
-        data: Partial<TMilestoneRewardClaim>;
+        data: Partial<TQuestCustomEntry>;
     }): Promise<{ reason: string; result: boolean }> {
         // See if there are identities
         const identities = await this.findIdentities({ quest, account });

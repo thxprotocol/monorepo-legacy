@@ -25,6 +25,7 @@ type TERC20Token = {
 };
 
 type TERC20Transfer = {
+    erc20Id: string;
     erc20: string;
     from: string;
     to: string;

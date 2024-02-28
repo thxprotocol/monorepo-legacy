@@ -1,4 +1,4 @@
-type TMilestoneRewardClaim = {
+type TQuestCustomEntry = {
     questId: string;
     sub: string;
     uuid: string;

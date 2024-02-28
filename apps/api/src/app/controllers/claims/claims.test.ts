@@ -3,10 +3,13 @@ import app from '@thxnetwork/api/';
 import { ChainId, NFTVariant } from '@thxnetwork/common/enums';
 import { sub, dashboardAccessToken, widgetAccessToken, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { ClaimDocument } from '@thxnetwork/api/models/Claim';
-import { ERC721Document } from '@thxnetwork/api/models/ERC721';
-import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
-import { PoolDocument } from '@thxnetwork/api/models';
+import {
+    PoolDocument,
+    ERC721Metadata,
+    ERC721MetadataDocument,
+    QRCodeEntryDocument,
+    ERC721Document,
+} from '@thxnetwork/api/models';
 import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { getProvider } from '@thxnetwork/api/util/network';
@@ -24,7 +27,7 @@ describe('QR Codes', () => {
         erc721: ERC721Document,
         metadata: ERC721MetadataDocument,
         wallet: WalletDocument,
-        claims: ClaimDocument[];
+        claims: QRCodeEntryDocument[];
     const claimAmount = 10,
         config = {
             title: '',

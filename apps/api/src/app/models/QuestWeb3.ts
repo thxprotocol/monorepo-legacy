@@ -3,19 +3,21 @@ import { questSchema } from '@thxnetwork/api/models/Quest';
 
 export type QuestWeb3Document = mongoose.Document & TQuestWeb3;
 
-const schema = new mongoose.Schema(
-    {
-        ...questSchema,
-        amount: Number,
-        chainId: Number,
-        contracts: Array({
+export const QuestWeb3 = mongoose.model<QuestWeb3Document>(
+    'QuestWeb3',
+    new mongoose.Schema(
+        {
+            ...(questSchema as any),
+            amount: Number,
             chainId: Number,
-            address: String,
-        }),
-        methodName: String,
-        threshold: Number,
-    },
-    { timestamps: true },
+            contracts: Array({
+                chainId: Number,
+                address: String,
+            }),
+            methodName: String,
+            threshold: Number,
+        },
+        { timestamps: true },
+    ),
+    'questweb3',
 );
-
-export const QuestWeb3 = mongoose.model<QuestWeb3Document>('QuestWeb3s', schema, 'web3quests');

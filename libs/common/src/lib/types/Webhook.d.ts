@@ -4,6 +4,7 @@ type TWebhook = {
     url: string;
     poolId: string;
     status: WebhookStatus;
+    active: boolean;
     webhookRequests: TWebhookRequest[];
     createdAt?: Date;
 };

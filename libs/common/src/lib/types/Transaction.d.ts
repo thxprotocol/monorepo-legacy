@@ -12,8 +12,8 @@ type TTransaction = {
     safeTxHash?: string;
     call?: { fn: string; args: string };
     baseFee?: string;
-    maxFeeForGas?: string;
-    maxPriorityFeeForGas?: string;
+    maxFeePerGas?: string;
+    maxPriorityFeePerGas?: string;
     failReason?: string;
     callback: TTransactionCallback;
 };

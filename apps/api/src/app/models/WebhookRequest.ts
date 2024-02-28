@@ -15,5 +15,5 @@ export const WebhookRequest = mongoose.model<WebhookRequestDocument>(
         },
         { timestamps: true },
     ),
-    'webhookrequests',
+    'webhookrequest',
 );

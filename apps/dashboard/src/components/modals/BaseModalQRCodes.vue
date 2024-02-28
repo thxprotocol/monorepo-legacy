@@ -182,7 +182,7 @@ import { type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TBaseQuest } from '@thxnetwork/types/index';
 import { API_URL, BASE_URL } from '@thxnetwork/dashboard/config/secrets';
-import { TClaim } from '@thxnetwork/dashboard/store/modules/claims';
+import { TQRCodeEntry } from '@thxnetwork/dashboard/store/modules/claims';
 import { saveAs } from 'file-saver';
 import { loadImage } from '@thxnetwork/dashboard/utils/loadImage';
 import { format } from 'date-fns';
@@ -236,7 +236,7 @@ export default class BaseModalQRCodes extends Vue {
     isCopied: { [id: string]: boolean } = {};
 
     @Prop() id!: string;
-    @Prop() rewards!: { [id: string]: TBaseQuest & { claims: TClaim[]; _id: string } };
+    @Prop() rewards!: { [id: string]: TBaseQuest & { claims: TQRCodeEntry[]; _id: string } };
     @Prop() selectedItems!: string[];
     @Prop() pool!: TPool;
 
@@ -249,7 +249,7 @@ export default class BaseModalQRCodes extends Vue {
         const rewards = Object.values(this.rewards).filter((r) => this.selectedItems.includes(r._id));
         this.claims = [];
         for (const r of rewards) {
-            const claims = Object.values(r.claims).map((claim: TClaim) => ({ ...claim, perk: r }));
+            const claims = Object.values(r.claims).map((claim: TQRCodeEntry) => ({ ...claim, perk: r }));
             this.claims = [...this.claims, ...claims].map((c) => ({
                 checkbox: c.uuid,
                 url: this.getUrl(c.uuid),

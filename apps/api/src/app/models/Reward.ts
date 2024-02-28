@@ -1,6 +1,6 @@
 export const rewardSchema = {
     uuid: String,
-    poolId: { type: String, index: 'hashed' },
+    poolId: String,
     title: String,
     description: String,
     image: String,

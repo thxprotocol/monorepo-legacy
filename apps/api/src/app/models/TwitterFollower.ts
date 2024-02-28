@@ -10,4 +10,8 @@ const twitterFollowerSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
-export const TwitterFollower = mongoose.model<TwitterFollowerDocument>('twitterfollowers', twitterFollowerSchema);
+export const TwitterFollower = mongoose.model<TwitterFollowerDocument>(
+    'TwitterFollower',
+    twitterFollowerSchema,
+    'twitterfollower',
+);

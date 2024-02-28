@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 export type QuestDailyEntryDocument = mongoose.Document & TDailyRewardClaim;
 
 export const QuestDailyEntry = mongoose.model<QuestDailyEntryDocument>(
-    'DailyRewardClaims',
+    'QuestDailyEntry',
     new mongoose.Schema(
         {
             questId: String,
@@ -16,4 +16,5 @@ export const QuestDailyEntry = mongoose.model<QuestDailyEntryDocument>(
         },
         { timestamps: true },
     ),
+    'questdailyentry',
 );

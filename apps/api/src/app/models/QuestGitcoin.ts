@@ -3,14 +3,16 @@ import { questSchema } from '@thxnetwork/api/models/Quest';
 
 export type QuestGitcoinDocument = mongoose.Document & TGitcoinQuest;
 
-const schema = new mongoose.Schema(
-    {
-        ...questSchema,
-        amount: Number,
-        scorerId: Number,
-        score: Number,
-    },
-    { timestamps: true },
+export const QuestGitcoin = mongoose.model<QuestGitcoinDocument>(
+    'QuestGitcoin',
+    new mongoose.Schema(
+        {
+            ...(questSchema as any),
+            amount: Number,
+            scorerId: Number,
+            score: Number,
+        },
+        { timestamps: true },
+    ),
+    'questgitcoin',
 );
-
-export const QuestGitcoin = mongoose.model<QuestGitcoinDocument>('GitcoinQuests', schema, 'gitcoinquests');

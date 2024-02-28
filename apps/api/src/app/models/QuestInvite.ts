@@ -3,16 +3,18 @@ import { questSchema } from '@thxnetwork/api/models/Quest';
 
 export type QuestInviteDocument = mongoose.Document & TQuestInvite;
 
-const schema = new mongoose.Schema(
-    {
-        ...questSchema,
-        amount: Number,
-        pathname: String,
-        successUrl: String,
-        token: String,
-        isMandatoryReview: Boolean,
-    },
-    { timestamps: true },
+export const QuestInvite = mongoose.model<QuestInviteDocument>(
+    'QuestInvite',
+    new mongoose.Schema(
+        {
+            ...(questSchema as any),
+            amount: Number,
+            pathname: String,
+            successUrl: String,
+            token: String,
+            isMandatoryReview: Boolean,
+        },
+        { timestamps: true },
+    ),
+    'questinvite',
 );
-
-export const QuestInvite = mongoose.model<QuestInviteDocument>('QuestInvites', schema);

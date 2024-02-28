@@ -1,15 +1,12 @@
 import { Request, Response } from 'express';
 import { param, query } from 'express-validator';
 import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { RewardNFT } from '@thxnetwork/api/models/RewardNFT';
-import { RewardNFTPayment } from '@thxnetwork/api/models/RewardNFTPayment';
+import { RewardNFT, RewardNFTPayment, QRCodeEntry, ERC721Metadata } from '@thxnetwork/api/models';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import WalletService from '@thxnetwork/api/services/WalletService';
-import { Claim } from '@thxnetwork/api/models/Claim';
-import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 
 const validation = [param('uuid').isUUID(4), query('walletId').isMongoId()];
 
@@ -54,7 +51,7 @@ const controller = async (req: Request, res: Response) => {
     });
 
     // Mark claim as claimed by setting sub
-    claim = await Claim.findByIdAndUpdate(claim._id, { sub: req.auth.sub, claimedAt: new Date() }, { new: true });
+    claim = await QRCodeEntry.findByIdAndUpdate(claim._id, { sub: req.auth.sub, claimedAt: new Date() }, { new: true });
 
     return res.json({
         erc721,
