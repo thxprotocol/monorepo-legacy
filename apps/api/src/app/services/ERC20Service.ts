@@ -1,5 +1,4 @@
 import { toChecksumAddress } from 'web3-utils';
-import { ICreateERC20Params } from '@thxnetwork/api/types/interfaces';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { ChainId, ERC20Type, TransactionState } from '@thxnetwork/common/enums';
 import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/services/ContractService';
@@ -43,7 +42,7 @@ export async function findBySub(sub: string) {
     return erc20s.concat(await ERC20.find({ _id: erc20Ids }));
 }
 
-export const deploy = async (params: ICreateERC20Params, forceSync = true) => {
+export const deploy = async (params: Partial<TERC20>, forceSync = true) => {
     const erc20 = await ERC20.create({
         name: params.name,
         symbol: params.symbol,
@@ -58,7 +57,7 @@ export const deploy = async (params: ICreateERC20Params, forceSync = true) => {
 
     const fn = contract.deploy({
         data: bytecode,
-        arguments: getDeployArgs(erc20, params.totalSupply),
+        arguments: getDeployArgs(erc20, String(params.totalSupply)),
     });
 
     const txId = await TransactionService.sendAsync(null, fn, erc20.chainId, forceSync, {

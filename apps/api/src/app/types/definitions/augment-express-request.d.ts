@@ -1,5 +1,3 @@
-import { PoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { TQuest } from '@thxnetwork/common/lib/types';
 declare global {
     namespace Express {
         interface Request {
