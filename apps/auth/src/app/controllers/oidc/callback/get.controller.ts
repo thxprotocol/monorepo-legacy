@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { AccessTokenKind } from '@thxnetwork/common/lib/types';
-import { providerAccountVariantMap } from '@thxnetwork/common/lib/types/maps/oauth';
+import { providerAccountVariantMap } from '@thxnetwork/common/maps';
+import { AccessTokenKind } from '@thxnetwork/common/enums';
 import AuthService from '@thxnetwork/auth/services/AuthService';
 import TokenService from '@thxnetwork/auth/services/TokenService';
 

@@ -1,7 +1,7 @@
 import TokenService from '@thxnetwork/auth/services/TokenService';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
-import { AccessTokenKind } from '@thxnetwork/common/lib/types';
+import { AccessTokenKind } from '@thxnetwork/common/enums';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
 
 const validation = [param('sub').isMongoId(), param('kind').isString()];

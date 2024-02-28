@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { oidc } from '@thxnetwork/auth/util/oidc';
-import { AccountVariant } from '@thxnetwork/common/lib/types';
+import { AccountVariant } from '@thxnetwork/common/enums';
 import AuthService from '@thxnetwork/auth/services/AuthService';
 
 async function controller(req: Request, res: Response) {

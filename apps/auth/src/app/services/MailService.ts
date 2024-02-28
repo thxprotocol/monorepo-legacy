@@ -15,7 +15,7 @@ import {
     NODE_ENV,
     CYPRESS_EMAIL,
 } from '../config/secrets';
-import { sendMail } from '@thxnetwork/common/lib/mail';
+import { sendMail } from '@thxnetwork/common/mail';
 import { logger } from '../util/logger';
 import TokenService from './TokenService';
 

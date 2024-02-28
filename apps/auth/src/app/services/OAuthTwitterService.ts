@@ -1,5 +1,4 @@
 import { URLSearchParams } from 'url';
-import { TToken } from '@thxnetwork/common/lib/types';
 import { twitterClient } from '../util/axios';
 import { AUTH_URL, TWITTER_CLIENT_ID, TWITTER_CLIENT_SECRET } from '../config/secrets';
 import { AccessTokenKind, OAuthTwitterScope } from '@thxnetwork/common/enums/AccessTokenKind';

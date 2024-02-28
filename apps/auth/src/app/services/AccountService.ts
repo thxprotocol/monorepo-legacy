@@ -1,12 +1,11 @@
 import { Account, AccountDocument } from '../models/Account';
-import { AccountPlanType } from '@thxnetwork/common/enums';
+import { AccountVariant, AccountPlanType } from '@thxnetwork/common/enums';
 import { generateUsername } from 'unique-username-generator';
 import { toChecksumAddress } from 'web3-utils';
 import { BadRequestError } from '../util/errors';
 import { MailService } from './MailService';
 import { WIDGET_URL } from '../config/secrets';
-import { accountVariantProviderMap } from '@thxnetwork/common/lib/types/maps/oauth';
-import { AccountVariant } from '@thxnetwork/common/lib/types';
+import { accountVariantProviderMap } from '@thxnetwork/common/maps';
 import TokenService from './TokenService';
 
 export class AccountService {

@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { AccountService } from '../../services/AccountService';
 import { body } from 'express-validator';
 import { Token } from '@thxnetwork/auth/models/Token';
-import { AccessTokenKind } from '@thxnetwork/common/lib/types/enums';
+import { AccountService } from '@thxnetwork/auth/services/AccountService';
+import { AccessTokenKind } from '@thxnetwork/common/enums';
 
 const validation = [
     body('subs')
