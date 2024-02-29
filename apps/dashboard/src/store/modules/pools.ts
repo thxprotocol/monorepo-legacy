@@ -468,6 +468,16 @@ class PoolModule extends VuexModule {
         });
     }
 
+    @Action
+    async createReward(payload: TReward) {
+        await axios({
+            method: 'POST',
+            url: `/pools/${payload.poolId}/quests`,
+            headers: { 'X-PoolId': payload.poolId },
+            data: prepareFormDataForUpload(payload),
+        });
+    }
+
     @Action({ rawError: true })
     async listRewards({ pool, page, limit, isPublished }) {
         const { data } = await axios({

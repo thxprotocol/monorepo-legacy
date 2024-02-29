@@ -88,14 +88,12 @@ export default class ModalRewardNFTCreate extends Vue {
     erc1155Amount = 1;
     erc1155Balance = '';
     redirectUrl = '';
-
     claimAmount = 0;
     claimLimit = 0;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TRewardNFT;
-    @Prop({ required: false, default: () => [] }) selectedMetadataIds!: string[];
 
     get chainId() {
         return (this.pool && this.pool.chainId) || (this.nft && this.nft.chainId) || ChainId.Hardhat;
@@ -156,7 +154,7 @@ export default class ModalRewardNFTCreate extends Vue {
     }
 
     async onSubmit(payload: TBaseReward) {
-        if (!this.nft || (!this.metadataId && !this.selectedMetadataIds.length && !this.tokenId)) {
+        if (!this.nft || (!this.metadataId && !this.tokenId)) {
             this.error = 'Select a token or metadata for this reward.';
             return;
         }
@@ -172,7 +170,8 @@ export default class ModalRewardNFTCreate extends Vue {
                     erc1155Id = this.nft._id;
                     break;
             }
-            await this.$store.dispatch(`erc721Perks/${this.reward ? 'update' : 'create'}`, {
+
+            await this.$store.dispatch(`pools/${this.reward ? 'update' : 'create'}Reward`, {
                 pool: this.pool,
                 reward: this.reward,
                 payload: {
@@ -181,10 +180,11 @@ export default class ModalRewardNFTCreate extends Vue {
                     erc1155Id,
                     erc1155Amount: this.erc1155Amount,
                     tokenId: this.tokenId,
-                    metadataIds: JSON.stringify(this.metadataId ? [this.metadataId] : this.selectedMetadataIds),
+                    metadataId: this.metadataId,
+                    //  QR Code related config
+                    redirectUrl: this.redirectUrl ? this.redirectUrl : undefined,
                     claimAmount: this.claimAmount,
                     claimLimit: this.claimLimit,
-                    redirectUrl: this.redirectUrl ? this.redirectUrl : undefined,
                 },
             });
             this.$bvModal.hide(this.id);
