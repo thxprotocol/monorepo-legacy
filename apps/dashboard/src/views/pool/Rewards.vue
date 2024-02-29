@@ -72,20 +72,25 @@
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="item.reward" v-model="selectedItems" />
                 </template>
-                <template #cell(pointPrice)="{ item }">
-                    <strong class="text-primary">{{ item.pointPrice }} </strong>
-                </template>
-                <template #cell(amount)="{ item }">
-                    <strong class="text-primary">{{ item.amount.amount }} {{ item.amount.symbol }}</strong>
-                </template>
-                <template #cell(payments)="{ item }">
-                    <BaseButtonRewardPayments :pool="pool" :reward="item.reward" />
-                </template>
                 <template #cell(title)="{ item }">
                     <b-badge variant="light" class="p-2 mr-2">
                         <i :class="rewardIconClassMap[item.reward.variant]" class="text-muted" />
                     </b-badge>
+                    <i
+                        v-if="item.reward.locks.length"
+                        class="fas fa-lock mx-1 text-muted"
+                        v-b-tooltip
+                        :title="`Locked with ${item.reward.locks.length} quest${
+                            item.reward.locks.length > 1 ? 's' : ''
+                        }`"
+                    />
                     {{ item.title }}
+                </template>
+                <template #cell(pointPrice)="{ item }">
+                    <strong class="text-primary">{{ item.pointPrice }} </strong>
+                </template>
+                <template #cell(payments)="{ item }">
+                    <BaseButtonRewardPayments :pool="pool" :reward="item.reward" />
                 </template>
                 <template #cell(expiry)="{ item }">
                     <small class="text-gray">{{ item.expiry }}</small>
@@ -210,7 +215,7 @@ export default class RewardsView extends Vue {
             title: reward.title,
             points: reward.pointPrice,
             payments: reward.paymentCount,
-            expiry: reward.expiryDate ? format(new Date(reward.expiryDate), 'dd-MM-yyyy HH:mm') : 'Never',
+            expiry: reward.expiryDate ? format(new Date(reward.expiryDate), 'dd-MM-yyyy HH:mm') : '',
             created: format(new Date(reward.createdAt), 'dd-MM-yyyy HH:mm'),
             reward,
         }));
@@ -291,7 +296,7 @@ export default class RewardsView extends Vue {
     width: 50px;
 }
 #table-rewards th:nth-child(2) {
-    width: 70px;
+    width: 50px;
 }
 #table-rewards th:nth-child(3) {
     width: auto;

@@ -249,7 +249,7 @@ export default class QuestsView extends Vue {
             title: quest.title,
             points: quest.amounts ? `${quest.amounts.length} days` : quest.amount,
             entries: quest.entryCount,
-            expiry: quest.expiryDate ? format(new Date(quest.expiryDate), 'dd-MM-yyyy HH:mm') : 'Never',
+            expiry: quest.expiryDate ? format(new Date(quest.expiryDate), 'dd-MM-yyyy HH:mm') : '',
             created: format(new Date(quest.createdAt), 'dd-MM-yyyy HH:mm'),
             quest,
         }));
