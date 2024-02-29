@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { param, query } from 'express-validator';
-import { QuestVariant } from '@thxnetwork/sdk/types/enums';
+import { RewardVariant } from '@thxnetwork/common/enums';
 import RewardService from '@thxnetwork/api/services/RewardService';
 
 const validation = [
@@ -12,7 +12,7 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
-    const variant = req.params.variant as unknown as QuestVariant;
+    const variant = req.params.variant as unknown as RewardVariant;
     const reward = await RewardService.findById(variant, req.params.rewardId);
     const entries = await RewardService.findPayments(reward.variant, {
         reward,

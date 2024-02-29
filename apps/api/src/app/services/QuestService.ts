@@ -1,5 +1,5 @@
 import { JobType, QuestSocialRequirement, QuestVariant } from '@thxnetwork/common/enums';
-import { PoolDocument, Participant, TwitterUser } from '@thxnetwork/api/models';
+import { PoolDocument, Participant } from '@thxnetwork/api/models';
 import { v4 } from 'uuid';
 import { agenda } from '../util/agenda';
 import { logger } from '../util/logger';

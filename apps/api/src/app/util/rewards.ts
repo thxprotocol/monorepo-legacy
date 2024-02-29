@@ -1,40 +1,11 @@
 import ClaimService from '@thxnetwork/api/services/ClaimService';
 import RewardNFTService from '@thxnetwork/api/services/RewardNFTService';
-import {
-    RewardCoin,
-    RewardCoinDocument,
-    RewardNFT,
-    RewardNFTDocument,
-    PoolDocument,
-    RewardDiscordRoleDocument,
-    RewardCustomDocument,
-    RewardCouponDocument,
-} from '@thxnetwork/api/models';
+import { RewardCoin, RewardNFT } from '@thxnetwork/api/models';
 
 export async function findRewardByUuid(uuid: string) {
     const erc20Perk = await RewardCoin.findOne({ uuid });
     const erc721Perk = await RewardNFT.findOne({ uuid });
     return erc20Perk || erc721Perk;
-}
-
-export function isTRewardCoin(perk: TReward): perk is RewardCoinDocument {
-    return (perk as RewardCoinDocument).erc20Id !== undefined;
-}
-
-export function isTRewardNFT(perk: TReward): perk is RewardNFTDocument {
-    return (perk as RewardNFTDocument).erc721Id !== undefined || (perk as RewardNFTDocument).erc1155Id !== undefined;
-}
-
-export function isCustomReward(reward: TReward): reward is RewardCustomDocument {
-    return (reward as RewardCustomDocument).webhookId !== undefined;
-}
-
-export function isCouponReward(reward: TReward): reward is RewardCouponDocument {
-    return (reward as RewardCouponDocument).webshopURL !== undefined;
-}
-
-export function isDiscordRoleReward(reward: TReward): reward is RewardDiscordRoleDocument {
-    return (reward as RewardDiscordRoleDocument).discordRoleId !== undefined;
 }
 
 export function addMinutes(date: Date, minutes: number) {
@@ -56,8 +27,9 @@ export function formatDate(date: Date) {
     return yyyy + '-' + mm + '-' + dd;
 }
 
-export const createRewardNFT = async (pool: PoolDocument, config: TRewardNFT) => {
-    const perk = await RewardNFTService.create(pool, config);
+export const createRewardNFT = async (config: TRewardNFT) => {
+    const service = new RewardNFTService();
+    const perk = await service.create(config);
     const claims = await ClaimService.create(
         {
             poolId: config.poolId,

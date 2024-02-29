@@ -21,13 +21,16 @@ import ERC1155Service from './ERC1155Service';
 import RewardCoinService from './RewardCoinService';
 import ERC721Service from './ERC721Service';
 import LockService from './LockService';
-import { isCouponReward, isCustomReward, isDiscordRoleReward, isTRewardCoin, isTRewardNFT } from '../util/rewards';
 import AccountProxy from '../proxies/AccountProxy';
 import ParticipantService from './ParticipantService';
+import RewardNFTService from './RewardNFTService';
+import ImageService from './ImageService';
+import NotificationService from './NotificationService';
+import { v4 } from 'uuid';
 
 const serviceMap = {
     [RewardVariant.Coin]: new RewardCoinService(),
-    // [RewardVariant.NFT]: new RewardNFTService(),
+    [RewardVariant.NFT]: new RewardNFTService(),
     // [RewardVariant.Coupon]: new RewardCouponService(),
     // [RewardVariant.Custom]: new RewardCustomService(),
     // [RewardVariant.DiscordRole]: new RewardDiscordRoleService(),
@@ -58,9 +61,23 @@ export default class RewardService {
         };
     }
 
-    static findById(variant, rewardId) {
-        const Reward = serviceMap[variant].models.reward;
-        return Reward.findById(rewardId);
+    static async create(variant: RewardVariant, poolId: string, data: Partial<TReward>, file?: Express.Multer.File) {
+        if (file) {
+            data.image = await ImageService.upload(file);
+        }
+
+        const reward = await serviceMap[variant].models.reward.create({ ...data, poolId, variant, uuid: v4() });
+
+        // TODO Implement publish notification flow for rewards
+        // if (data.isPublished) {
+        //     await NotificationService.notify(variant, quest);
+        // }
+
+        return reward;
+    }
+
+    static findById(variant: RewardVariant, rewardId: string) {
+        return serviceMap[variant].models.reward.findById(rewardId);
     }
 
     static async getMetadata(perk: RewardNFTDocument, token?: ERC721TokenDocument | ERC1155TokenDocument) {
@@ -105,24 +122,6 @@ export default class RewardService {
         };
     }
 
-    static getPaymentModel(reward: TReward): Model<any> {
-        if (isTRewardCoin(reward)) {
-            return RewardCoinPayment;
-        }
-        if (isTRewardNFT(reward)) {
-            return RewardNFTPayment;
-        }
-        if (isCustomReward(reward)) {
-            return RewardCustomPayment;
-        }
-        if (isCouponReward(reward)) {
-            return RewardCouponPayment;
-        }
-        if (isDiscordRoleReward(reward)) {
-            return RewardDiscordRolePayment;
-        }
-    }
-
     static async validate({
         reward,
         pool,
@@ -133,8 +132,8 @@ export default class RewardService {
         claim?: QRCodeEntryDocument;
         account?: TAccount;
     }): Promise<{ isError: boolean; errorMessage?: string }> {
-        const model = this.getPaymentModel(reward);
-        if (!model) return { isError: true, errorMessage: 'Could not determine payment model.' };
+        const service = serviceMap[reward.variant];
+        const Payment = service.models.payment;
 
         // Is gated and reqeust is made authenticated
         if (account && pool && reward.locks.length) {
@@ -151,7 +150,7 @@ export default class RewardService {
 
         // Can only be claimed for the amount of times per perk specified in the limit
         if (reward.limit > 0) {
-            const amountOfPayments = await model.countDocuments({ rewardId: reward._id });
+            const amountOfPayments = await Payment.countDocuments({ rewardId: reward._id });
             if (amountOfPayments >= reward.limit) {
                 return { isError: true, errorMessage: "This perk has reached it's limit." };
             }
