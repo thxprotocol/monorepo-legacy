@@ -44,6 +44,7 @@ class ClaimModule extends VuexModule {
         Vue.set(this._all[claim.poolId], claim.uuid, claim);
     }
 
+    @Mutation
     setClaimURLData(claim: TQRCodeEntryURLData) {
         if (!this._all[claim.poolId]) {
             Vue.set(this._all, claim.poolId, {});
@@ -55,7 +56,7 @@ class ClaimModule extends VuexModule {
     async get(id: string, poolId: string) {
         const r = await axios({
             method: 'GET',
-            url: `/claims/${id}`,
+            url: `/qr-codes/${id}`,
             headers: { 'X-PoolId': poolId },
         });
 
@@ -63,14 +64,17 @@ class ClaimModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async list(rewardUuid: number, poolId: string) {
-        const r = await axios({
+    async list({ rewardId, poolId }: { rewardId: string; poolId: string }) {
+        const { data } = await axios({
             method: 'GET',
-            url: `/claims/reward/${rewardUuid}`,
-            headers: { 'X-PoolId': poolId },
+            url: `/qr-codes`,
+            params: {
+                rewardId,
+                poolId,
+            },
         });
 
-        for (const claim of r.data) {
+        for (const claim of data) {
             this.context.commit('setClaim', claim);
         }
     }

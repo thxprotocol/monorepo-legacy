@@ -10,7 +10,7 @@ import { PoolDocument, QuestCustom } from '@thxnetwork/api/models';
 const user = request.agent(app);
 
 describe('Quests Custom ', () => {
-    let pool: PoolDocument, milestoneReward: any;
+    let pool: PoolDocument, customQuest: TQuestCustom;
     const eventName = v4();
 
     beforeAll(beforeAllCallback);
@@ -28,8 +28,8 @@ describe('Quests Custom ', () => {
     });
 
     it('POST /pools/:id/quests', (done) => {
-        user.post(`/v1/pools/${pool._id}/quests`)
-            .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
+        user.post(`/v1/pools/${pool._id}/quests/${QuestVariant.Custom}`)
+            .set({ Authorization: dashboardAccessToken })
             .send({
                 variant: QuestVariant.Custom,
                 title: 'Expiration date is next 30 min',
@@ -42,15 +42,15 @@ describe('Quests Custom ', () => {
             .expect(async (res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();
                 expect(res.body.amount).toBe(100);
-                milestoneReward = res.body;
-                await QuestCustom.findByIdAndUpdate(milestoneReward._id, { eventName: milestoneReward.uuid });
+                customQuest = res.body;
+                await QuestCustom.findByIdAndUpdate(customQuest._id, { eventName: customQuest.uuid });
             })
             .expect(201, done);
     });
 
     describe('Qualify (to be deprecated)', () => {
         it('POST /webhook/milestone/:token/claim', (done) => {
-            user.post(`/v1/webhook/milestone/${milestoneReward.uuid}/claim`)
+            user.post(`/v1/webhook/milestone/${customQuest.uuid}/claim`)
                 .send({
                     address: userWalletAddress2,
                 })
@@ -58,7 +58,7 @@ describe('Quests Custom ', () => {
         });
 
         it('POST /webhook/milestone/:token/claim second time should also succeed', (done) => {
-            user.post(`/v1/webhook/milestone/${milestoneReward.uuid}/claim`)
+            user.post(`/v1/webhook/milestone/${customQuest.uuid}/claim`)
                 .send({
                     address: userWalletAddress2,
                 })
@@ -75,7 +75,7 @@ describe('Quests Custom ', () => {
 
         it('POST /quests/custom/:id/entries', async () => {
             const { status } = await user
-                .post(`/v1/quests/custom/${milestoneReward._id}/entries`)
+                .post(`/v1/quests/custom/${customQuest._id}/entries`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken2 })
                 .send();
             expect(status).toBe(200);

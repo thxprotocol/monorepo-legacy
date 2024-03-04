@@ -381,7 +381,7 @@ export default class BaseModalQRCodes extends Vue {
 
     getUrl(uuid: string) {
         const url = new URL(API_URL);
-        url.pathname = `v1/claims/r/${uuid}`;
+        url.pathname = `v1/qr-codes/r/${uuid}`;
         return url.toString();
     }
 

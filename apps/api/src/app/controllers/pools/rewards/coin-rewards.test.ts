@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, ERC20Type } from '@thxnetwork/common/enums';
+import { ChainId, ERC20Type, RewardVariant } from '@thxnetwork/common/enums';
 import { dashboardAccessToken, tokenName, tokenSymbol } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
@@ -12,7 +12,7 @@ import { RewardCoinDocument } from '@thxnetwork/api/models/RewardCoin';
 const user = request.agent(app);
 
 describe('Coin Rewards', () => {
-    let poolId: string, erc20: ERC20Document, perk: RewardCoinDocument;
+    let poolId: string, erc20: ERC20Document, reward: RewardCoinDocument;
 
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
@@ -47,7 +47,7 @@ describe('Coin Rewards', () => {
             .expect(201, done);
     });
 
-    it('POST /erc20-perks', (done) => {
+    it('POST /pools/:poolId/rewards/:variant', (done) => {
         const title = 'Lorem',
             description = 'Ipsum',
             expiryDate = addMinutes(new Date(), 30),
@@ -55,10 +55,10 @@ describe('Coin Rewards', () => {
             image = createImage(),
             amount = '1',
             limit = 0,
-            claimAmount = 0,
-            isPromoted = true;
-        user.post('/v1/erc20-perks/')
-            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+            isPromoted = true,
+            isPublished = true;
+        user.post(`/v1/pools/${poolId}/rewards/${RewardVariant.Coin}`)
+            .set({ Authorization: dashboardAccessToken })
             .attach('file', image, {
                 filename: 'test.jpg',
                 contentType: 'image/jpg',
@@ -67,13 +67,13 @@ describe('Coin Rewards', () => {
                 title,
                 description,
                 image,
-                erc20Id: String(erc20._id),
-                amount,
+                limit,
                 pointPrice,
                 expiryDate: new Date(expiryDate).toISOString(),
-                limit,
-                claimAmount,
+                amount,
+                erc20Id: String(erc20._id),
                 isPromoted,
+                isPublished,
             })
             .expect((res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();
@@ -89,30 +89,22 @@ describe('Coin Rewards', () => {
             .expect(201, done);
     });
 
-    it('GET /erc20-perks', (done) => {
-        user.get('/v1/erc20-perks')
-            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+    it('GET /pools/:poolId/rewards', (done) => {
+        user.get(`/v1/pools/${poolId}/rewards`)
+            .set({ Authorization: dashboardAccessToken })
+            .query({ page: 1, limit: 10, isPublished: true })
             .expect((res: request.Response) => {
                 expect(res.body.results.length).toBe(1);
                 expect(res.body.limit).toBe(10);
                 expect(res.body.total).toBe(1);
-                perk = res.body.results[0];
+                reward = res.body.results[0];
             })
             .expect(200, done);
     });
 
-    it('GET /erc20-perks/:uuid', (done) => {
-        user.get('/v1/erc20-perks/' + perk._id)
-            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-            .expect((res: request.Response) => {
-                expect(res.body.payments).toHaveLength(0);
-            })
-            .expect(200, done);
-    });
-
-    it('DELETE /erc20-perks/:uuid', (done) => {
-        user.delete('/v1/erc20-perks/' + perk._id)
-            .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+    it('DELETE /pools/:poolId/rewards/:variant', (done) => {
+        user.delete(`/v1/pools/${poolId}/rewards/${reward.variant}/${reward._id}`)
+            .set({ Authorization: dashboardAccessToken })
             .expect(204, done);
     });
 });

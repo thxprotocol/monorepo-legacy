@@ -2,6 +2,7 @@ import { body, param } from 'express-validator';
 import { Request, Response } from 'express';
 import { defaults } from '@thxnetwork/api/util/validation';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
+import { RewardVariant } from '@thxnetwork/common/enums';
 import RewardService from '@thxnetwork/api/services/RewardService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 
@@ -39,8 +40,8 @@ const validation = [param('id').isMongoId(), ...validationBaseQuest];
 const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Could not find pool');
-
-    const reward = await RewardService.create(req.body.variant, req.params.id, req.body, req.file);
+    const variant = req.params.variant as unknown as RewardVariant;
+    const reward = await RewardService.create(variant, req.params.id, req.body, req.file);
 
     res.status(201).json(reward);
 };

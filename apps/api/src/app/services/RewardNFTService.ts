@@ -58,7 +58,7 @@ export default class RewardNFTService implements IRewardService {
             await this.createQRCodes(data);
         }
 
-        return this.models.reward.create(data);
+        return await this.models.reward.create(data);
     }
 
     update(reward: TRewardNFT, updates: Partial<TRewardNFT>) {

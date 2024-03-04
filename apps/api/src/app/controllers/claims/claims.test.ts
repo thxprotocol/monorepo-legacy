@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, NFTVariant } from '@thxnetwork/common/enums';
+import { ChainId, NFTVariant, RewardVariant } from '@thxnetwork/common/enums';
 import { sub, dashboardAccessToken, widgetAccessToken, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import {
@@ -28,13 +28,14 @@ describe('QR Codes', () => {
         metadata: ERC721MetadataDocument,
         wallet: WalletDocument,
         claims: QRCodeEntryDocument[];
-    const claimAmount = 10,
-        config = {
+    const config = {
             title: '',
             description: '',
             pointPrice: 0,
             limit: 0,
-        } as TRewardNFT,
+            claimAmount: 10,
+            variant: RewardVariant.NFT,
+        },
         chainId = ChainId.Hardhat;
 
     beforeAll(async () => {
@@ -77,31 +78,32 @@ describe('QR Codes', () => {
     afterAll(afterAllCallback);
 
     describe('PointPrice = 100', () => {
-        it('POST /erc721-perks', (done) => {
-            user.post('/v1/erc721-perks/')
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
+        it('POST /rewards/:poolId/rewards/:variant', (done) => {
+            user.post(`/v1/pools/${poolId}/rewards/${RewardVariant.NFT}`)
+                .set({ Authorization: dashboardAccessToken })
                 .send({
                     ...config,
+                    poolId,
                     erc721Id: erc721._id,
-                    metadataIds: JSON.stringify([metadata._id]),
+                    metadataId: metadata._id,
                     pointPrice: 100,
-                    claimAmount,
                 })
                 .expect((res: request.Response) => {
-                    expect(res.body[0].claims).toHaveLength(claimAmount);
-                    claims = res.body[0].claims;
+                    console.log(res.body);
+                    expect(res.body[0].qrcodes).toHaveLength(config.claimAmount);
+                    claims = res.body[0].qrcodes;
                 })
                 .expect(201, done);
         });
 
         it('should return a 200 for first claim attempt by wallet 0', (done) => {
-            user.get(`/v1/claims/${claims[0].uuid}`)
+            user.get(`/v1/qr-codes/${claims[0].uuid}`)
                 .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
                 .expect(200, done);
         });
 
         it('should return a 403 for claim', (done) => {
-            user.post(`/v1/claims/${claims[0].uuid}/collect`)
+            user.post(`/v1/qr-codes/${claims[0].uuid}/collect`)
                 .query({ walletId: String(wallet._id) })
                 .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
                 .expect((res: request.Response) => {
@@ -112,17 +114,16 @@ describe('QR Codes', () => {
     });
 
     describe('PointPrice = 0', () => {
-        it('POST /erc721-perks', (done) => {
-            user.post('/v1/erc721-perks/')
+        it('POST /rewards', (done) => {
+            user.post(`/v1/pools/${poolId}/rewards/${RewardVariant.NFT}`)
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .send({
                     ...config,
                     erc721Id: erc721._id,
-                    metadataIds: JSON.stringify([metadata._id]),
-                    claimAmount,
+                    metadataIds: metadata._id,
                 })
                 .expect((res: request.Response) => {
-                    expect(res.body[0].claims).toHaveLength(claimAmount);
+                    expect(res.body[0].claims).toHaveLength(config.claimAmount);
                     claims = res.body[0].claims;
                 })
                 .expect(201, done);

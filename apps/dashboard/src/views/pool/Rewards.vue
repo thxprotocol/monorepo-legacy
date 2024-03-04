@@ -43,6 +43,8 @@
                 :total-rows="total"
                 :selectedItems="[]"
                 :actions="[]"
+                :published="isPublished"
+                @click-published="onClickFilterPublished"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
@@ -121,7 +123,7 @@
                         :rewards="rewards[$route.params.id].results.filter((r) => r.variant == RewardVariant.NFT)"
                     />
                     <component
-                        @submit="listQuests"
+                        @submit="listRewards"
                         :is="rewardModalComponentMap[item.reward.variant]"
                         :id="rewardModalComponentMap[item.reward.variant] + item.reward._id"
                         :pool="pool"
@@ -237,8 +239,8 @@ export default class RewardsView extends Vue {
     async listRewards() {
         this.isLoading = true;
         await this.$store.dispatch('pools/listRewards', {
-            page: this.page,
             pool: this.pool,
+            page: this.page,
             limit: this.limit,
             isPublished: this.isPublished,
         });
@@ -267,6 +269,11 @@ export default class RewardsView extends Vue {
         const p = [reward.update({ ...reward, index: newIndex })];
         if (other) p.push(other.update({ ...other, index: currentIndex }));
         await Promise.all(p);
+        this.listRewards();
+    }
+
+    onClickFilterPublished(isPublished: boolean) {
+        this.isPublished = isPublished;
         this.listRewards();
     }
 

@@ -35,9 +35,9 @@ router.use('/data', dataRouter);
 router.use('/token', tokenRouter);
 router.use('/metadata', metadataRouter);
 router.use('/brands', brandsRouter);
-router.use('/claims', claimsRouter);
 router.use('/widget', widgetRouter);
 router.use('/leaderboards', leaderboardsRouter); // TODO Partial refactor
+router.use('/qr-codes', claimsRouter);
 router.use('/quests', questsRouter); // TODO Refactor
 router.use('/rewards', rewardsRouter);
 router.use('/webhook', webhookRouter);

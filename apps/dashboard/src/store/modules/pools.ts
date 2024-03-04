@@ -571,7 +571,6 @@ class PoolModule extends VuexModule {
         await axios({
             method: 'DELETE',
             url: `/pools/${payload.poolId}/rewards/${payload.variant}/${payload._id}`,
-            data: payload,
         });
         this.context.commit('unsetReward', payload);
     }

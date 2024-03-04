@@ -31,7 +31,7 @@ describe('Daily Rewards WebHooks', () => {
     });
 
     it('POST /daily-rewards', (done) => {
-        user.post(`/v1/pools/${poolId}/quests`)
+        user.post(`/v1/pools/${poolId}/quests/${QuestVariant.Daily}`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
                 isPublished: true,
