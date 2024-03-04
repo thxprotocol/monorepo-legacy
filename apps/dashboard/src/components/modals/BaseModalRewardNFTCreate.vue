@@ -8,9 +8,9 @@
         :error="error"
         :is-loading="isLoading"
     >
-        <!-- <b-form-group label="NFT" v-if="!selectedMetadataIds.length">
+        <b-form-group label="NFT">
             <BaseDropdownSelectERC721 :chainId="chainId" :nft="nft" @selected="onSelectNFT" />
-        </b-form-group> -->
+        </b-form-group>
 
         <b-form-group label="Metadata" v-if="nft">
             <BaseDropdownERC721Metadata

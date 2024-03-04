@@ -329,7 +329,7 @@ class PoolModule extends VuexModule {
         const rewards = this._rewards[reward.poolId].results;
         const index = rewards.findIndex((q) => q._id === reward._id);
 
-        Vue.set(this._rewards[reward.poolId].results, index, rewards);
+        Vue.set(this._rewards[reward.poolId].results, index, reward);
     }
 
     @Mutation
@@ -553,6 +553,7 @@ class PoolModule extends VuexModule {
             url: `/pools/${payload.poolId}/rewards/${payload.variant}/${payload._id}`,
             data: prepareFormDataForUpload(payload),
         });
+        this.context.commit('setReward', payload);
     }
 
     @Action
@@ -572,7 +573,7 @@ class PoolModule extends VuexModule {
             url: `/pools/${payload.poolId}/rewards/${payload.variant}/${payload._id}`,
             data: payload,
         });
-        this.context.commit('unsetQuest', payload);
+        this.context.commit('unsetReward', payload);
     }
 
     @Action({ rawError: true })

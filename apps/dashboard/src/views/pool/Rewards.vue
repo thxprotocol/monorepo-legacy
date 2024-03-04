@@ -140,7 +140,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { RewardVariant } from '@thxnetwork/common/enums';
 import { format } from 'date-fns';
-import { contentRewards } from '@thxnetwork/common/constants';
 import BaseModalRewardCoinCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCoinCreate.vue';
 import BaseModalRewardNFTCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardNFTCreate.vue';
 import BaseModalRewardCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCustomCreate.vue';
@@ -209,7 +208,7 @@ export default class RewardsView extends Vue {
 
     get allRewards() {
         if (!this.rewards[this.$route.params.id]) return [];
-        return this.rewards[this.$route.params.id].results.map((reward: any) => ({
+        return this.rewards[this.$route.params.id].results.map((reward: TBaseReward & { paymentCount: number }) => ({
             index: null,
             checkbox: reward._id,
             title: reward.title,

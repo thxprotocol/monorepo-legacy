@@ -31,18 +31,10 @@
                 :limit="limit"
                 :total-rows="totals[nft._id]"
                 :selectedItems="selectedItems"
-                :actions="[
-                    { variant: 0, label: `Delete metadata` },
-                    { variant: 1, label: `Create perk` },
-                ]"
+                :actions="[{ variant: 0, label: `Delete metadata` }]"
                 @click-action="onClickAction"
                 @change-limit="onChangeLimit"
                 @change-page="onChangePage"
-            />
-            <BaseModalRewardERC721Create
-                id="modalRewardERC721Create"
-                :erc721="nft"
-                :erc721SelectedMetadataIds="selectedItems"
             />
             <BTable hover :busy="isLoading" :items="metadataByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->

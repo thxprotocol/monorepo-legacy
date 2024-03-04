@@ -73,8 +73,7 @@ export default class RewardService {
         const Payment = serviceMap[reward.variant].models.payment;
         const total = await Payment.countDocuments({ rewardId: reward._id });
         const payments = await Payment.find({ rewardId: reward._id }).limit(limit).skip(skip);
-        const subs = payments.map((entry) => entry.sub);
-        const accounts = await AccountProxy.find({ subs });
+        const accounts = await AccountProxy.find({ subs: payments.map(({ sub }) => sub) });
         const participants = await Participant.find({ poolId: reward.poolId });
         const promises = payments.map(async (payment: Document & TRewardPayment) =>
             ParticipantService.decorate(payment, { accounts, participants }),
@@ -94,7 +93,6 @@ export default class RewardService {
             rewardVariants.map(async (variant: string) => {
                 const rewardVariant = Number(variant);
                 const payments = await serviceMap[rewardVariant].models.payment.find({ sub });
-                console.log({ payments });
                 const callback = payments.map(async (p: Document & TRewardPayment) => {
                     const decorated = await serviceMap[rewardVariant].decoratePayment(p);
                     return { ...decorated, rewardVariant };

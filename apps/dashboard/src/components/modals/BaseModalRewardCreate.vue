@@ -70,7 +70,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
@@ -83,10 +82,6 @@ import BaseCardQuestLocks from '../cards/BaseCardQuestLocks.vue';
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
     },
-    computed: mapGetters({
-        erc20List: 'erc20/all',
-        erc20BalanceList: 'erc20/balances',
-    }),
 })
 export default class ModalRewardERC20Create extends Vue {
     title = '';

@@ -66,14 +66,10 @@ export default class RewardCouponService implements IRewardService {
         // Register payment
         await this.models.payment.create({
             couponCodeId: couponCode._id,
-            perkId: reward.id,
+            rewardId: reward.id,
             sub: account.sub,
             poolId: reward.poolId,
             amount: reward.pointPrice,
         });
-    }
-
-    findPayments(reward: TReward): Promise<TRewardPayment[]> {
-        return this.models.payment.find({ rewardId: reward._id });
     }
 }

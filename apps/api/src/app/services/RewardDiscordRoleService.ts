@@ -19,10 +19,19 @@ export default class RewardDiscordRoleService implements IRewardService {
         const reward = await this.models.reward.findById(payment.rewardId);
         const guild = await this.getGuild(reward.poolId);
         const role = await this.getRole(guild.id, reward.discordRoleId);
+        const discordServerURL = `https://discordapp.com/channels/${guild.id}/`;
 
         return {
             ...payment.toJSON(),
-            role: { color: discordColorToHex(role.color), name: role.name },
+            discordServerURL,
+            guild: {
+                name: guild.name,
+                icon: guild.icon && `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`,
+            },
+            role: {
+                name: role.name,
+                color: discordColorToHex(role.color),
+            },
         };
     }
 
@@ -78,10 +87,6 @@ export default class RewardDiscordRoleService implements IRewardService {
             poolId: reward.poolId,
             amount: reward.pointPrice,
         });
-    }
-
-    findPayments(reward: TReward): Promise<TRewardPayment[]> {
-        return this.models.payment.find({ rewardId: reward._id });
     }
 
     private getToken(account: TAccount) {

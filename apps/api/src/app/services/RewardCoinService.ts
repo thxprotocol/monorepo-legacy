@@ -1,4 +1,4 @@
-import { ERC20, PoolDocument, RewardCoin, RewardCoinDocument, WalletDocument } from '@thxnetwork/api/models';
+import { ERC20, ERC20Document, RewardCoin, RewardCoinDocument, WalletDocument } from '@thxnetwork/api/models';
 import { RewardCoinPayment } from '@thxnetwork/api/models';
 import { IRewardService } from './interfaces/IRewardService';
 import { ChainId, ERC20Type } from '@thxnetwork/common/enums';
@@ -6,6 +6,8 @@ import { BigNumber } from 'ethers';
 import AccountProxy from '../proxies/AccountProxy';
 import ERC20Service from './ERC20Service';
 import MailService from './MailService';
+import PoolService from './PoolService';
+import { toWei } from 'web3-utils';
 
 export default class RewardCoinService implements IRewardService {
     models = {
@@ -13,9 +15,9 @@ export default class RewardCoinService implements IRewardService {
         payment: RewardCoinPayment,
     };
 
-    async decorate({ reward, account }) {
+    async decorate({ reward }) {
         const erc20 = await ERC20.findById(reward.erc20Id);
-        return { ...reward.toJSON(), erc20 };
+        return { ...reward.toJSON(), chainId: erc20.chainId, erc20 };
     }
 
     async decoratePayment(payment: TBaseRewardPayment) {
@@ -26,16 +28,18 @@ export default class RewardCoinService implements IRewardService {
         return this.models.reward.findById(id);
     }
 
-    findPayments(reward: RewardCoinDocument) {
-        return this.models.payment.find({ rewardId: reward._id });
+    async create(data: Partial<TRewardCoin>) {
+        const erc20 = await this.getERC20(data.erc20Id);
+        await this.addMinter(erc20, data.poolId);
+
+        return await this.models.reward.create(data);
     }
 
-    create(data: Partial<TRewardCoin>) {
-        return this.models.reward.create(data);
-    }
+    async update(reward: RewardCoinDocument, updates: Partial<TRewardCoin>) {
+        const erc20 = await this.getERC20(updates.erc20Id);
+        await this.addMinter(erc20, reward.poolId);
 
-    update(reward: RewardCoinDocument, updates: Partial<TRewardCoin>) {
-        return this.models.reward.findByIdAndUpdate(reward._id, updates, { new: true });
+        return await this.models.reward.findByIdAndUpdate(reward._id, updates, { new: true });
     }
 
     async remove(reward: RewardCoinDocument) {
@@ -51,11 +55,16 @@ export default class RewardCoinService implements IRewardService {
         safe: WalletDocument;
         wallet?: WalletDocument;
     }) {
+        if (!wallet) return { result: false, reason: 'Wallet not found' };
+
         const erc20 = await ERC20.findById(reward.erc20Id);
-        if (!erc20) throw new Error('ERC20 not found');
+        if (!erc20) return { result: false, reason: 'ERC20 not found' };
+
+        // TODO Wei should be determined in the FE
+        const amount = toWei(reward.amount as string);
 
         // Transfer ERC20 from safe to wallet
-        await ERC20Service.transferFrom(erc20, safe, wallet.address, reward.amount);
+        await ERC20Service.transferFrom(erc20, safe, wallet.address, amount);
 
         // Register the payment
         await RewardCoinPayment.create({
@@ -73,7 +82,7 @@ export default class RewardCoinService implements IRewardService {
 
         const balanceOfPool = await erc20.contract.methods.balanceOf(safe.address).call();
         const isTransferable = [ERC20Type.Unknown, ERC20Type.Limited].includes(erc20.type);
-        const isBalanceInsufficient = BigNumber.from(balanceOfPool).lt(BigNumber.from(reward.amount));
+        const isBalanceInsufficient = BigNumber.from(balanceOfPool).lt(BigNumber.from(toWei(reward.amount)));
 
         // Notifiy the campaign owner if token is transferrable and balance is insufficient
         if (isTransferable && isBalanceInsufficient) {
@@ -92,5 +101,19 @@ export default class RewardCoinService implements IRewardService {
         }
 
         return { result: true, reason: '' };
+    }
+
+    private getERC20(erc20Id: TERC20) {
+        return ERC20.findById(erc20Id);
+    }
+
+    private async addMinter(erc20: ERC20Document, poolId: string) {
+        if (erc20.type !== ERC20Type.Unlimited) return;
+
+        const { safe } = await PoolService.getById(poolId);
+        const isMinter = await ERC20Service.isMinter(erc20, safe.address);
+        if (!isMinter) {
+            await ERC20Service.addMinter(erc20, safe.address);
+        }
     }
 }

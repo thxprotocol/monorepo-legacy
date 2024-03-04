@@ -13,7 +13,6 @@ export interface IRewardService {
     update(reward: TReward, updates: Partial<TReward>): Promise<TReward>;
     remove(reward: TReward): Promise<void>;
     findById(id: string): Promise<TReward>;
-    findPayments(reward: TReward): Promise<TRewardPayment[]>;
     createPayment({
         reward,
         account,

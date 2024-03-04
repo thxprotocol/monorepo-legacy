@@ -26,12 +26,12 @@ export default class RewardNFTService implements IRewardService {
         [NFTVariant.ERC1155]: ERC1155Service,
     };
 
-    async decorate({ reward, account }) {
+    async decorate({ reward, account }: { reward: TRewardNFT; account?: TAccount }) {
         const nft = await this.findNFT(reward);
-        const metadata = reward.metadatId && (await this.findMetadataById(nft, reward.metadataId));
+        const metadata = reward.metadataId && (await this.findMetadataById(nft, reward.metadataId));
         const token = reward.tokenId && (await this.findTokenById(nft, reward));
 
-        return { ...reward.toJSON(), nft, metadata, token };
+        return { ...reward.toJSON(), chainId: nft.chainId, nft, metadata, token };
     }
 
     async decoratePayment(payment: TRewardPayment): Promise<TRewardPayment> {
@@ -113,10 +113,6 @@ export default class RewardNFTService implements IRewardService {
 
     findById(id: string) {
         return this.models.reward.findById(id);
-    }
-
-    findPayments(reward: RewardNFTDocument) {
-        return this.models.payment.find({ rewardId: reward._id });
     }
 
     findMetadataByToken(nft: TERC721 | TERC1155, token: TERC721Token | TERC1155Token) {

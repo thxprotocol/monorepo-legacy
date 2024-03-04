@@ -24,6 +24,7 @@ import { IERC20s, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
 import { RewardVariant } from '@thxnetwork/common/enums';
 import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
+import { toWei } from 'web3-utils';
 
 @Component({
     components: {
@@ -69,9 +70,9 @@ export default class ModalRewardCoinCreate extends Vue {
         }
     }
 
-    async onSubmit(payload: TReward) {
+    async onSubmit(payload: TBaseReward) {
         this.isLoading = true;
-        console.log(payload, this.reward);
+
         try {
             await this.$store.dispatch(`pools/${this.reward ? 'update' : 'create'}Reward`, {
                 ...this.reward,

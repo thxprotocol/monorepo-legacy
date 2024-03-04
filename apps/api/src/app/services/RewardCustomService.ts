@@ -39,8 +39,4 @@ export default class RewardCustomService implements IRewardService {
     createPayment({ reward, safe }: { reward: TReward; safe: WalletDocument }): Promise<void> {
         throw new Error('Method not implemented.');
     }
-
-    findPayments(reward: TReward): Promise<TRewardPayment[]> {
-        return this.models.payment.find({ rewardId: reward._id });
-    }
 }
