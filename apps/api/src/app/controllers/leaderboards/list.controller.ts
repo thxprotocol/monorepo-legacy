@@ -31,7 +31,6 @@ export const paginatedResults = async (page: number, limit: number, search: stri
 const validation = [query('page').isInt(), query('limit').isInt(), query('search').optional().isString()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Pools']
     const { page, limit, search } = req.query;
     const result = await paginatedResults(Number(page), Number(limit), search ? String(search) : '');
     const widgets = await Widget.find({ poolId: result.results.map((p: PoolDocument) => p._id) });
@@ -53,7 +52,6 @@ const controller = async (req: Request, res: Response) => {
                 domain: widget ? widget.domain : 'https://www.thx.network',
                 logoImgUrl: brand && brand.logoImgUrl,
                 backgroundImgUrl: brand && brand.backgroundImgUrl,
-                // tags: ['Gaming', 'Web3'],
                 participants: participantCount,
                 active: widget && widget.active,
             };

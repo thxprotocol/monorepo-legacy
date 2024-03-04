@@ -32,8 +32,8 @@ export const controller = async (req: Request, res: Response) => {
         erc1155,
         wallet,
         req.body.to,
-        req.body.erc1155Amount,
         erc1155Token,
+        req.body.erc1155Amount,
     );
     const tx = await Transaction.findById(receiverToken.transactions[0]);
 

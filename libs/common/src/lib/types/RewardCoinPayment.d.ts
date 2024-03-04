@@ -1,3 +1,3 @@
-type TRewardCoinPayment = TRewardPayment & {
+type TRewardCoinPayment = TBaseRewardPayment & {
     //
 };

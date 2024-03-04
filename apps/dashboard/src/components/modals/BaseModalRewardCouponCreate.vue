@@ -28,42 +28,23 @@
                 </b-form-group>
             </b-tab>
             <b-tab title="Coupon Codes" style="max-height: 300px; overflow-y: auto">
-                <b-table v-if="reward" striped hover :items="couponCodes">
-                    <template #head(code)> Code </template>
-                    <template #head(created)>Created</template>
-                    <template #head(id)> &nbsp; </template>
-
-                    <template #cell(code)="{ item }">
-                        <code>{{ item.code }}</code>
-                    </template>
-                    <template #cell(createdAt)="{ item }">
-                        <small>{{ item.createdAt }}</small>
-                    </template>
-                    <template #cell(id)="{ item }">
-                        <b-dropdown variant="link" size="sm" no-caret right>
-                            <template #button-content>
-                                <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
-                            </template>
-                            <b-dropdown-item @click="onClickDeleteCode(item)"> Delete </b-dropdown-item>
-                        </b-dropdown>
-                    </template>
-                </b-table>
+                <BaseTableCouponCodes :reward="reward" :pool="pool" />
             </b-tab>
         </b-tabs>
     </BaseModalRewardCreate>
 </template>
 
 <script lang="ts">
-import type { TPool, TRewardCoupon, TBaseReward } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { RewardVariant } from '@thxnetwork/common/enums';
 import { CSVParser } from '../../utils/csv';
-import { format } from 'date-fns';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
+import BaseTableCouponCodes from '../tables/BaseTableCouponCodes.vue';
 
 @Component({
     components: {
         BaseModalRewardCreate,
+        BaseTableCouponCodes,
     },
 })
 export default class ModalRewardCustomCreate extends Vue {
@@ -78,19 +59,15 @@ export default class ModalRewardCustomCreate extends Vue {
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TRewardCoupon;
 
-    get couponCodes() {
-        if (!this.reward) return [];
-        return this.reward.couponCodes.map((c) => ({
-            code: c.code,
-            created: format(new Date(c.createdAt), 'd-M yyyy (HH:mm)'),
-            id: c._id,
-        }));
-    }
-
     onShow() {
         this.codes = [];
         this.fileCoupons = null;
         this.webshopURL = this.reward ? this.reward.webshopURL : this.webshopURL;
+    }
+
+    onError(error) {
+        console.log(error);
+        debugger;
     }
 
     onChangeFileCoupons(file: File) {
@@ -102,18 +79,10 @@ export default class ModalRewardCustomCreate extends Vue {
         if (errors.length) console.error(errors);
     }
 
-    onClickDeleteCode(item: any) {
-        this.$store.dispatch(`couponRewards/deleteCode`, {
-            pool: this.pool,
-            reward: this.reward,
-            couponCodeId: item.id,
-        });
-    }
-
-    async onSubmit(payload: TBaseReward) {
+    async onSubmit(payload: TReward) {
         this.isLoading = true;
         try {
-            await this.$store.dispatch(`couponRewards/${this.reward ? 'update' : 'create'}`, {
+            await this.$store.dispatch(`pools/${this.reward ? 'update' : 'create'}Reward`, {
                 ...this.reward,
                 ...payload,
                 variant: RewardVariant.Coupon,

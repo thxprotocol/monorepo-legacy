@@ -4,8 +4,9 @@ type TRewardCoupon = TReward & {
     webshopURL: string;
 };
 
-type TRewardCouponPayment = TRewardPayment & {
+type TRewardCouponPayment = TBaseRewardPayment & {
     couponCodeId: string;
+    code: string;
 };
 
 type TCouponCode = {

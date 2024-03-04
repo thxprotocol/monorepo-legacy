@@ -181,8 +181,8 @@ export async function transferFrom(
     erc1155: ERC1155Document,
     wallet: WalletDocument,
     to: string,
-    amount: string,
     erc1155Token: ERC1155TokenDocument,
+    amount: string,
 ): Promise<ERC1155TokenDocument> {
     const toWallet = await SafeService.findOne({ address: to, chainId: erc1155.chainId });
     const tx = await TransactionService.sendSafeAsync(
@@ -257,6 +257,10 @@ async function addMinter(erc1155: ERC1155Document, address: string) {
     assertEvent('RoleGranted', parseLogs(erc1155.contract.options.jsonInterface, receipt.logs));
 }
 
+async function findMetadataByToken(token: TERC1155Token) {
+    return ERC1155Metadata.findById(token.metadataId);
+}
+
 async function findTokenById(id: string): Promise<ERC1155TokenDocument> {
     return ERC1155Token.findById(id);
 }
@@ -273,7 +277,7 @@ async function findTokensByWallet(wallet: WalletDocument): Promise<ERC1155TokenD
     return ERC1155Token.find({ walletId: wallet._id });
 }
 
-async function findMetadataById(id: string): Promise<ERC1155MetadataDocument> {
+async function findMetadataById(id: string) {
     return ERC1155Metadata.findById(id);
 }
 
@@ -290,15 +294,8 @@ async function findTokensByMetadata(metadata: ERC1155MetadataDocument): Promise<
     return ERC1155Token.find({ metadataId: String(metadata._id) });
 }
 
-async function findMetadataByNFT(erc1155Id: string, page = 1, limit = 10, q?: string) {
-    let query;
-    if (q && q != 'null' && q != 'undefined') {
-        query = { erc1155Id, title: { $regex: `.*${q}.*`, $options: 'i' } };
-    } else {
-        query = { erc1155Id };
-    }
-
-    const paginatedResult = await paginatedResults(ERC1155Metadata, page, limit, query);
+async function findMetadataByNFT(erc1155Id: string, page = 1, limit = 10) {
+    const paginatedResult = await paginatedResults(ERC1155Metadata, page, limit, { erc1155Id });
     const results: TERC1155Metadata[] = [];
     for (const metadata of paginatedResult.results) {
         const tokens = (await this.findTokensByMetadata(metadata)).map((m: ERC1155MetadataDocument) => m.toJSON());
@@ -350,4 +347,5 @@ export default {
     queryDeployTransaction,
     getOnChainERC1155Token,
     findTokensByWallet,
+    findMetadataByToken,
 };

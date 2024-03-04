@@ -3,9 +3,6 @@ type TRewardCustom = TReward & {
     metadata: string;
 };
 
-type TRewardCustomPayment = {
-    rewardId: string;
-    sub: string;
-    poolId: string;
-    amount: number;
+type TRewardCustomPayment = TBaseRewardPayment & {
+    //
 };

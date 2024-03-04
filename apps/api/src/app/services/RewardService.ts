@@ -1,48 +1,76 @@
-import { Document, Model } from 'mongoose';
+import { Document } from 'mongoose';
 import { RewardVariant } from '@thxnetwork/common/enums';
-import {
-    QRCodeEntryDocument,
-    ERC1155Token,
-    ERC1155TokenDocument,
-    ERC721Token,
-    ERC721TokenDocument,
-    PoolDocument,
-    RewardCoinPayment,
-    RewardNFTDocument,
-    RewardNFTPayment,
-    RewardCustomPayment,
-    RewardCouponPayment,
-    RewardDiscordRolePayment,
-    ERC721Metadata,
-    ERC1155Metadata,
-    Participant,
-} from '@thxnetwork/api/models';
-import ERC1155Service from './ERC1155Service';
+import { PoolDocument, Participant, WalletDocument } from '@thxnetwork/api/models';
+import { v4 } from 'uuid';
+import { logger } from '../util/logger';
 import RewardCoinService from './RewardCoinService';
-import ERC721Service from './ERC721Service';
 import LockService from './LockService';
 import AccountProxy from '../proxies/AccountProxy';
 import ParticipantService from './ParticipantService';
 import RewardNFTService from './RewardNFTService';
+import RewardCouponService from './RewardCouponService';
 import ImageService from './ImageService';
-import NotificationService from './NotificationService';
-import { v4 } from 'uuid';
+import PointBalanceService from './PointBalanceService';
+import MailService from './MailService';
+import RewardDiscordRoleService from './RewardDiscordRoleService';
+import RewardCustomService from './RewardCustomService';
 
 const serviceMap = {
     [RewardVariant.Coin]: new RewardCoinService(),
     [RewardVariant.NFT]: new RewardNFTService(),
-    // [RewardVariant.Coupon]: new RewardCouponService(),
-    // [RewardVariant.Custom]: new RewardCustomService(),
-    // [RewardVariant.DiscordRole]: new RewardDiscordRoleService(),
+    [RewardVariant.Custom]: new RewardCustomService(),
+    [RewardVariant.Coupon]: new RewardCouponService(),
+    [RewardVariant.DiscordRole]: new RewardDiscordRoleService(),
 };
 
 export default class RewardService {
-    static async findPayments(
-        variant: RewardVariant,
-        { reward, page, limit }: { reward: TReward; page: number; limit: number },
-    ) {
+    static async list({ pool, account }) {
+        const rewardVariants = Object.keys(RewardVariant).filter((v) => !isNaN(Number(v)));
+        const callback: any = async (variant: RewardVariant) => {
+            const Reward = serviceMap[variant].models.reward;
+            const rewards = await Reward.find({
+                poolId: pool._id,
+                variant,
+                isPublished: true,
+                pointPrice: { $exists: true, $gt: 0 },
+                $or: [
+                    // Include quests with expiryDate less than or equal to now
+                    { expiryDate: { $exists: true, $gte: new Date() } },
+                    // Include quests with no expiryDate
+                    { expiryDate: { $exists: false } },
+                ],
+            });
+
+            return await Promise.all(
+                rewards.map(async (reward) => {
+                    try {
+                        const decorated = await serviceMap[reward.variant].decorate({ reward, account });
+                        const isLocked = await this.isLocked({ reward, account });
+                        const isStocked = await this.isStocked(reward);
+                        const isExpired = this.isExpired(reward);
+                        const isAvailable = await this.isAvailable({ reward, account });
+                        const progress = {
+                            count: await serviceMap[reward.variant].models.payment.countDocuments({
+                                rewardId: reward._id,
+                            }),
+                            limit: reward.limit,
+                        };
+
+                        // Decorated properties may override generic properties
+                        return { progress, isLocked, isStocked, isExpired, isAvailable, ...decorated };
+                    } catch (error) {
+                        logger.error(error);
+                    }
+                }),
+            );
+        };
+
+        return await Promise.all(rewardVariants.map(callback));
+    }
+
+    static async findPayments(reward: TReward, { page, limit }: { page: number; limit: number }) {
         const skip = (page - 1) * limit;
-        const Payment = serviceMap[variant].models.payment;
+        const Payment = serviceMap[reward.variant].models.payment;
         const total = await Payment.countDocuments({ rewardId: reward._id });
         const payments = await Payment.find({ rewardId: reward._id }).limit(limit).skip(skip);
         const subs = payments.map((entry) => entry.sub);
@@ -52,7 +80,6 @@ export default class RewardService {
             ParticipantService.decorate(payment, { accounts, participants }),
         );
         const results = await Promise.allSettled(promises);
-
         return {
             total,
             limit,
@@ -61,12 +88,63 @@ export default class RewardService {
         };
     }
 
+    static async findPaymentsForSub(sub: string) {
+        const rewardVariants: string[] = Object.keys(RewardVariant).filter((v) => !isNaN(Number(v)));
+        const payments = await Promise.all(
+            rewardVariants.map(async (variant: string) => {
+                const rewardVariant = Number(variant);
+                const payments = await serviceMap[rewardVariant].models.payment.find({ sub });
+                console.log({ payments });
+                const callback = payments.map(async (p: Document & TRewardPayment) => {
+                    const decorated = await serviceMap[rewardVariant].decoratePayment(p);
+                    return { ...decorated, rewardVariant };
+                });
+                return await Promise.all(callback);
+            }),
+        );
+
+        return payments.flat();
+    }
+
+    static async createPayment(
+        variant: RewardVariant,
+        {
+            pool,
+            reward,
+            account,
+            safe,
+            wallet,
+        }: {
+            pool: PoolDocument;
+            reward: TReward;
+            account: TAccount;
+            safe?: WalletDocument;
+            wallet?: WalletDocument;
+        },
+    ) {
+        // Validate supply, expiry, locked and reward specific validation
+        const validationResult = await this.getValidationResult({ reward, account, safe });
+        if (!validationResult.result) return validationResult.reason;
+
+        // Subtract points for account
+        await PointBalanceService.subtract(pool, account, reward.pointPrice);
+
+        // Send email notification
+        let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
+        html += `<p>Your payment has been received!<strong>A new reward</strong> is available in your account.</p>`;
+        html += `<p class="btn"><a href="${pool.campaignURL}">View Wallet</a></p>`;
+        await MailService.send(account.email, `🎁 Reward Received!`, html);
+
+        // Register the payment for the account
+        return await serviceMap[variant].createPayment({ reward, account, safe, wallet });
+    }
+
     static async create(variant: RewardVariant, poolId: string, data: Partial<TReward>, file?: Express.Multer.File) {
         if (file) {
             data.image = await ImageService.upload(file);
         }
 
-        const reward = await serviceMap[variant].models.reward.create({ ...data, poolId, variant, uuid: v4() });
+        const reward = await serviceMap[variant].create({ ...data, poolId, variant, uuid: v4() });
 
         // TODO Implement publish notification flow for rewards
         // if (data.isPublished) {
@@ -76,86 +154,76 @@ export default class RewardService {
         return reward;
     }
 
+    static async update(reward: TReward, updates: Partial<TReward>, file?: Express.Multer.File) {
+        if (file) {
+            updates.image = await ImageService.upload(file);
+        }
+
+        reward = await serviceMap[reward.variant].update(reward, updates);
+
+        // TODO Implement publish notification flow for rewards
+        // if (data.isPublished) {
+        //     await NotificationService.notify(variant, quest);
+        // }
+
+        return reward;
+    }
+
+    static async remove(reward: TReward) {
+        return await serviceMap[reward.variant].remove(reward);
+    }
+
     static findById(variant: RewardVariant, rewardId: string) {
-        return serviceMap[variant].models.reward.findById(rewardId);
+        return serviceMap[variant].findById(rewardId);
     }
 
-    static async getMetadata(perk: RewardNFTDocument, token?: ERC721TokenDocument | ERC1155TokenDocument) {
-        const metadataId = perk.metadataId || (token && token.metadataId);
-        if (perk.erc721Id) {
-            return await ERC721Metadata.findById(metadataId);
-        }
-        if (perk.erc1155Id) {
-            return await ERC1155Metadata.findById(metadataId);
-        }
-    }
-
-    static async getToken(perk: RewardNFTDocument) {
-        if (perk.erc721Id) {
-            return await ERC721Token.findById(perk.tokenId);
-        }
-        if (perk.erc1155Id) {
-            return await ERC1155Token.findById(perk.tokenId);
-        }
-    }
-
-    static async getNFT(perk: RewardNFTDocument) {
-        if (perk.erc721Id) {
-            return await ERC721Service.findById(perk.erc721Id);
-        }
-        if (perk.erc1155Id) {
-            return await ERC1155Service.findById(perk.erc1155Id);
-        }
-    }
-
-    static async getProgress(r: TReward, model: any) {
-        return {
-            count: await model.countDocuments({ rewardId: r._id }),
-            limit: r.limit,
-        };
-    }
-
-    static async getExpiry(r: TReward) {
-        return {
-            now: Date.now(),
-            date: new Date(r.expiryDate).getTime(),
-        };
-    }
-
-    static async validate({
+    static async getValidationResult({
         reward,
-        pool,
         account,
+        safe,
     }: {
         reward: TReward;
-        pool?: PoolDocument;
-        claim?: QRCodeEntryDocument;
-        account?: TAccount;
-    }): Promise<{ isError: boolean; errorMessage?: string }> {
-        const service = serviceMap[reward.variant];
-        const Payment = service.models.payment;
+        account: TAccount;
+        safe: WalletDocument;
+    }) {
+        const isLocked = await this.isLocked({ reward, account });
+        if (isLocked) return { result: false, reason: 'This reward is locked.' };
 
-        // Is gated and reqeust is made authenticated
-        if (account && pool && reward.locks.length) {
-            const isPerkLocked = await LockService.getIsLocked(reward.locks, account);
-            if (isPerkLocked) {
-                return { isError: true, errorMessage: 'This perk has been gated with a token.' };
-            }
-        }
+        const isExpired = this.isExpired(reward);
+        if (isExpired) return { result: false, reason: 'This reward claim has expired.' };
 
-        // Can be claimed only before the expiry date
-        if (reward.expiryDate && new Date(reward.expiryDate).getTime() < Date.now()) {
-            return { isError: true, errorMessage: 'This perk claim has expired.' };
-        }
+        const isStocked = await this.isStocked(reward);
+        if (!isStocked) return { result: false, reason: 'This reward is out of stock.' };
 
-        // Can only be claimed for the amount of times per perk specified in the limit
-        if (reward.limit > 0) {
-            const amountOfPayments = await Payment.countDocuments({ rewardId: reward._id });
-            if (amountOfPayments >= reward.limit) {
-                return { isError: true, errorMessage: "This perk has reached it's limit." };
-            }
-        }
+        return serviceMap[reward.variant].getValidationResult({ reward, account, safe });
+    }
 
-        return { isError: false };
+    static async isLocked({ reward, account }) {
+        if (!account || !reward.locks.length) return false;
+        return await LockService.getIsLocked(reward.locks, account);
+    }
+
+    static isExpired(reward: TReward) {
+        if (!reward.expiryDate) return false;
+        return Date.now() > new Date(reward.expiryDate).getTime();
+    }
+
+    static async isStocked(reward) {
+        if (!reward.limit) return true;
+        // Check if reward has a limit and if limit has been reached
+        const amountOfPayments = await serviceMap[reward.variant].models.payment.countDocuments({
+            rewardId: reward._id,
+        });
+        return amountOfPayments < reward.limit;
+    }
+
+    static async isAvailable({ reward, account }: { reward: TReward; account?: TAccount }) {
+        if (!account) return true;
+
+        const isLocked = await this.isLocked({ reward, account });
+        const isStocked = await this.isStocked(reward);
+        const isExpired = this.isExpired(reward);
+
+        return !isLocked && !isExpired && isStocked;
     }
 }

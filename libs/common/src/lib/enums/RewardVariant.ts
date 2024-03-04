@@ -15,6 +15,4 @@ export enum QuestVariant {
     Custom = 5,
     Web3 = 6,
     Gitcoin = 7,
-    // Whitelist = 8,
-    // Snapshot = 9,
 }

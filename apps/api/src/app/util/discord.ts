@@ -27,3 +27,7 @@ export const eventRegister = (client: Client<true>, router: { [key: string]: any
         console.error('Discord.js error:', error);
     });
 };
+
+export function discordColorToHex(discordColorCode) {
+    return `#${discordColorCode.toString(16).padStart(6, '0')}`;
+}

@@ -4,8 +4,8 @@ type TInfoLink = {
 };
 
 type TQuestLock = { variant: QuestVariant; questId: string };
-
-type TReward = {
+type TReward = TRewardCoin | TRewardNFT | TRewardCustom | TRewardCoupon | TRewardDiscordRole;
+type TBaseReward = {
     _id: string;
     variant: RewardVariant;
     uuid: string;
@@ -28,7 +28,7 @@ type TReward = {
     delete: (payload: Partial<TReward>) => Promise<void>;
 };
 
-type TRewardPayment = {
+type TBaseRewardPayment = {
     _id: string;
     rewardId: string;
     poolId: string;
@@ -36,3 +36,9 @@ type TRewardPayment = {
     sub: string;
     createdAt: Date;
 };
+type TRewardPayment =
+    | TRewardCoinPayment
+    | TRewardNFTPayment
+    | TRewardCustomPayment
+    | TRewardCouponPayment
+    | TRewardDiscordRolePayment;

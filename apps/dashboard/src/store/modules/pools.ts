@@ -161,6 +161,11 @@ export type TGuildState = {
 export type TIdentityState = {
     [poolId: string]: TPaginationResult & { results: TIdentity[] };
 };
+export type TCouponCodeState = {
+    [poolId: string]: {
+        [rewardId: string]: TPaginationResult & { results: TCouponCode[] };
+    };
+};
 export type TParticipantState = {
     [poolId: string]: TPaginationResult & { results: TParticipant[] };
 };
@@ -176,6 +181,7 @@ class PoolModule extends VuexModule {
     _events: TEventState = {};
     _identities: TIdentityState = {};
     _participants: TParticipantState = {};
+    _couponCodes: TCouponCodeState = {};
     _analytics: IPoolAnalytics = {};
     _analyticsLeaderBoard: IPoolAnalyticsLeaderBoard = {};
     _analyticsMetrics: IPoolAnalyticsLeaderBoard = {};
@@ -214,6 +220,10 @@ class PoolModule extends VuexModule {
 
     get participants() {
         return this._participants;
+    }
+
+    get couponCodes() {
+        return this._couponCodes;
     }
 
     get analytics() {
@@ -363,6 +373,23 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
+    setCouponCodes(data: {
+        poolId: string;
+        couponRewardId: string;
+        result: { results: TCouponCode[] } & TPaginationResult;
+    }) {
+        if (!this._couponCodes[data.poolId]) Vue.set(this._couponCodes, data.poolId, {});
+        Vue.set(this._couponCodes[data.poolId], data.couponRewardId, data.result);
+    }
+
+    @Mutation
+    unsetCouponCode({ poolId, rewardId, couponCodeId }: { poolId: string; rewardId: string; couponCodeId: string }) {
+        const couponCodes = this._couponCodes[poolId][rewardId].results;
+        const index = couponCodes.findIndex((c) => c._id === couponCodeId);
+        Vue.delete(this._couponCodes[poolId][rewardId].results, index);
+    }
+
+    @Mutation
     setParticipant(data: TParticipant) {
         const index = this._participants[data.poolId].results.findIndex((p) => p._id === data._id);
         Vue.set(this._participants[data.poolId].results, index, data);
@@ -462,8 +489,7 @@ class PoolModule extends VuexModule {
     async createQuest(payload: TQuest) {
         await axios({
             method: 'POST',
-            url: `/pools/${payload.poolId}/quests`,
-            headers: { 'X-PoolId': payload.poolId },
+            url: `/pools/${payload.poolId}/quests/${payload.variant}`,
             data: prepareFormDataForUpload(payload),
         });
     }
@@ -472,8 +498,7 @@ class PoolModule extends VuexModule {
     async createReward(payload: TReward) {
         await axios({
             method: 'POST',
-            url: `/pools/${payload.poolId}/quests`,
-            headers: { 'X-PoolId': payload.poolId },
+            url: `/pools/${payload.poolId}/rewards/${payload.variant}`,
             data: prepareFormDataForUpload(payload),
         });
     }
@@ -483,7 +508,6 @@ class PoolModule extends VuexModule {
         const { data } = await axios({
             method: 'GET',
             url: `/pools/${pool._id}/rewards`,
-            headers: { 'X-PoolId': pool._id },
             params: { page, limit, isPublished },
         });
 
@@ -501,7 +525,6 @@ class PoolModule extends VuexModule {
         const { data } = await axios({
             method: 'GET',
             url: `/pools/${pool._id}/quests`,
-            headers: { 'X-PoolId': pool._id },
             params: { page, limit, isPublished },
         });
 
@@ -518,8 +541,16 @@ class PoolModule extends VuexModule {
     async updateQuest(payload: TQuest) {
         await axios({
             method: 'PATCH',
-            url: `/pools/${payload.poolId}/quests/${payload._id}`,
-            headers: { 'X-PoolId': payload.poolId },
+            url: `/pools/${payload.poolId}/quests/${payload.variant}/${payload._id}`,
+            data: prepareFormDataForUpload(payload),
+        });
+    }
+
+    @Action
+    async updateReward(payload: TReward) {
+        await axios({
+            method: 'PATCH',
+            url: `/pools/${payload.poolId}/rewards/${payload.variant}/${payload._id}`,
             data: prepareFormDataForUpload(payload),
         });
     }
@@ -528,8 +559,17 @@ class PoolModule extends VuexModule {
     async removeQuest(payload: TQuest) {
         await axios({
             method: 'DELETE',
-            url: `/pools/${payload.poolId}/quests/${payload._id}`,
-            headers: { 'X-PoolId': payload.poolId },
+            url: `/pools/${payload.poolId}/quests/${payload.variant}/${payload._id}`,
+            data: payload,
+        });
+        this.context.commit('unsetQuest', payload);
+    }
+
+    @Action
+    async removeReward(payload: TReward) {
+        await axios({
+            method: 'DELETE',
+            url: `/pools/${payload.poolId}/rewards/${payload.variant}/${payload._id}`,
             data: payload,
         });
         this.context.commit('unsetQuest', payload);
@@ -539,7 +579,7 @@ class PoolModule extends VuexModule {
     async listEntries(payload: { quest: TQuest; limit: number; page: number }) {
         const { data } = await axios({
             method: 'GET',
-            url: `/pools/${payload.quest.poolId}/quests/${payload.quest._id}/entries/${payload.quest.variant}`,
+            url: `/pools/${payload.quest.poolId}/quests/${payload.quest.variant}/${payload.quest._id}/entries`,
             headers: { 'X-PoolId': payload.quest.poolId },
             params: {
                 page: payload.page,
@@ -557,7 +597,7 @@ class PoolModule extends VuexModule {
     async listPayments(payload: { reward: TReward; limit: number; page: number }) {
         const { data } = await axios({
             method: 'GET',
-            url: `/pools/${payload.reward.poolId}/rewards/${payload.reward._id}/payments/${payload.reward.variant}`,
+            url: `/pools/${payload.reward.poolId}/rewards/${payload.reward.variant}/${payload.reward._id}/payments`,
             headers: { 'X-PoolId': payload.reward.poolId },
             params: {
                 page: payload.page,
@@ -620,6 +660,42 @@ class PoolModule extends VuexModule {
         });
         this.context.commit('setAnalyticsMetrics', { _id: payload.poolId, ...r.data });
         return r.data;
+    }
+
+    @Action({ rawError: true })
+    async listCouponCodes({
+        pool,
+        reward,
+        page,
+        limit,
+    }: {
+        pool: TPool;
+        reward: TRewardCoupon;
+        page: string;
+        limit: string;
+    }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/coupons`,
+            headers: { 'X-PoolId': pool._id },
+            params: {
+                poolId: pool._id,
+                couponRewardId: reward._id,
+                page,
+                limit,
+            },
+        });
+        this.context.commit('setCouponCodes', { poolId: pool._id, couponRewardId: reward._id, result: data });
+    }
+
+    @Action({ rawError: true })
+    async deleteCouponCode({ reward, couponCodeId }: { pool: TPool; reward: TRewardCoupon; couponCodeId: string }) {
+        await axios({
+            method: 'DELETE',
+            url: `/coupons/${couponCodeId}`,
+        });
+
+        this.context.commit('unsetCouponCode', { poolId: reward.poolId, rewardId: reward._id, couponCodeId });
     }
 
     @Action({ rawError: true })

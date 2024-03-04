@@ -69,7 +69,6 @@
 </template>
 
 <script lang="ts">
-import type { TBaseReward, TPool, TQuestLock } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
@@ -105,7 +104,7 @@ export default class ModalRewardERC20Create extends Vue {
     @Prop() error!: string;
     @Prop() isLoading!: boolean;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TBaseReward;
+    @Prop({ required: false }) reward!: TReward;
 
     onShow() {
         this.title = this.reward ? this.reward.title : this.title;

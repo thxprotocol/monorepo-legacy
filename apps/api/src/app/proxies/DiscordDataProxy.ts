@@ -7,6 +7,7 @@ import { logger } from '../util/logger';
 import { AccessTokenKind, OAuthRequiredScopes } from '@thxnetwork/common/enums';
 import { DISCORD_API_ENDPOINT } from '@thxnetwork/common/constants';
 import AccountProxy from './AccountProxy';
+import { discordColorToHex } from '../util/discord';
 
 export enum NotificationVariant {
     QuestDaily = 0,
@@ -99,15 +100,11 @@ export default class DiscordDataProxy {
         return { result: false, reason: 'Discord: Your Discord account is not a member of this server.' };
     }
 
-    static discordColorToHex(discordColorCode) {
-        return `#${discordColorCode.toString(16).padStart(6, '0')}`;
-    }
-
     static async getGuildRoles(guild: Guild) {
         return guild.roles.cache.map((role) => ({
             id: role.id,
             name: role.name,
-            color: this.discordColorToHex(role.color),
+            color: discordColorToHex(role.color),
         }));
     }
 

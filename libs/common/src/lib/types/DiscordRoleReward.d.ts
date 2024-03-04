@@ -4,4 +4,5 @@ type TRewardDiscordRole = TReward & {
 
 type TRewardDiscordRolePayment = TRewardPayment & {
     discordRoleId: string;
+    role: { color: string; name: string };
 };

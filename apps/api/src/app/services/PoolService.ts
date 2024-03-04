@@ -25,6 +25,7 @@ import {
     Widget,
     QuestSocial,
     QuestDaily,
+    CouponCode,
 } from '@thxnetwork/api/models';
 
 import AccountProxy from '../proxies/AccountProxy';
@@ -173,6 +174,22 @@ async function findIdentities(pool: PoolDocument, page: number, limit: number) {
     }));
 
     return identities;
+}
+
+async function findCouponCodes(query: { couponRewardId: string }, page: number, limit: number) {
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = await CouponCode.find(query).countDocuments();
+    return {
+        previous: startIndex > 0 && {
+            page: page - 1,
+        },
+        next: endIndex < total && {
+            page: page + 1,
+        },
+        total,
+        results: await CouponCode.aggregate([{ $match: query }, { $skip: startIndex }, { $limit: limit }]).exec(),
+    };
 }
 
 async function findParticipants(pool: PoolDocument, page: number, limit: number) {
@@ -341,5 +358,6 @@ export default {
     findParticipants,
     findGuilds,
     findCollaborators,
+    findCouponCodes,
     inviteCollaborator,
 };

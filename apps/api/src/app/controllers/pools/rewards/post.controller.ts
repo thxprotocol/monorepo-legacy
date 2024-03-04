@@ -1,14 +1,12 @@
 import { body, param } from 'express-validator';
 import { Request, Response } from 'express';
 import { defaults } from '@thxnetwork/api/util/validation';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
 import RewardService from '@thxnetwork/api/services/RewardService';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { NotFoundError } from '@thxnetwork/api/util/errors';
-import SafeService from '@thxnetwork/api/services/SafeService';
 
 const validationBaseQuest = [
     param('id').isMongoId(),
-    param('rewardId').isMongoId(),
     ...defaults.reward,
     // Coin
     body('erc20Id').optional().isMongoId(),
@@ -21,11 +19,14 @@ const validationBaseQuest = [
     body('claimLimit').optional().isInt(),
     body('claimAmount').optional().isInt({ lt: 5001 }),
     body('redirectUrl').optional().isURL({ require_tld: false }),
+
     // Coupon
     body('webshopURL').optional().isURL({ require_tld: false }),
     body('codes')
         .optional()
-        .custom((value: string) => value && JSON.parse(value).length > 0),
+        .custom((value: string) => value && Array.isArray(JSON.parse(value)))
+        .customSanitizer((value: string) => value && JSON.parse(value)),
+
     // Custom
     body('webhookId').optional().isMongoId(),
     body('metadata').optional().isString(),

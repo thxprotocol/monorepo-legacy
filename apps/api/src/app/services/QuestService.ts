@@ -49,20 +49,21 @@ export default class QuestService {
         return await Promise.all(questVariants.map(callback));
     }
 
-    static async update(variant: QuestVariant, questId: string, data: Partial<TQuest>, file?: Express.Multer.File) {
-        const quest = await this.findById(variant, questId);
-
+    static async update(quest: TQuest, updates: Partial<TQuest>, file?: Express.Multer.File) {
         if (file) {
-            data.image = await ImageService.upload(file);
-            data.image = await ImageService.upload(file);
+            updates.image = await ImageService.upload(file);
         }
 
         // We only want to notify when the quest is set to published (and not updated while published already)
-        if (data.isPublished && Boolean(data.isPublished) !== quest.isPublished) {
-            await NotificationService.notify(variant, { ...quest, ...data, image: data.image || quest.image });
+        if (updates.isPublished && Boolean(updates.isPublished) !== quest.isPublished) {
+            await NotificationService.notify(quest.variant, {
+                ...quest,
+                ...updates,
+                image: updates.image || quest.image,
+            });
         }
 
-        return await this.updateById(variant, questId, data);
+        return await this.updateById(quest.variant, quest._id, updates);
     }
 
     static async create(variant: QuestVariant, poolId: string, data: Partial<TQuest>, file?: Express.Multer.File) {
@@ -177,12 +178,9 @@ export default class QuestService {
         return token && token.userId;
     }
 
-    static async findEntries(
-        variant: QuestVariant,
-        { quest, page = 1, limit = 25 }: { quest: TQuest; page: number; limit: number },
-    ) {
+    static async findEntries(quest: TQuest, { page = 1, limit = 25 }: { page: number; limit: number }) {
         const skip = (page - 1) * limit;
-        const Entry = serviceMap[variant].models.entry;
+        const Entry = serviceMap[quest.variant].models.entry;
         const total = await Entry.countDocuments({ questId: quest._id });
         const entries = await Entry.find({ questId: quest._id }).limit(limit).skip(skip);
         const subs = entries.map((entry) => entry.sub);
@@ -190,7 +188,7 @@ export default class QuestService {
         const participants = await Participant.find({ poolId: quest.poolId });
         const promises = entries.map(async (entry) => ParticipantService.decorate(entry, { accounts, participants }));
         const results = await Promise.allSettled(promises);
-        const meta = await serviceMap[variant].findEntryMetadata({ quest });
+        const meta = await serviceMap[quest.variant].findEntryMetadata({ quest });
 
         return {
             total,

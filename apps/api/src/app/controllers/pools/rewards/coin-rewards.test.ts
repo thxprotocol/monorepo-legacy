@@ -4,7 +4,7 @@ import { ChainId, ERC20Type } from '@thxnetwork/common/enums';
 import { dashboardAccessToken, tokenName, tokenSymbol } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { addMinutes } from '@thxnetwork/api/util/rewards';
+import { addMinutes } from '@thxnetwork/api/util/date';
 import { createImage } from '@thxnetwork/api/util/jest/images';
 import { ERC20Document } from '@thxnetwork/api/models/ERC20';
 import { RewardCoinDocument } from '@thxnetwork/api/models/RewardCoin';

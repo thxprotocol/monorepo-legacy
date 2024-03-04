@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
 import { param, query } from 'express-validator';
 import { RewardVariant } from '@thxnetwork/common/enums';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
 import RewardService from '@thxnetwork/api/services/RewardService';
 
 const validation = [
     param('id').isMongoId(),
-    param('rewardId').isMongoId(),
     param('variant').isString(),
+    param('rewardId').isMongoId(),
     query('page').isInt(),
     query('limit').isInt(),
 ];
@@ -14,13 +15,14 @@ const validation = [
 const controller = async (req: Request, res: Response) => {
     const variant = req.params.variant as unknown as RewardVariant;
     const reward = await RewardService.findById(variant, req.params.rewardId);
-    const entries = await RewardService.findPayments(reward.variant, {
-        reward,
+    if (!reward) throw new NotFoundError('Reward not found');
+
+    const payments = await RewardService.findPayments(reward, {
         page: Number(req.query.page),
         limit: Number(req.query.limit),
     });
 
-    res.json(entries);
+    res.json(payments);
 };
 
 export default { controller, validation };

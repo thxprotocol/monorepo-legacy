@@ -18,10 +18,10 @@
 </template>
 
 <script lang="ts">
-import type { TBaseReward, TERC20, TRewardCoin, TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IERC20s, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
+import { RewardVariant } from '@thxnetwork/common/enums';
 import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
 
@@ -69,17 +69,16 @@ export default class ModalRewardCoinCreate extends Vue {
         }
     }
 
-    async onSubmit(payload: TBaseReward) {
+    async onSubmit(payload: TReward) {
         this.isLoading = true;
+        console.log(payload, this.reward);
         try {
-            await this.$store.dispatch(`erc20Perks/${this.reward ? 'update' : 'create'}`, {
-                pool: this.pool,
-                reward: this.reward,
-                payload: {
-                    ...payload,
-                    erc20Id: this.erc20Id,
-                    amount: this.amount,
-                },
+            await this.$store.dispatch(`pools/${this.reward ? 'update' : 'create'}Reward`, {
+                ...this.reward,
+                ...payload,
+                variant: RewardVariant.Coin,
+                erc20Id: this.erc20Id,
+                amount: this.amount,
             });
             this.$bvModal.hide(this.id);
         } catch (error) {

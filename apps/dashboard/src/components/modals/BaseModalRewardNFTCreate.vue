@@ -8,10 +8,11 @@
         :error="error"
         :is-loading="isLoading"
     >
-        <b-form-group label="NFT" v-if="!selectedMetadataIds.length">
+        <!-- <b-form-group label="NFT" v-if="!selectedMetadataIds.length">
             <BaseDropdownSelectERC721 :chainId="chainId" :nft="nft" @selected="onSelectNFT" />
-        </b-form-group>
-        <b-form-group label="Metadata" v-if="nft && !selectedMetadataIds.length">
+        </b-form-group> -->
+
+        <b-form-group label="Metadata" v-if="nft">
             <BaseDropdownERC721Metadata
                 :pool="pool"
                 :nft="nft"
@@ -47,10 +48,9 @@
 <script lang="ts">
 import { mapGetters } from 'vuex';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TERC1155Token, TERC721Token, TPool, TRewardNFT, TBaseReward } from '@thxnetwork/types/interfaces';
 import type { IERC721s, IERC721Tokens, TERC721, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
 import type { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
-import { ChainId, NFTVariant } from '@thxnetwork/common/enums';
+import { ChainId, NFTVariant, RewardVariant } from '@thxnetwork/common/enums';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
@@ -153,7 +153,7 @@ export default class ModalRewardNFTCreate extends Vue {
         this.erc1155Amount = amount;
     }
 
-    async onSubmit(payload: TBaseReward) {
+    async onSubmit(payload: TReward) {
         if (!this.nft || (!this.metadataId && !this.tokenId)) {
             this.error = 'Select a token or metadata for this reward.';
             return;
@@ -172,20 +172,18 @@ export default class ModalRewardNFTCreate extends Vue {
             }
 
             await this.$store.dispatch(`pools/${this.reward ? 'update' : 'create'}Reward`, {
-                pool: this.pool,
-                reward: this.reward,
-                payload: {
-                    ...payload,
-                    erc721Id,
-                    erc1155Id,
-                    erc1155Amount: this.erc1155Amount,
-                    tokenId: this.tokenId,
-                    metadataId: this.metadataId,
-                    //  QR Code related config
-                    redirectUrl: this.redirectUrl ? this.redirectUrl : undefined,
-                    claimAmount: this.claimAmount,
-                    claimLimit: this.claimLimit,
-                },
+                ...this.reward,
+                ...payload,
+                variant: RewardVariant.NFT,
+                erc721Id,
+                erc1155Id,
+                erc1155Amount: this.erc1155Amount,
+                tokenId: this.tokenId,
+                metadataId: this.metadataId,
+                //  QR Code related config
+                redirectUrl: this.redirectUrl ? this.redirectUrl : undefined,
+                claimAmount: this.claimAmount,
+                claimLimit: this.claimLimit,
             });
             this.$bvModal.hide(this.id);
         } catch (error) {

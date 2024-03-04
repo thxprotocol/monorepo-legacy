@@ -190,8 +190,7 @@ import { config } from '../utils/oidc';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import { track } from '@thxnetwork/common/mixpanel';
 import BaseCodeExample from '../components/BaseCodeExample.vue';
-import { contentQuests } from './pool/Quests.vue';
-import { contentRewards } from './pool/Rewards.vue';
+import { contentQuests, contentRewards } from '@thxnetwork/common/constants';
 
 @Component({
     metaInfo() {

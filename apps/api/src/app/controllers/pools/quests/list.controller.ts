@@ -1,8 +1,9 @@
-import { query } from 'express-validator';
+import { param, query } from 'express-validator';
 import { Request, Response } from 'express';
 import { QuestInvite, QuestSocial, QuestCustom, QuestWeb3, QuestGitcoin, QuestDaily } from '@thxnetwork/api/models';
 
 const validation = [
+    param('id').isMongoId(),
     query('page').isInt(),
     query('limit').isInt(),
     query('isPublished')
@@ -14,8 +15,7 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Pools']
-    const poolId = req.header('X-PoolId');
+    const poolId = req.params.id;
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
     const $match = { poolId, isPublished: req.query.isPublished };
