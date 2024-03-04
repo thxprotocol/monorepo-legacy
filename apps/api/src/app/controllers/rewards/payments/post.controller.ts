@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
-import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { Participant } from '@thxnetwork/api/models/Participant';
+import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { RewardVariant } from '@thxnetwork/common/enums';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
@@ -26,12 +25,6 @@ const controller = async (req: Request, res: Response) => {
 
     const account = await AccountProxy.findById(req.auth.sub);
     if (!account) throw new NotFoundError('Account not found');
-
-    const participant = await Participant.findOne({ sub: account.sub, poolId: pool._id });
-    if (!participant) new NotFoundError('Participant not found');
-    if (Number(participant.balance) < Number(reward.pointPrice)) {
-        throw new BadRequestError('Participant has insufficient points');
-    }
 
     const validationResult = await RewardService.getValidationResult({ reward, account, safe });
     if (!validationResult.result) {

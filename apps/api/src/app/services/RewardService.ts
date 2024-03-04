@@ -184,6 +184,11 @@ export default class RewardService {
         account: TAccount;
         safe: WalletDocument;
     }) {
+        const participant = await Participant.findOne({ sub: account.sub, poolId: reward.poolId });
+        if (Number(participant.balance) < Number(reward.pointPrice)) {
+            return { result: false, reason: 'Participant has insufficient points.' };
+        }
+
         const isLocked = await this.isLocked({ reward, account });
         if (isLocked) return { result: false, reason: 'This reward is locked.' };
 
