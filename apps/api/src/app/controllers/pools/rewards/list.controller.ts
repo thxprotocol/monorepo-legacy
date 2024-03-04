@@ -1,6 +1,14 @@
 import { param, query } from 'express-validator';
 import { Request, Response } from 'express';
-import { RewardNFT, RewardCoupon, RewardCoin, RewardDiscordRole, RewardCustom } from '@thxnetwork/api/models';
+import {
+    CouponCode,
+    RewardNFT,
+    RewardCoupon,
+    RewardCoin,
+    RewardDiscordRole,
+    RewardCustom,
+} from '@thxnetwork/api/models';
+import { RewardVariant } from '@thxnetwork/common/enums';
 
 const validation = [
     param('id').isMongoId(),
@@ -43,7 +51,17 @@ const controller = async (req: Request, res: Response) => {
         total,
         limit,
         page,
-        results,
+        results: await Promise.all(
+            results.map(async (reward) => {
+                // TODO Move this hack to a service method and make it part of the IRewardService
+                if (reward.variant === RewardVariant.Coupon) {
+                    const couponCodeCount = await CouponCode.countDocuments({ couponRewardId: reward._id });
+                    return { ...reward, couponCodeCount };
+                }
+
+                return reward;
+            }),
+        ),
     });
 };
 

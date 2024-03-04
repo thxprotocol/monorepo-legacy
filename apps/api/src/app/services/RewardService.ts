@@ -129,7 +129,7 @@ export default class RewardService {
 
         // Send email notification
         let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
-        html += `<p>Your payment has been received!<strong>A new reward</strong> is available in your account.</p>`;
+        html += `<p>Your payment has been received! <strong>${reward.title}</strong> is available in your account.</p>`;
         html += `<p class="btn"><a href="${pool.campaignURL}">View Wallet</a></p>`;
         await MailService.send(account.email, `🎁 Reward Received!`, html);
 
