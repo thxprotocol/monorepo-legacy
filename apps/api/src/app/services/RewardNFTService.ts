@@ -30,8 +30,11 @@ export default class RewardNFTService implements IRewardService {
         const nft = await this.findNFT(reward);
         const metadata = reward.metadataId && (await this.findMetadataById(nft, reward.metadataId));
         const token = reward.tokenId && (await this.findTokenById(nft, reward));
-
-        return { ...reward.toJSON(), chainId: nft.chainId, nft, metadata, token };
+        const expiry = reward.expiryDate && {
+            date: reward.expiryDate,
+            now: new Date(),
+        };
+        return { ...reward.toJSON(), chainId: nft.chainId, nft, metadata, token, expiry };
     }
 
     async decoratePayment(payment: TRewardPayment): Promise<TRewardPayment> {

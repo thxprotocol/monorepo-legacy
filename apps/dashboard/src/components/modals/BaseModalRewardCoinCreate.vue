@@ -24,7 +24,6 @@ import { IERC20s, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
 import { RewardVariant } from '@thxnetwork/common/enums';
 import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
-import { toWei } from 'web3-utils';
 
 @Component({
     components: {
