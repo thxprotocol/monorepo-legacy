@@ -82,7 +82,7 @@ module.exports = {
             ['erc20perkpayments', 'rewardcoinpayment'],
             ['erc20', 'erc20'],
             ['collaborators', 'collaborator'],
-            ['referralrewards', 'rewardinvite'],
+            ['referralrewards', 'questinvite'],
         ];
 
         for (const [oldName, newName] of updates) {
