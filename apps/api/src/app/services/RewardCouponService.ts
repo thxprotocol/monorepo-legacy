@@ -21,7 +21,7 @@ export default class RewardCouponService implements IRewardService {
 
     async decoratePayment(payment: TRewardPayment) {
         const code = await CouponCode.findById(payment.couponCodeId);
-        return { ...payment.toJSON(), code: code.code };
+        return { ...payment.toJSON(), code: code && code.code };
     }
 
     async getValidationResult({ reward }: { reward: TReward; account?: TAccount }) {

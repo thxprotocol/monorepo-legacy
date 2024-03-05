@@ -17,18 +17,18 @@ export default class RewardDiscordRoleService implements IRewardService {
 
     async decoratePayment(payment: TRewardPayment): Promise<TRewardDiscordRolePayment> {
         const reward = await this.models.reward.findById(payment.rewardId);
-        const guild = await this.getGuild(reward.poolId);
-        const role = await this.getRole(guild.id, reward.discordRoleId);
-        const discordServerURL = `https://discordapp.com/channels/${guild.id}/`;
+        const guild = reward && (await this.getGuild(reward.poolId));
+        const role = guild && reward && (await this.getRole(guild.id, reward.discordRoleId));
+        const discordServerURL = guild && `https://discordapp.com/channels/${guild.id}/`;
 
         return {
             ...payment.toJSON(),
             discordServerURL,
-            guild: {
+            guild: guild && {
                 name: guild.name,
                 icon: guild.icon && `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png`,
             },
-            role: {
+            role: role && {
                 name: role.name,
                 color: discordColorToHex(role.color),
             },
