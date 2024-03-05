@@ -12,7 +12,7 @@ export type TQRCodeEntryURLData = TQRCodeEntry & {
 };
 
 export interface TQRCodeEntryState {
-    [rewardId: string]: TPaginationResult & { results: TQRCodeEntry[] };
+    [rewardId: string]: TPaginationResult & { results: TQRCodeEntry[]; meta: { participantCount: number } };
 }
 
 @Module({ namespaced: true })

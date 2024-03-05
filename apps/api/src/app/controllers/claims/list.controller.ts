@@ -28,12 +28,16 @@ const controller = async (req: Request, res: Response) => {
         const account = accounts.find((account) => account.sub === entry.sub);
         return Object.assign(entry.toJSON(), { account });
     });
+    const meta = {
+        participantCount: await QRCodeEntry.countDocuments({ rewardId, sub: { $exists: true } }),
+    };
 
     res.json({
         total,
         limit,
         page,
         results,
+        meta,
     });
 };
 

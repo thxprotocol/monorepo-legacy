@@ -1,7 +1,7 @@
 <template>
     <base-modal @show="onShow" size="xl" title="QR Codes" :id="id" hide-footer>
         <template #modal-body>
-            <b-tabs content-class="py-3">
+            <b-tabs v-model="tabIndex" content-class="py-3" justified>
                 <b-tab title="Create">
                     <b-form-group
                         label="Amount"
@@ -19,16 +19,12 @@
 
                     <b-button @click="onClickCreate" block variant="primary" :disabled="isLoading" class="rounded-pill">
                         <b-spinner small variant="light" v-if="isLoading" />
-                        <template v-else>Create QR Codes</template>
+                        <template v-else>Create {{ claimAmount || '' }} QR Codes</template>
                     </b-button>
                 </b-tab>
                 <b-tab title="Entries">
                     <b-form-group label="QR code supply">
-                        <b-progress
-                            :value="qrCodeEntries.filter((c) => c.claimedAt).length"
-                            :max="qrCodeEntries.length"
-                            show-value
-                        />
+                        <b-progress :value="qrCodes.meta.participantCount" :max="qrCodes.total" show-value />
                     </b-form-group>
                     <BaseCardTableHeader
                         :page="page"
@@ -247,10 +243,10 @@ export default class BaseModalQRCodes extends Vue {
     selectedUnit = unitList[0];
     selectedQRCodeEntries: string[] = [];
 
-    limit = 500;
+    limit = 25;
     page = 1;
     index = 0;
-
+    tabIndex = 0;
     claimAmount = 0;
     redirectURL = '';
 
@@ -261,12 +257,13 @@ export default class BaseModalQRCodes extends Vue {
     @Prop() pool!: TPool;
 
     get qrCodes() {
-        if (!this.qrCodeEntryList || !this.qrCodeEntryList[this.reward._id]) return { total: 0, results: [] };
+        if (!this.qrCodeEntryList || !this.qrCodeEntryList[this.reward._id])
+            return { total: 0, results: [], meta: { participantCount: 0 } };
         return this.qrCodeEntryList[this.reward._id];
     }
 
     get qrCodeEntries() {
-        return this.qrCodes.results.map((entry) => ({
+        return this.qrCodes.results.map((entry: TQRCodeEntry) => ({
             checkbox: entry.uuid,
             url: this.getUrl(entry.uuid),
             account: parseAccount({ id: entry.sub, account: entry.account }),
@@ -299,7 +296,8 @@ export default class BaseModalQRCodes extends Vue {
             claimAmount: this.claimAmount,
             redirectURL: this.redirectURL,
         });
-        this.listEntries();
+        await this.listEntries();
+        this.tabIndex = 1;
     }
 
     async listEntries() {
@@ -318,10 +316,12 @@ export default class BaseModalQRCodes extends Vue {
 
     onChangeLimit(limit: number) {
         this.limit = limit;
+        this.listEntries();
     }
 
     onChangePage(page: number) {
         this.page = page;
+        this.listEntries();
     }
 
     onClickDownloadZipAll() {
