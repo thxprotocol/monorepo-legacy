@@ -12,7 +12,6 @@ import { NFTVariant } from '@thxnetwork/common/enums';
 import { IRewardService } from './interfaces/IRewardService';
 import ERC721Service from './ERC721Service';
 import ERC1155Service from './ERC1155Service';
-import ClaimService from './ClaimService';
 import PoolService from './PoolService';
 import SafeService from './SafeService';
 
@@ -51,11 +50,6 @@ export default class RewardNFTService implements IRewardService {
             const pool = await PoolService.getById(data.poolId);
             const safe = await SafeService.findOneByPool(pool, pool.chainId);
             await this.addMinter(data, safe.address);
-        }
-
-        // If claimAmount is set, create QR Codes
-        if (data.claimAmount) {
-            await this.createQRCodes(data);
         }
 
         return await this.models.reward.create(data);
@@ -138,18 +132,6 @@ export default class RewardNFTService implements IRewardService {
         if (erc1155Id) {
             return ERC1155Service.findById(erc1155Id);
         }
-    }
-
-    private async createQRCodes(data: Partial<TRewardNFT>) {
-        await ClaimService.create(
-            {
-                poolId: data.poolId,
-                rewardUuid: data.uuid,
-                erc721Id: data.erc721Id,
-                erc1155Id: data.erc1155Id,
-            },
-            data.claimAmount,
-        );
     }
 
     private async addMinter({ erc721Id, erc1155Id }: { erc721Id?: string; erc1155Id?: string }, address: string) {

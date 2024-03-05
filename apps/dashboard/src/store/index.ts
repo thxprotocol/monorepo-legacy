@@ -10,6 +10,7 @@ import ERC721Store from './modules/erc721';
 import ERC1155Store from './modules/erc1155';
 import ClientStore from './modules/clients';
 import WebhookStore from './modules/webhooks';
+import QRCodeStore from './modules/qrcodes';
 import ImageStore from './modules/images';
 
 Vue.use(Vuex);
@@ -28,6 +29,7 @@ const modules = {
     brands: BrandStore,
     webhooks: WebhookStore,
     images: ImageStore,
+    qrcodes: QRCodeStore,
 };
 
 export default new Vuex.Store({

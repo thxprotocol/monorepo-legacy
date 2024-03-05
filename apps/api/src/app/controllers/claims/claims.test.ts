@@ -9,6 +9,7 @@ import {
     ERC721MetadataDocument,
     QRCodeEntryDocument,
     ERC721Document,
+    RewardNFTDocument,
 } from '@thxnetwork/api/models';
 import { IPFS_BASE_URL } from '@thxnetwork/api/config/secrets';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
@@ -25,18 +26,12 @@ describe('QR Codes', () => {
     let poolId: string,
         pool: PoolDocument,
         erc721: ERC721Document,
+        reward: RewardNFTDocument,
         metadata: ERC721MetadataDocument,
         wallet: WalletDocument,
-        claims: QRCodeEntryDocument[];
-    const config = {
-            title: '',
-            description: '',
-            pointPrice: 0,
-            limit: 0,
-            claimAmount: 10,
-            variant: RewardVariant.NFT,
-        },
-        chainId = ChainId.Hardhat;
+        qrcodes: QRCodeEntryDocument[];
+
+    const chainId = ChainId.Hardhat;
 
     beforeAll(async () => {
         await beforeAllCallback();
@@ -77,136 +72,121 @@ describe('QR Codes', () => {
     });
     afterAll(afterAllCallback);
 
-    describe('PointPrice = 100', () => {
-        it('POST /rewards/:poolId/rewards/:variant', (done) => {
-            user.post(`/v1/pools/${poolId}/rewards/${RewardVariant.NFT}`)
-                .set({ Authorization: dashboardAccessToken })
-                .send({
-                    ...config,
-                    poolId,
-                    erc721Id: erc721._id,
-                    metadataId: metadata._id,
-                    pointPrice: 100,
-                })
-                .expect((res: request.Response) => {
-                    console.log(res.body);
-                    expect(res.body[0].qrcodes).toHaveLength(config.claimAmount);
-                    claims = res.body[0].qrcodes;
-                })
-                .expect(201, done);
-        });
-
-        it('should return a 200 for first claim attempt by wallet 0', (done) => {
-            user.get(`/v1/qr-codes/${claims[0].uuid}`)
-                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-                .expect(200, done);
-        });
-
-        it('should return a 403 for claim', (done) => {
-            user.post(`/v1/qr-codes/${claims[0].uuid}/collect`)
-                .query({ walletId: String(wallet._id) })
-                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-                .expect((res: request.Response) => {
-                    expect(res.body.error.message).toBe('This perk should be redeemed with points.');
-                })
-                .expect(403, done);
-        });
+    it('POST /pools/:poolId/rewards/:variant', (done) => {
+        user.post(`/v1/pools/${poolId}/rewards/${RewardVariant.NFT}`)
+            .set({ Authorization: dashboardAccessToken })
+            .send({
+                title: '',
+                description: '',
+                pointPrice: 0,
+                limit: 0,
+                variant: RewardVariant.NFT,
+                erc721Id: erc721._id,
+                metadataId: metadata._id,
+            })
+            .expect(({ body }: request.Response) => {
+                expect(body._id).toBeDefined();
+                reward = body;
+            })
+            .expect(201, done);
     });
 
-    describe('PointPrice = 0', () => {
-        it('POST /rewards', (done) => {
-            user.post(`/v1/pools/${poolId}/rewards/${RewardVariant.NFT}`)
-                .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
-                .send({
-                    ...config,
-                    erc721Id: erc721._id,
-                    metadataIds: metadata._id,
-                })
-                .expect((res: request.Response) => {
-                    expect(res.body[0].claims).toHaveLength(config.claimAmount);
-                    claims = res.body[0].claims;
-                })
-                .expect(201, done);
-        });
+    it('POST /qr-codes', (done) => {
+        user.post(`/v1/qr-codes`)
+            .set({ Authorization: dashboardAccessToken })
+            .send({
+                rewardId: reward._id,
+                claimAmount: 10,
+                redirectURL: 'https://example.com/redirect',
+            })
+            .expect(({ body }: request.Response) => {
+                expect(body).toHaveLength(10);
+            })
+            .expect(201, done);
+    });
 
-        it('200 with no error', (done) => {
-            user.get(`/v1/claims/${claims[0].uuid}`)
-                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-                .expect(({ body }: request.Response) => {
-                    expect(body.claim).toBeDefined();
-                    expect(body.pool).toBeDefined();
-                    expect(body.perk).toBeDefined();
-                    expect(body.erc721).toBeDefined();
-                    expect(body.metadata).toBeDefined();
-                    // No error
-                    expect(body.error).toBeUndefined();
-                })
-                .expect(200, done);
-        });
+    it('GET /qr-codes?rewardId=:rewardId&page=:page&limit=:limit', (done) => {
+        user.get(`/v1/qr-codes`)
+            .set({ Authorization: dashboardAccessToken })
+            .query({
+                rewardId: reward._id,
+                page: 1,
+                limit: 15,
+            })
+            .expect(({ body }: request.Response) => {
+                expect(body.total).toBe(10);
+                expect(body.results).toHaveLength(10);
+                qrcodes = body.results;
+            })
+            .expect(200, done);
+    });
 
-        it('First attempt claim should succeed', (done) => {
-            user.post(`/v1/claims/${claims[0].uuid}/collect`)
-                .query({ walletId: String(wallet._id) })
-                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-                .expect(({ body }: request.Response) => {
-                    expect(body.erc721).toBeDefined();
-                    expect(body.claim).toBeDefined();
-                    expect(body.payment).toBeDefined();
-                    expect(body.token).toBeDefined();
-                    expect(body.metadata).toBeDefined();
-                    expect(body.reward).toBeDefined();
-                })
-                .expect(200, done);
-        });
+    it('GET /qr-codes/:uuid', (done) => {
+        user.get(`/v1/qr-codes/${qrcodes[0].uuid}`)
+            .expect(({ body }: request.Response) => {
+                expect(body.entry).toBeDefined();
+                expect(body.erc721).toBeDefined();
+                expect(body.metadata).toBeDefined();
+            })
+            .expect(200, done);
+    });
 
-        it('200 with no error.', (done) => {
-            user.get(`/v1/claims/${claims[0].uuid}`)
-                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-                .expect(({ body }: request.Response) => {
-                    expect(body.claim).toBeDefined();
-                    expect(body.pool).toBeDefined();
-                    expect(body.perk).toBeDefined();
-                    expect(body.erc721).toBeDefined();
-                    expect(body.metadata).toBeDefined();
-                    // Should show error
-                    expect(body.error).toBe('This NFT is claimed already.');
-                })
-                .expect(200, done);
-        });
+    it('PATCH /qr-codes/:uuid should succeed', (done) => {
+        user.patch(`/v1/qr-codes/${qrcodes[0].uuid}/entries`)
+            .query({ walletId: String(wallet._id) })
+            .set({ Authorization: widgetAccessToken })
+            .expect(({ body }: request.Response) => {
+                expect(body.erc721).toBeDefined();
+                expect(body.entry).toBeDefined();
+                expect(body.payment).toBeDefined();
+                expect(body.token).toBeDefined();
+                expect(body.metadata).toBeDefined();
+                expect(body.reward).toBeDefined();
+            })
+            .expect(200, done);
+    });
 
-        it('Second attempt same claim should fail.', (done) => {
-            user.post(`/v1/claims/${claims[0].uuid}/collect`)
-                .query({ walletId: String(wallet._id) })
-                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken })
-                .expect(({ body }: request.Response) => {
-                    expect(body.error.message).toBe('This NFT is claimed already.');
-                })
-                .expect(403, done);
-        });
+    it('GET /qr-codes/:uuid should return sub', (done) => {
+        user.get(`/v1/qr-codes/${qrcodes[0].uuid}`)
+            .set({ Authorization: widgetAccessToken })
+            .expect(({ body }: request.Response) => {
+                expect(body.entry).toBeDefined();
+                expect(body.entry.sub).toBeDefined();
+                expect(body.erc721).toBeDefined();
+                expect(body.metadata).toBeDefined();
+            })
+            .expect(200, done);
+    });
 
-        it('First attempt other account should also fail', (done) => {
-            user.post(`/v1/claims/${claims[0].uuid}/collect`)
-                .query({ walletId: String(wallet._id) })
-                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
-                .expect(({ body }: request.Response) => {
-                    expect(body.error.message).toBe('This NFT is claimed already.');
-                })
-                .expect(403, done);
-        });
+    it('PATCH /qr-codes/:uuid should fail', (done) => {
+        user.patch(`/v1/qr-codes/${qrcodes[0].uuid}/entries`)
+            .query({ walletId: String(wallet._id) })
+            .set({ Authorization: widgetAccessToken })
+            .expect(({ body }: request.Response) => {
+                expect(body.error.message).toBe('This NFT is claimed already.');
+            })
+            .expect(403, done);
+    });
 
-        it('First attempt other claim for other account should succeed', (done) => {
-            user.post(`/v1/claims/${claims[1].uuid}/collect`)
-                .query({ walletId: String(wallet._id) })
-                .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken2 })
-                .expect(({ body }: request.Response) => {
-                    expect(body.erc721).toBeDefined();
-                    expect(body.claim).toBeDefined();
-                    expect(body.payment).toBeDefined();
-                    expect(body.token).toBeDefined();
-                    expect(body.metadata).toBeDefined();
-                    expect(body.reward).toBeDefined();
-                })
-                .expect(200, done);
-        });
+    it('PATCH /qr-codes/:uuid from other account should also fail', (done) => {
+        user.patch(`/v1/qr-codes/${qrcodes[0].uuid}/entries`)
+            .query({ walletId: String(wallet._id) })
+            .set({ Authorization: widgetAccessToken2 })
+            .expect(({ body }: request.Response) => {
+                expect(body.error.message).toBe('This NFT is claimed already.');
+            })
+            .expect(403, done);
+    });
+
+    it('First attempt other claim for other account should succeed', (done) => {
+        user.patch(`/v1/qr-codes/${qrcodes[1].uuid}/entries`)
+            .query({ walletId: String(wallet._id) })
+            .set({ Authorization: widgetAccessToken2 })
+            .expect(({ body }: request.Response) => {
+                expect(body.entry).toBeDefined();
+                expect(body.erc721).toBeDefined();
+                expect(body.metadata).toBeDefined();
+            })
+            .expect(200, done);
     });
 });

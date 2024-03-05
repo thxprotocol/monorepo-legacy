@@ -1,16 +1,107 @@
 <template>
-    <base-modal
-        @show="onShow"
-        size="xl"
-        :title="`Download Claims for ${selectedItems.length} perks`"
-        :id="id"
-        :loading="isLoading"
-        hide-footer
-    >
-        <template #modal-body v-if="!isLoading">
-            <b-tabs>
-                <b-tab title="Download" active>
-                    <b-row class="mt-3">
+    <base-modal @show="onShow" size="xl" title="QR Codes" :id="id" hide-footer>
+        <template #modal-body>
+            <b-tabs content-class="py-3">
+                <b-tab title="Create">
+                    <b-form-group
+                        label="Amount"
+                        description="We currently support a maximum of 5000 QR codes per preward. Contact our support if you require more!"
+                    >
+                        <b-form-input v-model="claimAmount" type="number" :max="5000" />
+                    </b-form-group>
+
+                    <b-form-group
+                        label="Redirect URL"
+                        description="Important: Replace with a URL that contains your campaign widget."
+                    >
+                        <b-form-input v-model="redirectURL" />
+                    </b-form-group>
+
+                    <b-button @click="onClickCreate" block variant="primary" :disabled="isLoading" class="rounded-pill">
+                        <b-spinner small variant="light" v-if="isLoading" />
+                        <template v-else>Create QR Codes</template>
+                    </b-button>
+                </b-tab>
+                <b-tab title="Entries">
+                    <b-form-group label="QR code supply">
+                        <b-progress
+                            :value="qrCodeEntries.filter((c) => c.claimedAt).length"
+                            :max="qrCodeEntries.length"
+                            show-value
+                        />
+                    </b-form-group>
+                    <BaseCardTableHeader
+                        :page="page"
+                        :limit="limit"
+                        :pool="pool"
+                        :total-rows="qrCodes.total"
+                        :selected-items="selectedQRCodeEntries"
+                        :actions="[
+                            { variant: 0, label: `Delete claims` },
+                            { variant: 1, label: 'Download QR Codes' },
+                            { variant: 2, label: 'Download URL\'s' },
+                        ]"
+                        @click-action="onClickAction"
+                        @change-page="onChangePage"
+                        @change-limit="onChangeLimit"
+                    />
+                    <BTable hover :busy="isLoading" :items="qrCodeEntries" responsive="lg" show-empty>
+                        <!-- Head formatting -->
+                        <template #head(checkbox)>
+                            <b-form-checkbox @change="onSelectAll" />
+                        </template>
+                        <template #head(url)> URL </template>
+                        <template #head(account)> Account </template>
+                        <template #head(claimedAt)> Claimed </template>
+                        <template #head(createdAt)> Created </template>
+                        <template #head(entry)> &nbsp; </template>
+
+                        <!-- Cell formatting -->
+                        <template #cell(checkbox)="{ item }">
+                            <b-form-checkbox :value="item.checkbox" v-model="selectedQRCodeEntries" />
+                        </template>
+                        <template #cell(url)="{ item }">
+                            <b-link
+                                size="sm"
+                                class="mr-2"
+                                variant="light"
+                                v-clipboard:copy="item.url"
+                                v-clipboard:success="() => $set(isCopied, item.entry.uuid, true)"
+                            >
+                                <code class="text-muted">
+                                    {{ item.entry.uuid }}
+                                </code>
+                                <i
+                                    class="fas ml-0 text-gray"
+                                    :class="isCopied[item.entry.uuid] ? 'fa-clipboard-check' : 'fa-clipboard'"
+                                />
+                            </b-link>
+                        </template>
+                        <template #cell(account)="{ item }">
+                            <BaseParticipantAccount v-if="item.account" :account="item.account" />
+                        </template>
+                        <template #cell(claimedAt)="{ item }">
+                            <small v-if="item.claimedAt" class="text-muted">
+                                {{ format(new Date(item.claimedAt), 'dd-MM-yyyy HH:mm') }}
+                            </small>
+                        </template>
+                        <template #cell(createdAt)="{ item }">
+                            <small class="text-muted">
+                                {{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}
+                            </small>
+                        </template>
+                        <template #cell(entry)="{ item }">
+                            <b-dropdown variant="link" size="sm" right no-caret>
+                                <template #button-content>
+                                    <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
+                                </template>
+                                <b-dropdown-item @click="() => item" disabled> Delete </b-dropdown-item>
+                            </b-dropdown>
+                        </template>
+                    </BTable>
+                </b-tab>
+                <b-tab title="Download">
+                    <b-row>
                         <b-col>
                             <b-form-group label="File format">
                                 <b-form-radio v-model="selectedFormat" name="fileFormat" value="png">
@@ -77,94 +168,17 @@
                                     <b-button variant="primary" @click="onClickDownloadCSVAll"> CSV </b-button>
                                 </b-button-group>
                             </b-form-group>
+
                             <b-progress
                                 v-if="index"
                                 :value="index"
-                                :max="selectedClaims.length"
+                                :max="selectedQRCodeEntries.length"
                                 variant="primary"
                                 show-value
                                 class="mt-2"
                             />
                         </b-col>
                     </b-row>
-                </b-tab>
-                <b-tab :title="`Claim URLs (${claims.length})`">
-                    <b-card class="bg-light m-3" title="Supply">
-                        <b-progress :value="claims.filter((c) => c.sub).length" :max="claims.length" show-value />
-                    </b-card>
-                    <BaseCardTableHeader
-                        :page="page"
-                        :limit="limit"
-                        :pool="pool"
-                        :total-rows="claims.length"
-                        :selectedItems="selectedItems"
-                        :actions="[
-                            { variant: 0, label: `Delete claims` },
-                            { variant: 1, label: 'Download QR Codes' },
-                            { variant: 2, label: 'Download URL\'s' },
-                        ]"
-                        @click-action="onClickAction"
-                        @change-page="onChangePage"
-                        @change-limit="onChangeLimit"
-                    />
-                    <BTable hover :busy="isLoading" :items="claimsByPage" responsive="lg" show-empty>
-                        <!-- Head formatting -->
-                        <template #head(checkbox)>
-                            <b-form-checkbox @change="onSelectAll" />
-                        </template>
-                        <template #head(url)> URL </template>
-                        <template #head(sub)> Sub </template>
-                        <template #head(claimedAt)> User </template>
-                        <template #head(createdAt)> Created </template>
-                        <template #head(id)> &nbsp; </template>
-
-                        <!-- Cell formatting -->
-                        <template #cell(checkbox)="{ item }">
-                            <b-form-checkbox :value="item.checkbox" v-model="selectedClaims" />
-                        </template>
-                        <template #cell(url)="{ item }">
-                            <b-link
-                                size="sm"
-                                variant="light"
-                                class="mr-2"
-                                v-clipboard:copy="item.url"
-                                v-clipboard:success="() => $set(isCopied, item.id, true)"
-                            >
-                                <code class="text-muted">
-                                    {{ item.id }}
-                                </code>
-                                <i
-                                    class="fas ml-0 text-gray"
-                                    :class="isCopied[item.id] ? 'fa-clipboard-check' : 'fa-clipboard'"
-                                ></i>
-                            </b-link>
-                        </template>
-                        <template #cell(claimedAt)="{ item }">
-                            <BaseParticipantAccount v-if="item.claimedAt.account" :account="item.claimedAt.account" />
-                            <small v-if="item.claimedAt.date" class="text-muted">
-                                Claimed at: {{ format(new Date(item.claimedAt.date), 'dd-MM-yyyy HH:mm') }}
-                            </small>
-                            <!-- <div v-if="item.claimedAt.sub" style="line-height: 1">
-                                <div class="text-primary">{{ item.claimedAt.sub }}</div>
-                                <small class="text-muted">
-                                    Claimed at: {{ format(new Date(item.claimedAt.date), 'dd-MM-yyyy HH:mm') }}
-                                </small>
-                            </div> -->
-                        </template>
-                        <template #cell(createdAt)="{ item }">
-                            <small class="text-muted">
-                                {{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}
-                            </small>
-                        </template>
-                        <template #cell(id)="{ item }">
-                            <b-dropdown variant="link" size="sm" right no-caret>
-                                <template #button-content>
-                                    <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
-                                </template>
-                                <b-dropdown-item @click="item" disabled> Delete </b-dropdown-item>
-                            </b-dropdown>
-                        </template>
-                    </BTable>
                 </b-tab>
             </b-tabs>
         </template>
@@ -178,14 +192,13 @@ import QRCode from 'qrcode';
 import QRCodeSVG from 'qrcode-svg';
 import xml2js from 'xml2js';
 import { jsPDF } from 'jspdf';
-import { type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { TBaseQuest } from '@thxnetwork/types/index';
 import { API_URL, BASE_URL } from '@thxnetwork/dashboard/config/secrets';
-import { TQRCodeEntry } from '@thxnetwork/dashboard/store/modules/claims';
 import { saveAs } from 'file-saver';
 import { loadImage } from '@thxnetwork/dashboard/utils/loadImage';
 import { format } from 'date-fns';
+import { TQRCodeEntryState } from '@thxnetwork/dashboard/store/modules/qrcodes';
+import { mapGetters } from 'vuex';
 import BaseParticipantAccount, { parseAccount } from '../BaseParticipantAccount.vue';
 
 const unitList = [
@@ -214,9 +227,12 @@ function hex2Rgb(hex: string) {
     name: 'BaseModalQRCodes',
     components: {
         BaseParticipantAccount,
-        BaseCardTableHeader: () => import('@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue'),
         BaseModal,
+        BaseCardTableHeader: () => import('@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue'),
     },
+    computed: mapGetters({
+        qrCodeEntryList: 'qrcodes/all',
+    }),
 })
 export default class BaseModalQRCodes extends Vue {
     format = format;
@@ -225,61 +241,79 @@ export default class BaseModalQRCodes extends Vue {
     color = '000000';
     size = 256;
     file: File | null = null;
-    redirectUrl = '';
+    isCopied: { [id: string]: boolean } = {};
+
     selectedFormat = 'png';
     selectedUnit = unitList[0];
-    selectedClaims: string[] = [];
+    selectedQRCodeEntries: string[] = [];
+
     limit = 500;
     page = 1;
     index = 0;
-    claims: any[] = [];
-    isCopied: { [id: string]: boolean } = {};
+
+    claimAmount = 0;
+    redirectURL = '';
+
+    qrCodeEntryList!: TQRCodeEntryState;
 
     @Prop() id!: string;
-    @Prop() rewards!: { [id: string]: TBaseQuest & { claims: TQRCodeEntry[]; _id: string } };
-    @Prop() selectedItems!: string[];
+    @Prop() reward!: TRewardNFT;
     @Prop() pool!: TPool;
 
-    onShow() {
-        this.getClaimURLs();
-        this.redirectUrl = this.pool.widget?.domain;
+    get qrCodes() {
+        if (!this.qrCodeEntryList || !this.qrCodeEntryList[this.reward._id]) return { total: 0, results: [] };
+        return this.qrCodeEntryList[this.reward._id];
     }
 
-    getClaimURLs() {
-        const rewards = Object.values(this.rewards).filter((r) => this.selectedItems.includes(r._id));
-        this.claims = [];
-        for (const r of rewards) {
-            const claims = Object.values(r.claims).map((claim: TQRCodeEntry) => ({ ...claim, perk: r }));
-            this.claims = [...this.claims, ...claims].map((c) => ({
-                checkbox: c.uuid,
-                url: this.getUrl(c.uuid),
-                claimedAt: {
-                    account: parseAccount({ id: c.sub, account: c.account }),
-                    date: c.claimedAt,
-                },
-                createdAt: c.createdAt,
-                id: c.uuid,
-            }));
-        }
+    get qrCodeEntries() {
+        return this.qrCodes.results.map((entry) => ({
+            checkbox: entry.uuid,
+            url: this.getUrl(entry.uuid),
+            account: parseAccount({ id: entry.sub, account: entry.account }),
+            claimedAt: entry.claimedAt,
+            createdAt: entry.createdAt,
+            entry,
+        }));
     }
 
     get units() {
         return unitList.filter((u) => acceptedUnits[this.selectedFormat].includes(u.value));
     }
 
-    get claimsByPage() {
-        if (!this.claims) return [];
-        return this.claims
-            .sort((a, b) => (a.createdAt && b.createdAt && a.createdAt < b.createdAt ? 1 : -1))
-            .slice(this.page * this.limit - this.limit, this.page * this.limit);
+    onShow() {
+        this.listEntries();
+        this.claimAmount = 0;
+        this.redirectURL = this.getRedirectURL();
+    }
+
+    getRedirectURL() {
+        const url = new URL(BASE_URL);
+        url.pathname = `/preview/${this.pool._id}`;
+        return url.toString();
+    }
+
+    async onClickCreate() {
+        this.isLoading = true;
+        await this.$store.dispatch('qrcodes/create', {
+            rewardId: this.reward._id,
+            claimAmount: this.claimAmount,
+            redirectURL: this.redirectURL,
+        });
+        this.listEntries();
+    }
+
+    async listEntries() {
+        this.isLoading = true;
+        await this.$store.dispatch('qrcodes/list', { reward: this.reward, page: this.page, limit: this.limit });
+        this.isLoading = false;
     }
 
     onChangeRedirectURL() {
-        this.getClaimURLs();
+        this.listEntries();
     }
 
     onSelectAll(isSelectAll: boolean) {
-        this.selectedClaims = isSelectAll ? (this.claimsByPage.map((r) => r.id) as string[]) : [];
+        this.selectedQRCodeEntries = isSelectAll ? this.qrCodeEntries.map((e) => e.entry.uuid) : [];
     }
 
     onChangeLimit(limit: number) {
@@ -291,19 +325,23 @@ export default class BaseModalQRCodes extends Vue {
     }
 
     onClickDownloadZipAll() {
-        this.selectedClaims = this.claims.map((c) => c.id);
+        this.selectedQRCodeEntries = this.qrCodeEntries.map((c) => c.entry.uuid);
         this.onClickCreateZip();
     }
 
     onClickDownloadCSVAll() {
-        this.selectedClaims = this.claims.map((c) => c.id);
+        this.selectedQRCodeEntries = this.qrCodeEntries.map((c) => c.entry.uuid);
         this.onClickCreateCSV();
+    }
+
+    onClickDelete() {
+        //
     }
 
     onClickAction(action: { variant: number; label: string }) {
         switch (action.variant) {
             case 0:
-                for (const id of Object.values(this.selectedClaims)) {
+                for (const id of Object.values(this.selectedQRCodeEntries)) {
                     console.log('Delete claim', id);
                 }
                 break;
@@ -381,7 +419,7 @@ export default class BaseModalQRCodes extends Vue {
 
     getUrl(uuid: string) {
         const url = new URL(API_URL);
-        url.pathname = `v1/qr-codes/r/${uuid}`;
+        url.pathname = `/v1/qr-codes/r/${uuid}`;
         return url.toString();
     }
 
@@ -391,7 +429,7 @@ export default class BaseModalQRCodes extends Vue {
         const archive = zip.folder(filename) as JSZip;
         const format = this.selectedFormat;
 
-        for (const uuid of this.selectedClaims) {
+        for (const uuid of this.selectedQRCodeEntries) {
             let data: string | ArrayBuffer;
             const url = this.getUrl(uuid);
 
@@ -421,7 +459,7 @@ export default class BaseModalQRCodes extends Vue {
 
     onClickCreateCSV() {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_urls`;
-        const data = this.selectedClaims.map((uuid) => [this.getUrl(uuid)]);
+        const data = this.selectedQRCodeEntries.map((uuid) => [this.getUrl(uuid)]);
         const csvContent = 'data:text/csv;charset=utf-8,' + data.map((e) => e.join(',')).join('\n');
         saveAs(encodeURI(csvContent), `${filename}.csv`);
     }

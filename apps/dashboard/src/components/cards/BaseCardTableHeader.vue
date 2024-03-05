@@ -75,7 +75,6 @@
 </template>
 
 <script lang="ts">
-import { type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
 export type TTableBulkAction = { variant: number; label: string };

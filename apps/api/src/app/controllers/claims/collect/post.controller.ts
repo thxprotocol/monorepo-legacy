@@ -4,40 +4,38 @@ import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/
 import { RewardNFT, RewardNFTPayment, QRCodeEntry, ERC721Metadata } from '@thxnetwork/api/models';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import ClaimService from '@thxnetwork/api/services/ClaimService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import WalletService from '@thxnetwork/api/services/WalletService';
 
 const validation = [param('uuid').isUUID(4), query('walletId').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Claims']
-    let claim = await ClaimService.findByUuid(req.params.uuid);
-    if (!claim) throw new BadRequestError('This claim URL is invalid.');
+    let entry = await QRCodeEntry.findOne({ uuid: req.params.uuid });
+    if (!entry) throw new BadRequestError('This claim URL is invalid.');
     // Can not be claimed when sub is set for this claim URL and claim amount is greater than 1
-    if (claim.sub) throw new ForbiddenError('This NFT is claimed already.');
+    if (entry.sub) throw new ForbiddenError('This NFT is claimed already.');
 
-    const pool = await PoolService.getById(claim.poolId);
-    if (!pool) throw new BadRequestError('The pool for this claim URL has been removed.');
+    const reward = await RewardNFT.findById(entry.rewardId);
+    if (!reward) throw new BadRequestError('Reward not found');
+    // Can be claimed only if point price is 0
+    if (reward.pointPrice > 0) throw new ForbiddenError('Reward needs to be purchased with points.');
+
+    const pool = await PoolService.getById(reward.poolId);
+    if (!pool) throw new BadRequestError('Campaign not found.');
 
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
-    if (!safe) throw new BadRequestError('Could not find campaign Safe.');
-
-    const perk = await RewardNFT.findOne({ uuid: claim.rewardUuid });
-    if (!perk) throw new BadRequestError('The perk for this ID does not exist.');
-    // Can be claimed only if point price is 0
-    if (perk.pointPrice > 0) throw new ForbiddenError('This perk should be redeemed with points.');
+    if (!safe) throw new BadRequestError('Safe not found.');
 
     // Find wallet for the authenticated user
     const wallet = await WalletService.findById(req.query.walletId as string);
-    if (!wallet) throw new NotFoundError('No wallet found for this user');
+    if (!wallet) throw new NotFoundError('Wallet not found');
 
     // Mint an NFT token if the erc721 and metadata for the claim exists.
-    const metadata = await ERC721Metadata.findById(perk.metadataId);
-    if (!metadata) throw new NotFoundError('No metadata found for this claim URL');
+    const metadata = await ERC721Metadata.findById(reward.metadataId);
+    if (!metadata) throw new NotFoundError('Metadata not found');
 
     const erc721 = await ERC721Service.findById(metadata.erc721Id);
-    if (!erc721) throw new NotFoundError('No erc721 found for this claim URL');
+    if (!erc721) throw new NotFoundError('ERC721 not found');
 
     // Mint the NFT
     const token = await ERC721Service.mint(safe, erc721, wallet, metadata);
@@ -45,21 +43,21 @@ const controller = async (req: Request, res: Response) => {
     // Create a payment to register a completed claim.
     const payment = await RewardNFTPayment.create({
         sub: req.auth.sub,
-        rewardId: perk._id,
-        amount: perk.pointPrice,
+        rewardId: reward._id,
+        amount: reward.pointPrice,
         poolId: pool._id,
     });
 
     // Mark claim as claimed by setting sub
-    claim = await QRCodeEntry.findByIdAndUpdate(claim._id, { sub: req.auth.sub, claimedAt: new Date() }, { new: true });
+    entry = await QRCodeEntry.findByIdAndUpdate(entry._id, { sub: req.auth.sub, claimedAt: new Date() }, { new: true });
 
     return res.json({
         erc721,
-        claim,
+        entry,
         payment,
         token,
         metadata,
-        reward: perk,
+        reward,
     });
 };
 

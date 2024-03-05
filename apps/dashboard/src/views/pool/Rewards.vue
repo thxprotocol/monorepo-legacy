@@ -106,7 +106,7 @@
                             <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                         </template>
                         <b-dropdown-item
-                            v-if="item.reward.variant === RewardVariant.NFT"
+                            v-if="item.reward.variant === RewardVariant.NFT && item.reward.erc721Id"
                             v-b-modal="`modalQRCodes${item.reward._id}`"
                         >
                             QR Codes
@@ -116,12 +116,7 @@
                         </b-dropdown-item>
                         <b-dropdown-item @click="onClickDelete(item.reward)"> Delete </b-dropdown-item>
                     </b-dropdown>
-                    <BaseModalQRCodes
-                        :id="`modalQRCodes${item.reward._id}`"
-                        :pool="pool"
-                        :selectedItems="[item.reward._id]"
-                        :rewards="rewards[$route.params.id].results.filter((r) => r.variant == RewardVariant.NFT)"
-                    />
+                    <BaseModalQRCodes :id="`modalQRCodes${item.reward._id}`" :pool="pool" :reward="item.reward" />
                     <component
                         @submit="listRewards"
                         :is="rewardModalComponentMap[item.reward.variant]"

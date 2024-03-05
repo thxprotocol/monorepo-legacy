@@ -9,17 +9,16 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 const validationBaseQuest = [
     param('id').isMongoId(),
     ...defaults.reward,
+
     // Coin
     body('erc20Id').optional().isMongoId(),
     body('amount').optional().isInt({ gt: 0 }),
+
     // NFT
     body('erc721Id').optional().isString(),
     body('erc1155Id').optional().isString(),
     body('metadataIds').optional().isString(),
     body('tokenId').optional().isString(),
-    body('claimLimit').optional().isInt(),
-    body('claimAmount').optional().isInt({ lt: 5001 }),
-    body('redirectUrl').optional().isURL({ require_tld: false }),
 
     // Coupon
     body('webshopURL').optional().isURL({ require_tld: false }),

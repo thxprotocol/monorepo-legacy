@@ -31,17 +31,7 @@
             <b-form-input :state="isValidAmount" type="number" :value="erc1155Amount" @input="onChangeERC1155Amount" />
         </b-form-group>
 
-        <template #aside>
-            <BaseCardClaimAmount
-                :disabled="!!reward"
-                class="mb-3"
-                :claimAmount="claimAmount"
-                :claimLimit="claimLimit"
-                :redirectUrl="redirectUrl"
-                @change-claim-amount="claimAmount = $event"
-                @change-redirect-url="redirectUrl = $event"
-            />
-        </template>
+        <template #aside> </template>
     </BaseModalRewardCreate>
 </template>
 
@@ -56,7 +46,6 @@ import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
 import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
 import BaseDropdownERC721ImportedToken from '../dropdowns/BaseDropdownERC721ImportedToken.vue';
-import BaseCardClaimAmount from '../cards/BaseCardClaimAmount.vue';
 
 @Component({
     components: {
@@ -64,7 +53,6 @@ import BaseCardClaimAmount from '../cards/BaseCardClaimAmount.vue';
         BaseDropdownSelectERC721,
         BaseDropdownERC721Metadata,
         BaseDropdownERC721ImportedToken,
-        BaseCardClaimAmount,
     },
     computed: mapGetters({
         erc721s: 'erc721/all',
@@ -88,8 +76,6 @@ export default class ModalRewardNFTCreate extends Vue {
     erc1155Amount = 1;
     erc1155Balance = '';
     redirectUrl = '';
-    claimAmount = 0;
-    claimLimit = 0;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
@@ -111,8 +97,6 @@ export default class ModalRewardNFTCreate extends Vue {
     }
 
     async onShow() {
-        this.claimAmount = this.reward ? this.reward.claimAmount : this.claimAmount;
-        this.claimLimit = this.reward ? this.reward.claimLimit : this.claimLimit;
         if (this.reward && this.reward.erc721Id) {
             await this.$store.dispatch('erc721/read', this.reward.erc721Id);
             this.nft = this.erc721s[this.reward.erc721Id];
@@ -180,10 +164,6 @@ export default class ModalRewardNFTCreate extends Vue {
                 erc1155Amount: this.erc1155Amount,
                 tokenId: this.tokenId,
                 metadataId: this.metadataId,
-                //  QR Code related config
-                redirectUrl: this.redirectUrl ? this.redirectUrl : undefined,
-                claimAmount: this.claimAmount,
-                claimLimit: this.claimLimit,
             });
             this.$bvModal.hide(this.id);
         } catch (error) {
