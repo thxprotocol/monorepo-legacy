@@ -89,24 +89,22 @@ export default class RewardService {
 
     static async findPaymentsForSub(sub: string) {
         const rewardVariants: string[] = Object.keys(RewardVariant).filter((v) => !isNaN(Number(v)));
-        const payments = await Promise.all(
+        const payments = await Promise.allSettled(
             rewardVariants.map(async (variant: string) => {
-                try {
-                    const rewardVariant = Number(variant);
-                    const payments = await serviceMap[rewardVariant].models.payment.find({ sub });
-                    const callback = payments.map(async (p: Document & TRewardPayment) => {
-                        const decorated = await serviceMap[rewardVariant].decoratePayment(p);
-                        return { ...decorated, rewardVariant };
-                    });
-                    return await Promise.all(callback);
-                } catch (error) {
-                    logger.error(error);
-                    return false;
-                }
+                const rewardVariant = Number(variant);
+                const payments = await serviceMap[rewardVariant].models.payment.find({ sub });
+                const callback = payments.map(async (p: Document & TRewardPayment) => {
+                    const decorated = await serviceMap[rewardVariant].decoratePayment(p);
+                    return { ...decorated, rewardVariant };
+                });
+                return await Promise.all(callback);
             }),
         );
 
-        return payments.filter((p) => !!p).flat();
+        return payments
+            .filter((result) => result.status === 'fulfilled')
+            .map((result: any) => result.value)
+            .flat();
     }
 
     static async createPayment(
