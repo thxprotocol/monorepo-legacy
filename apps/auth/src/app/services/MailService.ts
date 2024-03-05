@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import { AccountDocument } from '../models/Account';
 import { createRandomToken } from '../util/tokens';
 import { assetsPath } from '../util/path';
-import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccessTokenKind } from '@thxnetwork/common/enums/AccessTokenKind';
 import { get24HoursExpiryTimestamp } from '../util/time';
 import {
     AWS_ACCESS_KEY_ID,
@@ -15,7 +15,7 @@ import {
     NODE_ENV,
     CYPRESS_EMAIL,
 } from '../config/secrets';
-import { sendMail } from '@thxnetwork/common/lib/mail';
+import { sendMail } from '@thxnetwork/common/mail';
 import { logger } from '../util/logger';
 import TokenService from './TokenService';
 

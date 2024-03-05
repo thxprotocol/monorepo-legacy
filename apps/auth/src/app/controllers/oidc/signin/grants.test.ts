@@ -4,8 +4,7 @@ import db from '../../../util/database';
 import { AccountService } from '../../../services/AccountService';
 import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { accountEmail } from '../../../util/jest';
-import { AccountVariant } from '@thxnetwork/types/interfaces';
-import { AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountVariant, AccountPlanType } from '@thxnetwork/common/enums';
 
 const http = request.agent(app);
 

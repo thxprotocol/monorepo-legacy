@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { query } from 'express-validator';
 import { Wallet } from '@thxnetwork/api/services/SafeService';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 
 const validation = [query('chainId').optional().isNumeric(), query('poolId').optional().isString()];

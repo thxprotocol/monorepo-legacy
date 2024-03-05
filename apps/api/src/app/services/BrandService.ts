@@ -1,13 +1,10 @@
-import BrandModel, { TBrandUpdate } from '@thxnetwork/api/models/Brand';
-import { TBrand } from '@thxnetwork/types/interfaces';
-
-type FindOptions = Partial<Pick<TBrand, 'poolId'>>;
+import { Brand } from '@thxnetwork/api/models/Brand';
 
 export default {
     get: async (poolId: string) => {
-        return BrandModel.findOne({ poolId });
+        return Brand.findOne({ poolId });
     },
-    update: async (options: FindOptions, updates: TBrandUpdate) => {
-        return BrandModel.findOneAndUpdate(options, updates, { upsert: true, new: true });
+    update: async (filter: Partial<TBrand>, updates: Partial<TBrand>) => {
+        return Brand.findOneAndUpdate(filter, updates, { upsert: true, new: true });
     },
 };

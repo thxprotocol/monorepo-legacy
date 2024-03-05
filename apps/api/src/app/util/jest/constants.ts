@@ -1,7 +1,6 @@
-import { AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountPlanType, AccountVariant } from '@thxnetwork/common/enums';
 import { getToken } from './jwt';
 import { toWei } from 'web3-utils';
-import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { CYPRESS_EMAIL } from '@thxnetwork/api/config/secrets';
 
 export const tokenName = 'Volunteers United';

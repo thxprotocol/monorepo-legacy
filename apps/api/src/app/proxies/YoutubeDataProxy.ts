@@ -1,6 +1,5 @@
-import type { TAccount } from '@thxnetwork/types/interfaces';
 import { google } from 'googleapis';
-import { AccessTokenKind, OAuthRequiredScopes, OAuthScope } from '@thxnetwork/common/lib/types';
+import { AccessTokenKind, OAuthRequiredScopes, OAuthScope } from '@thxnetwork/common/enums';
 import { AUTH_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../config/secrets';
 import AccountProxy from './AccountProxy';
 

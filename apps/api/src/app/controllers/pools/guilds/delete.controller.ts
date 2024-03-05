@@ -1,6 +1,6 @@
 import { param } from 'express-validator';
 import { Request, Response } from 'express';
-import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
+import { DiscordGuild } from '@thxnetwork/api/models';
 
 const validation = [param('id').isMongoId(), param('guildId').isMongoId()];
 

@@ -1,8 +1,6 @@
 import Vue from 'vue';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import type { TPool, TWebhook } from '@thxnetwork/types/interfaces';
-import { wrap } from 'module';
 
 export type TWebhookState = {
     [poolId: string]: {

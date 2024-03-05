@@ -8,10 +8,11 @@
         :error="error"
         :is-loading="isLoading"
     >
-        <b-form-group label="NFT" v-if="!selectedMetadataIds.length">
+        <b-form-group label="NFT">
             <BaseDropdownSelectERC721 :chainId="chainId" :nft="nft" @selected="onSelectNFT" />
         </b-form-group>
-        <b-form-group label="Metadata" v-if="nft && !selectedMetadataIds.length">
+
+        <b-form-group label="Metadata" v-if="nft">
             <BaseDropdownERC721Metadata
                 :pool="pool"
                 :nft="nft"
@@ -30,33 +31,21 @@
             <b-form-input :state="isValidAmount" type="number" :value="erc1155Amount" @input="onChangeERC1155Amount" />
         </b-form-group>
 
-        <template #aside>
-            <BaseCardClaimAmount
-                :disabled="!!reward"
-                class="mb-3"
-                :claimAmount="claimAmount"
-                :claimLimit="claimLimit"
-                :redirectUrl="redirectUrl"
-                @change-claim-amount="claimAmount = $event"
-                @change-redirect-url="redirectUrl = $event"
-            />
-        </template>
+        <template #aside> </template>
     </BaseModalRewardCreate>
 </template>
 
 <script lang="ts">
 import { mapGetters } from 'vuex';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TERC1155Token, TERC721Token, TPool, TERC721Perk, TBaseReward } from '@thxnetwork/types/interfaces';
 import type { IERC721s, IERC721Tokens, TERC721, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
 import type { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
-import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant, RewardVariant } from '@thxnetwork/common/enums';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
 import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
 import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
 import BaseDropdownERC721ImportedToken from '../dropdowns/BaseDropdownERC721ImportedToken.vue';
-import BaseCardClaimAmount from '../cards/BaseCardClaimAmount.vue';
 
 @Component({
     components: {
@@ -64,7 +53,6 @@ import BaseCardClaimAmount from '../cards/BaseCardClaimAmount.vue';
         BaseDropdownSelectERC721,
         BaseDropdownERC721Metadata,
         BaseDropdownERC721ImportedToken,
-        BaseCardClaimAmount,
     },
     computed: mapGetters({
         erc721s: 'erc721/all',
@@ -89,13 +77,9 @@ export default class ModalRewardNFTCreate extends Vue {
     erc1155Balance = '';
     redirectUrl = '';
 
-    claimAmount = 0;
-    claimLimit = 0;
-
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TERC721Perk;
-    @Prop({ required: false, default: () => [] }) selectedMetadataIds!: string[];
+    @Prop({ required: false }) reward!: TRewardNFT;
 
     get chainId() {
         return (this.pool && this.pool.chainId) || (this.nft && this.nft.chainId) || ChainId.Hardhat;
@@ -113,8 +97,6 @@ export default class ModalRewardNFTCreate extends Vue {
     }
 
     async onShow() {
-        this.claimAmount = this.reward ? this.reward.claimAmount : this.claimAmount;
-        this.claimLimit = this.reward ? this.reward.claimLimit : this.claimLimit;
         if (this.reward && this.reward.erc721Id) {
             await this.$store.dispatch('erc721/read', this.reward.erc721Id);
             this.nft = this.erc721s[this.reward.erc721Id];
@@ -155,8 +137,8 @@ export default class ModalRewardNFTCreate extends Vue {
         this.erc1155Amount = amount;
     }
 
-    async onSubmit(payload: TBaseReward) {
-        if (!this.nft || (!this.metadataId && !this.selectedMetadataIds.length && !this.tokenId)) {
+    async onSubmit(payload: TReward) {
+        if (!this.nft || (!this.metadataId && !this.tokenId)) {
             this.error = 'Select a token or metadata for this reward.';
             return;
         }
@@ -172,20 +154,16 @@ export default class ModalRewardNFTCreate extends Vue {
                     erc1155Id = this.nft._id;
                     break;
             }
-            await this.$store.dispatch(`erc721Perks/${this.reward ? 'update' : 'create'}`, {
-                pool: this.pool,
-                reward: this.reward,
-                payload: {
-                    ...payload,
-                    erc721Id,
-                    erc1155Id,
-                    erc1155Amount: this.erc1155Amount,
-                    tokenId: this.tokenId,
-                    metadataIds: JSON.stringify(this.metadataId ? [this.metadataId] : this.selectedMetadataIds),
-                    claimAmount: this.claimAmount,
-                    claimLimit: this.claimLimit,
-                    redirectUrl: this.redirectUrl ? this.redirectUrl : undefined,
-                },
+
+            await this.$store.dispatch(`pools/${this.reward ? 'update' : 'create'}Reward`, {
+                ...this.reward,
+                ...payload,
+                variant: RewardVariant.NFT,
+                erc721Id,
+                erc1155Id,
+                erc1155Amount: this.erc1155Amount,
+                tokenId: this.tokenId,
+                metadataId: this.metadataId,
             });
             this.$bvModal.hide(this.id);
         } catch (error) {

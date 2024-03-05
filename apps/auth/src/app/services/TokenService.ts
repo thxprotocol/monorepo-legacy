@@ -1,4 +1,4 @@
-import { AccessTokenKind, OAuthScope } from '@thxnetwork/common/lib/types';
+import { AccessTokenKind, OAuthScope } from '@thxnetwork/common/enums';
 import { Token, TokenDocument } from '../models/Token';
 import { AccountDocument } from '../models/Account';
 import { decryptString } from '../util/decrypt';

@@ -1,12 +1,7 @@
 import path from 'path';
 import db from '@thxnetwork/api/util/database';
-import { AssetPool } from '@thxnetwork/api/models/AssetPool';
-import { ChainId, QuestVariant, QuestSocialRequirement, AccessTokenKind } from '@thxnetwork/types/enums';
+import { ChainId, QuestVariant, QuestSocialRequirement, AccessTokenKind } from '@thxnetwork/common/enums';
 import { Widget } from '@thxnetwork/api/models/Widget';
-import { DailyReward } from '@thxnetwork/api/models/DailyReward';
-import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
-import { PointReward } from '@thxnetwork/api/models/PointReward';
-import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
 import {
     readCSV,
     getYoutubeID,
@@ -16,8 +11,9 @@ import {
     getTwitterTWeet,
     getTwitterUser,
 } from './utils/index';
-import { ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
+import { RewardCoin } from '@thxnetwork/api/models/RewardCoin';
 import { Collaborator } from '@thxnetwork/api/models/Collaborator';
+import { Pool, QuestDaily, QuestInvite, QuestSocial, QuestCustom } from '@thxnetwork/api/models';
 
 const csvFilePath = path.join(__dirname, '../../../', 'quests.csv');
 // const sub = '60a38b36bf804b033c5e3faa'; // Local
@@ -64,7 +60,7 @@ export default async function main() {
 
             if (!missingMaterials || !gameName || !gameDomain) continue;
 
-            let pool = await AssetPool.findOne({ 'settings.title': gameName });
+            let pool = await Pool.findOne({ 'settings.title': gameName });
             console.log('===============');
             console.log('Import: ', gameName, gameDomain);
             if (pool) {
@@ -77,11 +73,11 @@ export default async function main() {
 
             // Remove all existing data
             await Promise.all([
-                DailyReward.deleteMany({ poolId }),
-                ReferralReward.deleteMany({ poolId }),
-                PointReward.deleteMany({ poolId }),
-                MilestoneReward.deleteMany({ poolId }),
-                ERC20Perk.deleteMany({ poolId, erc20Id }),
+                QuestDaily.deleteMany({ poolId }),
+                QuestInvite.deleteMany({ poolId }),
+                QuestSocial.deleteMany({ poolId }),
+                QuestCustom.deleteMany({ poolId }),
+                RewardCoin.deleteMany({ poolId, erc20Id }),
                 Collaborator.deleteMany({ poolId }),
             ]);
 
@@ -102,7 +98,7 @@ export default async function main() {
                     isPublished: true,
                     variant: QuestVariant.YouTube,
                 };
-                await PointReward.create(socialQuestYoutubeLike);
+                await QuestSocial.create(socialQuestYoutubeLike);
             }
 
             // Create social quest twitter retweet
@@ -128,7 +124,7 @@ export default async function main() {
                     }),
                     isPublished: true,
                 };
-                await PointReward.create(socialQuestFollow);
+                await QuestSocial.create(socialQuestFollow);
 
                 const tweetId = tweetUrl.match(/\/(\d+)(?:\?|$)/)[1];
                 const [tweet] = await getTwitterTWeet(tweetId);
@@ -149,7 +145,7 @@ export default async function main() {
                     }),
                     isPublished: true,
                 };
-                await PointReward.create(socialQuestRetweet);
+                await QuestSocial.create(socialQuestRetweet);
             }
 
             // Create social quest twitter retweet
@@ -168,11 +164,11 @@ export default async function main() {
                     contentMetadata: JSON.stringify({ serverId, inviteURL: inviteURL || undefined }),
                     isPublished: true,
                 };
-                await PointReward.create(socialQuestJoin);
+                await QuestSocial.create(socialQuestJoin);
             }
 
             // Create default erc20 rewards
-            await ERC20Perk.create({
+            await RewardCoin.create({
                 poolId,
                 uuid: db.createUUID(),
                 title: `Small bag of $THX`,
@@ -224,7 +220,7 @@ export default async function main() {
                             amounts: [5, 10, 20, 40, 80, 160, 360],
                             isPublished: true,
                         };
-                        await DailyReward.create(dailyQuest);
+                        await QuestDaily.create(dailyQuest);
                         console.log(sql[`Q${i} - Type`], titleSuggestion.content, 'quest created!');
                         break;
                     }
@@ -238,7 +234,7 @@ export default async function main() {
                             limit: 0,
                             isPublished: true,
                         };
-                        await MilestoneReward.create(customQuest);
+                        await QuestCustom.create(customQuest);
                         console.log(sql[`Q${i} - Type`], titleSuggestion.content, 'quest created!');
                         break;
                     }

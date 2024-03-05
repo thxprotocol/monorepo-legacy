@@ -1,17 +1,17 @@
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
-import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
+import { QuestWeb3 } from '@thxnetwork/api/models/QuestWeb3';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { JobType, QuestVariant } from '@thxnetwork/common/lib/types';
 import { agenda } from '@thxnetwork/api/util/agenda';
 import { recoverSigner } from '@thxnetwork/api/util/network';
-import { chainList } from '@thxnetwork/common';
 import QuestService from '@thxnetwork/api/services/QuestService';
+import { chainList } from '@thxnetwork/common/chains';
+import { JobType, QuestVariant } from '@thxnetwork/common/enums';
 
 const validation = [param('id').isMongoId(), body('signature').isString(), body('chainId').isInt()];
 
 const controller = async ({ account, body, params }: Request, res: Response) => {
-    const quest = await Web3Quest.findById(params.id);
+    const quest = await QuestWeb3.findById(params.id);
     if (!quest) throw new NotFoundError('Quest not found');
 
     const address = recoverSigner(body.message, body.signature);

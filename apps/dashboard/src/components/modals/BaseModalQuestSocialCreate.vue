@@ -36,10 +36,8 @@
 </template>
 
 <script lang="ts">
-import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TPointReward, TAccount, TQuestLock } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind, QuestVariant, QuestSocialRequirement } from '@thxnetwork/types/enums';
+import { AccessTokenKind, QuestVariant, QuestSocialRequirement } from '@thxnetwork/common/enums';
 import { providerInteractionList, providerList } from '@thxnetwork/dashboard/types/rewards';
 import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
@@ -47,7 +45,7 @@ import BaseModal from './BaseModal.vue';
 import BaseModalQuestCreate from './BaseModalQuestCreate.vue';
 import BaseCardQuestRequirement from '../cards/BaseCardQuestRequirement.vue';
 import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
-import { questInteractionVariantMap } from '@thxnetwork/common/lib/types';
+import { questInteractionVariantMap } from '@thxnetwork/common/maps';
 
 const requirementDefaultsMap = {
     [QuestVariant.Twitter]: {
@@ -105,7 +103,7 @@ export default class ModalQuestSocialCreate extends Vue {
     @Prop() variant!: string;
     @Prop() total!: number;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TPointReward;
+    @Prop({ required: false }) reward!: TQuestSocial;
 
     get isSubmitDisabled() {
         return this.requirement && (!this.requirement.content || !this.requirement.contentMetadata);

@@ -40,8 +40,11 @@
                             @change-date="expiryDate = $event"
                         />
                         <BaseCardRewardLimits class="mb-3" :limit="limit" @change-reward-limit="limit = $event" />
-                        <b-form-group>
+                        <b-form-group class="mb-0">
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
+                        </b-form-group>
+                        <b-form-group>
+                            <b-form-checkbox v-model="isPublished">Published</b-form-checkbox>
                         </b-form-group>
                     </b-col>
                 </b-row>
@@ -66,9 +69,7 @@
 </template>
 
 <script lang="ts">
-import type { TBaseReward, TPool, TQuestLock } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
 import BaseModal from './BaseModal.vue';
 import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
 import BaseCardRewardLimits from '../cards/BaseCardRewardLimits.vue';
@@ -81,10 +82,6 @@ import BaseCardQuestLocks from '../cards/BaseCardQuestLocks.vue';
         BaseCardRewardExpiry,
         BaseCardRewardLimits,
     },
-    computed: mapGetters({
-        erc20List: 'erc20/all',
-        erc20BalanceList: 'erc20/balances',
-    }),
 })
 export default class ModalRewardERC20Create extends Vue {
     title = '';
@@ -95,13 +92,14 @@ export default class ModalRewardERC20Create extends Vue {
     imageFile: File | null = null;
     image = '';
     isPromoted = false;
+    isPublished = false;
     locks: TQuestLock[] = [];
 
     @Prop() id!: string;
     @Prop() error!: string;
     @Prop() isLoading!: boolean;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TBaseReward;
+    @Prop({ required: false }) reward!: TReward;
 
     onShow() {
         this.title = this.reward ? this.reward.title : this.title;
@@ -111,6 +109,8 @@ export default class ModalRewardERC20Create extends Vue {
         this.limit = this.reward ? this.reward.limit : 0;
         this.image = this.reward && this.reward.image ? this.reward.image : '';
         this.isPromoted = this.reward ? this.reward.isPromoted : this.isPromoted;
+        this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
+        this.locks = this.reward ? this.reward.locks : this.locks;
         this.$emit('show');
     }
 
@@ -125,6 +125,7 @@ export default class ModalRewardERC20Create extends Vue {
             file: this.imageFile,
             locks: this.locks,
             isPromoted: this.isPromoted,
+            isPublished: this.isPublished,
         });
     }
 }

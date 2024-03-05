@@ -1,5 +1,5 @@
 import { AUTH_URL, DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET } from '../config/secrets';
-import { AccessTokenKind, OAuthDiscordScope } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccessTokenKind, OAuthDiscordScope } from '@thxnetwork/common/enums/AccessTokenKind';
 import { discordClient } from '../util/axios';
 import { Token, TokenDocument } from '../models/Token';
 import { IOAuthService } from './interfaces/IOAuthService';

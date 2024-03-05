@@ -3,8 +3,7 @@ import app from '../../app';
 import db from '../../util/database';
 import { accountAddress, accountEmail } from '../../util/jest';
 import { INITIAL_ACCESS_TOKEN } from '@thxnetwork/auth/config/secrets';
-import { AccountVariant } from '@thxnetwork/types/interfaces';
-import { AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountVariant, AccountPlanType } from '@thxnetwork/common/enums';
 import AuthService from '@thxnetwork/auth/services/AuthService';
 
 const http = request.agent(app);

@@ -1,7 +1,7 @@
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { toChecksumAddress } from 'web3-utils';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
-import { ChainId } from '@thxnetwork/common/lib/types';
+import { ChainId } from '@thxnetwork/common/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { SafeFactory } from '@safe-global/protocol-kit';
 

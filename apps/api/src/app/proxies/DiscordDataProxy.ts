@@ -1,14 +1,13 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import type { TAccount, TDiscordButton, TDiscordEmbed, TToken } from '@thxnetwork/types/interfaces';
 import { client, PermissionFlagsBits } from '../../discord';
-import { AssetPoolDocument } from '../models/AssetPool';
+import { DiscordGuild, DiscordGuildDocument, PoolDocument } from '@thxnetwork/api/models';
 import { ActionRowBuilder, ButtonBuilder, Guild } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
 import { logger } from '../util/logger';
-import { AccessTokenKind, OAuthRequiredScopes } from '@thxnetwork/common/lib/types/enums';
-import { DISCORD_API_ENDPOINT } from '@thxnetwork/common/lib/types/contants';
-import DiscordGuild, { DiscordGuildDocument } from '../models/DiscordGuild';
+import { AccessTokenKind, OAuthRequiredScopes } from '@thxnetwork/common/enums';
+import { DISCORD_API_ENDPOINT } from '@thxnetwork/common/constants';
 import AccountProxy from './AccountProxy';
+import { discordColorToHex } from '../util/discord';
 
 export enum NotificationVariant {
     QuestDaily = 0,
@@ -31,7 +30,7 @@ export async function discordClient(config: AxiosRequestConfig) {
 
 export default class DiscordDataProxy {
     static async sendChannelMessage(
-        pool: AssetPoolDocument,
+        pool: PoolDocument,
         content: string,
         embeds: TDiscordEmbed[] = [],
         buttons?: TDiscordButton[],
@@ -101,15 +100,11 @@ export default class DiscordDataProxy {
         return { result: false, reason: 'Discord: Your Discord account is not a member of this server.' };
     }
 
-    static discordColorToHex(discordColorCode) {
-        return `#${discordColorCode.toString(16).padStart(6, '0')}`;
-    }
-
     static async getGuildRoles(guild: Guild) {
         return guild.roles.cache.map((role) => ({
             id: role.id,
             name: role.name,
-            color: this.discordColorToHex(role.color),
+            color: discordColorToHex(role.color),
         }));
     }
 

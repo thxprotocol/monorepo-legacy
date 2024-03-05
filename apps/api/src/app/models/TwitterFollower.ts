@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TTwitterFollower } from '@thxnetwork/types/interfaces';
 
 export type TwitterFollowerDocument = mongoose.Document & TTwitterFollower;
 
@@ -11,4 +10,8 @@ const twitterFollowerSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
-export const TwitterFollower = mongoose.model<TwitterFollowerDocument>('twitterfollowers', twitterFollowerSchema);
+export const TwitterFollower = mongoose.model<TwitterFollowerDocument>(
+    'TwitterFollower',
+    twitterFollowerSchema,
+    'twitterfollower',
+);

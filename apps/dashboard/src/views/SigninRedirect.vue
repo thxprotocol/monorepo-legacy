@@ -5,11 +5,10 @@
 </template>
 
 <script lang="ts">
-import { track } from '@thxnetwork/mixpanel';
+import { track } from '@thxnetwork/common/mixpanel';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IPools } from '../store/modules/pools';
-import { TAccount } from '@thxnetwork/types/interfaces';
 import { User } from 'oidc-client-ts';
 
 @Component({

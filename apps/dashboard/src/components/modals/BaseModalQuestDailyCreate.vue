@@ -65,12 +65,11 @@
 </template>
 
 <script lang="ts">
-import type { TDailyReward, TInfoLink, TPool, TQuestLock } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
-import { QuestVariant } from '@thxnetwork/common/lib/types';
+import { QuestVariant } from '@thxnetwork/common/enums';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseDropdownEventType from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownEventType.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';

@@ -23,7 +23,7 @@
 import { mapGetters } from 'vuex';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TGuildState } from '@thxnetwork/dashboard/store/modules/pools';
-import type { TPool, TDiscordRoleReward, TBaseReward } from '@thxnetwork/types/interfaces';
+import { RewardVariant } from '@thxnetwork/common/enums';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
 import BaseDropdownDiscordRole from '../dropdowns/BaseDropdownDiscordRole.vue';
 
@@ -45,7 +45,7 @@ export default class ModalRewardCustomCreate extends Vue {
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TDiscordRoleReward;
+    @Prop({ required: false }) reward!: TRewardDiscordRole;
 
     get guilds() {
         if (!this.guildsList[this.pool._id]) return [];
@@ -63,13 +63,13 @@ export default class ModalRewardCustomCreate extends Vue {
         this.isLoadingGuilds = true;
     }
 
-    async onSubmit(payload: TBaseReward) {
+    async onSubmit(payload: TReward) {
         try {
             this.isLoading = true;
-
-            await this.$store.dispatch(`discordRoleRewards/${this.reward ? 'update' : 'create'}`, {
+            await this.$store.dispatch(`pools/${this.reward ? 'update' : 'create'}Reward`, {
                 ...this.reward,
                 ...payload,
+                variant: RewardVariant.DiscordRole,
                 discordRoleId: this.discordRoleId,
             });
             this.$bvModal.hide(this.id);

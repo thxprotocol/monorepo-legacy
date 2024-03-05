@@ -1,17 +1,15 @@
-import { Web3QuestClaim } from '../models/Web3QuestClaim';
+import { QuestWeb3Entry, QuestWeb3 } from '@thxnetwork/api/models';
 import { BigNumber, ethers } from 'ethers';
 import { logger } from '@thxnetwork/api/util/logger';
 import { IQuestService } from './interfaces/IQuestService';
-import { TAccount, TWeb3Quest, TValidationResult, TWeb3QuestClaim } from '@thxnetwork/common/lib/types';
-import { Web3Quest } from '../models/Web3Quest';
 
 export default class QuestWeb3Service implements IQuestService {
     models = {
-        quest: Web3Quest,
-        entry: Web3QuestClaim,
+        quest: QuestWeb3,
+        entry: QuestWeb3Entry,
     };
 
-    findEntryMetadata(options: { quest: TWeb3Quest }) {
+    findEntryMetadata(options: { quest: TQuestWeb3 }) {
         return {};
     }
 
@@ -20,10 +18,10 @@ export default class QuestWeb3Service implements IQuestService {
         account,
         data,
     }: {
-        quest: TWeb3Quest;
-        data: Partial<TWeb3QuestClaim>;
+        quest: TQuestWeb3;
+        data: Partial<TQuestWeb3Entry>;
         account?: TAccount;
-    }): Promise<TWeb3Quest & { isAvailable: boolean }> {
+    }): Promise<TQuestWeb3 & { isAvailable: boolean }> {
         const isAvailable = await this.isAvailable({ quest, account, data });
 
         return {
@@ -41,16 +39,16 @@ export default class QuestWeb3Service implements IQuestService {
         account,
         data,
     }: {
-        quest: TWeb3Quest;
+        quest: TQuestWeb3;
         account: TAccount;
-        data: Partial<TWeb3QuestClaim>;
+        data: Partial<TQuestWeb3Entry>;
     }): Promise<TValidationResult> {
         if (!account) return { result: true, reason: '' };
 
         const ids: any[] = [{ sub: account.sub }];
         if (data && data.address) ids.push({ address: data.address });
 
-        const isCompleted = await Web3QuestClaim.exists({
+        const isCompleted = await QuestWeb3Entry.exists({
             questId: quest._id,
             $or: ids,
         });
@@ -59,7 +57,7 @@ export default class QuestWeb3Service implements IQuestService {
         return { result: false, reason: 'You have completed this quest with this account and/or address already.' };
     }
 
-    async getAmount({ quest }: { quest: TWeb3Quest; account: TAccount }): Promise<number> {
+    async getAmount({ quest }: { quest: TQuestWeb3; account: TAccount }): Promise<number> {
         return quest.amount;
     }
 
@@ -68,13 +66,13 @@ export default class QuestWeb3Service implements IQuestService {
         account,
         data,
     }: {
-        quest: TWeb3Quest;
+        quest: TQuestWeb3;
         account: TAccount;
-        data: Partial<TWeb3QuestClaim & { rpc: string }>;
+        data: Partial<TQuestWeb3Entry & { rpc: string }>;
     }): Promise<TValidationResult> {
         const { rpc, chainId, address } = data;
         const provider = new ethers.providers.JsonRpcProvider(rpc);
-        const isClaimed = await Web3QuestClaim.exists({
+        const isClaimed = await QuestWeb3Entry.exists({
             questId: quest._id,
             $or: [{ sub: account.sub }, { address }],
         });

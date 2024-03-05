@@ -1,22 +1,14 @@
 import axios from 'axios';
-import { WalletDocument } from '../models/Wallet';
-import { GitcoinQuestEntry } from '../models/GitcoinQuestEntry';
 import { GITCOIN_API_KEY } from '../config/secrets';
 import { logger } from '../util/logger';
-import {
-    TAccount,
-    TGitcoinQuestEntry,
-    TGitcoinQuest,
-    TValidationResult,
-} from '@thxnetwork/common/lib/types/interfaces';
-import { GitcoinQuest } from '../models/GitcoinQuest';
+import { QuestGitcoin, QuestGitcoinEntry } from '@thxnetwork/api/models';
 import { IQuestService } from './interfaces/IQuestService';
 import GitcoinService from './GitcoinService';
 
 export default class QuestGitcoinService implements IQuestService {
     models = {
-        quest: GitcoinQuest,
-        entry: GitcoinQuestEntry,
+        quest: QuestGitcoin,
+        entry: QuestGitcoinEntry,
     };
 
     findEntryMetadata(options: { quest: TGitcoinQuest }) {
@@ -50,7 +42,7 @@ export default class QuestGitcoinService implements IQuestService {
         const ids: { [key: string]: string }[] = [{ sub: account.sub }];
         if (data && data.address) ids.push({ address: data.address });
 
-        const isCompleted = await GitcoinQuestEntry.exists({
+        const isCompleted = await QuestGitcoinEntry.exists({
             questId: quest._id,
             $or: ids,
         });

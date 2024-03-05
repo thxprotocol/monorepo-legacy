@@ -15,8 +15,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { AccessTokenKind } from '@thxnetwork/types/enums';
-import { AccountVariant } from '../types/enums/AccountVariant';
+import { AccountVariant, AccessTokenKind } from '@thxnetwork/common/enums';
 
 export function parseAccount({ id, account }) {
     if (!account) return;

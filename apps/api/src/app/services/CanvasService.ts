@@ -1,6 +1,5 @@
 import path from 'path';
 import { createCanvas, loadImage, registerFont } from 'canvas';
-import { TBrand } from '@thxnetwork/common/lib/types';
 import { assetsPath } from '@thxnetwork/api/util/path';
 
 // Load on boot as registration on runtime results in font not being loaded in time

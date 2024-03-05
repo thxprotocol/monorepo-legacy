@@ -1,20 +1,19 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { QuestVariant } from '@thxnetwork/types/enums';
+import { QuestVariant } from '@thxnetwork/common/enums';
 import { account4, dashboardAccessToken, widgetAccessToken4 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
+import { QuestDailyDocument } from '@thxnetwork/api/models';
 import { poll } from '@thxnetwork/api/util/polling';
 import { Job } from '@thxnetwork/api/models/Job';
 import { IJobParameters } from '@hokify/agenda';
 import { v4 } from 'uuid';
-import { Identity } from '@thxnetwork/api/models/Identity';
 
 const user = request.agent(app);
 
 describe('Daily Rewards WebHooks', () => {
-    let poolId: string, dailyReward: DailyRewardDocument;
+    let poolId: string, dailyReward: QuestDailyDocument;
     const eventName = v4();
 
     beforeAll(beforeAllCallback);
@@ -32,7 +31,7 @@ describe('Daily Rewards WebHooks', () => {
     });
 
     it('POST /daily-rewards', (done) => {
-        user.post(`/v1/pools/${poolId}/quests`)
+        user.post(`/v1/pools/${poolId}/quests/${QuestVariant.Daily}`)
             .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
             .send({
                 isPublished: true,

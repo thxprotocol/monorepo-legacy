@@ -69,10 +69,9 @@
 <script lang="ts">
 import hljs from 'highlight.js/lib/core';
 import Shell from 'highlight.js/lib/languages/shell';
-import { QuestVariant, TQuestLock, type TReferralReward } from '@thxnetwork/types/index';
+import { QuestVariant } from '@thxnetwork/common/enums';
 import { mapGetters } from 'vuex';
 import { UserProfile } from 'oidc-client-ts';
-import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
@@ -96,7 +95,7 @@ hljs.registerLanguage('shell', Shell);
         profile: 'account/profile',
     }),
 })
-export default class ModalReferralRewardCreate extends Vue {
+export default class ModalQuestInviteCreate extends Vue {
     isSubmitDisabled = false;
     isMandatoryReview = false;
     isLoading = false;
@@ -120,7 +119,7 @@ export default class ModalReferralRewardCreate extends Vue {
     @Prop() id!: string;
     @Prop() total!: number;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TReferralReward;
+    @Prop({ required: false }) reward!: TQuestInvite;
 
     get code() {
         return `curl "${API_URL}/v1/webhook/referral/${this.reward ? this.reward.token : '<REFERRAL_TOKEN>'}/qualify" \\

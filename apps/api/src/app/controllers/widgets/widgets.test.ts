@@ -1,6 +1,6 @@
 import request, { Response } from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { WidgetDocument } from '@thxnetwork/api/models/Widget';

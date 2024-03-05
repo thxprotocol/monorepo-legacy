@@ -58,14 +58,13 @@
 </template>
 
 <script lang="ts">
-import type { TWebhook, TWebhookRequest } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModal from './BaseModal.vue';
 import hljs from 'highlight.js/lib/core';
 import JavaScript from 'highlight.js/lib/languages/javascript';
 import 'highlight.js/styles/atom-one-dark.css';
 import { format } from 'date-fns';
-import { WebhookRequestState } from '@thxnetwork/common/lib/types/enums';
+import { WebhookRequestState } from '@thxnetwork/common/enums';
 
 hljs.registerLanguage('javascript', JavaScript);
 

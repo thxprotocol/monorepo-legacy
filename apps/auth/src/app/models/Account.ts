@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TAccount } from '@thxnetwork/types/interfaces';
 
 export type AccountDocument = mongoose.Document & TAccount;
 

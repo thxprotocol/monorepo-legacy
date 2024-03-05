@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { TQuestSocialInteraction } from '@thxnetwork/dashboard/types/rewards';
+import { type TQuestSocialInteraction } from '@thxnetwork/dashboard/types/rewards';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})

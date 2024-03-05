@@ -2,7 +2,7 @@ import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
 import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
 import { oidc } from '@thxnetwork/auth/util/oidc';
-import { AccessTokenKind } from '@thxnetwork/types/index';
+import { AccessTokenKind } from '@thxnetwork/common/enums';
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
 import TokenService from '@thxnetwork/auth/services/TokenService';
@@ -35,8 +35,6 @@ async function controller(req: Request, res: Response) {
         await account.updateOne({ isEmailVerified: true });
 
         await AuthService.getReturnUrl(account, req.interaction);
-
-        console.log('Success', account, String(account._id));
 
         return await oidc.interactionFinished(req, res, { login: { accountId: String(account._id) } });
     } catch (error) {

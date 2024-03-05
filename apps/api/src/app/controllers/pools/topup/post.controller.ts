@@ -5,7 +5,6 @@ import { getAbiForContractName } from '@thxnetwork/api/services/ContractService'
 import PoolService from '@thxnetwork/api/services/PoolService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
-import { ethers } from 'hardhat';
 import { BigNumber, ContractInterface } from 'ethers';
 import {
     USDC_ADDRESS,

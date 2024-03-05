@@ -37,7 +37,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import type { TAccount, TCollaborator, TPool } from '@thxnetwork/types/interfaces';
-import { CollaboratorInviteState } from '@thxnetwork/types/enums';
+import { CollaboratorInviteState } from '@thxnetwork/common/enums';
 import { format } from 'date-fns';
 import { mapGetters } from 'vuex';
 

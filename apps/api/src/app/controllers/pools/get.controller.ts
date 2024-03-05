@@ -1,16 +1,12 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import { currentVersion } from '@thxnetwork/contracts/exports';
-import { Widget } from '@thxnetwork/api/services/WidgetService';
-import { Wallet } from '@thxnetwork/api/models/Wallet';
-import { Event } from '@thxnetwork/api/models/Event';
-import { Identity } from '@thxnetwork/api/models/Identity';
+import { Participant, Widget, Wallet, Event, Identity } from '@thxnetwork/api/models';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { logger } from '@thxnetwork/api/util/logger';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import SafeService from '@thxnetwork/api/services/SafeService';
-import { Participant } from '@thxnetwork/api/models/Participant';
 
 export const validation = [param('id').isMongoId()];
 

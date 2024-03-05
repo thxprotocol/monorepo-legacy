@@ -1,4 +1,4 @@
-import { OAuthScope } from '@thxnetwork/common/lib/types';
+import { OAuthScope } from '@thxnetwork/common/enums';
 import { TokenDocument } from '../../models/Token';
 
 export interface IOAuthService {

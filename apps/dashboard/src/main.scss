@@ -3,7 +3,7 @@
 // Required
 @import '~bootstrap/scss/mixins';
 @import '~bootstrap/scss/functions';
-@import '@thxnetwork/scss/_variables.scss';
+@import '@thxnetwork/common/scss/_variables.scss';
 @import '~bootstrap/scss/variables';
 
 // Optional
@@ -44,22 +44,22 @@
 @import '~bootstrap-vue/src/index.scss';
 
 // Reset
-@import '@thxnetwork/scss/_root.scss';
+@import '@thxnetwork/common/scss/_root.scss';
 
 // Custom
-@import '@thxnetwork/scss/_buttons.scss';
-@import '@thxnetwork/scss/_forms.scss';
-@import '@thxnetwork/scss/_custom-forms.scss';
-@import '@thxnetwork/scss/_custom-switch.scss';
-@import '@thxnetwork/scss/_dropdown.scss';
-@import '@thxnetwork/scss/_sidebar.scss';
-@import '@thxnetwork/scss/_jumbotron.scss';
-@import '@thxnetwork/scss/_modals.scss';
-@import '@thxnetwork/scss/_utilities.scss';
-@import '@thxnetwork/scss/_identicon.scss';
-@import '@thxnetwork/scss/_alert.scss';
-@import '@thxnetwork/scss/_popover.scss';
-@import '@thxnetwork/scss/_dark-mode.scss';
+@import '@thxnetwork/common/scss/_buttons.scss';
+@import '@thxnetwork/common/scss/_forms.scss';
+@import '@thxnetwork/common/scss/_custom-forms.scss';
+@import '@thxnetwork/common/scss/_custom-switch.scss';
+@import '@thxnetwork/common/scss/_dropdown.scss';
+@import '@thxnetwork/common/scss/_sidebar.scss';
+@import '@thxnetwork/common/scss/_jumbotron.scss';
+@import '@thxnetwork/common/scss/_modals.scss';
+@import '@thxnetwork/common/scss/_utilities.scss';
+@import '@thxnetwork/common/scss/_identicon.scss';
+@import '@thxnetwork/common/scss/_alert.scss';
+@import '@thxnetwork/common/scss/_popover.scss';
+@import '@thxnetwork/common/scss/_dark-mode.scss';
 
 .b-tooltip {
     .arrow {
@@ -178,4 +178,37 @@ tbody {
         border-color: $primary;
         color: $primary !important;
     }
+}
+
+.btn-sort {
+    a {
+        line-height: 0;
+        display: flex;
+        height: 20px;
+        width: 40px;
+        padding: 0;
+        cursor: pointer;
+        color: var(--gray);
+        justify-content: center;
+
+        &:first-child {
+            align-items: end;
+        }
+
+        &:hover {
+            text-decoration: none;
+            color: var(--gray-dark);
+
+            &:active {
+                color: var(--gray);
+            }
+        }
+    }
+}
+
+#table-quests tr:first-child .btn-sort a:first-child,
+#table-quests tr:last-child .btn-sort a:last-child {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: var(--gray) !important;
 }

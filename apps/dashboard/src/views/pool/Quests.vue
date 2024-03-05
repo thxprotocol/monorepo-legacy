@@ -115,7 +115,7 @@
                     {{ item.title }}
                 </template>
                 <template #cell(entries)="{ item }">
-                    <BaseBtnQuestEntries
+                    <BaseButtonQuestEntries
                         v-if="
                             [
                                 QuestVariant.Daily,
@@ -160,11 +160,13 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { TQuest } from '@thxnetwork/types/interfaces';
-import { QuestVariant } from '@thxnetwork/types/enums';
+import { format } from 'date-fns';
+import { QuestVariant } from '@thxnetwork/common/enums';
+import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { TQuestState } from '@thxnetwork/dashboard/store/modules/pools';
+import { contentQuests } from '@thxnetwork/common/constants';
 import BaseModalQuestDailyCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestDailyCreate.vue';
 import BaseModalQuestSocialCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialCreate.vue';
 import BaseModalQuestInviteCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestInviteCreate.vue';
@@ -173,100 +175,12 @@ import BaseModalQuestWeb3Create from '@thxnetwork/dashboard/components/modals/Ba
 import BaseModalQuestInviteClaims from '@thxnetwork/dashboard/components/modals/BaseModalQuestInviteClaims.vue';
 import BaseModalQuestGitcoinCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestGitcoinCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
-import BaseBtnQuestEntries from '@thxnetwork/dashboard/components/buttons/BaseBtnQuestEntries.vue';
-import { hasPremiumAccess } from '@thxnetwork/common';
-import { TQuestState } from '@thxnetwork/dashboard/store/modules/pools';
-import { format } from 'date-fns';
+import BaseButtonQuestEntries from '@thxnetwork/dashboard/components/buttons/BaseButtonQuestEntries.vue';
 
-export const contentQuests = {
-    'steam-quest': {
-        tag: 'Steam Quest',
-        icon: 'fab fa-steam',
-        title: 'Unlock Steam engagement',
-        description: 'Embark on a gaming journey by purchasing, wishlisting games, and earning Steam achievements.',
-        list: ['Buy a game on Steam', 'Wishlist a game on Steam', 'Earn a Steam achievement'],
-        docsUrl: 'https://docs.thx.network/user-guides/quests/daily-quests',
-        color: '#171d25',
-    },
-    'twitter-quest': {
-        tag: 'Twitter Quest',
-        icon: 'fab fa-twitter',
-        title: 'Boost your Twitter presence',
-        description: 'Engage your audience on Twitter by creating exciting quests that encourage retweets and likes.',
-        list: ['Increase followers', 'Enhance brand recognition', 'Foster community engagement'],
-        docsUrl: 'https://docs.thx.network/user-guides/quests/social-quests',
-        color: '#1B95E0',
-    },
-    'daily-quest': {
-        tag: 'Daily Quest',
-        title: 'Boost user engagement',
-        icon: 'fas fa-calendar',
-        description: 'Provide daily incentives for returning to your website.',
-        list: ['Encourage regular visits', 'Enhance user loyalty', 'Foster community growth'],
-        docsUrl: 'https://docs.thx.network/user-guides/quests/daily-quests',
-        color: '#4CAF50',
-    },
-    'custom-quest': {
-        tag: 'Custom Quest',
-        icon: 'fas fa-trophy',
-        title: 'Seamless integration',
-        description: 'Integrate quests with ease using webhooks to reward important achievements in your application.',
-        list: ['Tailor rewards to your app', 'Streamline integration', 'Enhance user experience'],
-        docsUrl: 'https://docs.thx.network/user-guides/quests/custom-quests',
-        color: '#9370DB',
-    },
-    'youtube-quest': {
-        tag: 'Youtube Quest',
-        icon: 'fab fa-youtube',
-        title: 'Expand your YouTube presence',
-        description:
-            'Amplify your presence on YouTube by creating quests that encourage likes, shares, and subscriptions.',
-        list: ['Increase video views', 'Boost channel subscribers', 'Enhance YouTube community engagement'],
-        docsUrl: 'https://docs.thx.network/user-guides/quests/social-quests',
-        color: '#FF0000',
-    },
-    'invite-quest': {
-        tag: 'Invite Quest',
-        icon: 'fas fa-comments',
-        title: 'Drive user acquisition',
-        description: 'Empower your players to earn rewards for referrals.',
-        list: ['Expand your user base', 'Lower acquisition costs', 'Strengthen player networks'],
-        docsUrl: 'https://docs.thx.network/user-guides/quests/referral-quests',
-        color: '#FFA500',
-    },
-    'discord-quest': {
-        tag: 'Discord Quest',
-        icon: 'fab fa-discord',
-        title: 'Strengthen your Discord community',
-        description:
-            'Create quests on Discord to promote community interactions and build a strong, engaged user base.',
-        list: ['Grow your Discord server', 'Enhance community participation', 'Boost server activity'],
-        docsUrl: 'https://docs.thx.network/user-guides/quests',
-        color: '#5865F2',
-    },
-    'web3-quest': {
-        tag: 'Web3 Quest',
-        icon: 'fab fa-ethereum',
-        title: 'Empower with Web3 rewards',
-        description: "Reward users' coin balance or NFT ownership using smart contracts.",
-        list: ['Leverage blockchain technology', 'Enhance user ownership', 'Facilitate decentralized rewards'],
-        docsUrl: 'https://docs.thx.network/user-guides/quests',
-        color: '#3C3C3D',
-    },
-    'gitcoin-quest': {
-        tag: 'Gitcoin Quest',
-        icon: 'fas fa-fingerprint',
-        title: 'Use Gitcoin Passport for sybil resistance',
-        description: 'Use this quest to verify if wallets are owned by real humans.',
-        list: ['Increase Sybil Resistance', 'Gitcoin Unique Humanity Scorer', 'Tap into new ecosystems'],
-        docsUrl: 'https://docs.thx.network/user-guides/quests',
-        color: '#3498db',
-    },
-};
 @Component({
     components: {
         BaseCardTableHeader,
-        BaseBtnQuestEntries,
+        BaseButtonQuestEntries,
         BaseModalQuestDailyCreate,
         BaseModalQuestSocialCreate,
         BaseModalQuestCustomCreate,
@@ -278,11 +192,9 @@ export const contentQuests = {
     computed: mapGetters({
         pools: 'pools/all',
         quests: 'pools/quests',
-        totals: 'dailyRewards/totals',
     }),
 })
 export default class QuestsView extends Vue {
-    hasPremiumAccess = hasPremiumAccess;
     contentQuests = contentQuests;
     actions = [
         { label: 'Publish all', variant: 0 },
@@ -329,22 +241,17 @@ export default class QuestsView extends Vue {
         return this.quests[this.$route.params.id].total;
     }
 
-    get currentPage() {
-        if (!this.quests[this.$route.params.id]) return 1;
-        return this.quests[this.$route.params.id].page;
-    }
-
     get allQuests() {
         if (!this.quests[this.$route.params.id]) return [];
         return this.quests[this.$route.params.id].results.map((quest: any) => ({
-            index: quest,
+            index: null,
             checkbox: quest._id,
             title: quest.title,
             points: quest.amounts ? `${quest.amounts.length} days` : quest.amount,
             entries: quest.entryCount,
-            expiry: quest.expiryDate ? format(new Date(quest.expiryDate), 'dd-MM-yyyy HH:mm') : 'Never',
+            expiry: quest.expiryDate ? format(new Date(quest.expiryDate), 'dd-MM-yyyy HH:mm') : '',
             created: format(new Date(quest.createdAt), 'dd-MM-yyyy HH:mm'),
-            quest: quest,
+            quest,
         }));
     }
 
@@ -434,39 +341,6 @@ export default class QuestsView extends Vue {
 </script>
 
 <style lang="scss">
-.btn-sort {
-    a {
-        line-height: 0;
-        display: flex;
-        height: 20px;
-        width: 40px;
-        padding: 0;
-        cursor: pointer;
-        color: var(--gray);
-        justify-content: center;
-
-        &:first-child {
-            align-items: end;
-        }
-
-        &:hover {
-            text-decoration: none;
-            color: var(--gray-dark);
-
-            &:active {
-                color: var(--gray);
-            }
-        }
-    }
-}
-
-#table-quests tr:first-child .btn-sort a:first-child,
-#table-quests tr:last-child .btn-sort a:last-child {
-    opacity: 0.5;
-    cursor: not-allowed;
-    color: var(--gray) !important;
-}
-
 #table-quests th:nth-child(1) {
     width: 20px;
 }

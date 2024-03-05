@@ -1,6 +1,5 @@
 import { ERC20TokenDocument } from '@thxnetwork/api/models/ERC20Token';
 import { Request, Response } from 'express';
-import { TERC20, TERC20Token } from '@thxnetwork/types/interfaces';
 import { fromWei } from 'web3-utils';
 import { query } from 'express-validator';
 import { BadRequestError } from '@thxnetwork/api/util/errors';

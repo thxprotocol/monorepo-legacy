@@ -1,6 +1,6 @@
 import { Response, Request, NextFunction } from 'express';
 import { NotFoundError } from '../util/errors';
-import { AssetPool } from '../models/AssetPool';
+import { Pool } from '@thxnetwork/api/models';
 import AccountProxy from '../proxies/AccountProxy';
 
 const assertAccount = async (req: Request, res: Response, next: NextFunction) => {
@@ -10,7 +10,7 @@ const assertAccount = async (req: Request, res: Response, next: NextFunction) =>
 
     const poolId = req.header('X-PoolId');
     if (poolId) {
-        const pool = await AssetPool.findById(poolId);
+        const pool = await Pool.findById(poolId);
         if (!pool) throw new NotFoundError('Could not find campaign');
         req.campaign = pool;
     }

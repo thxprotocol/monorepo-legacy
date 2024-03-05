@@ -1,4 +1,4 @@
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { AbiItem } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';

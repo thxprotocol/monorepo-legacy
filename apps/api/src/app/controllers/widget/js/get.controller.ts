@@ -1,7 +1,7 @@
 import { API_URL, AUTH_URL, DASHBOARD_URL, NODE_ENV, WIDGET_URL } from '@thxnetwork/api/config/secrets';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import PoolService from '@thxnetwork/api/services/PoolService';
-import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
+import { QuestInvite } from '@thxnetwork/api/models/QuestInvite';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
@@ -16,7 +16,7 @@ const validation = [
 
 const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Widget']
-    const referralRewards = await ReferralReward.find({
+    const referralRewards = await QuestInvite.find({
         poolId: req.params.id,
     });
     const refs = JSON.stringify(

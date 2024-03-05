@@ -18,7 +18,7 @@ router.get(
     ListController.controller,
 );
 router.post(
-    '/',
+    '/:variant',
     guard.check(['pools:read', 'pools:write']),
     upload.single('file'),
     assertPoolAccess,
@@ -26,7 +26,7 @@ router.post(
     CreateController.controller,
 );
 router.patch(
-    '/:questId',
+    '/:variant/:questId',
     guard.check(['pools:read', 'pools:write']),
     upload.single('file'),
     assertPoolAccess,
@@ -34,7 +34,7 @@ router.patch(
     UpdateController.controller,
 );
 router.delete(
-    '/:questId',
+    '/:variant/:questId',
     guard.check(['pools:read', 'pools:write']),
     upload.single('file'),
     assertPoolAccess,
@@ -42,6 +42,6 @@ router.delete(
     RemoveController.controller,
 );
 
-router.use('/:questId/entries', routerQuestEntries);
+router.use('/:variant/:questId/entries', routerQuestEntries);
 
 export default router;

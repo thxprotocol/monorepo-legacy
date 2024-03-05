@@ -15,14 +15,14 @@
         "module": "commonjs",
         "types": ["node", "jest"]
     },
-    "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-    "include": [
-        "scripts/**/*.ts",
-        "src/**/*.ts",
-        "../../package.json",
-        "./package.json",
-        "../../libs/common/**/*",
-        "../../libs/contracts/**/*",
-        "../../libs/contracts/package.json"
-    ]
+    "include": ["**/*.ts", "../../libs/common/**/*"],
+    "exclude": []
+    // "include": [
+    //     "../../libs/common/**/*",
+    //     "../../libs/contracts/**/*",
+    //     "../../package.json",
+    //     "scripts/**/*.ts",
+    //     "src/**/*.ts",
+    //     "./package.json"
+    // ]
 }

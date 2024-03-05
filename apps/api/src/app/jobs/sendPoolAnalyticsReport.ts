@@ -1,11 +1,10 @@
-import { TAccount } from '@thxnetwork/types/interfaces';
-import { AssetPool } from '../models/AssetPool';
-import AccountProxy from '../proxies/AccountProxy';
-import MailService from '../services/MailService';
-import AnalyticsService from '../services/AnalyticsService';
+import { Pool } from '@thxnetwork/api/models';
 import { DASHBOARD_URL } from '../config/secrets';
 import { logger } from '../util/logger';
 import PoolService from '../services/PoolService';
+import AccountProxy from '../proxies/AccountProxy';
+import MailService from '../services/MailService';
+import AnalyticsService from '../services/AnalyticsService';
 
 const emojiMap = ['🥇', '🥈', '🥉'];
 const oneDay = 86400000; // one day in milliseconds
@@ -19,7 +18,7 @@ export async function sendPoolAnalyticsReport() {
 
     let account: TAccount;
 
-    for await (const pool of AssetPool.find({ 'settings.isWeeklyDigestEnabled': true })) {
+    for await (const pool of Pool.find({ 'settings.isWeeklyDigestEnabled': true })) {
         try {
             if (!account || account.sub != pool.sub) account = await AccountProxy.findById(pool.sub);
             if (!account.email) continue;

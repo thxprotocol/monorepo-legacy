@@ -7,9 +7,9 @@ import {
 import { handleError } from './commands/error';
 import { onSelectQuestComplete, onClickQuestComplete, onClickRewardList, onClickQuestList } from './handlers/index';
 import { logger } from '../util/logger';
+import { DiscordGuild } from '@thxnetwork/api/models';
+import { Pool, PoolDocument } from '@thxnetwork/api/models';
 import router from './commands/thx';
-import DiscordGuild from '../models/DiscordGuild';
-import { AssetPool, AssetPoolDocument } from '../models/AssetPool';
 
 export enum DiscordStringSelectMenuVariant {
     QuestComplete = 'thx.campaign.quest.entry.create',
@@ -32,8 +32,8 @@ export const onAutoComplete = async (interaction: AutocompleteInteraction) => {
 
     const discordGuilds = await DiscordGuild.find({ guildId: interaction.guildId });
     const focusedValue = interaction.options.getFocused();
-    const campaigns = await Promise.all(discordGuilds.map(({ poolId }) => AssetPool.findById(poolId)));
-    const choices = campaigns.filter((c) => !!c).map((c: AssetPoolDocument) => `${c.settings.title}`);
+    const campaigns = await Promise.all(discordGuilds.map(({ poolId }) => Pool.findById(poolId)));
+    const choices = campaigns.filter((c) => !!c).map((c: PoolDocument) => `${c.settings.title}`);
     const filtered = choices.filter((choice) => choice.startsWith(focusedValue));
 
     await interaction.respond(filtered.map((choice) => ({ name: choice, value: choice })));

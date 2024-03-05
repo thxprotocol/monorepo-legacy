@@ -1,7 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { TAccount, TPointReward, TToken } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind, OAuthRequiredScopes, OAuthTwitterScope } from '@thxnetwork/common/lib/types/enums';
-import { TWITTER_API_ENDPOINT } from '@thxnetwork/common/lib/types/contants';
+import { AccessTokenKind, OAuthRequiredScopes, OAuthTwitterScope } from '@thxnetwork/common/enums';
+import { TWITTER_API_ENDPOINT } from '@thxnetwork/common/constants';
 import { formatDistance } from 'date-fns';
 import { logger } from '../util/logger';
 import { TwitterLike } from '../models/TwitterLike';
@@ -112,7 +111,7 @@ export default class TwitterDataProxy {
         return data.data;
     }
 
-    static async validateUser(account: TAccount, quest: TPointReward) {
+    static async validateUser(account: TAccount, quest: TQuestSocial) {
         const token = await AccountProxy.getToken(
             account,
             AccessTokenKind.Twitter,
@@ -176,7 +175,7 @@ export default class TwitterDataProxy {
         }
     }
 
-    static async validateLike(account: TAccount, quest: TPointReward) {
+    static async validateLike(account: TAccount, quest: TQuestSocial) {
         const postId = quest.content;
         const token = await AccountProxy.getToken(
             account,
@@ -214,7 +213,7 @@ export default class TwitterDataProxy {
         }
     }
 
-    static async validateRetweet(account: TAccount, quest: TPointReward) {
+    static async validateRetweet(account: TAccount, quest: TQuestSocial) {
         const postId = quest.content;
         const token = await AccountProxy.getToken(
             account,

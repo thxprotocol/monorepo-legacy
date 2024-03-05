@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { NFTVariant } from '@thxnetwork/types/enums';
+import { NFTVariant } from '@thxnetwork/common/enums';
 
 @Component({})
 export default class ModalAssetPoolCreate extends Vue {

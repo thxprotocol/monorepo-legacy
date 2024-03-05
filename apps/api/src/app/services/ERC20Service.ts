@@ -1,25 +1,24 @@
-import ERC20, { ERC20Document, IERC20Updates } from '@thxnetwork/api/models/ERC20';
-import { toChecksumAddress, toWei } from 'web3-utils';
-import { ICreateERC20Params } from '@thxnetwork/api/types/interfaces';
-import TransactionService from './TransactionService';
+import { toChecksumAddress } from 'web3-utils';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
-import { ChainId, ERC20Type, TransactionState } from '@thxnetwork/types/enums';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import { ChainId, ERC20Type, TransactionState } from '@thxnetwork/common/enums';
 import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api/services/ContractService';
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
-import { ERC20Token } from '@thxnetwork/api/models/ERC20Token';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
-import { TERC20DeployCallbackArgs, TERC20TransferFromCallBackArgs } from '@thxnetwork/api/types/TTransaction';
-import { Transaction } from '@thxnetwork/api/models/Transaction';
-import ERC20Transfer from '../models/ERC20Transfer';
-import { WalletDocument } from '../models/Wallet';
 import { TokenContractName } from '@thxnetwork/contracts/exports';
-import BN from 'bn.js';
-import { ERC20Perk } from '../models/ERC20Perk';
-import SafeService, { Wallet } from './SafeService';
+import {
+    ERC20,
+    ERC20Document,
+    ERC20Token,
+    ERC20Transfer,
+    PoolDocument,
+    RewardCoin,
+    Transaction,
+    WalletDocument,
+} from '@thxnetwork/api/models';
+import { Wallet } from './SafeService';
+import TransactionService from './TransactionService';
 import PoolService from './PoolService';
-import { TWallet } from '@thxnetwork/common/lib/types';
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     const { defaultAccount } = getProvider(erc20.chainId);
@@ -36,14 +35,14 @@ function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
 
 export async function findBySub(sub: string) {
     const pools = await PoolService.getAllBySub(sub);
-    const coinRewards = await ERC20Perk.find({ poolId: pools.map((p) => String(p._id)) });
+    const coinRewards = await RewardCoin.find({ poolId: pools.map((p) => String(p._id)) });
     const erc20Ids = coinRewards.map((c) => c.erc20Id);
     const erc20s = await ERC20.find({ sub });
 
     return erc20s.concat(await ERC20.find({ _id: erc20Ids }));
 }
 
-export const deploy = async (params: ICreateERC20Params, forceSync = true) => {
+export const deploy = async (params: Partial<TERC20>, forceSync = true) => {
     const erc20 = await ERC20.create({
         name: params.name,
         symbol: params.symbol,
@@ -58,7 +57,7 @@ export const deploy = async (params: ICreateERC20Params, forceSync = true) => {
 
     const fn = contract.deploy({
         data: bytecode,
-        arguments: getDeployArgs(erc20, params.totalSupply),
+        arguments: getDeployArgs(erc20, String(params.totalSupply)),
     });
 
     const txId = await TransactionService.sendAsync(null, fn, erc20.chainId, forceSync, {
@@ -96,7 +95,7 @@ export async function queryDeployTransaction(erc20: ERC20Document): Promise<ERC2
     return erc20;
 }
 
-const initialize = async (pool: AssetPoolDocument, erc20: ERC20Document) => {
+const initialize = async (pool: PoolDocument, erc20: ERC20Document) => {
     if (erc20 && erc20.type === ERC20Type.Unlimited) {
         await addMinter(erc20, pool.safeAddress);
     }
@@ -177,7 +176,7 @@ export const importToken = async (chainId: number, address: string, wallet: Wall
     return erc20;
 };
 
-export const update = (erc20: ERC20Document, updates: IERC20Updates) => {
+export const update = (erc20: ERC20Document, updates: Partial<TERC20>) => {
     return ERC20.findByIdAndUpdate(erc20._id, updates, { new: true });
 };
 

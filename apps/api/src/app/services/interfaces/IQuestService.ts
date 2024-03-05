@@ -1,7 +1,4 @@
 import { Model } from 'mongoose';
-import { QuestVariant } from '@thxnetwork/types/enums';
-import { TAccount, TQuest, TQuestEntry, TValidationResult } from '@thxnetwork/types/interfaces';
-
 import QuestInviteService from '../QuestInviteService';
 import QuestDiscordService from '../QuestDiscordService';
 import QuestTwitterService from '../QuestSocialService'; // Split
@@ -10,6 +7,7 @@ import QuestDailyService from '../QuestDailyService';
 import QuestCustomService from '../QuestCustomService';
 import QuestGitcoinService from '../QuestGitcoinService';
 import QuestWeb3Service from '../QuestWeb3Service';
+import { QuestVariant } from '@thxnetwork/common/enums';
 
 export interface IQuestService {
     models: { quest: Model<TQuest>; entry: Model<TQuestEntry> };

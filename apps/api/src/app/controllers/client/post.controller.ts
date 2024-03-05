@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { GrantVariant } from '@thxnetwork/types/enums';
+import { GrantVariant } from '@thxnetwork/common/enums';
 import ClientProxy from '@thxnetwork/api/proxies/ClientProxy';
 import { widgetScopes } from '@thxnetwork/api/util/jest/constants';
 

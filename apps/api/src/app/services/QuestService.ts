@@ -1,32 +1,21 @@
-import { JobType, QuestSocialRequirement, QuestVariant } from '@thxnetwork/types/enums';
-import { TAccount, TQuest, TQuestEntry, TToken, TValidationResult } from '@thxnetwork/types/interfaces';
+import { JobType, QuestSocialRequirement, QuestVariant } from '@thxnetwork/common/enums';
+import { PoolDocument, Participant } from '@thxnetwork/api/models';
 import { v4 } from 'uuid';
-import { AssetPoolDocument } from '../models/AssetPool';
 import { agenda } from '../util/agenda';
 import { logger } from '../util/logger';
 import { Job } from '@hokify/agenda';
 import { serviceMap } from './interfaces/IQuestService';
-
+import { tokenInteractionMap } from './maps/quests';
 import PoolService from './PoolService';
 import NotificationService from './NotificationService';
 import PointBalanceService from './PointBalanceService';
 import LockService from './LockService';
 import ImageService from './ImageService';
 import AccountProxy from '../proxies/AccountProxy';
-import { tokenInteractionMap } from './maps/quests';
-import { TwitterUser } from '../models/TwitterUser';
-import { Participant } from '../models/Participant';
+import ParticipantService from './ParticipantService';
 
 export default class QuestService {
-    static async list({
-        pool,
-        data,
-        account,
-    }: {
-        pool: AssetPoolDocument;
-        data: Partial<TQuestEntry>;
-        account?: TAccount;
-    }) {
+    static async list({ pool, data, account }: { pool: PoolDocument; data: Partial<TQuestEntry>; account?: TAccount }) {
         const questVariants = Object.keys(QuestVariant).filter((v) => !isNaN(Number(v)));
         const callback: any = async (variant: QuestVariant) => {
             const Quest = serviceMap[variant].models.quest;
@@ -60,20 +49,21 @@ export default class QuestService {
         return await Promise.all(questVariants.map(callback));
     }
 
-    static async update(variant: QuestVariant, questId: string, data: Partial<TQuest>, file?: Express.Multer.File) {
-        const quest = await this.findById(variant, questId);
-
+    static async update(quest: TQuest, updates: Partial<TQuest>, file?: Express.Multer.File) {
         if (file) {
-            data.image = await ImageService.upload(file);
-            data.image = await ImageService.upload(file);
+            updates.image = await ImageService.upload(file);
         }
 
         // We only want to notify when the quest is set to published (and not updated while published already)
-        if (data.isPublished && Boolean(data.isPublished) !== quest.isPublished) {
-            await NotificationService.notify(variant, { ...quest, ...data, image: data.image || quest.image });
+        if (updates.isPublished && Boolean(updates.isPublished) !== quest.isPublished) {
+            await NotificationService.notify(quest.variant, {
+                ...quest,
+                ...updates,
+                image: updates.image || quest.image,
+            });
         }
 
-        return await this.updateById(variant, questId, data);
+        return await this.updateById(quest.variant, quest._id, updates);
     }
 
     static async create(variant: QuestVariant, poolId: string, data: Partial<TQuest>, file?: Express.Multer.File) {
@@ -188,35 +178,17 @@ export default class QuestService {
         return token && token.userId;
     }
 
-    static async findEntries(
-        variant: QuestVariant,
-        { quest, page = 1, limit = 25 }: { quest: TQuest; page: number; limit: number },
-    ) {
+    static async findEntries(quest: TQuest, { page = 1, limit = 25 }: { page: number; limit: number }) {
         const skip = (page - 1) * limit;
-        const Entry = serviceMap[variant].models.entry;
+        const Entry = serviceMap[quest.variant].models.entry;
         const total = await Entry.countDocuments({ questId: quest._id });
         const entries = await Entry.find({ questId: quest._id }).limit(limit).skip(skip);
         const subs = entries.map((entry) => entry.sub);
         const accounts = await AccountProxy.find({ subs });
         const participants = await Participant.find({ poolId: quest.poolId });
-        const promises = entries.map(async (entry) => {
-            const account = accounts.find((a) => a.sub === entry.sub);
-            const pointBalance = participants.find((p) => account.sub === String(p.sub));
-            const tokens = await Promise.all(
-                account.tokens.map(async (token: TToken) => {
-                    if (token.kind !== 'twitter') return token;
-                    const user = await TwitterUser.findOne({ userId: token.userId });
-                    return { ...token, user };
-                }),
-            );
-            return {
-                ...entry.toJSON(),
-                account: { ...account, tokens },
-                pointBalance: pointBalance ? pointBalance.balance : 0,
-            };
-        });
+        const promises = entries.map(async (entry) => ParticipantService.decorate(entry, { accounts, participants }));
         const results = await Promise.allSettled(promises);
-        const meta = await serviceMap[variant].findEntryMetadata({ quest });
+        const meta = await serviceMap[quest.variant].findEntryMetadata({ quest });
 
         return {
             total,

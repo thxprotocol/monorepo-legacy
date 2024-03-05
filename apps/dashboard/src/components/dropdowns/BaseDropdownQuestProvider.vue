@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { TQuestSocialProvider, providerList } from '@thxnetwork/dashboard/types/rewards';
+import { type TQuestSocialProvider, providerList } from '@thxnetwork/dashboard/types/rewards';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({})

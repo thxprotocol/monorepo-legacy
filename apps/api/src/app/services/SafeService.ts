@@ -1,5 +1,5 @@
 import { Wallet as WalletModel, WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { ChainId, WalletVariant } from '@thxnetwork/types/enums';
+import { ChainId, WalletVariant } from '@thxnetwork/common/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
@@ -14,7 +14,7 @@ import {
 import { logger } from '@thxnetwork/api/util/logger';
 import { agenda, JobType } from '@thxnetwork/api/util/agenda';
 import { Job } from '@hokify/agenda';
-import { AssetPool, AssetPoolDocument } from '../models/AssetPool';
+import { Pool, PoolDocument } from '@thxnetwork/api/models';
 import { Transaction } from '../models/Transaction';
 import TransactionService from './TransactionService';
 import { convertObjectIdToNumber } from '../util';
@@ -106,7 +106,7 @@ async function createJob(job: Job) {
 
     // Set safeAddress for campaign to keep address available for potential regression
     if (wallet.poolId) {
-        await AssetPool.findByIdAndUpdate(wallet.poolId, { safeAddress: toChecksumAddress(safeAddress) });
+        await Pool.findByIdAndUpdate(wallet.poolId, { safeAddress: toChecksumAddress(safeAddress) });
     }
 }
 
@@ -132,7 +132,7 @@ function findOneByAddress(address: string) {
     return Wallet.findOne({ address: toChecksumAddress(address) });
 }
 
-async function findOneByPool(pool: AssetPoolDocument, chainId: ChainId) {
+async function findOneByPool(pool: PoolDocument, chainId: ChainId) {
     return await Wallet.findOne({
         chainId,
         sub: pool.sub,

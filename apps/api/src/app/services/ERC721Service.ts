@@ -5,22 +5,15 @@ import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
 import { ERC721Metadata, ERC721MetadataDocument } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
-import { TransactionState } from '@thxnetwork/types/enums';
-import {
-    TERC721DeployCallbackArgs,
-    TERC721TokenMintCallbackArgs,
-    TERC721TransferFromCallBackArgs,
-} from '@thxnetwork/api/types/TTransaction';
+import { ERC721TokenState, TransactionState } from '@thxnetwork/common/enums';
 import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
-import { type TERC721, type TERC721Metadata, type TERC721Token, ERC721TokenState } from '@thxnetwork/types/interfaces';
 import { WalletDocument } from '../models/Wallet';
-import { ERC721Perk } from '../models/ERC721Perk';
+import { RewardNFT } from '../models/RewardNFT';
 import PoolService from './PoolService';
 import TransactionService from './TransactionService';
 import IPFSService from './IPFSService';
-import SafeService from './SafeService';
 import WalletService from './WalletService';
 
 const contractName = 'NonFungibleToken';
@@ -75,7 +68,7 @@ export async function findById(id: string): Promise<ERC721Document> {
 
 export async function findBySub(sub: string): Promise<ERC721Document[]> {
     const pools = await PoolService.getAllBySub(sub);
-    const nftRewards = await ERC721Perk.find({ poolId: pools.map((p) => String(p._id)) });
+    const nftRewards = await RewardNFT.find({ poolId: pools.map((p) => String(p._id)) });
     const erc721Ids = nftRewards.map((c) => c.erc721Id);
     const erc721s = await ERC721.find({ sub });
 
@@ -177,15 +170,20 @@ async function findTokensByRecipient(recipient: string, erc721Id: string): Promi
     return result;
 }
 
-async function findMetadataByNFT(erc721Id: string, page = 1, limit = 10, q?: string) {
-    let query;
-    if (q && q != 'null' && q != 'undefined') {
-        query = { erc721Id, title: { $regex: `.*${q}.*`, $options: 'i' } };
-    } else {
-        query = { erc721Id };
-    }
+async function findMetadataByToken(token: TERC721Token) {
+    return ERC721Metadata.findById(token.metadataId);
+}
 
-    const paginatedResult = await paginatedResults(ERC721Metadata, page, limit, query);
+async function findTokenById(id: string) {
+    return await ERC721Token.findById(id);
+}
+
+async function findMetadataById(id: string) {
+    return await ERC721Metadata.findById(id);
+}
+
+async function findMetadataByNFT(erc721Id: string, page = 1, limit = 10) {
+    const paginatedResult = await paginatedResults(ERC721Metadata, page, limit, { erc721Id });
     const results: TERC721Metadata[] = [];
     for (const metadata of paginatedResult.results) {
         const tokens = await ERC721Token.find({ erc721Id, metadataId: metadata._id });
@@ -285,4 +283,7 @@ export default {
     transferFrom,
     transferFromCallback,
     queryTransferFromTransaction,
+    findMetadataById,
+    findTokenById,
+    findMetadataByToken,
 };

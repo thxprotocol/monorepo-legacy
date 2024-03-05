@@ -32,9 +32,9 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import type { TBaseReward, TCustomReward, TPool, TWebhook } from '@thxnetwork/types/interfaces';
 import { TWebhookState } from '@thxnetwork/dashboard/store/modules/webhooks';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
+import { RewardVariant } from '@thxnetwork/common/enums';
 
 @Component({
     components: {
@@ -55,7 +55,7 @@ export default class ModalRewardCustomCreate extends Vue {
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TCustomReward;
+    @Prop({ required: false }) reward!: TRewardCustom;
 
     get webhookList() {
         if (!this.webhooks[this.pool._id]) return [];
@@ -70,16 +70,17 @@ export default class ModalRewardCustomCreate extends Vue {
         this.webhook = this.webhooks[this.pool._id][this.webhookId];
     }
 
-    async onSubmit(payload: TBaseReward) {
+    async onSubmit(payload: TReward) {
         if (!this.webhook) {
             this.error = 'Choose a webhook';
             return;
         }
         this.isLoading = true;
         try {
-            await this.$store.dispatch(`rewards/${this.reward ? 'update' : 'create'}`, {
+            await this.$store.dispatch(`pools/${this.reward ? 'update' : 'create'}Reward`, {
                 ...this.reward,
                 ...payload,
+                variant: RewardVariant.Custom,
                 webhookId: this.webhook._id,
                 metadata: this.metadata,
             });

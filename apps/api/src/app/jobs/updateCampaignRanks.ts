@@ -1,11 +1,11 @@
-import { ChainId } from '@thxnetwork/common/lib/types/enums';
-import { AssetPool } from '../models/AssetPool';
+import { ChainId } from '@thxnetwork/common/enums';
+import { Pool } from '@thxnetwork/api/models';
 import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 import { logger } from '../util/logger';
 
 export async function updateCampaignRanks() {
     try {
-        const campaigns = await AssetPool.aggregate([
+        const campaigns = await Pool.aggregate([
             {
                 $addFields: {
                     id: { $toString: '$_id' },
@@ -150,7 +150,7 @@ export async function updateCampaignRanks() {
             },
         ]).exec();
 
-        await AssetPool.bulkWrite(
+        await Pool.bulkWrite(
             campaigns.map((campaign, index) => {
                 return {
                     updateOne: {

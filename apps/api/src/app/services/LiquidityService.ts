@@ -1,7 +1,5 @@
-import { BigNumber, ContractInterface, ethers } from 'ethers';
+import { BigNumber } from 'ethers';
 import { WalletDocument } from '../models/Wallet';
-import { getProvider } from '@thxnetwork/api/util/network';
-import { ChainId } from '@thxnetwork/common/lib/types';
 
 const USDC_ADDRESS = '';
 const COMPANY_SAFE_ADDRESS = '';

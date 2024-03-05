@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import { Account, AccountDocument } from '../models/Account';
 import { SUCCESS_SIGNUP_COMPLETED } from '../util/messages';
-import { TInteraction, AccountVariant, TToken } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind, AccountPlanType, OAuthRequiredScopes } from '@thxnetwork/types/enums';
+import { AccessTokenKind, AccountVariant, AccountPlanType, OAuthRequiredScopes } from '@thxnetwork/common/enums';
 import bcrypt from 'bcrypt';
 import { AccountService } from './AccountService';
 import { Token } from '../models/Token';

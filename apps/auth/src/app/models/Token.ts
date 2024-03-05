@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { TToken } from '@thxnetwork/common/lib/types';
 import { encryptString } from '../util/encrypt';
 import { SECURE_KEY } from '../config/secrets';
 import { decryptString } from '../util/decrypt';

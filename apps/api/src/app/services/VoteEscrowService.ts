@@ -1,10 +1,9 @@
 import { BigNumber } from 'ethers';
-import { WalletDocument } from '../models/Wallet';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { SC_ADDRESS, VE_ADDRESS } from '@thxnetwork/api/config/secrets';
 import { contractArtifacts } from '@thxnetwork/contracts/exports';
-import { ChainId } from '@thxnetwork/common/lib/types';
-import { TransactionDocument } from '@thxnetwork/api/models/Transaction';
+import { ChainId } from '@thxnetwork/common/enums';
+import { WalletDocument, TransactionDocument } from '@thxnetwork/api/models';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 
 async function isApprovedAddress(address: string) {

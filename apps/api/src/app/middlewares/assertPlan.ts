@@ -1,5 +1,5 @@
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import { AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountPlanType } from '@thxnetwork/common/enums';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import { Response, Request, NextFunction } from 'express';
 import PoolService from '../services/PoolService';

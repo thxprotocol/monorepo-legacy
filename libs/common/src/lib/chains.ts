@@ -1,4 +1,4 @@
-import { ChainId } from './types/enums';
+import { ChainId } from './enums';
 
 type ChainInfo = { name: string; chainId: number; blockExplorer: string; rpc: string };
 

@@ -1,15 +1,10 @@
-import { TAccount, TPointReward, TToken, TTwitterRequestParams } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind, JobType, OAuthRequiredScopes, OAuthTwitterScope } from '@thxnetwork/common/lib/types/enums';
-import { TwitterLike } from '../models/TwitterLike';
+import { AccessTokenKind, JobType, OAuthRequiredScopes, OAuthTwitterScope } from '@thxnetwork/common/enums';
 import { agenda } from '../util/agenda';
-import { PointReward } from '../models/PointReward';
+import { Job, QuestSocial, TwitterLike, TwitterRepost } from '../models';
+import { AxiosResponse } from 'axios';
 import { logger } from '../util/logger';
-import { TJob } from '@thxnetwork/common/lib/types';
-import { Job } from '../models/Job';
 import AccountProxy from '../proxies/AccountProxy';
 import TwitterDataProxy from '../proxies/TwitterDataProxy';
-import { TwitterRepost } from '../models/TwitterRepost';
-import { AxiosResponse } from 'axios';
 
 function findUserById(users: { id: string }[], userId: string) {
     return users.find((user: { id: string }) => user.id === userId);
@@ -18,7 +13,7 @@ function findUserById(users: { id: string }[], userId: string) {
 export default class TwitterCacheService {
     static async updateRepostCache(
         account: TAccount,
-        quest: TPointReward,
+        quest: TQuestSocial,
         token: TToken,
         params: TTwitterRequestParams = { max_results: 100 },
     ) {
@@ -64,7 +59,7 @@ export default class TwitterCacheService {
 
     static async updateLikeCache(
         account: TAccount,
-        quest: TPointReward,
+        quest: TQuestSocial,
         token: TToken,
         params: TTwitterRequestParams = { max_results: 100 },
     ) {
@@ -112,7 +107,7 @@ export default class TwitterCacheService {
     static async handleRateLimitError(
         res: AxiosResponse,
         account: TAccount,
-        quest: TPointReward,
+        quest: TQuestSocial,
         params: TTwitterRequestParams,
         jobType: JobType,
     ) {
@@ -158,7 +153,7 @@ export default class TwitterCacheService {
         scopes: OAuthTwitterScope[],
         updateCacheCallback: (
             account: TAccount,
-            quest: TPointReward,
+            quest: TQuestSocial,
             token: TToken,
             params: TTwitterRequestParams,
         ) => Promise<void>,
@@ -171,7 +166,7 @@ export default class TwitterCacheService {
         logger.info(`Starting ${job.attrs.name}`, params);
 
         try {
-            const quest = await PointReward.findById(questId);
+            const quest = await QuestSocial.findById(questId);
             if (!quest) throw new Error(`No token found for questId ${questId}.`);
 
             const account = await AccountProxy.findById(sub);

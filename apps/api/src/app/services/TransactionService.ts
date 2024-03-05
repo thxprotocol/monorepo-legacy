@@ -1,16 +1,14 @@
-import { Transaction, TransactionDocument } from '@thxnetwork/api/models/Transaction';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { ChainId, TransactionState, TransactionType } from '@thxnetwork/types/enums';
+import { ChainId, TransactionState, TransactionType } from '@thxnetwork/common/enums';
 import { MINIMUM_GAS_LIMIT, RELAYER_SPEED } from '@thxnetwork/api/config/secrets';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
-import type { TTransactionCallback } from '@thxnetwork/api/types/TTransaction';
 import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
 import { toChecksumAddress } from 'web3-utils';
 import { poll } from '@thxnetwork/api/util/polling';
 import { deployCallback as erc20DeployCallback } from './ERC20Service';
 import { RelayerTransactionPayload } from '@openzeppelin/defender-relay-client';
 import { Contract } from 'web3-eth-contract';
-import { WalletDocument } from '../models/Wallet';
+import { Transaction, TransactionDocument, WalletDocument } from '@thxnetwork/api/models';
 import ERC721Service from './ERC721Service';
 import ERC1155Service from './ERC1155Service';
 import SafeService from './SafeService';

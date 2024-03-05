@@ -5,17 +5,17 @@ import QuestService from '@thxnetwork/api/services/QuestService';
 
 const validation = [
     param('id').isMongoId(),
-    param('questId').isMongoId(),
     param('variant').isString(),
+    param('questId').isMongoId(),
     query('page').isInt(),
     query('limit').isInt(),
 ];
 
 const controller = async (req: Request, res: Response) => {
     const variant = req.params.variant as unknown as QuestVariant;
-    const quest = await QuestService.findById(variant, req.params.questId);
-    const entries = await QuestService.findEntries(quest.variant, {
-        quest,
+    const questId = req.params.questId as string;
+    const quest = await QuestService.findById(variant, questId);
+    const entries = await QuestService.findEntries(quest, {
         page: Number(req.query.page),
         limit: Number(req.query.limit),
     });

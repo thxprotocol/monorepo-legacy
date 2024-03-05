@@ -4,8 +4,7 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import type { IERC20s, TERC20, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
 import { ChainId } from '../enums/chainId';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
-import { track } from '@thxnetwork/mixpanel';
-import { TPool } from '@thxnetwork/common/lib/types';
+import { track } from '@thxnetwork/common/mixpanel';
 
 @Module({ namespaced: true })
 class ERC20Module extends VuexModule {

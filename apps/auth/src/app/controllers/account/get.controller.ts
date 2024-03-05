@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { NotFoundError } from '../../util/errors';
 import { AccountService } from '../../services/AccountService';
-import { AccessTokenKind } from '@thxnetwork/common/lib/types/enums';
+import { AccessTokenKind } from '@thxnetwork/common/enums';
 import { AccountDocument } from '@thxnetwork/auth/models/Account';
 import TokenService from '@thxnetwork/auth/services/TokenService';
 

@@ -71,11 +71,11 @@
 </template>
 
 <script lang="ts">
-import type { TInfoLink, TPool, TQuestLock, TWeb3Quest } from '@thxnetwork/types/interfaces';
+import type { TInfoLink, TPool, TQuestLock, TQuestWeb3 } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { isAddress } from 'web3-utils';
-import { ChainId, QuestVariant } from '@thxnetwork/types/enums';
+import { ChainId, QuestVariant } from '@thxnetwork/common/enums';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { NODE_ENV } from '@thxnetwork/dashboard/config/secrets';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
@@ -113,7 +113,7 @@ export default class ModalQuestWeb3Create extends Vue {
     @Prop() id!: string;
     @Prop() total!: number;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TWeb3Quest;
+    @Prop({ required: false }) reward!: TQuestWeb3;
 
     onShow() {
         this.title = this.reward ? this.reward.title : this.title;

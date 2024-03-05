@@ -1,7 +1,6 @@
 import { API_URL, NODE_ENV } from '../config/secrets';
-import { ERC721Document } from '../models/ERC721';
-import { ERC1155Document } from '../models/ERC1155';
-import { NFTVariant } from '@thxnetwork/common/lib/types';
+import { NFTVariant } from '@thxnetwork/common/enums';
+import { ERC721Document, ERC1155Document } from '@thxnetwork/api/models';
 import axios from 'axios';
 import pinataSDK from '@pinata/sdk';
 import https from 'https';

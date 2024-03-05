@@ -21,7 +21,6 @@ import BaseModal from './BaseModal.vue';
 import BaseIdenticon from '../BaseIdenticon.vue';
 import BaseCampaignDuration from '@thxnetwork/dashboard/components/form-group/BaseDateDuration.vue';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import type { TAccount } from '@thxnetwork/common/lib/types';
 
 @Component({
     components: {

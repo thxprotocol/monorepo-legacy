@@ -1,6 +1,5 @@
 import { Wallet } from '@thxnetwork/api/models/Wallet';
-import { TAccount, TWallet } from '@thxnetwork/common/lib/types';
-import { TransactionState, WalletVariant } from '@thxnetwork/types/enums';
+import { TransactionState, WalletVariant } from '@thxnetwork/common/enums';
 import { Transaction } from '@thxnetwork/api/models/Transaction';
 import { getChainId, safeVersion } from './ContractService';
 import SafeService from './SafeService';

@@ -1,7 +1,7 @@
 import { URLSearchParams } from 'url';
 import { AUTH_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '@thxnetwork/auth/config/secrets';
 import { githubClient } from '../util/axios';
-import { AccessTokenKind, OAuthGithubScope } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccessTokenKind, OAuthGithubScope } from '@thxnetwork/common/enums/AccessTokenKind';
 import { IOAuthService } from './interfaces/IOAuthService';
 import { TokenDocument } from '../models/Token';
 

@@ -1,16 +1,12 @@
-import { DailyReward } from '@thxnetwork/api/models/DailyReward';
-import { DailyRewardClaim } from '../models/DailyRewardClaims';
-import { Event } from '../models/Event';
-import { TDailyReward, TAccount, TDailyRewardClaim, TValidationResult } from '@thxnetwork/common/lib/types';
-import { Identity } from '../models/Identity';
+import { Event, Identity, QuestDaily, QuestDailyEntry } from '@thxnetwork/api/models';
 import { IQuestService } from './interfaces/IQuestService';
 
 const ONE_DAY_MS = 86400 * 1000; // 24 hours in milliseconds
 
 export default class QuestDailyService implements IQuestService {
     models = {
-        quest: DailyReward,
-        entry: DailyRewardClaim,
+        quest: QuestDaily,
+        entry: QuestDailyEntry,
     };
 
     async findEntryMetadata({ quest }: { quest: TDailyReward }) {
@@ -72,7 +68,7 @@ export default class QuestDailyService implements IQuestService {
 
         // Check for IP as we limit to 1 per IP per day (if an ip is passed)
         if (data.ip) {
-            const isCompletedForIP = !!(await DailyRewardClaim.exists({
+            const isCompletedForIP = !!(await QuestDailyEntry.exists({
                 questId: quest._id,
                 createdAt: { $gt: new Date(start), $lt: new Date(end) },
                 ip: data.ip,
@@ -85,7 +81,7 @@ export default class QuestDailyService implements IQuestService {
             }
         }
 
-        const isCompleted = await DailyRewardClaim.findOne({
+        const isCompleted = await QuestDailyEntry.findOne({
             questId: quest._id,
             sub: account.sub,
             createdAt: { $gt: new Date(start), $lt: new Date(end) },
@@ -116,7 +112,7 @@ export default class QuestDailyService implements IQuestService {
             start = now - ONE_DAY_MS,
             end = now;
 
-        const entry = await DailyRewardClaim.findOne({
+        const entry = await QuestDailyEntry.findOne({
             questId: quest._id,
             sub: account.sub,
             createdAt: { $gt: new Date(start), $lt: new Date(end) },
@@ -176,7 +172,7 @@ export default class QuestDailyService implements IQuestService {
 
         while (lastEntry) {
             const timestamp = new Date(lastEntry.createdAt).getTime();
-            lastEntry = await DailyRewardClaim.findOne({
+            lastEntry = await QuestDailyEntry.findOne({
                 questId: quest._id,
                 sub: account.sub,
                 createdAt: {
@@ -192,14 +188,14 @@ export default class QuestDailyService implements IQuestService {
     }
 
     private async getLastEntry(account: TAccount, quest: TDailyReward, start: number, end: number) {
-        let lastEntry = await DailyRewardClaim.findOne({
+        let lastEntry = await QuestDailyEntry.findOne({
             questId: quest._id,
             sub: account.sub,
             createdAt: { $gt: new Date(start), $lt: new Date(end) },
         });
 
         if (!lastEntry) {
-            lastEntry = await DailyRewardClaim.findOne({
+            lastEntry = await QuestDailyEntry.findOne({
                 questId: quest._id,
                 sub: account.sub,
                 createdAt: { $gt: new Date(start - ONE_DAY_MS), $lt: new Date(end - ONE_DAY_MS) },

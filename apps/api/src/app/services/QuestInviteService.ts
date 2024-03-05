@@ -1,24 +1,17 @@
-import { TAccount, TReferralReward, TReferralRewardClaim, TValidationResult } from '@thxnetwork/common/lib/types';
-import { ReferralRewardClaim } from '../models/ReferralRewardClaim';
-import { ReferralReward } from '../models/ReferralReward';
+import { QuestInvite, QuestInviteEntry } from '@thxnetwork/api/models';
 import { IQuestService } from './interfaces/IQuestService';
 
 export default class QuestInviteService implements IQuestService {
     models = {
-        quest: ReferralReward,
-        entry: ReferralRewardClaim,
+        quest: QuestInvite,
+        entry: QuestInviteEntry,
     };
 
-    findEntryMetadata(options: { quest: TReferralReward }) {
+    findEntryMetadata(options: { quest: TQuestInvite }) {
         return {};
     }
 
-    async decorate({
-        quest,
-    }: {
-        quest: TReferralReward;
-        data: Partial<TReferralRewardClaim>;
-    }): Promise<TReferralReward> {
+    async decorate({ quest }: { quest: TQuestInvite; data: Partial<TQuestInviteEntry> }): Promise<TQuestInvite> {
         return {
             ...quest,
             pathname: quest.pathname,
@@ -27,21 +20,21 @@ export default class QuestInviteService implements IQuestService {
     }
 
     async isAvailable(options: {
-        quest: TReferralReward;
+        quest: TQuestInvite;
         account?: TAccount;
-        data: Partial<TReferralRewardClaim>;
+        data: Partial<TQuestInviteEntry>;
     }): Promise<TValidationResult> {
         return { result: false, reason: 'Not implemented' };
     }
 
-    async getAmount({ quest }: { quest: TReferralReward; account: TAccount }): Promise<number> {
+    async getAmount({ quest }: { quest: TQuestInvite; account: TAccount }): Promise<number> {
         return quest.amount;
     }
 
     async getValidationResult(options: {
-        quest: TReferralReward;
+        quest: TQuestInvite;
         account: TAccount;
-        data: Partial<TReferralRewardClaim>;
+        data: Partial<TQuestInviteEntry>;
     }): Promise<TValidationResult> {
         return {
             result: false,

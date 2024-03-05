@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { ChainId } from '@thxnetwork/common/lib/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { contractArtifacts } from '@thxnetwork/contracts/exports';
 import { getProvider } from '@thxnetwork/api/util/network';
 import SafeService from '@thxnetwork/api/services/SafeService';

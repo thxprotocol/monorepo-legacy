@@ -1,11 +1,10 @@
-import type { TAccount } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind, AccountPlanType, OAuthScope } from '@thxnetwork/types/enums';
 import axios from 'axios';
+import { AccessTokenKind, AccountPlanType, OAuthScope } from '@thxnetwork/common/enums';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { SigninRedirectArgs, User, UserManager } from 'oidc-client-ts';
 import { config } from '@thxnetwork/dashboard/utils/oidc';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
-import Mixpanel, { track } from '@thxnetwork/mixpanel';
+import Mixpanel, { track } from '@thxnetwork/common/mixpanel';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {

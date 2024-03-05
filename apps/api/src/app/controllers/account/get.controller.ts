@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
-import { AccountVariant, TToken } from '@thxnetwork/types/interfaces';
+import { WalletVariant, AccountVariant } from '@thxnetwork/common/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import WalletService from '@thxnetwork/api/services/WalletService';
-import { WalletVariant } from '@thxnetwork/common/lib/types';
 import { getChainId } from '@thxnetwork/api/services/ContractService';
 
 const validation = [];

@@ -198,10 +198,8 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseNavbarNav from './BaseNavbarNav.vue';
 import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
-import { TAccount, TPool } from '@thxnetwork/types/interfaces';
-import { AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountPlanType } from '@thxnetwork/common/enums';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
-import { hasBasicAccess } from '@thxnetwork/common';
 
 @Component({
     components: {
@@ -223,7 +221,6 @@ export default class BaseNavbar extends Vue {
     pools!: IPools;
     account!: TAccount;
     isVisible = true;
-    hasBasicAccess = hasBasicAccess;
 
     get tokenRoutes() {
         return [

@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { recoverSigner } from '@thxnetwork/api/util/network';
 import { body } from 'express-validator';
-import { TWallet } from '@thxnetwork/common/lib/types';
 import WalletService from '@thxnetwork/api/services/WalletService';
 
 const validation = [

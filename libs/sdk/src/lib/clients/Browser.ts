@@ -6,7 +6,7 @@ import RequestManager from '../managers/RequestManager';
 import AccountManager from '../managers/AccountManager';
 import QuestManager from '../managers/QuestManager';
 import RewardManager from '../managers/RewardManager';
-import ClaimsManager from '../managers/ClaimsManager';
+import QRCodeManager from '../managers/QRCodeManager';
 import PoolManager from '../managers/PoolManager';
 import { THXOIDCGrant } from '../managers/OIDCManager';
 import { THXBrowserClientOptions } from '../types';
@@ -21,7 +21,7 @@ export default class THXBrowserClient {
     couponCodes: CouponCodeManager;
     quests: QuestManager;
     rewards: RewardManager;
-    claims: ClaimsManager;
+    qrCodes: QRCodeManager;
     pools: PoolManager;
 
     constructor(options: THXBrowserClientOptions) {
@@ -34,7 +34,7 @@ export default class THXBrowserClient {
         this.couponCodes = new CouponCodeManager(this);
         this.quests = new QuestManager(this);
         this.rewards = new RewardManager(this);
-        this.claims = new ClaimsManager(this);
+        this.qrCodes = new QRCodeManager(this);
         this.pools = new PoolManager(this);
     }
 

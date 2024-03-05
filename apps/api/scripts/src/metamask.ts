@@ -2,21 +2,23 @@ import path from 'path';
 import fs from 'fs';
 import { MongoClient, Db } from 'mongodb';
 import { Wallet } from '@thxnetwork/api/models/Wallet';
-import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
-import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
-import { DailyRewardClaim } from '@thxnetwork/api/models/DailyRewardClaims';
-import { GitcoinQuestEntry } from '@thxnetwork/api/models/GitcoinQuestEntry';
-import { Web3QuestClaim } from '@thxnetwork/api/models/Web3QuestClaim';
-import { ERC20Token } from '@thxnetwork/api/models/ERC20Token';
-import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
-import { ERC1155Token } from '@thxnetwork/api/models/ERC1155Token';
-import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
-import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
-import { DiscordRoleRewardPayment } from '@thxnetwork/api/models/DiscordRoleRewardPayment';
-import { CustomRewardPayment } from '@thxnetwork/api/models/CustomRewardPayment';
-import { CouponRewardPayment } from '@thxnetwork/api/models/CouponRewardPayment';
-import { Participant } from '@thxnetwork/api/models/Participant';
-import { AssetPool } from '@thxnetwork/api/models/AssetPool';
+import { QuestSocialEntry } from '@thxnetwork/api/models/QuestSocialEntry';
+import {
+    ERC1155Token,
+    ERC20Token,
+    ERC721Token,
+    Participant,
+    Pool,
+    QuestCustomEntry,
+    QuestDailyEntry,
+    QuestGitcoinEntry,
+    QuestWeb3Entry,
+    RewardCoinPayment,
+    RewardCouponPayment,
+    RewardCustomPayment,
+    RewardDiscordRolePayment,
+    RewardNFTPayment,
+} from '@thxnetwork/api/models';
 
 export default async function main() {
     const filePath = path.join(__dirname, '../../../metamask-accounts.csv');
@@ -34,7 +36,7 @@ export default async function main() {
     });
     const participants = await Participant.find({ sub: { $in: subs } });
     const poolIds = participants.map((p) => p.poolId);
-    const pools = await AssetPool.find({ _id: { $in: poolIds } });
+    const pools = await Pool.find({ _id: { $in: poolIds } });
 
     const csvData = await Promise.all(
         accounts.map(async (account) => {
@@ -59,22 +61,22 @@ export default async function main() {
                 couponCount,
             ] = await Promise.all(
                 [
-                    DailyRewardClaim,
-                    PointRewardClaim,
-                    MilestoneRewardClaim,
-                    Web3QuestClaim,
-                    GitcoinQuestEntry,
+                    QuestDailyEntry,
+                    QuestSocialEntry,
+                    QuestCustomEntry,
+                    QuestWeb3Entry,
+                    QuestGitcoinEntry,
                     // Coins
                     ERC20Token,
                     // NFT
                     ERC721Token,
                     ERC1155Token,
                     // RewardPayments
-                    ERC20PerkPayment,
-                    ERC721PerkPayment,
-                    DiscordRoleRewardPayment,
-                    CustomRewardPayment,
-                    CouponRewardPayment,
+                    RewardCoinPayment,
+                    RewardNFTPayment,
+                    RewardDiscordRolePayment,
+                    RewardCustomPayment,
+                    RewardCouponPayment,
                 ].map((Model) => Model.countDocuments({ sub })),
             );
 

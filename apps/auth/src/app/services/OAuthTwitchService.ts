@@ -1,7 +1,6 @@
 import { AUTH_URL, TWITCH_CLIENT_ID, TWITCH_CLIENT_SECRET } from '@thxnetwork/auth/config/secrets';
-import { AccessTokenKind, OAuthTwitchScope } from '@thxnetwork/types/enums/AccessTokenKind';
+import { AccessTokenKind, OAuthTwitchScope } from '@thxnetwork/common/enums/AccessTokenKind';
 import { twitchClient } from '../util/axios';
-import { TToken } from '@thxnetwork/common/lib/types';
 import { IOAuthService } from './interfaces/IOAuthService';
 import { Token, TokenDocument } from '../models/Token';
 

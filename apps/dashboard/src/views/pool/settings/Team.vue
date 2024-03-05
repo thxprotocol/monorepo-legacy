@@ -3,12 +3,11 @@
         <b-form-row>
             <b-col md="4">
                 <strong>Collaborators</strong>
-                <b-badge v-if="!hasBasicAccess(pool.owner)" variant="primary" class="ml-2">Premium</b-badge>
                 <p class="text-muted">Invite people from your team to collaborate on this campaign.</p>
             </b-col>
             <b-col md="8">
                 <b-alert variant="danger" show v-if="errorCollaborator">{{ errorCollaborator }} </b-alert>
-                <b-form-group label="E-mail" :state="isValidCollaboratorEmail" :disabled="!hasBasicAccess(pool.owner)">
+                <b-form-group label="E-mail" :state="isValidCollaboratorEmail">
                     <b-input-group>
                         <b-form-input
                             :state="isValidCollaboratorEmail"
@@ -50,8 +49,6 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { validateEmail } from '@thxnetwork/dashboard/components/modals/BaseModalRequestAccountEmailUpdate.vue';
-import { hasBasicAccess } from '@thxnetwork/common';
-import type { TAccount } from '@thxnetwork/types/interfaces';
 import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-items/BaseListItemCollaborator.vue';
 
 @Component({
@@ -74,7 +71,6 @@ export default class SettingsView extends Vue {
     errorCollaborator = '';
     emailCollaborator = '';
     isSubmittingCollaborator = false;
-    hasBasicAccess = hasBasicAccess;
 
     get pool() {
         return this.pools[this.$route.params.id];

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { AccountService } from '../../../services/AccountService';
-import { AccessTokenKind, AccountPlanType, OAuthRequiredScopes } from '@thxnetwork/types/enums';
+import { AccessTokenKind, AccountPlanType, OAuthRequiredScopes } from '@thxnetwork/common/enums';
 import TokenService from '@thxnetwork/auth/services/TokenService';
 
 async function controller(req: Request, res: Response) {

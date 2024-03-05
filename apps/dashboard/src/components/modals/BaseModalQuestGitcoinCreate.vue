@@ -37,7 +37,7 @@
 import type { TGitcoinQuest, TInfoLink, TPool, TQuestLock } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
-import { QuestVariant } from '@thxnetwork/types/enums';
+import { QuestVariant } from '@thxnetwork/common/enums';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
 

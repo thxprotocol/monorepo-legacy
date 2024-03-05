@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { body, check, query } from 'express-validator';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import ImageService from '@thxnetwork/api/services/ImageService';
-import { AccountPlanType, NFTVariant } from '@thxnetwork/types/enums';
+import { AccountPlanType, NFTVariant } from '@thxnetwork/common/enums';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 const validation = [

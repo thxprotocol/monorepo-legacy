@@ -1,11 +1,10 @@
 import mongoose from 'mongoose';
-import { TERC1155 } from '@thxnetwork/types/interfaces';
 import { getAbiForContractName } from '@thxnetwork/api/services/ContractService';
 import { getProvider } from '@thxnetwork/api/util/network';
 
 export type ERC1155Document = mongoose.Document & TERC1155;
 
-const ERC1155Schema = new mongoose.Schema(
+const schema = new mongoose.Schema(
     {
         variant: String,
         chainId: Number,
@@ -21,15 +20,11 @@ const ERC1155Schema = new mongoose.Schema(
     { timestamps: true },
 );
 
-ERC1155Schema.virtual('contract').get(function () {
+schema.virtual('contract').get(function () {
     if (!this.address) return;
     const { readProvider, defaultAccount } = getProvider(this.chainId);
     const abi = getAbiForContractName('THX_ERC1155');
     return new readProvider.eth.Contract(abi, this.address, { from: defaultAccount });
 });
 
-export interface IERC1155Updates {
-    archived?: boolean;
-}
-
-export const ERC1155 = mongoose.model<ERC1155Document>('ERC1155', ERC1155Schema, 'erc1155');
+export const ERC1155 = mongoose.model<ERC1155Document>('ERC1155', schema, 'erc1155');

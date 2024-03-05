@@ -1,16 +1,7 @@
-import {
-    TAccount,
-    TPointReward,
-    TDiscordMessage,
-    TValidationResult,
-    QuestSocialRequirement,
-    TPointRewardClaim,
-} from '@thxnetwork/common/lib/types';
-import { PointRewardClaim } from '../models/PointRewardClaim';
-import { PointReward } from '../models/PointReward';
+import { QuestSocialEntry, QuestSocial, DiscordMessage } from '@thxnetwork/api/models';
+import { QuestSocialRequirement } from '@thxnetwork/common/enums';
 import { IQuestService } from './interfaces/IQuestService';
 import { requirementMap } from './maps/quests';
-import DiscordMessage from '../models/DiscordMessage';
 import QuestSocialService from './QuestSocialService';
 import QuestService from './QuestService';
 
@@ -18,11 +9,11 @@ type TRestartDates = { now: Date; start: Date; endDay: Date; end: Date };
 
 export default class QuestDiscordService implements IQuestService {
     models = {
-        quest: PointReward,
-        entry: PointRewardClaim,
+        quest: QuestSocial,
+        entry: QuestSocialEntry,
     };
 
-    findEntryMetadata(options: { quest: TPointReward }) {
+    findEntryMetadata(options: { quest: TQuestSocial }) {
         return {};
     }
 
@@ -31,11 +22,11 @@ export default class QuestDiscordService implements IQuestService {
         account,
         data,
     }: {
-        quest: TPointReward;
+        quest: TQuestSocial;
         account: TAccount;
-        data: Partial<TPointRewardClaim>;
+        data: Partial<TQuestSocialEntry>;
     }): Promise<
-        TPointReward & {
+        TQuestSocial & {
             messages: TDiscordMessage[];
             restartDates: TRestartDates;
             amount: number;
@@ -63,9 +54,9 @@ export default class QuestDiscordService implements IQuestService {
         quest,
         account,
     }: {
-        quest: TPointReward;
+        quest: TQuestSocial;
         account?: TAccount;
-        data: Partial<TPointRewardClaim>;
+        data: Partial<TQuestSocialEntry>;
     }): Promise<TValidationResult> {
         const map = {
             [QuestSocialRequirement.DiscordMessage]: this.isAvailableMessage.bind(this),
@@ -79,9 +70,9 @@ export default class QuestDiscordService implements IQuestService {
         account,
         data,
     }: {
-        quest: TPointReward;
+        quest: TQuestSocial;
         account?: TAccount;
-        data: Partial<TPointRewardClaim>;
+        data: Partial<TQuestSocialEntry>;
     }) {
         if (!account) return { result: true, reason: '' };
 
@@ -90,7 +81,7 @@ export default class QuestDiscordService implements IQuestService {
         return await new QuestSocialService().isAvailable({ quest, account, data });
     }
 
-    private async isAvailableMessage({ quest, account }: { quest: TPointReward; account?: TAccount }) {
+    private async isAvailableMessage({ quest, account }: { quest: TQuestSocial; account?: TAccount }) {
         const amount = await this.getAmount({ quest, account });
         const isAvailable = amount > 0;
         if (isAvailable) return { result: true, reason: '' };
@@ -98,7 +89,7 @@ export default class QuestDiscordService implements IQuestService {
         return { result: false, reason: 'You have not earned any points with messages yet.' };
     }
 
-    async getAmount({ account, quest }: { quest: TPointReward; account?: TAccount }): Promise<number> {
+    async getAmount({ account, quest }: { quest: TQuestSocial; account?: TAccount }): Promise<number> {
         if (!account) return 0;
 
         const interactionMap = {
@@ -110,15 +101,15 @@ export default class QuestDiscordService implements IQuestService {
     }
 
     async getValidationResult(options: {
-        quest: TPointReward;
+        quest: TQuestSocial;
         account: TAccount;
-        data: Partial<TPointRewardClaim>;
+        data: Partial<TQuestSocialEntry>;
     }): Promise<TValidationResult> {
         if (!options.quest.interaction) return { result: false, reason: '' };
         return await requirementMap[options.quest.interaction](options.account, options.quest);
     }
 
-    private getRestartDates(quest: TPointReward) {
+    private getRestartDates(quest: TQuestSocial) {
         const { days } = JSON.parse(quest.contentMetadata);
         const now = new Date();
         const questCreatedAt = new Date(quest.createdAt);
@@ -138,11 +129,11 @@ export default class QuestDiscordService implements IQuestService {
         return { now, start, endDay, end };
     }
 
-    private async getDiscordParams({ quest }: { quest: TPointReward; account: TAccount }) {
+    private async getDiscordParams({ quest }: { quest: TQuestSocial; account: TAccount }) {
         return { pointsAvailable: quest.amount };
     }
 
-    private async getDiscordMessageParams({ quest, account }: { quest: TPointReward; account: TAccount }) {
+    private async getDiscordMessageParams({ quest, account }: { quest: TQuestSocial; account: TAccount }) {
         const restartDates = this.getRestartDates(quest);
         const messages = await this.getMessages({ account, quest, start: restartDates.start });
         const points = await this.getMessagePoints({
@@ -157,7 +148,7 @@ export default class QuestDiscordService implements IQuestService {
         };
     }
 
-    private async getMessages({ quest, account, start }: { quest: TPointReward; account: TAccount; start: Date }) {
+    private async getMessages({ quest, account, start }: { quest: TQuestSocial; account: TAccount; start: Date }) {
         if (!account) return [];
 
         const userId = QuestService.findUserIdForInteraction(account, quest.interaction);
@@ -177,7 +168,7 @@ export default class QuestDiscordService implements IQuestService {
 
         const { start, end } = this.getRestartDates(quest);
         const platformUserId = QuestService.findUserIdForInteraction(account, quest.interaction);
-        const claims = await PointRewardClaim.find({
+        const claims = await QuestSocialEntry.find({
             questId: String(quest._id),
             platformUserId,
             createdAt: {

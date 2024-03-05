@@ -72,7 +72,7 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
-import { NFTVariant } from '@thxnetwork/types/enums';
+import { NFTVariant } from '@thxnetwork/common/enums';
 
 import type { TERC721Token, TERC1155Token, TPool } from '@thxnetwork/types/interfaces';
 import type { IERC721Metadatas, IERC721s, TERC721, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
