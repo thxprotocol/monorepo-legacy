@@ -5,6 +5,7 @@ module.exports = {
                 perkId: 'rewardId',
             },
         };
+        await db.collection('widget').drop();
         await db.collection('erc20perkpayments').updateMany({}, operation);
         await db.collection('erc721perkpayments').updateMany({}, operation);
         await db.collection('couponrewardpayments').updateMany({}, operation);
@@ -40,7 +41,6 @@ module.exports = {
             ['twitterlikes', 'twitterlike'],
             ['wallets', 'wallet'],
             ['poolsubscriptions', ''],
-            ['widget', ''],
             ['transactions', 'transaction'],
             ['erc721perkpayments', 'rewardnftpayment'],
             ['events', 'event'],
