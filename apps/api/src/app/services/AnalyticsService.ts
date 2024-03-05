@@ -43,7 +43,7 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
         discordRoleRewardsQueryResult,
     ] = await Promise.all([
         queryRewardRedemptions<RewardCoinDocument>({
-            collectionName: 'erc20perkpayments',
+            collectionName: 'rewardcoinpayment',
             key: 'rewardId',
             model: RewardCoin,
             poolId: String(pool._id),
@@ -51,7 +51,7 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
             endDate,
         }),
         queryRewardRedemptions<RewardNFTDocument>({
-            collectionName: 'erc721perkpayments',
+            collectionName: 'rewardnftpayment',
             key: 'rewardId',
             model: RewardNFT,
             poolId: String(pool._id),
@@ -59,7 +59,7 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
             endDate,
         }),
         queryRewardRedemptions<RewardCustomDocument>({
-            collectionName: 'customrewardpayments',
+            collectionName: 'rewardcustompayment',
             key: 'rewardId',
             model: RewardCustom,
             poolId: String(pool._id),
@@ -67,7 +67,7 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
             endDate,
         }),
         queryRewardRedemptions<RewardCouponDocument>({
-            collectionName: 'couponrewardpayments',
+            collectionName: 'rewardcouponpayment',
             key: 'rewardId',
             model: RewardCoupon,
             poolId: String(pool._id),
@@ -75,7 +75,7 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
             endDate,
         }),
         queryRewardRedemptions<RewardDiscordRoleDocument>({
-            collectionName: 'discordrolerewardpayments',
+            collectionName: 'rewarddiscordrolepayment',
             key: 'rewardId',
             model: RewardDiscordRole,
             poolId: String(pool._id),
@@ -93,7 +93,7 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
         web3QuestsQueryResult,
     ] = await Promise.all([
         queryQuestEntries<QuestCustomDocument>({
-            collectionName: 'milestonerewardclaims',
+            collectionName: 'questcustomentry',
             key: 'questId',
             model: QuestCustom,
             poolId: String(pool._id),
@@ -102,8 +102,8 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
             extraFilter: { isClaimed: true },
         }),
         queryQuestEntries<QuestInviteDocument>({
-            collectionName: 'referralrewardclaims',
-            key: 'referralRewardId',
+            collectionName: 'questinviteentry',
+            key: 'questId',
             model: QuestInvite,
             poolId: String(pool._id),
             startDate,
@@ -111,7 +111,7 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
             extraFilter: { isApproved: true },
         }),
         queryQuestEntries<QuestSocialDocument>({
-            collectionName: 'pointrewardclaims',
+            collectionName: 'questsocialentry',
             key: 'questId',
             model: QuestSocial,
             poolId: String(pool._id),
@@ -119,7 +119,7 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
             endDate,
         }),
         queryQuestEntries<QuestDailyDocument>({
-            collectionName: 'dailyrewardclaims',
+            collectionName: 'questdailyentry',
             key: 'questId',
             model: QuestDaily,
             poolId: String(pool._id),
@@ -127,7 +127,7 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
             endDate,
         }),
         queryQuestEntries<QuestWeb3Document>({
-            collectionName: 'web3questclaims',
+            collectionName: 'questweb3entry',
             key: 'questId',
             model: QuestWeb3,
             poolId: String(pool._id),
@@ -136,7 +136,7 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
         }),
     ]);
 
-    const result: any = {
+    const result = {
         _id: pool._id,
         erc20Perks: erc20PerksQueryResult.map((x) => {
             return {
