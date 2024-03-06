@@ -41,31 +41,31 @@ export interface IPoolAnalytic {
     dailyRewards: [
         {
             day: string;
-            totalClaimPoints: number;
+            totalAmount: number;
         },
     ];
     referralRewards: [
         {
             day: string;
-            totalClaimPoints: number;
+            totalAmount: number;
         },
     ];
     pointRewards: [
         {
             day: string;
-            totalClaimPoints: number;
+            totalAmount: number;
         },
     ];
     milestoneRewards: [
         {
             day: string;
-            totalClaimPoints: number;
+            totalAmount: number;
         },
     ];
     web3Quests: [
         {
             day: string;
-            totalClaimPoints: number;
+            totalAmount: number;
         },
     ];
 }

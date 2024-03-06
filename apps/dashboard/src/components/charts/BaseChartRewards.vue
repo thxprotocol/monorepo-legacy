@@ -1,6 +1,6 @@
 <template>
     <b-card>
-        <bar-chart :chartData="barChartData" :chart-options="chartOptions" />
+        <bar-chart :chart-data="barChartData" :chart-options="chartOptions" />
     </b-card>
 </template>
 <script lang="ts">
@@ -8,14 +8,12 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IPoolAnalytics } from '@thxnetwork/dashboard/store/modules/pools';
 import { format } from 'date-fns';
-import type { TPool } from '@thxnetwork/types/interfaces';
 import BarChart from '@thxnetwork/dashboard/components/charts/BarChart.vue';
-import LineChart from '@thxnetwork/dashboard/components/charts/LineChart.vue';
+import { RewardVariant } from '@thxnetwork/common/enums';
 
 @Component({
     components: {
         BarChart,
-        LineChart,
     },
     computed: {
         ...mapGetters({
@@ -28,11 +26,21 @@ export default class BaseChardQuests extends Vue {
     isLoading = false;
     analytics!: IPoolAnalytics;
     chartOptions = {
-        scales: {
-            x: { display: false, grid: { display: false } },
-            y: { display: false, grid: { display: false } },
-        },
         responsive: true,
+        interaction: {
+            intersect: false,
+        },
+        scales: {
+            x: {
+                stacked: true,
+                grid: { display: false },
+            },
+            y: {
+                stacked: true,
+                display: false,
+                grid: { display: false },
+            },
+        },
         maintainAspectRatio: false,
     };
 
@@ -44,76 +52,53 @@ export default class BaseChardQuests extends Vue {
     }
 
     get barChartData() {
-        let coinRewardPayments: number[] = [];
-        let nftRewardPayments: number[] = [];
-        let customRewardPayments: number[] = [];
-        let couponRewardPayments: number[] = [];
-        let discordRoleRewardPayments: number[] = [];
-
-        if (this.poolAnalytics) {
-            coinRewardPayments = this.chartDates.map((data) => {
-                const dayData = this.poolAnalytics.erc20Perks.find((x) => x.day == data);
+        const getData = (key: string) =>
+            this.chartDates.map((data) => {
+                const dayData = this.poolAnalytics[key].find((x) => x.day == data);
                 return dayData ? dayData.totalAmount : 0;
             });
 
-            nftRewardPayments = this.chartDates.map((data) => {
-                const dayData = this.poolAnalytics.erc721Perks.find((x) => x.day == data);
-                return dayData ? dayData.totalAmount : 0;
-            });
+        const entries = {
+            [RewardVariant.Coin]: getData('erc20Perks'),
+            [RewardVariant.NFT]: getData('erc721Perks'),
+            [RewardVariant.Custom]: getData('customRewards'),
+            [RewardVariant.Coupon]: getData('couponRewards'),
+            [RewardVariant.DiscordRole]: getData('discordRoleRewards'),
+        };
 
-            customRewardPayments = this.chartDates.map((data) => {
-                const dayData = this.poolAnalytics.customRewards.find((x) => x.day == data);
-                return dayData ? dayData.totalAmount : 0;
-            });
-
-            couponRewardPayments = this.chartDates.map((data) => {
-                const dayData = this.poolAnalytics.couponRewards.find((x) => x.day == data);
-                return dayData ? dayData.totalAmount : 0;
-            });
-
-            discordRoleRewardPayments = this.chartDates.map((data) => {
-                const dayData = this.poolAnalytics.discordRoleRewards.find((x) => x.day == data);
-                return dayData ? dayData.totalAmount : 0;
-            });
-        }
-
+        const style = {
+            borderRadius: 3,
+            hoverBackgroundColor: '#7d6ccb',
+            backgroundColor: '#5942c1',
+            borderWidth: 1,
+        };
         const result = {
             labels: this.chartDates.map((x) => format(new Date(x), 'MM-dd')),
             datasets: [
                 {
                     label: 'Coin',
-                    data: coinRewardPayments,
-                    backgroundColor: '#4fa3d1',
-                    borderColor: '#4fa3d1',
-                    pointRadius: 0,
+                    data: entries[RewardVariant.Coin],
+                    ...style,
                 },
                 {
                     label: 'NFT',
-                    data: nftRewardPayments,
-                    backgroundColor: '#5eb36a',
-                    borderColor: '#5eb36a',
-                    pointRadius: 0,
+                    data: entries[RewardVariant.NFT],
+                    ...style,
                 },
                 {
                     label: 'Custom',
-                    data: customRewardPayments,
-                    backgroundColor: '#e88f51',
-                    borderColor: '#e88f51',
-                    pointRadius: 0,
+                    data: entries[RewardVariant.Custom],
+                    ...style,
                 },
                 {
                     label: 'Coupon',
-                    data: couponRewardPayments,
-                    backgroundColor: '#f3d053',
-                    borderColor: '#f3d053',
-                    pointRadius: 0,
+                    data: entries[RewardVariant.Coupon],
+                    ...style,
                 },
                 {
                     label: 'Discord Role',
-                    data: discordRoleRewardPayments,
-                    backgroundColor: '#a3a3a3',
-                    borderColor: '#a3a3a3',
-                    pointRadius: 0,
+                    data: entries[RewardVariant.DiscordRole],
+                    ...style,
                 },
             ],
         };

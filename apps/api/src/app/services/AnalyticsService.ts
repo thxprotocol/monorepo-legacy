@@ -172,31 +172,31 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
         dailyRewards: dailyRewardsQueryResult.map((x) => {
             return {
                 day: x._id,
-                totalClaimPoints: x.total_amount,
+                totalAmount: x.total_amount,
             };
         }),
         milestoneRewards: milestoneRewardsQueryResult.map((x) => {
             return {
                 day: x._id,
-                totalClaimPoints: x.total_amount,
+                totalAmount: x.total_amount,
             };
         }),
         referralRewards: referralRewardsQueryResult.map((x) => {
             return {
                 day: x._id,
-                totalClaimPoints: x.total_amount,
+                totalAmount: x.total_amount,
             };
         }),
         pointRewards: pointRewardsQueryResult.map((x) => {
             return {
                 day: x._id,
-                totalClaimPoints: x.total_amount,
+                totalAmount: x.total_amount,
             };
         }),
         web3Quests: web3QuestsQueryResult.map((x) => {
             return {
                 day: x._id,
-                totalClaimPoints: x.total_amount,
+                totalAmount: x.total_amount,
             };
         }),
     };
@@ -420,16 +420,8 @@ async function queryQuestEntries<T>(args: {
                         date: { $toDate: '$entries.createdAt' },
                     },
                 },
-                paymentsCount: {
-                    $count: {},
-                },
                 total_amount: {
-                    $sum: {
-                        $convert: {
-                            input: '$entries.amount',
-                            to: 'int',
-                        },
-                    },
+                    $sum: 1,
                 },
             },
         },
@@ -499,16 +491,8 @@ async function queryRewardRedemptions<T>(args: {
                         date: { $toDate: '$entries.createdAt' },
                     },
                 },
-                paymentsCount: {
-                    $count: {},
-                },
                 total_amount: {
-                    $sum: {
-                        $convert: {
-                            input: '$entries.amount',
-                            to: 'int',
-                        },
-                    },
+                    $sum: 1,
                 },
             },
         },
