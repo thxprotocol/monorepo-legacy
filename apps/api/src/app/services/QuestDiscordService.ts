@@ -90,8 +90,6 @@ export default class QuestDiscordService implements IQuestService {
     }
 
     async getAmount({ account, quest }: { quest: TQuestSocial; account?: TAccount }): Promise<number> {
-        if (!account) return 0;
-
         const interactionMap = {
             [QuestSocialRequirement.DiscordMessage]: this.getMessagePoints.bind(this),
             [QuestSocialRequirement.DiscordGuildJoined]: this.getPoints.bind(this),
