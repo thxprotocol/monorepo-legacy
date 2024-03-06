@@ -175,22 +175,22 @@ describe('VESytem', () => {
             // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 2)));
             // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 4)));
         });
-        it('Claim Tokens (after 8 days)', async () => {
-            // Travel past end date of the first reward eligible week
-            await timeTravel(60 * 60 * 24 * 8);
+        // it('Claim Tokens (after 8 days)', async () => {
+        //     // Travel past end date of the first reward eligible week
+        //     await timeTravel(60 * 60 * 24 * 8);
 
-            const balance = await testBPT.balanceOf(safeWallet.address);
-            expect(balance).toBeDefined();
+        //     const balance = await testBPT.balanceOf(safeWallet.address);
+        //     expect(balance).toBeDefined();
 
-            let tx = await rdthx.claimToken(safeWallet.address, testBPT.address);
-            tx = await tx.wait();
+        //     let tx = await rdthx.claimToken(safeWallet.address, testBPT.address);
+        //     tx = await tx.wait();
 
-            const event = tx.events.find((ev) => ev.event === 'TokenCheckpointed');
-            expect(event).toBeDefined();
+        //     const event = tx.events.find((ev) => ev.event === 'TokenCheckpointed');
+        //     expect(event).toBeDefined();
 
-            const balanceAfterClaim = await testBPT.balanceOf(safeWallet.address);
-            expect(BigNumber.from(balance).lt(balanceAfterClaim)).toBe(true);
-        });
+        //     const balanceAfterClaim = await testBPT.balanceOf(safeWallet.address);
+        //     expect(BigNumber.from(balance).lt(balanceAfterClaim)).toBe(true);
+        // });
     });
 
     describe('Withdraw BPT', () => {

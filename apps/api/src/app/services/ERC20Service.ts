@@ -5,11 +5,12 @@ import { getByteCodeForContractName, getContractFromName } from '@thxnetwork/api
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
-import { TokenContractName } from '@thxnetwork/contracts/exports';
+import { contractNetworks, TokenContractName } from '@thxnetwork/contracts/exports';
 import {
     ERC20,
     ERC20Document,
     ERC20Token,
+    ERC20TokenDocument,
     ERC20Transfer,
     PoolDocument,
     RewardCoin,
@@ -19,6 +20,20 @@ import {
 import { Wallet } from './SafeService';
 import TransactionService from './TransactionService';
 import PoolService from './PoolService';
+import { fromWei } from 'web3-utils';
+
+async function decorate(token: ERC20TokenDocument, wallet: WalletDocument) {
+    const erc20 = await getById(token.erc20Id);
+    if (!erc20 || erc20.chainId !== wallet.chainId) return;
+
+    const walletBalanceInWei = await erc20.contract.methods.balanceOf(wallet.address).call();
+    const walletBalance = fromWei(walletBalanceInWei, 'ether');
+
+    return Object.assign(token.toJSON() as TERC20Token, {
+        walletBalance,
+        erc20,
+    });
+}
 
 function getDeployArgs(erc20: ERC20Document, totalSupply?: string) {
     const { defaultAccount } = getProvider(erc20.chainId);
@@ -126,8 +141,22 @@ export const getTokensForSub = (sub: string) => {
     return ERC20Token.find({ sub });
 };
 
-export const getTokensForWallet = (wallet: WalletDocument) => {
-    return ERC20Token.find({ walletId: wallet.id });
+export const getTokensForWallet = async (wallet: WalletDocument) => {
+    const tokens = await ERC20Token.find({ walletId: wallet.id });
+
+    const result = [];
+    for (const token of tokens) {
+        try {
+            const decorated = await decorate(token, wallet);
+            result.push(decorated);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const defaultTokens = (await findDefaultTokens(wallet)).filter(({ walletBalance }) => walletBalance > 0);
+
+    return result.concat(defaultTokens);
 };
 
 export const getById = async (id: string) => {
@@ -238,7 +267,45 @@ async function createERC20Token(erc20: ERC20Document, wallet: TWallet) {
     });
 }
 
+async function findDefaultTokens(wallet: WalletDocument) {
+    const defaultContracts = [
+        {
+            type: ERC20Type.Unknown,
+            name: '20USDC-80THX',
+            symbol: '20USDC-80THX',
+            decimals: 18,
+            chainId: wallet.chainId,
+            address: contractNetworks[wallet.chainId].BPT,
+            logoImgUrl: 'https://assets.coingecko.com/coins/images/21323/standard/logo-thx-resized-200-200.png',
+        },
+        {
+            type: ERC20Type.Unknown,
+            name: '20USDC-80THX (staked)',
+            symbol: '20USDC-80THX-gauge',
+            decimals: 18,
+            chainId: wallet.chainId,
+            address: contractNetworks[wallet.chainId].BPT,
+            logoImgUrl: 'https://assets.coingecko.com/coins/images/21323/standard/logo-thx-resized-200-200.png',
+        },
+    ];
+
+    const promises = defaultContracts.map(async (erc20) => {
+        const contract = getContractFromName(erc20.chainId, 'LimitedSupplyToken', erc20.address);
+        return {
+            sub: wallet.sub,
+            erc20Id: '',
+            walletId: wallet.id,
+            walletBalance: await contract.methods.balanceOf(wallet.address).call(),
+            erc20,
+        };
+    });
+
+    return await Promise.all(promises);
+}
+
 export default {
+    findDefaultTokens,
+    decorate,
     findBySub,
     createERC20Token,
     deploy,
