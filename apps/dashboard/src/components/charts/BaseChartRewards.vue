@@ -8,8 +8,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IPoolAnalytics } from '@thxnetwork/dashboard/store/modules/pools';
 import { format } from 'date-fns';
-import BarChart from '@thxnetwork/dashboard/components/charts/BarChart.vue';
 import { RewardVariant } from '@thxnetwork/common/enums';
+import BarChart from '@thxnetwork/dashboard/components/charts/BarChart.vue';
 
 @Component({
     components: {
@@ -26,6 +26,16 @@ export default class BaseChardQuests extends Vue {
     isLoading = false;
     analytics!: IPoolAnalytics;
     chartOptions = {
+        plugins: {
+            legend: {
+                position: 'top',
+                align: 'start',
+                labels: {
+                    boxWidth: 0,
+                    boxHeight: 0,
+                },
+            },
+        },
         responsive: true,
         interaction: {
             intersect: false,
@@ -70,7 +80,7 @@ export default class BaseChardQuests extends Vue {
             borderRadius: 3,
             hoverBackgroundColor: '#7d6ccb',
             backgroundColor: '#5942c1',
-            borderWidth: 1,
+            borderWidth: 2,
         };
         const result = {
             labels: this.chartDates.map((x) => format(new Date(x), 'MM-dd')),
