@@ -17,9 +17,15 @@ const router = express.Router();
 
 router.use('/callback', RouterCallback);
 router.use('/:uid/signin', RouterSignin);
+
+// Generic redirects from the OIDC router
 router.get('/:uid', assertInteraction, ReadOIDC.controller);
+
+// Our custom connect flow for external accounts
 router.get('/:uid/connect', assertInteraction, assertAuthorization, ReadConnect.controller);
 router.post('/:uid/tokens/:kind/disconnect', assertInteraction, assertAuthorization, CreateDisconnect.controller);
+
+// @peterpolman Should deprecate and let dashboard use the /account in the API for patching account data
 router.get('/:uid/account', assertInteraction, assertAuthorization, ReadAccount.controller);
 router.get('/:uid/account/email/verify', assertInteraction, assertAuthorization, ReadAccountEmailVerify.controller);
 router.post(

@@ -25,6 +25,7 @@ export const contractNetworks = {
         simulateTxAccessorAddress: '0xFF1eE64b8806C0891e8F73b37f8403F441b552E1',
         // Balancer
         BPT: '0x439F0128d07f005e0703602f366599ACaaBfEA18',
+        BPTGauge: '0x76aBe9ec9b15947ba1Ca910695B8b6CffeD8E6CA',
         BAL: '0x24E91C3a2822bDc4bc73512872ab07fD93c8101b',
         USDC: '0xc368fA6A4057BcFD9E49221d8354d5fA6B88945a',
         // veTHX
@@ -34,20 +35,21 @@ export const contractNetworks = {
         SmartWalletWhitelist: '0x774442713f32fa98bf27bEc78c96fb7186f7C223',
         LensReward: '0xb2Bea6009625407C3c3cF7158185125Ed2C7f101',
         // Tokens
-        LimitedSupplyToken: '0xf228ADAa4c3D07C8285C1025421afe2c4F320C59',
-        UnlimitedSupplyToken: '0x8613B8E442219e4349fa5602C69431131a7ED114',
-        NonFungibleToken: '0x8B219D3d1FC64e03F6cF3491E7C7A732bF253EC8',
-        THX_ERC1155: '0xeDdBA2bDeE7c9006944aCF9379Daa64478E02290',
+        // LimitedSupplyToken: '0xf228ADAa4c3D07C8285C1025421afe2c4F320C59',
+        // UnlimitedSupplyToken: '0x8613B8E442219e4349fa5602C69431131a7ED114',
+        // NonFungibleToken: '0x8B219D3d1FC64e03F6cF3491E7C7A732bF253EC8',
+        // THX_ERC1155: '0xeDdBA2bDeE7c9006944aCF9379Daa64478E02290',
     },
     '137': {
         // Balancer
-        BPT: '',
-        BAL: '',
-        USDC: '',
+        BPT: '0xb204bf10bc3a5435017d3db247f56da601dfe08a',
+        BPTGauge: '0xf16BECC1Bcaf0fF0b865024a644a4da1A2f8585c',
+        BAL: '0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3',
+        USDC: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
         // veTHX
-        VotingEscrow: '',
-        RewardDistributor: '',
-        RewardFaucet: '',
+        VotingEscrow: '0xE3B8E734e7BCcB64B63e032795896CC57012A51D',
+        RewardDistributor: '0xCc62c812EfF9cA4c35623103B2Bb63E22f465E09',
+        RewardFaucet: '0xA1D7671f73FbcB5e079d4dC4Cffb7dDD0967EA7E',
         SmartWalletWhitelist: '',
         LensReward: '',
     },
@@ -60,8 +62,8 @@ export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: 
     SmartWalletWhitelist,
     VotingEscrow,
     Launchpad,
-    // Tokens
     LensReward,
+    // TOkens
     BPTToken,
     USDCToken: BPTToken,
     THXToken: BPTToken,

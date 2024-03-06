@@ -262,6 +262,7 @@
         "typescript": "^4.5.5"
     },
     "resolutions": {
-        "graceful-fs": "4.2.9"
+        "graceful-fs": "4.2.9",
+        "protobufjs": "7.2.4"
     }
 }

@@ -10,7 +10,7 @@ import RouterERC20 from './erc20/erc20.router';
 import RouterERC721 from './erc721/erc721.router';
 import RouterERC1155 from './erc1155/erc1155.router';
 import RouterClients from './client/client.router';
-import RouterQRCodes from './claims/claims.router';
+import RouterQRCodes from './qr-codes/qr-codes.router';
 import RouterBrands from './brands/brands.router';
 import RouterWidget from './widget/widget.router';
 import RouterQuests from './quests/quests.router';
@@ -38,7 +38,7 @@ router.use('/metadata', RouterMetadata);
 router.use('/brands', RouterBrands);
 router.use('/widget', RouterWidget);
 router.use('/leaderboards', RouterLeaderboards);
-router.use('/claims', RouterQRCodes); // Should redirect
+router.use('/claims', RouterQRCodes); // Legacy QR codes still redirect to /claims/r/:uuid
 router.use('/qr-codes', RouterQRCodes);
 router.use('/quests', RouterQuests);
 router.use('/rewards', RouterRewards);
