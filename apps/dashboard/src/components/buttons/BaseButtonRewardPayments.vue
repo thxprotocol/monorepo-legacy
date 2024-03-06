@@ -29,7 +29,7 @@ export default class BaseButtonRewardPayments extends Vue {
 
     @Prop() reward!: TReward;
 
-    @Watch('quest')
+    @Watch('reward')
     onQuestChange(reward: TReward) {
         this.getPayments(reward);
     }
