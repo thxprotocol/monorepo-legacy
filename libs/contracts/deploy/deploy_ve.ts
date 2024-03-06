@@ -22,7 +22,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const rewardDistributorImpl = await deploy('RewardDistributor', [], signer);
     const rewardFaucetImpl = await deploy('RewardFaucet', [], signer);
 
-    const thxToken = await deploy('THXToken', [], signer);
     const usdcToken = await deploy('USDCToken', [], signer);
     const bptToken = await deploy('BPTToken', [], signer);
     const balToken = await deploy('BalToken', [], signer);
@@ -74,11 +73,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const rdthx = new ethers.Contract(rewardDistributor, contractArtifacts['RewardDistributor'].abi, signer);
     const rfthx = new ethers.Contract(rewardFaucet, contractArtifacts['RewardFaucet'].abi, signer);
     const smartCheckerList = await deploy('SmartWalletWhitelist', [owner], signer);
-    console.log(`deploying "SmartWalletWhitelist" (tx: "")...: deployed at ${smartCheckerList.address}`);
     const lensReward = await deploy('LensReward', [], signer);
-    console.log(`deploying "LensReward" (tx: "")...: deployed at ${lensReward.address}`);
+
+    // Configure reward tokens in reward distributor
+    await rdthx.addAllowedRewardTokens([balToken.address, bptToken.address]);
 
     // Add smart wallet whitelist checker
+    await vethx.commit_smart_wallet_checker(smartCheckerList.address);
     await vethx.commit_smart_wallet_checker(smartCheckerList.address);
     console.log('VeTHX:', 'commit_smart_wallet_checker', smartCheckerList.address);
     await vethx.apply_smart_wallet_checker();

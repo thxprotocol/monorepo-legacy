@@ -158,7 +158,7 @@ export const addTokenForWallet = async (erc20: ERC20Document, wallet: WalletDocu
     }
 };
 
-export const importToken = async (chainId: number, address: string, wallet: WalletDocument, logoImgUrl: string) => {
+export const importToken = async (chainId: number, address: string, sub: string, logoImgUrl: string) => {
     const contract = getContractFromName(chainId, 'LimitedSupplyToken', address);
     const [name, symbol] = await Promise.all([contract.methods.name().call(), contract.methods.symbol().call()]);
     const erc20 = await ERC20.create({
@@ -167,11 +167,14 @@ export const importToken = async (chainId: number, address: string, wallet: Wall
         address: toChecksumAddress(address),
         chainId,
         type: ERC20Type.Unknown,
-        sub: wallet.sub,
+        sub,
         logoImgUrl,
     });
 
-    await addTokenForWallet(erc20, wallet);
+    const wallets = await Wallet.find({ sub });
+    for (const wallet of wallets) {
+        await addTokenForWallet(erc20, wallet);
+    }
 
     return erc20;
 };

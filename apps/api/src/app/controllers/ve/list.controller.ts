@@ -12,7 +12,8 @@ export const validation = [];
 const parseMs = (s) => Number(s) * 1000;
 
 export const controller = async (req: Request, res: Response) => {
-    const chainId = getChainId();
+    const chainId = getChainId(); // TODO Replace with query.walletId and derive chainId from wallet
+
     const wallet = await SafeService.findOne({ sub: req.auth.sub, chainId });
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
@@ -32,7 +33,7 @@ export const controller = async (req: Request, res: Response) => {
         });
         return web3.eth.abi.decodeParameters(['address', 'uint256'], result);
     };
-    const calls = await Promise.all([
+    const calls = await Promise.allSettled([
         callStatic(
             lr.methods.getUserClaimableReward(
                 contractNetworks[chainId].RewardDistributor,
@@ -48,9 +49,10 @@ export const controller = async (req: Request, res: Response) => {
             ),
         ),
     ]);
-    const rewards = calls.map((call) => ({ tokenAddress: call[0], amount: call[1] }));
+    const rewards = calls
+        .filter((result) => result.status === 'fulfilled')
+        .map((call) => ({ tokenAddress: call[0], amount: call[1] }));
     const veTHX = await ve.methods.balanceOf(wallet.address).call();
-    console.log({ rewards });
 
     res.status(200).json([{ veTHX, amount: Number(amount), end: parseMs(end), now: parseMs(now), rewards }]);
 };
