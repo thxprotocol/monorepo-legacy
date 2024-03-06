@@ -4,7 +4,7 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
-const validation = [param('id').exists().isMongoId()];
+const validation = [param('id').isMongoId(), param('walletId').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     const token = await ERC1155Service.queryMintTransaction(await ERC1155Service.findTokenById(req.params.id));
@@ -16,8 +16,8 @@ const controller = async (req: Request, res: Response) => {
     const metadata = await ERC1155Service.findMetadataById(token.metadataId);
     if (!metadata) throw new NotFoundError('ERC1155Metadata not found');
 
-    const wallet = await SafeService.findPrimary(req.auth.sub);
-    if (!wallet) throw new NotFoundError('Safe not found for account');
+    const wallet = await SafeService.findById(req.query.walletId as string);
+    if (!wallet) throw new NotFoundError('Wallet not found for account');
 
     const balance = await erc1155.contract.methods.balanceOf(wallet.address, metadata.tokenId).call();
     const tokenUri = token.tokenId ? await erc1155.contract.methods.uri(token.tokenId).call() : '';

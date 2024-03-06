@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { Account } from 'web3-core';
 import { isAddress } from 'web3-utils';
 import { createWallet } from '@thxnetwork/api/util/jest/network';
@@ -17,7 +17,6 @@ import TransactionService from '@thxnetwork/api/services/TransactionService';
 import { Contract } from 'web3-eth-contract';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { poll } from '@thxnetwork/api/util/polling';
-import { TWallet } from '@thxnetwork/common/lib/types/interfaces';
 
 const user = request.agent(app);
 

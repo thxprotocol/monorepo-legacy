@@ -1,6 +1,4 @@
 import mongoose from 'mongoose';
-import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { IAccessToken, TAccount } from '@thxnetwork/types/interfaces';
 
 export type AccountDocument = mongoose.Document & TAccount;
 
@@ -25,44 +23,8 @@ const accountSchema = new mongoose.Schema(
         acceptUpdates: Boolean,
         role: String,
         goal: [String],
-        tokens: [
-            {
-                kind: String,
-                accessToken: String,
-                refreshToken: String,
-                expiry: Number,
-                userId: String,
-                metadata: Object,
-            },
-        ],
-        referralCode: String,
     },
     { timestamps: true },
 );
-
-const getToken = function (kind: AccessTokenKind): IAccessToken {
-    return this.tokens.find((x: IAccessToken) => x.kind === kind);
-};
-
-const unsetToken = function (kind: AccessTokenKind) {
-    const index = this.tokens.findIndex((x: IAccessToken) => x.kind === kind);
-    if (index < 0) return;
-    this.tokens.splice(index, 1);
-};
-
-const setToken = async function (data: IAccessToken) {
-    const index = this.tokens.findIndex((x: IAccessToken) => x.kind === data.kind);
-    if (index < 0) {
-        this.tokens.push(data);
-    } else {
-        this.tokens[index]['accessToken'] = data.accessToken || this.tokens[index].accessToken;
-        this.tokens[index]['refreshToken'] = data.refreshToken || this.tokens[index].refreshToken;
-        this.tokens[index]['expiry'] = data.expiry || this.tokens[index].expiry;
-    }
-};
-
-accountSchema.methods.getToken = getToken;
-accountSchema.methods.setToken = setToken;
-accountSchema.methods.unsetToken = unsetToken;
 
 export const Account = mongoose.model<AccountDocument>('Account', accountSchema);

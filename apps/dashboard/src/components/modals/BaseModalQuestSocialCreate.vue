@@ -25,34 +25,48 @@
             </b-form-group>
         </template>
         <template #col-right>
-            <BaseCardRewardCondition
+            <BaseCardQuestRequirement
                 class="mb-3"
-                :rewardCondition="rewardCondition"
-                @change="rewardCondition = $event"
+                :pool="pool"
+                :requirement="requirement"
+                @change="requirement = $event"
             />
         </template>
     </BaseModalQuestCreate>
 </template>
 
 <script lang="ts">
-import { TInfoLink, type TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TPointReward, TAccount, TQuestLock } from '@thxnetwork/types/interfaces';
-import { QuestVariant, RewardConditionInteraction, RewardConditionPlatform } from '@thxnetwork/types/enums';
-import { platformInteractionList, platformList } from '@thxnetwork/dashboard/types/rewards';
+import { AccessTokenKind, QuestVariant, QuestSocialRequirement } from '@thxnetwork/common/enums';
+import { providerInteractionList, providerList } from '@thxnetwork/dashboard/types/rewards';
 import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModal from './BaseModal.vue';
 import BaseModalQuestCreate from './BaseModalQuestCreate.vue';
-import BaseCardRewardCondition from '../cards/BaseCardRewardCondition.vue';
+import BaseCardQuestRequirement from '../cards/BaseCardQuestRequirement.vue';
 import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
-import { questInteractionVariantMap } from '@thxnetwork/common/lib/types';
+import { questInteractionVariantMap } from '@thxnetwork/common/maps';
+
+const requirementDefaultsMap = {
+    [QuestVariant.Twitter]: {
+        kind: AccessTokenKind.Twitter,
+        interaction: QuestSocialRequirement.TwitterFollow,
+    },
+    [QuestVariant.Discord]: {
+        kind: AccessTokenKind.Discord,
+        interaction: QuestSocialRequirement.DiscordGuildJoined,
+    },
+    [QuestVariant.YouTube]: {
+        kind: AccessTokenKind.Google,
+        interaction: QuestSocialRequirement.YouTubeSubscribe,
+    },
+};
 
 @Component({
     components: {
         BaseModal,
         BaseModalQuestCreate,
-        BaseCardRewardCondition,
+        BaseCardQuestRequirement,
         BaseCardInfoLinks,
     },
     computed: mapGetters({
@@ -60,7 +74,7 @@ import { questInteractionVariantMap } from '@thxnetwork/common/lib/types';
         profile: 'account/profile',
     }),
 })
-export default class ModalRewardPointsCreate extends Vue {
+export default class ModalQuestSocialCreate extends Vue {
     isLoading = false;
     error = '';
     title = '';
@@ -68,15 +82,16 @@ export default class ModalRewardPointsCreate extends Vue {
     description = '';
     limit = 0;
     isPublished = false;
-    rewardCondition: {
-        platform: RewardConditionPlatform;
-        interaction: RewardConditionInteraction;
+    requirement: {
+        kind: AccessTokenKind;
+        interaction: QuestSocialRequirement;
         content: string;
-        contentMetadata?: object;
+        contentMetadata: object;
     } = {
-        platform: platformList[0].type,
-        interaction: platformInteractionList[0].type,
+        kind: providerList[0].kind,
+        interaction: providerInteractionList[0].type,
         content: '',
+        contentMetadata: {},
     };
     profile!: TAccount;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
@@ -88,14 +103,10 @@ export default class ModalRewardPointsCreate extends Vue {
     @Prop() variant!: string;
     @Prop() total!: number;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TPointReward;
+    @Prop({ required: false }) reward!: TQuestSocial;
 
     get isSubmitDisabled() {
-        return (
-            this.rewardCondition.interaction &&
-            this.rewardCondition.interaction !== RewardConditionInteraction.None &&
-            (!this.rewardCondition.content || !this.rewardCondition.contentMetadata)
-        );
+        return this.requirement && (!this.requirement.content || !this.requirement.contentMetadata);
     }
 
     onShow() {
@@ -104,46 +115,20 @@ export default class ModalRewardPointsCreate extends Vue {
         this.description = this.reward ? this.reward.description : this.description;
         this.amount = this.reward ? this.reward.amount : this.amount;
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
-        this.rewardCondition = this.reward
+        this.requirement = this.reward
             ? {
-                  platform: this.reward.platform,
+                  kind: this.reward.kind,
                   interaction: this.reward.interaction,
                   content: this.reward.content,
-                  contentMetadata: this.reward.contentMetadata,
+                  contentMetadata: JSON.parse(this.reward.contentMetadata),
               }
             : {
-                  ...this.getConditionDefaults(this.variant),
+                  ...requirementDefaultsMap[QuestVariant[this.variant]],
                   content: '',
-                  contentMetadata: '',
+                  contentMetadata: {},
               };
         this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
         this.locks = this.reward ? this.reward.locks : this.locks;
-    }
-
-    getConditionDefaults(questVariant: string) {
-        const variant = QuestVariant[questVariant];
-        switch (variant) {
-            case QuestVariant.Twitter:
-                return {
-                    platform: RewardConditionPlatform.Twitter,
-                    interaction: RewardConditionInteraction.TwitterFollow,
-                };
-            case QuestVariant.Discord:
-                return {
-                    platform: RewardConditionPlatform.Discord,
-                    interaction: RewardConditionInteraction.DiscordGuildJoined,
-                };
-            case QuestVariant.YouTube:
-                return {
-                    platform: RewardConditionPlatform.Google,
-                    interaction: RewardConditionInteraction.YouTubeSubscribe,
-                };
-            default:
-                return {
-                    platform: RewardConditionPlatform.None,
-                    interaction: RewardConditionInteraction.None,
-                };
-        }
     }
 
     onSubmit() {
@@ -151,10 +136,7 @@ export default class ModalRewardPointsCreate extends Vue {
         this.$store
             .dispatch(`pools/${this.reward ? 'updateQuest' : 'createQuest'}`, {
                 ...this.reward,
-                variant:
-                    this.rewardCondition.platform !== RewardConditionPlatform.None
-                        ? questInteractionVariantMap[this.rewardCondition.interaction]
-                        : RewardConditionInteraction.None,
+                variant: questInteractionVariantMap[this.requirement.interaction],
                 _id: this.reward ? this.reward._id : undefined,
                 poolId: this.pool._id,
                 title: this.title,
@@ -163,18 +145,10 @@ export default class ModalRewardPointsCreate extends Vue {
                 amount: this.amount,
                 isPublished: this.isPublished,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
-                platform: this.rewardCondition.platform,
-                interaction:
-                    this.rewardCondition.platform !== RewardConditionPlatform.None
-                        ? this.rewardCondition.interaction
-                        : RewardConditionInteraction.None,
-                content:
-                    this.rewardCondition.platform !== RewardConditionPlatform.None ? this.rewardCondition.content : '',
-                contentMetadata:
-                    this.rewardCondition.contentMetadata &&
-                    this.rewardCondition.platform !== RewardConditionPlatform.None
-                        ? this.rewardCondition.contentMetadata
-                        : '',
+                kind: this.requirement.kind,
+                interaction: this.requirement.interaction,
+                content: this.requirement.content,
+                contentMetadata: JSON.stringify(this.requirement.contentMetadata),
                 expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
                 page: this.reward ? this.reward.page : 1,
                 index: !this.reward ? this.total : this.reward.index,

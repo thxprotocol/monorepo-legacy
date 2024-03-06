@@ -1,4 +1,4 @@
-import { NFTVariant, TPool } from '@thxnetwork/types/index';
+import { NFTVariant } from '@thxnetwork/common/enums';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { AxiosResponse } from 'axios';
 import { TERC1155Metadata } from './erc1155';

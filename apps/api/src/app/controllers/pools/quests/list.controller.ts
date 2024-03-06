@@ -1,13 +1,9 @@
-import { query } from 'express-validator';
+import { param, query } from 'express-validator';
 import { Request, Response } from 'express';
-import { DailyReward } from '@thxnetwork/api/models/DailyReward';
-import { ReferralReward } from '@thxnetwork/api/models/ReferralReward';
-import { PointReward } from '@thxnetwork/api/models/PointReward';
-import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
-import { Web3Quest } from '@thxnetwork/api/models/Web3Quest';
-import { GitcoinQuest } from '@thxnetwork/api/models/GitcoinQuest';
+import { QuestInvite, QuestSocial, QuestCustom, QuestWeb3, QuestGitcoin, QuestDaily } from '@thxnetwork/api/models';
 
 const validation = [
+    param('id').isMongoId(),
     query('page').isInt(),
     query('limit').isInt(),
     query('isPublished')
@@ -19,26 +15,25 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Pools']
-    const poolId = req.header('X-PoolId');
+    const poolId = req.params.id;
     const page = Number(req.query.page);
     const limit = Number(req.query.limit);
     const $match = { poolId, isPublished: req.query.isPublished };
     const pipeline = [
-        { $unionWith: { coll: ReferralReward.collection.name } },
-        { $unionWith: { coll: PointReward.collection.name } },
-        { $unionWith: { coll: MilestoneReward.collection.name } },
-        { $unionWith: { coll: Web3Quest.collection.name } },
-        { $unionWith: { coll: GitcoinQuest.collection.name } },
+        { $unionWith: { coll: QuestInvite.collection.name } },
+        { $unionWith: { coll: QuestSocial.collection.name } },
+        { $unionWith: { coll: QuestCustom.collection.name } },
+        { $unionWith: { coll: QuestWeb3.collection.name } },
+        { $unionWith: { coll: QuestGitcoin.collection.name } },
         { $match },
     ];
     const arr = await Promise.all(
-        [DailyReward, ReferralReward, PointReward, MilestoneReward, Web3Quest, GitcoinQuest].map(
+        [QuestDaily, QuestInvite, QuestSocial, QuestCustom, QuestWeb3, QuestGitcoin].map(
             async (model) => await model.countDocuments($match),
         ),
     );
     const total = arr.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-    const results = await DailyReward.aggregate([
+    const results = await QuestDaily.aggregate([
         ...pipeline,
         { $sort: { index: 1 } },
         { $skip: (page - 1) * limit },

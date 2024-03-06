@@ -31,7 +31,7 @@
                 </b-col>
             </b-row>
             <b-form-group label="Total Supply" v-if="tokenType === ERC20Type.Limited">
-                <b-form-input id="erc20totalSupply" min="0" type="number" v-model="totalSupply" />
+                <b-form-input min="0" type="number" v-model="totalSupply" />
             </b-form-group>
             <b-form-group label="Icon image">
                 <b-form-file v-model="logoImg" accept="image/*" />
@@ -52,6 +52,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
 import BaseModal from './BaseModal.vue';
+import { toWei } from 'web3-utils';
 
 @Component({
     components: {
@@ -93,7 +94,7 @@ export default class ModalERC20Create extends Vue {
             name: this.name,
             symbol: this.symbol,
             type: this.tokenType,
-            totalSupply: this.tokenType === ERC20Type.Limited ? this.totalSupply : 0,
+            totalSupply: this.tokenType === ERC20Type.Limited ? toWei(String(this.totalSupply)) : 0,
             file: this.logoImg,
         });
 
@@ -102,4 +103,3 @@ export default class ModalERC20Create extends Vue {
     }
 }
 </script>
-<style lang="scss"></style>

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { query } from 'express-validator';
+import { ChainId } from '@thxnetwork/common/enums';
 import ContractService from '@thxnetwork/api/services/ContractService';
-import { ChainId } from '@thxnetwork/common/lib/types';
 
 const validation = [query('chainId').isInt(), query('address').isEthereumAddress()];
 

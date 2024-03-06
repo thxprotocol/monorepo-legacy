@@ -31,25 +31,17 @@
                 :limit="limit"
                 :total-rows="totals[nft._id]"
                 :selectedItems="selectedItems"
-                :actions="[
-                    { variant: 0, label: `Delete metadata` },
-                    { variant: 1, label: `Create perk` },
-                ]"
+                :actions="[{ variant: 0, label: `Delete metadata` }]"
                 @click-action="onClickAction"
                 @change-limit="onChangeLimit"
                 @change-page="onChangePage"
-            />
-            <BaseModalRewardERC721Create
-                id="modalRewardERC721Create"
-                :erc721="nft"
-                :erc721SelectedMetadataIds="selectedItems"
             />
             <BTable hover :busy="isLoading" :items="metadataByPage" responsive="lg" show-empty>
                 <!-- Head formatting -->
                 <template #head(checkbox)>
                     <b-form-checkbox @change="onSelectAll" />
                 </template>
-                <template #head(image))> Image </template>
+                <template #head(image)> Image </template>
                 <template #head(info)> Details </template>
                 <template #head(tokens)> Tokens </template>
                 <template #head(created)> Created </template>
@@ -100,28 +92,24 @@ import { format } from 'date-fns';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import type { IERC721Metadatas, IERC721s, TNFTMetadata } from '@thxnetwork/dashboard/types/erc721';
-import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
+import type { IERC1155Metadatas, IERC1155s } from '@thxnetwork/dashboard/types/erc1155';
+import { NFTVariant } from '@thxnetwork/common/enums';
+import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import BaseCardErc721Metadata from '@thxnetwork/dashboard/components/cards/BaseCardERC721Metadata.vue';
 import BaseModalErc721MetadataCreate from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataCreate.vue';
 import BaseModalErc721MetadataBulkCreate from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataBulkCreate.vue';
 import BaseModalErc721MetadataUploadCSV from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataUploadCSV.vue';
 import BaseModalErc721MetadataCreateCSV from '@thxnetwork/dashboard/components/modals/BaseModalERC721MetadataCreateCSV.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
-import BaseModalRewardERC721Create from '@thxnetwork/dashboard/components/modals/BaseModalRewardERC721Create.vue';
-import { IERC1155Metadatas, IERC1155s } from '@thxnetwork/dashboard/types/erc1155';
-import { NFTVariant } from '@thxnetwork/types/enums';
-import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 
 @Component({
     components: {
-        BaseNothingHere,
         BaseCardErc721Metadata,
         BaseModalErc721MetadataCreate,
         BaseModalErc721MetadataBulkCreate,
         BaseModalErc721MetadataUploadCSV,
         BaseModalErc721MetadataCreateCSV,
         BaseCardTableHeader,
-        BaseModalRewardERC721Create,
     },
     computed: mapGetters({
         totals: 'erc721/totalsMetadata',

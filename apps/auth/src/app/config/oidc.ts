@@ -6,9 +6,11 @@ import { Configuration, interactionPolicy } from 'oidc-provider';
 import { getJwks } from '../util/jwks';
 
 const basePolicy = interactionPolicy.base();
+const promptAuth = new interactionPolicy.Prompt({ name: 'auth', requestable: true });
 const promptVerifyEmail = new interactionPolicy.Prompt({ name: 'verify_email', requestable: true });
 const promptConnect = new interactionPolicy.Prompt({ name: 'connect', requestable: true });
 const promptAccount = new interactionPolicy.Prompt({ name: 'account-settings', requestable: true });
+basePolicy.add(promptAuth);
 basePolicy.add(promptVerifyEmail);
 basePolicy.add(promptConnect);
 basePolicy.add(promptAccount);
@@ -50,25 +52,22 @@ const config: Configuration = {
         authorization: '/authorize',
     },
     extraParams: [
-        'identity',
+        'pool_id',
         'claim_id',
-        'reward_hash',
+        'return_url',
         'signup_email',
         'signup_plan',
         'signup_offer',
-        'return_url',
-        'authentication_token',
-        'secure_key',
-        'prompt',
-        'channel',
         'verifyEmailToken',
-        'access_token_kind',
-        'distinct_id',
-        'pool_id',
-        'pool_transfer_token',
-        'wallet_transfer_token',
+        'prompt',
         'collaborator_request_token',
         'referral_code',
+        'access_token_kind',
+        'provider_scope',
+        'auth_variant',
+        'auth_signature',
+        'auth_message',
+        'auth_email',
     ],
     scopes: [
         'openid',

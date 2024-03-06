@@ -13,8 +13,8 @@
         "skipLibCheck": true,
         "outDir": "../../dist/out-tsc",
         "module": "commonjs",
-        "types": ["node"]
+        "types": ["node", "jest"]
     },
-    "exclude": ["jest.config.ts", "**/*.spec.ts", "**/*.test.ts"],
-    "include": ["scripts/**/*.ts", "src/**/*.ts", "../../package.json", "./package.json", "../../libs/common/**/*"]
+    "include": ["**/*.ts", "../../libs/common/**/*"],
+    "exclude": []
 }

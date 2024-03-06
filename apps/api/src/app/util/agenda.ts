@@ -5,12 +5,13 @@ import { createTwitterQuests } from '@thxnetwork/api/jobs/createTwitterQuests';
 import { sendPoolAnalyticsReport } from '@thxnetwork/api/jobs/sendPoolAnalyticsReport';
 import { updateCampaignRanks } from '@thxnetwork/api/jobs/updateCampaignRanks';
 import { updateParticipantRanks } from '@thxnetwork/api/jobs/updateParticipantRanks';
-import { JobType } from '@thxnetwork/types/enums';
 import { logger } from './logger';
 import { MONGODB_URI } from '../config/secrets';
+import { JobType } from '@thxnetwork/common/enums';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import WebhookService from '../services/WebhookService';
 import QuestService from '../services/QuestService';
+import TwitterCacheService from '../services/TwitterCacheService';
 
 const agenda = new Agenda({
     db: {
@@ -29,8 +30,9 @@ agenda.define(JobType.CreateTwitterQuests, createTwitterQuests);
 agenda.define(JobType.CreateQuestEntry, (job: Job) => QuestService.createEntryJob(job));
 agenda.define(JobType.DeploySafe, (job: Job) => SafeService.createJob(job));
 agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
-agenda.define(JobType.MigrateWallets, (job: Job) => SafeService.migrateJob(job));
 agenda.define(JobType.RequestAttemp, (job: Job) => WebhookService.requestAttemptJob(job));
+agenda.define(JobType.UpdateTwitterLikeCache, (job: Job) => TwitterCacheService.updateLikeCacheJob(job));
+agenda.define(JobType.UpdateTwitterRepostCache, (job: Job) => TwitterCacheService.updateRepostCacheJob(job));
 
 db.connection.once('open', async () => {
     await agenda.start();

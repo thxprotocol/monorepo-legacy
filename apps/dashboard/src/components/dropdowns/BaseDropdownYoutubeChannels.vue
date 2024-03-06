@@ -21,7 +21,7 @@ export default class BaseDropdownYoutubeChannels extends Vue {
 
     onChangeInput(content: string) {
         this.channelId = content;
-        this.$emit('selected', { content, contentMetadata: { channelId: this.channelId } });
+        this.$emit('selected', { content });
     }
 }
 </script>

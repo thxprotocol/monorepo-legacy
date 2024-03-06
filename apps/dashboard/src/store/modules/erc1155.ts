@@ -1,7 +1,6 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { type TERC1155Token, type TPool } from '@thxnetwork/types/interfaces';
 import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import type {
     TERC1155,
@@ -11,7 +10,7 @@ import type {
     TMetadataResponse,
     IERC1155Metadatas,
 } from '@thxnetwork/dashboard/types/erc1155';
-import { track } from '@thxnetwork/mixpanel';
+import { track } from '@thxnetwork/common/mixpanel';
 
 @Module({ namespaced: true })
 class ERC1155Module extends VuexModule {
@@ -279,7 +278,7 @@ class ERC1155Module extends VuexModule {
         const { data } = await axios({
             method: 'GET',
             url: '/erc1155/token',
-            params: { chainId: pool.chainId, recipient: pool.safeAddress },
+            params: { walletId: pool.safe._id },
         });
 
         data.forEach((token: TERC1155Token & { nft: TERC1155 }) => {

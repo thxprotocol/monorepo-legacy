@@ -1,6 +1,19 @@
 <template>
-    <base-modal hide-footer size="xl" :title="`Quest Entries: ${questEntries.total} `" :id="id">
+    <base-modal hide-footer size="xl" :title="`Quest Entries`" :id="id">
         <template #modal-body>
+            <b-card>
+                <b-row>
+                    <b-col>
+                        Entries: <strong>{{ questEntries.total }}</strong>
+                    </b-col>
+                    <b-col v-if="questEntries.meta && questEntries.meta.participantCount">
+                        Participants: <strong>{{ questEntries.meta.participantCount }}</strong>
+                    </b-col>
+                    <b-col v-if="questEntries.meta && questEntries.meta.reachTotal">
+                        Reached Users: <strong>{{ questEntries.meta.reachTotal }}</strong>
+                    </b-col>
+                </b-row>
+            </b-card>
             <BaseCardTableHeader
                 :page="page"
                 :limit="limit"
@@ -23,11 +36,11 @@
                     <!-- Head formatting -->
                     <template #head(account)> Username </template>
                     <template #head(email)> E-mail</template>
-                    <template #head(connectedAccounts)> Connected </template>
-                    <template #head(walletAddress)> Wallet </template>
+                    <template #head(tokens)> Connected </template>
                     <template #head(pointBalance)> Point Balance </template>
+                    <template #head(amount)> Amount </template>
                     <template #head(duration)> Duration </template>
-                    <template #head(createdAt)> Created </template>
+                    <template #head(entry)> Created </template>
 
                     <!-- Cell formatting -->
                     <template #cell(account)="{ item }">
@@ -36,24 +49,27 @@
                     <template #cell(email)="{ item }">
                         {{ item.email }}
                     </template>
-                    <template #cell(connectedAccounts)="{ item }">
+                    <template #cell(tokens)="{ item }">
                         <BaseParticipantConnectedAccount
+                            :id="`entry${item.entry._id}`"
                             :account="a"
                             :key="key"
-                            v-for="(a, key) in item.connectedAccounts"
+                            v-for="(a, key) in item.tokens"
                         />
-                    </template>
-                    <template #cell(wallet)="{ item }">
-                        <BaseParticipantWallet :wallet="item.wallet" />
                     </template>
                     <template #cell(pointBalance)="{ item }">
                         <strong class="text-primary">{{ item.pointBalance }}</strong>
                     </template>
+                    <template #cell(amount)="{ item }">
+                        <strong>{{ item.amount }}</strong>
+                    </template>
                     <template #cell(duration)="{ item }">
                         <code>{{ item.duration }}</code>
                     </template>
-                    <template #cell(createdAt)="{ item }">
-                        <small class="text-muted">{{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}</small>
+                    <template #cell(entry)="{ item }">
+                        <small class="text-muted">{{
+                            format(new Date(item.entry.createdAt), 'dd-MM-yyyy HH:mm')
+                        }}</small>
                     </template>
                 </b-table>
             </b-card>
@@ -63,14 +79,13 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TPointReward, TPool, TQuest, TQuestEntry } from '@thxnetwork/types/interfaces';
+import type { TQuestSocial, TQuest, TQuestEntry } from '@thxnetwork/types/interfaces';
 import { mapGetters } from 'vuex';
 import { format, differenceInMilliseconds } from 'date-fns';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModal from './BaseModal.vue';
 import { getAddressURL } from '../../utils/chains';
 import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
-import BaseParticipantWallet, { parseWallet } from '@thxnetwork/dashboard/components/BaseParticipantWallet.vue';
 import BaseParticipantConnectedAccount, {
     parseConnectedAccounts,
 } from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
@@ -105,7 +120,6 @@ function formatDuration(durationInMilliseconds) {
         BaseModal,
         BaseCardTableHeader,
         BaseParticipantAccount,
-        BaseParticipantWallet,
         BaseParticipantConnectedAccount,
     },
     computed: mapGetters({
@@ -122,11 +136,16 @@ export default class BaseModalQuestSocialEntries extends Vue {
     page = 1;
 
     @Prop() id!: string;
-    @Prop() quest!: TPointReward;
+    @Prop() quest!: TQuestSocial;
 
-    get questEntries() {
+    get questEntries(): {
+        total: number;
+        results: TQuestEntry[];
+        meta?: { reachTotal?: number; participantCount?: number };
+    } {
         if (!this.entriesList[this.quest.poolId]) return { total: 0, results: [] };
         if (!this.entriesList[this.quest.poolId][this.quest._id]) return { total: 0, results: [] };
+
         return this.entriesList[this.quest.poolId][this.quest._id];
     }
 
@@ -136,11 +155,11 @@ export default class BaseModalQuestSocialEntries extends Vue {
             .map((entry: any) => ({
                 account: parseAccount({ id: entry._id, account: entry.account }),
                 email: entry.account && entry.account.email,
-                connectedAccounts: entry.account && parseConnectedAccounts(entry.account.connectedAccounts),
-                wallet: parseWallet(entry.wallet),
+                tokens: entry.account && parseConnectedAccounts(entry.account),
                 pointBalance: entry.pointBalance,
+                amount: entry.amount,
                 duration: this.getDuration(this.quest, entry),
-                createdAt: entry.createdAt,
+                entry,
             }));
     }
 

@@ -4,7 +4,6 @@ import BPTToken from './abis/BPTToken.json';
 import RewardDistributor from './abis/RewardDistributor.json';
 import SmartWalletWhitelist from './abis/SmartWalletWhitelist.json';
 import VotingEscrow from './abis/VotingEscrow.json';
-import Launchpad from './abis/Launchpad.json';
 import TestToken from './abis/TestToken.json';
 import RewardFaucet from './abis/RewardFaucet.json';
 import LensReward from './abis/LensReward.json';
@@ -23,19 +22,33 @@ export const contractNetworks = {
         signMessageLibAddress: '0x658FAD2acB6d1E615f295E566ee9a6d32Cc97b10',
         createCallAddress: '0x40Efd8a16485213445E6d8b9a4266Fd2dFf7C69a',
         simulateTxAccessorAddress: '0xFF1eE64b8806C0891e8F73b37f8403F441b552E1',
-        // VE
-        BPTToken: '',
-        TestToken: '',
-        RewardFaucet: '',
-        RewardDistributor: '',
-        SmartWalletWhitelist: '',
-        VotingEscrow: '',
-        Launchpad: '',
+        // Balancer
+        BPT: '0x24E91C3a2822bDc4bc73512872ab07fD93c8101b',
+        BAL: '0x76aBe9ec9b15947ba1Ca910695B8b6CffeD8E6CA',
+        USDC: '0x439F0128d07f005e0703602f366599ACaaBfEA18',
+        // veTHX
+        VotingEscrow: '0xB9FB14bfdA8C77979a2b1897eF520B1A99C39E08',
+        RewardDistributor: '0x7638feeD2335a3DfD16a8B99D191ce374B1c4062',
+        RewardFaucet: '0xdD5060e15EF857b7cdaB45eDC33DfbffAC5F7A39',
+        SmartWalletWhitelist: '0xb2Bea6009625407C3c3cF7158185125Ed2C7f101',
+        LensReward: '0x5E0A87862f9175493Cc1d02199ad18Eff87Eb400',
         // Tokens
         LimitedSupplyToken: '0xf228ADAa4c3D07C8285C1025421afe2c4F320C59',
         UnlimitedSupplyToken: '0x8613B8E442219e4349fa5602C69431131a7ED114',
         NonFungibleToken: '0x8B219D3d1FC64e03F6cF3491E7C7A732bF253EC8',
         THX_ERC1155: '0xeDdBA2bDeE7c9006944aCF9379Daa64478E02290',
+    },
+    '137': {
+        // Balancer
+        BPT: '',
+        BAL: '',
+        USDC: '',
+        // veTHX
+        VotingEscrow: '',
+        RewardDistributor: '',
+        RewardFaucet: '',
+        SmartWalletWhitelist: '',
+        LensReward: '',
     },
 } as ContractNetworksConfig & any;
 
@@ -45,9 +58,8 @@ export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: 
     RewardDistributor,
     SmartWalletWhitelist,
     VotingEscrow,
-    Launchpad,
-    LensReward,
     // Tokens
+    LensReward,
     BPTToken,
     USDCToken: BPTToken,
     THXToken: BPTToken,

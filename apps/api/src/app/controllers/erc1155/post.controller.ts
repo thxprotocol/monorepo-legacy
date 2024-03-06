@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { body, check, query } from 'express-validator';
-import { NFTVariant } from '@thxnetwork/types/enums';
+import { NFTVariant } from '@thxnetwork/common/enums';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import ImageService from '@thxnetwork/api/services/ImageService';
 

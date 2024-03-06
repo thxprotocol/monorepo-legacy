@@ -1,8 +1,8 @@
 import { Client, GatewayIntentBits, Partials, PermissionFlagsBits } from 'discord.js';
 import { BOT_TOKEN } from '@thxnetwork/api/config/secrets';
 import { eventRegister } from '@thxnetwork/api/util/discord';
-import eventRouter from '@thxnetwork/api/events';
 import { logger } from './app/util/logger';
+import eventRouter from '@thxnetwork/api/events';
 
 export const client = new Client({
     intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildMessageReactions],

@@ -32,7 +32,7 @@ import { mapGetters } from 'vuex';
         profile: 'account/profile',
     }),
 })
-export default class AssetPoolView extends Vue {
+export default class PoolView extends Vue {
     pools!: IPools;
     childRoutes = [
         {

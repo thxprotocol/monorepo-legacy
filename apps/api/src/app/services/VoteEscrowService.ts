@@ -1,15 +1,16 @@
 import { BigNumber } from 'ethers';
-import { WalletDocument } from '../models/Wallet';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { SC_ADDRESS, VE_ADDRESS } from '@thxnetwork/api/config/secrets';
-import { contractArtifacts } from '@thxnetwork/contracts/exports';
-import { ChainId } from '@thxnetwork/common/lib/types';
-import { TransactionDocument } from '@thxnetwork/api/models/Transaction';
+import { contractArtifacts, contractNetworks } from '@thxnetwork/contracts/exports';
+import { ChainId } from '@thxnetwork/common/enums';
+import { WalletDocument, TransactionDocument } from '@thxnetwork/api/models';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 
-async function isApprovedAddress(address: string) {
-    const { web3 } = getProvider();
-    const whitelist = new web3.eth.Contract(contractArtifacts['SmartWalletWhitelist'].abi, SC_ADDRESS);
+async function isApprovedAddress(address: string, chainId: ChainId) {
+    const { web3 } = getProvider(chainId);
+    const whitelist = new web3.eth.Contract(
+        contractArtifacts['SmartWalletWhitelist'].abi,
+        contractNetworks[chainId].SmartWalletWhitelist,
+    );
     return await whitelist.methods.check(address).call();
 }
 
@@ -30,7 +31,10 @@ async function approve(wallet: WalletDocument, tokenAddress: string, spender: st
 
 async function deposit(wallet: WalletDocument, amountInWei: string, endTimestamp: number) {
     const { web3 } = getProvider(ChainId.Hardhat);
-    const ve = new web3.eth.Contract(contractArtifacts['VotingEscrow'].abi, VE_ADDRESS);
+    const ve = new web3.eth.Contract(
+        contractArtifacts['VotingEscrow'].abi,
+        contractNetworks[wallet.chainId].VotingEscrow,
+    );
 
     // Check for lock and determine ve fn to call
     const lock = await ve.methods.locked(wallet.address).call();
@@ -40,17 +44,17 @@ async function deposit(wallet: WalletDocument, amountInWei: string, endTimestamp
     const createLock = () => {
         console.log(amountInWei, endTimestamp, 'create_lock');
         const fn = ve.methods.create_lock(amountInWei, endTimestamp);
-        return TransactionService.sendSafeAsync(wallet, VE_ADDRESS, fn);
+        return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
     };
     const increaseAmount = () => {
         console.log(amountInWei, 'increase_amount');
         const fn = ve.methods.increase_amount(amountInWei);
-        return TransactionService.sendSafeAsync(wallet, VE_ADDRESS, fn);
+        return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
     };
     const increaseUnlockTime = () => {
         console.log(endTimestamp, 'increase_unlock_time');
         const fn = ve.methods.increase_unlock_time(endTimestamp);
-        return TransactionService.sendSafeAsync(wallet, VE_ADDRESS, fn);
+        return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
     };
 
     // Build tx array
@@ -75,7 +79,10 @@ async function deposit(wallet: WalletDocument, amountInWei: string, endTimestamp
 
 async function withdraw(wallet: WalletDocument, isEarlyWithdraw: boolean) {
     const { web3 } = getProvider();
-    const ve = new web3.eth.Contract(contractArtifacts['VotingEscrow'].abi, VE_ADDRESS);
+    const ve = new web3.eth.Contract(
+        contractArtifacts['VotingEscrow'].abi,
+        contractNetworks[wallet.chainId].VotingEscrow,
+    );
 
     // Check for lock and determine ve function to call
     const fn = isEarlyWithdraw ? ve.methods.withdraw_early() : ve.methods.withdraw();

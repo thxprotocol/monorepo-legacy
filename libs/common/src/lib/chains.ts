@@ -1,4 +1,4 @@
-import { ChainId } from './types/enums';
+import { ChainId } from './enums';
 
 type ChainInfo = { name: string; chainId: number; blockExplorer: string; rpc: string };
 
@@ -26,6 +26,12 @@ const chainList: { [chainId: number]: ChainInfo } = {
         name: 'Polygon',
         blockExplorer: 'https://polygonscan.com',
         rpc: 'https://polygon-rpc.com',
+    },
+    [ChainId.PolygonZK]: {
+        chainId: ChainId.PolygonZK,
+        name: 'Polygon zkEVM',
+        blockExplorer: 'https://zkevm.polygonscan.com',
+        rpc: 'https://zkevm-rpc.com',
     },
 };
 

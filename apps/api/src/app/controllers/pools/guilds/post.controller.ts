@@ -1,4 +1,4 @@
-import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
+import { DiscordGuild } from '@thxnetwork/api/models';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';

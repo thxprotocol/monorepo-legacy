@@ -16,6 +16,10 @@
                     {
                         "entryPath": "apps/auth/scripts/migrate-mongo.ts",
                         "entryName": "migrate-mongo"
+                    },
+                    {
+                        "entryPath": "apps/auth/scripts/script.ts",
+                        "entryName": "script"
                     }
                 ],
                 "generatePackageJson": true
@@ -61,6 +65,14 @@
                 "runInBand": true,
                 "codeCoverage": true,
                 "cwd": "apps/auth"
+            }
+        },
+        "script": {
+            "dependsOn": ["^build"],
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "node script.js",
+                "cwd": "dist/apps/auth"
             }
         },
         "migrate-db": {

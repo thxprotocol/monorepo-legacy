@@ -52,7 +52,10 @@ export default class BaseDropdownDiscordGuilds extends Vue {
 
     mounted() {
         this.serverId = this.content ? this.content : this.serverId;
-        this.limit = this.contentMetadata ? this.contentMetadata.limit : this.limit;
+        if (this.contentMetadata) {
+            const { limit } = this.contentMetadata;
+            this.limit = limit || this.limit;
+        }
     }
 
     onChange(limit: number) {

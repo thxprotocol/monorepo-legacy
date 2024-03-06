@@ -1,23 +1,8 @@
-import type {
-    TAccount,
-    TDiscordGuild,
-    TEvent,
-    TPaginationResult,
-    TParticipant,
-    TPool,
-    TPoolSettings,
-    TPoolTransferResponse,
-    TQuest,
-    TQuestEntry,
-} from '@thxnetwork/types/interfaces';
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
-import { track } from '@thxnetwork/mixpanel';
-import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
+import { track } from '@thxnetwork/common/mixpanel';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
-import { TIdentity } from '@thxnetwork/common/lib/types/interfaces/Identity';
 
 export interface IPoolAnalytic {
     _id: string;
@@ -56,31 +41,31 @@ export interface IPoolAnalytic {
     dailyRewards: [
         {
             day: string;
-            totalClaimPoints: number;
+            totalAmount: number;
         },
     ];
     referralRewards: [
         {
             day: string;
-            totalClaimPoints: number;
+            totalAmount: number;
         },
     ];
     pointRewards: [
         {
             day: string;
-            totalClaimPoints: number;
+            totalAmount: number;
         },
     ];
     milestoneRewards: [
         {
             day: string;
-            totalClaimPoints: number;
+            totalAmount: number;
         },
     ];
     web3Quests: [
         {
             day: string;
-            totalClaimPoints: number;
+            totalAmount: number;
         },
     ];
 }
@@ -129,6 +114,21 @@ export interface IPoolAnalyticsMetrics {
     [id: string]: IPoolAnalyticMetrics;
 }
 
+export type TRewardState = {
+    [poolId: string]: {
+        total: number;
+        limit: number;
+        page: number;
+        results: TReward[];
+    };
+};
+
+export type TRewardPaymentState = {
+    [poolId: string]: {
+        [rewardId: string]: TPaginationResult & { results: TRewardPayment[] };
+    };
+};
+
 export type TQuestState = {
     [poolId: string]: {
         total: number;
@@ -138,9 +138,13 @@ export type TQuestState = {
     };
 };
 
+export type TQuestEntryMeta = {
+    reachTotal: number;
+};
+
 export type TQuestEntryState = {
     [poolId: string]: {
-        [questId: string]: TPaginationResult & { results: TQuestEntry[] };
+        [questId: string]: TPaginationResult & { results: TQuestEntry[]; meta?: TQuestEntryMeta };
     };
 };
 
@@ -157,6 +161,11 @@ export type TGuildState = {
 export type TIdentityState = {
     [poolId: string]: TPaginationResult & { results: TIdentity[] };
 };
+export type TCouponCodeState = {
+    [poolId: string]: {
+        [rewardId: string]: TPaginationResult & { results: TCouponCode[] };
+    };
+};
 export type TParticipantState = {
     [poolId: string]: TPaginationResult & { results: TParticipant[] };
 };
@@ -166,10 +175,13 @@ class PoolModule extends VuexModule {
     _all: IPools = {};
     _quests: TQuestState = {};
     _entries: TQuestEntryState = {};
+    _rewards: TQuestState = {};
+    _payments: TQuestState = {};
     _guilds: TGuildState = {};
     _events: TEventState = {};
     _identities: TIdentityState = {};
     _participants: TParticipantState = {};
+    _couponCodes: TCouponCodeState = {};
     _analytics: IPoolAnalytics = {};
     _analyticsLeaderBoard: IPoolAnalyticsLeaderBoard = {};
     _analyticsMetrics: IPoolAnalyticsLeaderBoard = {};
@@ -184,6 +196,14 @@ class PoolModule extends VuexModule {
 
     get guilds() {
         return this._guilds;
+    }
+
+    get rewards() {
+        return this._rewards;
+    }
+
+    get payments() {
+        return this._payments;
     }
 
     get quests() {
@@ -202,6 +222,10 @@ class PoolModule extends VuexModule {
         return this._participants;
     }
 
+    get couponCodes() {
+        return this._couponCodes;
+    }
+
     get analytics() {
         return this._analytics;
     }
@@ -217,21 +241,6 @@ class PoolModule extends VuexModule {
     @Mutation
     set(pool: TPool) {
         Vue.set(this._all, pool._id, pool);
-    }
-
-    @Mutation
-    clearTransfers(pool: TPool) {
-        Vue.set(this._all[pool._id], 'transfers', []);
-    }
-
-    @Mutation
-    setTransfer(poolTransfer: TPoolTransferResponse) {
-        const pool = this._all[poolTransfer.poolId] as TPool & { transfers: TPoolTransferResponse[] };
-        poolTransfer.isCopied = false;
-        poolTransfer.url = `${BASE_URL}/preview/${pool._id}?token=${poolTransfer.token}`;
-
-        const transfers = [...(pool.transfers ? pool.transfers : []), poolTransfer];
-        Vue.set(this._all[pool._id], 'transfers', transfers);
     }
 
     @Mutation
@@ -257,6 +266,11 @@ class PoolModule extends VuexModule {
     @Mutation
     clear() {
         Vue.set(this, '_all', {});
+    }
+
+    @Mutation
+    setRewards({ poolId, result }: { poolId: string; result: { results: TReward[] } & TPaginationResult }) {
+        Vue.set(this._rewards, poolId, result);
     }
 
     @Mutation
@@ -289,9 +303,40 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
+    setRewardPayments({
+        poolId,
+        rewardId,
+        result,
+    }: {
+        poolId: string;
+        rewardId: string;
+        result: { results: TQuestEntry[] } & TPaginationResult;
+    }) {
+        if (!this._payments[poolId]) Vue.set(this._payments, poolId, {});
+        Vue.set(this._payments[poolId], rewardId, result);
+    }
+
+    @Mutation
     unsetIdentity(identity: TIdentity) {
         const index = this._identities[identity.poolId].results.findIndex((i) => i._id === identity._id);
         Vue.delete(this._identities[identity.poolId].results, index);
+    }
+
+    @Mutation
+    setReward(reward: TReward) {
+        if (!this._rewards[reward.poolId]) return;
+
+        const rewards = this._rewards[reward.poolId].results;
+        const index = rewards.findIndex((q) => q._id === reward._id);
+
+        Vue.set(this._rewards[reward.poolId].results, index, reward);
+    }
+
+    @Mutation
+    unsetReward(reward: TReward) {
+        const rewards = this._rewards[reward.poolId].results;
+        const index = rewards.findIndex((q) => q._id === reward._id);
+        Vue.delete(this._rewards[reward.poolId].results, index);
     }
 
     @Mutation
@@ -325,6 +370,23 @@ class PoolModule extends VuexModule {
     @Mutation
     setParticipants(data: { poolId: string; result: { results: TParticipant[] } & TPaginationResult }) {
         Vue.set(this._participants, data.poolId, data.result);
+    }
+
+    @Mutation
+    setCouponCodes(data: {
+        poolId: string;
+        couponRewardId: string;
+        result: { results: TCouponCode[] } & TPaginationResult;
+    }) {
+        if (!this._couponCodes[data.poolId]) Vue.set(this._couponCodes, data.poolId, {});
+        Vue.set(this._couponCodes[data.poolId], data.couponRewardId, data.result);
+    }
+
+    @Mutation
+    unsetCouponCode({ poolId, rewardId, couponCodeId }: { poolId: string; rewardId: string; couponCodeId: string }) {
+        const couponCodes = this._couponCodes[poolId][rewardId].results;
+        const index = couponCodes.findIndex((c) => c._id === couponCodeId);
+        Vue.delete(this._couponCodes[poolId][rewardId].results, index);
     }
 
     @Mutation
@@ -427,10 +489,35 @@ class PoolModule extends VuexModule {
     async createQuest(payload: TQuest) {
         await axios({
             method: 'POST',
-            url: `/pools/${payload.poolId}/quests`,
-            headers: { 'X-PoolId': payload.poolId },
+            url: `/pools/${payload.poolId}/quests/${payload.variant}`,
             data: prepareFormDataForUpload(payload),
         });
+    }
+
+    @Action
+    async createReward(payload: TReward) {
+        await axios({
+            method: 'POST',
+            url: `/pools/${payload.poolId}/rewards/${payload.variant}`,
+            data: prepareFormDataForUpload(payload),
+        });
+    }
+
+    @Action({ rawError: true })
+    async listRewards({ pool, page, limit, isPublished }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/rewards`,
+            params: { page, limit, isPublished },
+        });
+
+        data.results = data.results.map((q) => {
+            q.delete = (reward) => this.context.dispatch('removeReward', reward);
+            q.update = (reward) => this.context.dispatch('updateReward', reward);
+            return q;
+        });
+
+        this.context.commit('setRewards', { poolId: pool._id, result: data });
     }
 
     @Action({ rawError: true })
@@ -438,7 +525,6 @@ class PoolModule extends VuexModule {
         const { data } = await axios({
             method: 'GET',
             url: `/pools/${pool._id}/quests`,
-            headers: { 'X-PoolId': pool._id },
             params: { page, limit, isPublished },
         });
 
@@ -455,28 +541,45 @@ class PoolModule extends VuexModule {
     async updateQuest(payload: TQuest) {
         await axios({
             method: 'PATCH',
-            url: `/pools/${payload.poolId}/quests/${payload._id}`,
-            headers: { 'X-PoolId': payload.poolId },
+            url: `/pools/${payload.poolId}/quests/${payload.variant}/${payload._id}`,
             data: prepareFormDataForUpload(payload),
         });
+    }
+
+    @Action
+    async updateReward(payload: TReward) {
+        await axios({
+            method: 'PATCH',
+            url: `/pools/${payload.poolId}/rewards/${payload.variant}/${payload._id}`,
+            data: prepareFormDataForUpload(payload),
+        });
+        this.context.commit('setReward', payload);
     }
 
     @Action
     async removeQuest(payload: TQuest) {
         await axios({
             method: 'DELETE',
-            url: `/pools/${payload.poolId}/quests/${payload._id}`,
-            headers: { 'X-PoolId': payload.poolId },
+            url: `/pools/${payload.poolId}/quests/${payload.variant}/${payload._id}`,
             data: payload,
         });
         this.context.commit('unsetQuest', payload);
+    }
+
+    @Action
+    async removeReward(payload: TReward) {
+        await axios({
+            method: 'DELETE',
+            url: `/pools/${payload.poolId}/rewards/${payload.variant}/${payload._id}`,
+        });
+        this.context.commit('unsetReward', payload);
     }
 
     @Action({ rawError: true })
     async listEntries(payload: { quest: TQuest; limit: number; page: number }) {
         const { data } = await axios({
             method: 'GET',
-            url: `/pools/${payload.quest.poolId}/quests/${payload.quest._id}/entries`,
+            url: `/pools/${payload.quest.poolId}/quests/${payload.quest.variant}/${payload.quest._id}/entries`,
             headers: { 'X-PoolId': payload.quest.poolId },
             params: {
                 page: payload.page,
@@ -491,54 +594,37 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async listTransfers(pool: TPool) {
-        this.context.commit('clearTransfers', pool);
-
-        const r = await axios({
+    async listPayments(payload: { reward: TReward; limit: number; page: number }) {
+        const { data } = await axios({
             method: 'GET',
-            url: `/pools/${pool._id}/transfers`,
-            headers: { 'X-PoolId': pool._id },
+            url: `/pools/${payload.reward.poolId}/rewards/${payload.reward.variant}/${payload.reward._id}/payments`,
+            headers: { 'X-PoolId': payload.reward.poolId },
+            params: {
+                page: payload.page,
+                limit: payload.limit,
+            },
         });
-
-        r.data.forEach((poolTransfer: TPoolTransferResponse) => {
-            this.context.commit('setTransfer', poolTransfer);
+        this.context.commit('setRewardPayments', {
+            poolId: payload.reward.poolId,
+            rewardId: payload.reward._id,
+            result: data,
         });
-    }
-
-    @Action({ rawError: true })
-    async refreshTransfers(pool: TPool & { transfers: TPoolTransferResponse[] }) {
-        await axios({
-            method: 'POST',
-            url: `/pools/${pool._id}/transfers/refresh`,
-            headers: { 'X-PoolId': pool._id },
-            data: { token: pool.transfers[0].token },
-        });
-        this.context.dispatch('listTransfers', pool);
-    }
-
-    @Action({ rawError: true })
-    async deleteTransfers(pool: TPool & { transfers: TPoolTransferResponse[] }) {
-        await axios({
-            method: 'DELETE',
-            url: `/pools/${pool._id}/transfers`,
-            headers: { 'X-PoolId': pool._id },
-            data: { token: pool.transfers[0].token },
-        });
-        this.context.dispatch('listTransfers', pool);
     }
 
     @Action({ rawError: true })
     async list() {
         this.context.commit('clear');
 
-        const r = await axios({
+        const { data } = await axios({
             method: 'GET',
             url: '/pools',
         });
 
-        r.data.forEach((pool: TPool) => {
+        for (const pool of data) {
+            // Skip pools that are already in store
+            if (this.context.rootGetters['pools/all'][pool._id]) continue;
             this.context.commit('set', pool);
-        });
+        }
     }
 
     @Action({ rawError: true })
@@ -574,6 +660,42 @@ class PoolModule extends VuexModule {
         });
         this.context.commit('setAnalyticsMetrics', { _id: payload.poolId, ...r.data });
         return r.data;
+    }
+
+    @Action({ rawError: true })
+    async listCouponCodes({
+        pool,
+        reward,
+        page,
+        limit,
+    }: {
+        pool: TPool;
+        reward: TRewardCoupon;
+        page: string;
+        limit: string;
+    }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/coupons`,
+            headers: { 'X-PoolId': pool._id },
+            params: {
+                poolId: pool._id,
+                couponRewardId: reward._id,
+                page,
+                limit,
+            },
+        });
+        this.context.commit('setCouponCodes', { poolId: pool._id, couponRewardId: reward._id, result: data });
+    }
+
+    @Action({ rawError: true })
+    async deleteCouponCode({ reward, couponCodeId }: { pool: TPool; reward: TRewardCoupon; couponCodeId: string }) {
+        await axios({
+            method: 'DELETE',
+            url: `/coupons/${couponCodeId}`,
+        });
+
+        this.context.commit('unsetCouponCode', { poolId: reward.poolId, rewardId: reward._id, couponCodeId });
     }
 
     @Action({ rawError: true })

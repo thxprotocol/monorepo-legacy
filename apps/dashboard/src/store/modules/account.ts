@@ -1,11 +1,10 @@
-import type { TAccount } from '@thxnetwork/types/interfaces';
-import { AccessTokenKind, RewardConditionPlatform, AccountPlanType } from '@thxnetwork/types/enums';
 import axios from 'axios';
+import { AccessTokenKind, AccountPlanType, OAuthScope } from '@thxnetwork/common/enums';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { SigninRedirectArgs, User, UserManager } from 'oidc-client-ts';
 import { config } from '@thxnetwork/dashboard/utils/oidc';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
-import Mixpanel, { track } from '@thxnetwork/mixpanel';
+import Mixpanel, { track } from '@thxnetwork/common/mixpanel';
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
@@ -84,28 +83,13 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async connectRedirect(payload: { platform: RewardConditionPlatform; returnUrl: string }) {
-        let access_token_kind = '';
-        switch (payload.platform) {
-            case RewardConditionPlatform.Google: {
-                access_token_kind = AccessTokenKind.YoutubeView;
-                break;
-            }
-            case RewardConditionPlatform.Twitter: {
-                access_token_kind = AccessTokenKind.Twitter;
-                break;
-            }
-            case RewardConditionPlatform.Discord: {
-                access_token_kind = AccessTokenKind.Discord;
-                break;
-            }
-        }
+    async connectRedirect(payload: { kind: AccessTokenKind; scopes: OAuthScope[]; returnUrl: string }) {
         await this.userManager.signinRedirect({
             extraQueryParams: {
                 prompt: 'connect',
-                channel: payload.platform,
+                access_token_kind: payload.kind,
+                provider_scope: payload.scopes.join(' '),
                 return_url: payload.returnUrl,
-                access_token_kind,
             },
         });
     }
@@ -136,21 +120,9 @@ class AccountModule extends VuexModule {
         };
         const state = {};
 
-        if (payload.shopifyParams) {
-            extraQueryParams['shopify_params'] = payload.shopifyParams;
-        }
-
-        if (payload.referralCode) {
-            extraQueryParams['referral_code'] = payload.referralCode;
-        }
-
         if (payload.poolId) {
             extraQueryParams['pool_id'] = payload.poolId;
             state['poolId'] = payload.poolId;
-        }
-
-        if (payload.poolTransferToken) {
-            extraQueryParams['pool_transfer_token'] = payload.poolTransferToken;
         }
 
         if (payload.collaboratorRequestToken) {
@@ -192,14 +164,13 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async connect(kind: AccessTokenKind) {
-        const client = Mixpanel.client();
+    async connect({ kind, scopes = [] }: { kind: AccessTokenKind; scopes: OAuthScope[] }) {
         await this.userManager.signinRedirect({
             prompt: 'connect',
             extraQueryParams: {
                 access_token_kind: kind,
+                provider_scope: scopes.join(' '),
                 return_url: window.location.href,
-                distinct_id: client && client.get_distinct_id(),
             },
         });
     }

@@ -84,7 +84,7 @@ import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { isAddress } from 'web3-utils';
 import BaseDropdownSelectPool from '../dropdowns/BaseDropdownSelectPool.vue';
 import BaseDropdownSelectNftVariant from '../dropdowns/BaseDropdownSelectNftVariant.vue';
-import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant } from '@thxnetwork/common/enums';
 import { type TPool } from '@thxnetwork/types/interfaces';
 
 @Component({

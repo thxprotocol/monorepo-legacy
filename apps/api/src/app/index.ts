@@ -1,5 +1,4 @@
 import 'express-async-errors';
-import '@thxnetwork/api/config/openapi';
 import axios from 'axios';
 import axiosBetterStacktrace from 'axios-better-stacktrace';
 import compression from 'compression';
@@ -37,7 +36,7 @@ app.use(
 app.use(morgan);
 
 morganBody(app, {
-    logRequestBody: false,
+    logRequestBody: NODE_ENV === 'development',
     logResponseBody: false,
     skip: () => ['test', 'production'].includes(NODE_ENV),
 });

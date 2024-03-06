@@ -37,7 +37,7 @@
 import type { TClient, TPool } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModal from './BaseModal.vue';
-import { GrantVariant } from '@thxnetwork/types/enums';
+import { GrantVariant } from '@thxnetwork/common/enums';
 
 @Component({
     components: {

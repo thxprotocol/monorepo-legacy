@@ -3,14 +3,13 @@ import app from '@thxnetwork/api/';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { BigNumber, Contract, ethers } from 'ethers';
-import { ChainId } from '@thxnetwork/types/enums';
-import { contractArtifacts } from '@thxnetwork/contracts/exports';
+import { ChainId } from '@thxnetwork/common/enums';
+import { contractArtifacts, contractNetworks } from '@thxnetwork/contracts/exports';
 import { sub, userWalletPrivateKey, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { signTxHash, timeTravel } from '@thxnetwork/api/util/jest/network';
 import { poll } from '@thxnetwork/api/util/polling';
-import { BPT_ADDRESS, RD_ADDRESS, RF_ADDRESS, SC_ADDRESS, VE_ADDRESS } from '@thxnetwork/api/config/secrets';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const user = request.agent(app);
 const { signer, defaultAccount } = getProvider(ChainId.Hardhat);
@@ -20,6 +19,7 @@ describe('VESytem', () => {
     afterAll(afterAllCallback);
 
     const amountInWei = String(ethers.utils.parseUnits('1000', 'ether'));
+    const chainId = ChainId.Hardhat;
 
     let safeWallet!: WalletDocument,
         testBPT!: Contract,
@@ -30,19 +30,33 @@ describe('VESytem', () => {
         scthx!: Contract;
 
     it('Deploy Tokens', async () => {
-        safeWallet = await SafeService.findPrimary(sub);
+        safeWallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
         expect(safeWallet.address).toBeDefined();
 
-        testBAL = new ethers.Contract(BPT_ADDRESS, contractArtifacts['BalToken'].abi, signer);
-        testBPT = new ethers.Contract(BPT_ADDRESS, contractArtifacts['BPTToken'].abi, signer);
-        expect(testBPT.address).toBe(BPT_ADDRESS);
+        testBAL = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BalToken'].abi, signer);
+        testBPT = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BPTToken'].abi, signer);
+        expect(testBPT.address).toBe(contractNetworks[chainId].BPT);
 
-        console.log(VE_ADDRESS);
-
-        vethx = new ethers.Contract(VE_ADDRESS, contractArtifacts['VotingEscrow'].abi, signer);
-        rdthx = new ethers.Contract(RD_ADDRESS, contractArtifacts['RewardDistributor'].abi, signer);
-        rfthx = new ethers.Contract(RF_ADDRESS, contractArtifacts['RewardFaucet'].abi, signer);
-        scthx = new ethers.Contract(SC_ADDRESS, contractArtifacts['SmartWalletWhitelist'].abi, signer);
+        vethx = new ethers.Contract(
+            contractNetworks[chainId].VotingEscrow,
+            contractArtifacts['VotingEscrow'].abi,
+            signer,
+        );
+        rdthx = new ethers.Contract(
+            contractNetworks[chainId].RewardDistributor,
+            contractArtifacts['RewardDistributor'].abi,
+            signer,
+        );
+        rfthx = new ethers.Contract(
+            contractNetworks[chainId].RewardFaucet,
+            contractArtifacts['RewardFaucet'].abi,
+            signer,
+        );
+        scthx = new ethers.Contract(
+            contractNetworks[chainId].SmartWalletWhitelist,
+            contractArtifacts['SmartWalletWhitelist'].abi,
+            signer,
+        );
     });
 
     describe('Deposit BPT ', () => {
@@ -67,7 +81,7 @@ describe('VESytem', () => {
             const { status, body } = await user
                 .post('/v1/ve/approve')
                 .set({ Authorization: widgetAccessToken })
-                .send({ amountInWei, spender: VE_ADDRESS });
+                .send({ amountInWei, spender: contractNetworks[chainId].VotingEscrow });
             expect(status).toBe(201);
 
             for (const tx of body) {
@@ -75,7 +89,7 @@ describe('VESytem', () => {
 
                 const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
                 await user
-                    .post('/v1/account/wallet/confirm')
+                    .post('/v1/account/wallets/confirm')
                     .set({ Authorization: widgetAccessToken })
                     .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);
@@ -103,7 +117,7 @@ describe('VESytem', () => {
 
                 const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
                 await user
-                    .post('/v1/account/wallet/confirm')
+                    .post('/v1/account/wallets/confirm')
                     .set({ Authorization: widgetAccessToken })
                     .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);
@@ -200,7 +214,7 @@ describe('VESytem', () => {
 
                 const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
                 await user
-                    .post('/v1/account/wallet/confirm')
+                    .post('/v1/account/wallets/confirm')
                     .set({ Authorization: widgetAccessToken })
                     .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);

@@ -3,7 +3,6 @@ import { param } from 'express-validator';
 import AnalyticsService from '@thxnetwork/api/services/AnalyticsService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { Participant } from '@thxnetwork/api/models/Participant';
-import { PoolSubscription } from '@thxnetwork/api/models/PoolSubscription';
 
 export const validation = [param('id').isMongoId()];
 
@@ -13,7 +12,7 @@ export const controller = async (req: Request, res: Response) => {
     const metrics = await AnalyticsService.getPoolMetrics(pool);
     const participantCount = await Participant.countDocuments({ poolId: pool._id });
     const participantActiveCount = await Participant.countDocuments({ poolId: pool._id, score: { $gt: 0 } });
-    const subscriptionCount = await PoolSubscription.countDocuments({ poolId: pool._id });
+    const subscriptionCount = await Participant.countDocuments({ poolId: pool._id, isSubscribed: true });
 
     res.json({ _id: pool._id, participantCount, participantActiveCount, subscriptionCount, ...metrics });
 };

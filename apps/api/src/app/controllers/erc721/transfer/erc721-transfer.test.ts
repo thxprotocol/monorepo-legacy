@@ -1,28 +1,34 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
+import { ChainId, NFTVariant } from '@thxnetwork/common/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { sub, sub2, userWalletPrivateKey, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
-import { ERC721, ERC721Document } from '@thxnetwork/api/models/ERC721';
-import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { ERC721Token, ERC721TokenDocument } from '@thxnetwork/api/models/ERC721Token';
-import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
-import ERC721Service from '@thxnetwork/api/services/ERC721Service';
-import PoolService from '@thxnetwork/api/services/PoolService';
 import { poll } from '@thxnetwork/api/util/polling';
 import { signTxHash } from '@thxnetwork/api/util/jest/network';
-import SafeService, { Wallet } from '@thxnetwork/api/services/SafeService';
 import { safeVersion } from '@thxnetwork/api/services/ContractService';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { AssetPool, AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
+import {
+    ERC721Token,
+    ERC721TokenDocument,
+    ERC721,
+    ERC721Document,
+    ERC721Metadata,
+    Wallet,
+    WalletDocument,
+    Pool,
+    PoolDocument,
+} from '@thxnetwork/api/models';
+import ERC721Service from '@thxnetwork/api/services/ERC721Service';
+import PoolService from '@thxnetwork/api/services/PoolService';
+import SafeService from '@thxnetwork/api/services/SafeService';
 
 const user = request.agent(app);
 
 describe('ERC721 Transfer', () => {
     let erc721: ERC721Document,
         erc721Token: ERC721TokenDocument,
-        pool: AssetPoolDocument,
-        to = '',
+        pool: PoolDocument,
+        wallet: WalletDocument,
         safeTxHash = '';
     const chainId = ChainId.Hardhat,
         name = 'Test Collection',
@@ -88,7 +94,7 @@ describe('ERC721 Transfer', () => {
     });
 
     it('Add ERC721 minter', async () => {
-        pool = await AssetPool.findById(pool._id);
+        pool = await Pool.findById(pool._id);
 
         const safe = await SafeService.findOneByPool(pool, pool.chainId);
         erc721 = await ERC721.findById(erc721._id);
@@ -126,7 +132,7 @@ describe('ERC721 Transfer', () => {
             1000,
         );
 
-        const wallet = await SafeService.findPrimary(sub);
+        wallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
 
         // Mint a token for metadata
         erc721Token = await ERC721Service.mint(safe, erc721, wallet, metadata);
@@ -145,11 +151,15 @@ describe('ERC721 Transfer', () => {
 
     it('Transfer ERC721 ownership', async () => {
         const receiver = await Wallet.findOne({ sub: sub2, safeVersion });
-        const { status, body } = await user.post('/v1/erc721/transfer').set({ Authorization: widgetAccessToken }).send({
-            erc721Id: erc721._id,
-            erc721TokenId: erc721Token._id,
-            to: receiver.address,
-        });
+        const { status, body } = await user
+            .post('/v1/erc721/transfer')
+            .set({ Authorization: widgetAccessToken })
+            .send({
+                walletId: String(wallet._id),
+                erc721Id: erc721._id,
+                erc721TokenId: erc721Token._id,
+                to: receiver.address,
+            });
 
         expect(status).toBe(201);
         expect(body.safeTxHash).toBeDefined();
@@ -158,10 +168,10 @@ describe('ERC721 Transfer', () => {
     });
 
     it('Confirm tx', async () => {
-        const wallet = await SafeService.findPrimary(sub);
+        const wallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
         const { signature } = await signTxHash(wallet.address, safeTxHash, userWalletPrivateKey);
         const res2 = await user
-            .post(`/v1/account/wallet/confirm`)
+            .post(`/v1/account/wallets/confirm`)
             .set({ Authorization: widgetAccessToken })
             .send({ chainId: ChainId.Hardhat, safeTxHash, signature });
 

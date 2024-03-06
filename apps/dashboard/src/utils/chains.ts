@@ -30,6 +30,13 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_polygon.svg'),
         blockExplorer: 'https://polygonscan.com',
     },
+    1101: {
+        disabled: false,
+        chainId: ChainId.PolygonZK,
+        name: 'Polygon zkEVM',
+        logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_polygon.svg'),
+        blockExplorer: 'https://zkevm.polygonscan.com',
+    },
 };
 
 if (process.env.NODE_ENV !== 'production') {

@@ -2,10 +2,11 @@ import BrandProxy from '@thxnetwork/auth/proxies/BrandProxy';
 import ClaimProxy from '@thxnetwork/auth/proxies/ClaimProxy';
 import { AccountService } from '@thxnetwork/auth/services/AccountService';
 import { oidc } from '@thxnetwork/auth/util/oidc';
-import { AccessTokenKind } from '@thxnetwork/types/index';
+import { AccessTokenKind } from '@thxnetwork/common/enums';
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { callbackPostAuth } from '../../get';
+import TokenService from '@thxnetwork/auth/services/TokenService';
+import AuthService from '@thxnetwork/auth/services/AuthService';
 
 const validation = [
     body('otp').exists().isString().isLength({ min: 5, max: 5 }),
@@ -25,18 +26,15 @@ async function controller(req: Request, res: Response) {
         const account = await AccountService.get(params.sub);
         if (!account) throw new Error('No account could be found for this one-time password.');
 
-        const isValid = await AccountService.isOTPValid(account, req.body.otp);
+        const isValid = await AuthService.isOTPValid(account, req.body.otp);
         if (!isValid) throw new Error('Your one-time password is incorrect.');
 
-        const token = account.getToken(AccessTokenKind.Auth);
+        const token = await TokenService.getToken(account, AccessTokenKind.Auth);
         if (token.expiry < Date.now()) throw new Error('One-time password expired');
 
-        await account.updateOne({
-            isEmailVerified: true,
-            active: true,
-        });
+        await account.updateOne({ isEmailVerified: true });
 
-        await callbackPostAuth(account, req.interaction);
+        await AuthService.getReturnUrl(account, req.interaction);
 
         return await oidc.interactionFinished(req, res, { login: { accountId: String(account._id) } });
     } catch (error) {

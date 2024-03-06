@@ -1,8 +1,8 @@
-import DiscordGuild from '@thxnetwork/api/models/DiscordGuild';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 import CreateController from './post.controller';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
+import { DiscordGuild } from '@thxnetwork/api/models';
 
 const validation = [param('guildId').optional().isMongoId(), ...CreateController.validation];
 

@@ -1,15 +1,9 @@
 import { ButtonStyle, CommandInteraction, Embed } from 'discord.js';
-import { AssetPool } from '@thxnetwork/api/models/AssetPool';
-import { PointBalance } from '@thxnetwork/api/models/PointBalance';
-import { Participant } from '@thxnetwork/api/models/Participant';
-import { DiscordButtonVariant } from '../../InteractionCreated';
-import { WIDGET_URL } from '@thxnetwork/api/config/secrets';
-import { Widget } from '@thxnetwork/api/models/Widget';
-import { handleError } from '../error';
-import Brand from '@thxnetwork/api/models/Brand';
+import { Participant, Widget, Brand, Pool } from '@thxnetwork/api/models';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import DiscordDataProxy from '@thxnetwork/api/proxies/DiscordDataProxy';
+import { DiscordButtonVariant } from '../../InteractionCreated';
+import { handleError } from '../error';
 import { getDiscordGuild } from './points';
 
 export const onSubcommandInfo = async (interaction: CommandInteraction) => {
@@ -20,16 +14,8 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
         const { discordGuild, error } = await getDiscordGuild(interaction);
         if (error) throw new Error(error);
 
-        const pool = await AssetPool.findById(discordGuild.poolId);
+        const pool = await Pool.findById(discordGuild.poolId);
         if (!pool) throw new Error('Could not find connected campaign.');
-
-        const wallet = await SafeService.findPrimary(account.sub, pool.chainId);
-        if (!wallet) throw new Error('Could not find your wallet.');
-
-        const balance = await PointBalance.findOne({
-            poolId: pool._id,
-            walletId: wallet._id,
-        });
 
         const participant = await Participant.findOne({ poolId: pool._id, sub: account.sub });
         if (!participant) throw new Error('You have not participated in the campaign yet.');
@@ -55,7 +41,7 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
             {
                 style: ButtonStyle.Link,
                 label: 'Campaign URL',
-                url: `${WIDGET_URL}/c/${pool.settings.slug}`,
+                url: `${pool.campaignURL}`,
             },
         ]);
 
@@ -70,7 +56,7 @@ export const onSubcommandInfo = async (interaction: CommandInteraction) => {
                 },
                 {
                     name: `Points`,
-                    value: balance ? `${balance.balance}` : '0',
+                    value: participant ? `${participant.balance}` : '0',
                     inline: true,
                 },
                 {

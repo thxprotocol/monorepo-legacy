@@ -165,7 +165,6 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { fromWei } from 'web3-utils';
 import { format } from 'date-fns';
 import { IPoolAnalyticsMetrics, IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import type { TPool } from '@thxnetwork/types/interfaces';
 import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
 import BaseChartQuests from '@thxnetwork/dashboard/components/charts/BaseChartQuests.vue';
 import BaseChartRewards from '@thxnetwork/dashboard/components/charts/BaseChartRewards.vue';

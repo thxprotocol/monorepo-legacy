@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
 import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { ChainId } from '@thxnetwork/common/lib/types/enums';
-import { contractArtifacts } from '@thxnetwork/contracts/exports';
+import { contractArtifacts, contractNetworks } from '@thxnetwork/contracts/exports';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { VE_ADDRESS } from '@thxnetwork/api/config/secrets';
 import { body } from 'express-validator';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import VoteEscrowService from '@thxnetwork/api/services/VoteEscrowService';
+import { getChainId } from '@thxnetwork/api/services/ContractService';
 
 export const validation = [
     body('isEarlyAttempt')
@@ -15,12 +14,17 @@ export const validation = [
 ];
 
 export const controller = async (req: Request, res: Response) => {
-    const wallet = await SafeService.findPrimary(req.auth.sub, ChainId.Hardhat);
+    const chainId = getChainId(); // TODO Replace with query.walletId and derive chainId from wallet
+
+    const wallet = await SafeService.findOne({ sub: req.auth.sub, chainId });
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
     // Check sufficient BPT approval
     const { web3 } = getProvider();
-    const ve = new web3.eth.Contract(contractArtifacts['VotingEscrow'].abi, VE_ADDRESS);
+    const ve = new web3.eth.Contract(
+        contractArtifacts['VotingEscrow'].abi,
+        contractNetworks[wallet.chainId].VotingEscrow,
+    );
     const [lock, latest] = await Promise.all([ve.methods.locked(wallet.address).call(), web3.eth.getBlockNumber()]);
     const now = (await web3.eth.getBlock(latest)).timestamp;
 

@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { Vue } from 'vue-property-decorator';
 import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
-import type { TPool, TClient, TClientState } from '@thxnetwork/types/interfaces';
-import { track } from '@thxnetwork/mixpanel';
+import { track } from '@thxnetwork/common/mixpanel';
 
 @Module({ namespaced: true })
 class ClientModule extends VuexModule {

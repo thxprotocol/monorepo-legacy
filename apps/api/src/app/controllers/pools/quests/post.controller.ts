@@ -1,7 +1,7 @@
 import { body, param } from 'express-validator';
 import { Request, Response } from 'express';
 import { isValidUrl } from '@thxnetwork/api/util/url';
-import { ChainId } from '@thxnetwork/common/lib/types';
+import { ChainId } from '@thxnetwork/common/enums';
 import { isAddress } from 'web3-utils';
 import { defaults } from '@thxnetwork/api/util/validation';
 import QuestService from '@thxnetwork/api/services/QuestService';
@@ -29,7 +29,7 @@ const validationBaseQuest = [
         }),
     body('isMandatoryReview').optional().isBoolean(),
     // Social
-    body('platform').optional().isNumeric(),
+    body('kind').optional().isString(),
     body('interaction').optional().isNumeric(),
     body('content').optional().isString(),
     body('contentMetadata').optional().isString(),

@@ -1,9 +1,9 @@
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { AbiItem } from 'web3-utils';
 import { Contract } from 'web3-eth-contract';
-import { contractConfig, TNetworkName, TokenContractName } from '@thxnetwork/contracts/exports';
-import { BPT_ADDRESS, HARDHAT_NAME, POLYGON_NAME } from '@thxnetwork/api/config/secrets';
+import { contractConfig, contractNetworks, TNetworkName, TokenContractName } from '@thxnetwork/contracts/exports';
+import { HARDHAT_NAME, POLYGON_NAME } from '@thxnetwork/api/config/secrets';
 import { SafeVersion } from '@safe-global/safe-core-sdk-types';
 import { contractArtifacts } from '@thxnetwork/contracts/exports';
 import { ethers } from 'ethers';
@@ -17,7 +17,7 @@ const getContract = (contractName: TokenContractName, chainId: ChainId, address:
 };
 const getBPTContract = (contractName: TokenContractName, chainId: ChainId) => {
     const { signer } = getProvider(chainId);
-    return new ethers.Contract(BPT_ADDRESS, contractArtifacts[contractName].abi, signer);
+    return new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts[contractName].abi, signer);
 };
 
 export const deploy = async (contractName: string, args: any[], signer: ethers.Signer): Promise<ethers.Contract> => {

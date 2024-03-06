@@ -1,17 +1,16 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { QuestVariant } from '@thxnetwork/types/enums';
+import { v4 } from 'uuid';
+import { QuestVariant } from '@thxnetwork/common/enums';
 import { dashboardAccessToken, userWalletAddress2, widgetAccessToken2 } from '@thxnetwork/api/util/jest/constants';
 import { isAddress } from 'web3-utils';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { v4 } from 'uuid';
-import { MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
+import { PoolDocument, QuestCustom } from '@thxnetwork/api/models';
 
 const user = request.agent(app);
 
 describe('Quests Custom ', () => {
-    let pool: AssetPoolDocument, milestoneReward: any, claim: any;
+    let pool: PoolDocument, customQuest: TQuestCustom;
     const eventName = v4();
 
     beforeAll(beforeAllCallback);
@@ -29,8 +28,8 @@ describe('Quests Custom ', () => {
     });
 
     it('POST /pools/:id/quests', (done) => {
-        user.post(`/v1/pools/${pool._id}/quests`)
-            .set({ 'X-PoolId': pool._id, 'Authorization': dashboardAccessToken })
+        user.post(`/v1/pools/${pool._id}/quests/${QuestVariant.Custom}`)
+            .set({ Authorization: dashboardAccessToken })
             .send({
                 variant: QuestVariant.Custom,
                 title: 'Expiration date is next 30 min',
@@ -43,15 +42,15 @@ describe('Quests Custom ', () => {
             .expect(async (res: request.Response) => {
                 expect(res.body.uuid).toBeDefined();
                 expect(res.body.amount).toBe(100);
-                milestoneReward = res.body;
-                await MilestoneReward.findByIdAndUpdate(milestoneReward._id, { eventName: milestoneReward.uuid });
+                customQuest = res.body;
+                await QuestCustom.findByIdAndUpdate(customQuest._id, { eventName: customQuest.uuid });
             })
             .expect(201, done);
     });
 
     describe('Qualify (to be deprecated)', () => {
         it('POST /webhook/milestone/:token/claim', (done) => {
-            user.post(`/v1/webhook/milestone/${milestoneReward.uuid}/claim`)
+            user.post(`/v1/webhook/milestone/${customQuest.uuid}/claim`)
                 .send({
                     address: userWalletAddress2,
                 })
@@ -59,7 +58,7 @@ describe('Quests Custom ', () => {
         });
 
         it('POST /webhook/milestone/:token/claim second time should also succeed', (done) => {
-            user.post(`/v1/webhook/milestone/${milestoneReward.uuid}/claim`)
+            user.post(`/v1/webhook/milestone/${customQuest.uuid}/claim`)
                 .send({
                     address: userWalletAddress2,
                 })
@@ -74,9 +73,9 @@ describe('Quests Custom ', () => {
                 .expect(200, done);
         });
 
-        it('POST /quests/custom/claims/:uuid/collect', async () => {
+        it('POST /quests/custom/:id/entries', async () => {
             const { status } = await user
-                .post(`/v1/quests/custom/claims/${milestoneReward.uuid}/collect`)
+                .post(`/v1/quests/custom/${customQuest._id}/entries`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken2 })
                 .send();
             expect(status).toBe(200);

@@ -1,13 +1,13 @@
-import axios from 'axios';
-import type { TAccount, TDiscordButton, TDiscordEmbed } from '@thxnetwork/types/interfaces';
-import { authClient, getAuthAccessToken } from '@thxnetwork/api/util/auth';
+import axios, { AxiosRequestConfig } from 'axios';
 import { client, PermissionFlagsBits } from '../../discord';
-import { AssetPoolDocument } from '../models/AssetPool';
-import { ActionRowBuilder, ButtonBuilder, Guild, OAuth2Guild } from 'discord.js';
+import { DiscordGuild, DiscordGuildDocument, PoolDocument } from '@thxnetwork/api/models';
+import { ActionRowBuilder, ButtonBuilder, Guild } from 'discord.js';
 import { WIDGET_URL } from '../config/secrets';
 import { logger } from '../util/logger';
-import DiscordGuild, { DiscordGuildDocument } from '../models/DiscordGuild';
-import { AccessTokenKind } from '@thxnetwork/common/lib/types/enums';
+import { AccessTokenKind, OAuthRequiredScopes } from '@thxnetwork/common/enums';
+import { DISCORD_API_ENDPOINT } from '@thxnetwork/common/constants';
+import AccountProxy from './AccountProxy';
+import { discordColorToHex } from '../util/discord';
 
 export enum NotificationVariant {
     QuestDaily = 0,
@@ -19,9 +19,18 @@ export enum NotificationVariant {
     QuestWeb3 = 7,
 }
 
+export async function discordClient(config: AxiosRequestConfig) {
+    try {
+        const client = axios.create({ ...config, baseURL: DISCORD_API_ENDPOINT });
+        return await client(config);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 export default class DiscordDataProxy {
     static async sendChannelMessage(
-        pool: AssetPoolDocument,
+        pool: PoolDocument,
         content: string,
         embeds: TDiscordEmbed[] = [],
         buttons?: TDiscordButton[],
@@ -63,51 +72,39 @@ export default class DiscordDataProxy {
         return new ActionRowBuilder().addComponents(components);
     }
 
-    static async getUserId(account: TAccount) {
-        const { data } = await authClient({
+    static async getGuilds(token: TToken) {
+        const r = await discordClient({
             method: 'GET',
-            url: `/account/${account.sub}`,
+            url: '/users/@me/guilds',
             headers: {
-                Authorization: await getAuthAccessToken(),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token.accessToken}`,
             },
         });
-        const token = data.connectedAccounts.find((token) => token.kind === AccessTokenKind.Discord);
-        if (!token) return;
-        return token.userId;
+        return r.data;
     }
 
-    static async get(sub: string) {
-        const r = await authClient({
-            method: 'GET',
-            url: `/account/${sub}/discord`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
-        });
+    static async validateGuildJoined(account: TAccount, guildId: string) {
+        const token = await AccountProxy.getToken(
+            account,
+            AccessTokenKind.Discord,
+            OAuthRequiredScopes.DiscordValidateGuild,
+        );
+        if (!token) return { result: false, reason: 'Could not find a Discord access_token for this account.' };
 
-        return { isAuthorized: r.data.isAuthorized, guilds: r.data.guilds };
-    }
+        const guilds = await this.getGuilds(token);
+        const isUserJoinedGuild = guilds.find((guild) => guild.id === guildId);
+        if (isUserJoinedGuild) return { result: true, reason: '' };
 
-    static async validateGuildJoined(account: TAccount, channelItem: string) {
-        const { data } = await authClient({
-            method: 'GET',
-            url: `/account/${account.sub}/discord/guild/${channelItem}`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
-        });
-        return data;
-    }
-
-    static discordColorToHex(discordColorCode) {
-        return `#${discordColorCode.toString(16).padStart(6, '0')}`;
+        return { result: false, reason: 'Discord: Your Discord account is not a member of this server.' };
     }
 
     static async getGuildRoles(guild: Guild) {
         return guild.roles.cache.map((role) => ({
             id: role.id,
             name: role.name,
-            color: this.discordColorToHex(role.color),
+            color: discordColorToHex(role.color),
         }));
     }
 

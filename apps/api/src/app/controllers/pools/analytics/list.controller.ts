@@ -6,10 +6,7 @@ import AnalyticsService from '@thxnetwork/api/services/AnalyticsService';
 export const validation = [param('id').isMongoId(), query('startDate').exists(), query('endDate').exists()];
 
 export const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
-    if (!pool.safeAddress) return res.json(pool.toJSON());
-
     const startDate = new Date(String(req.query.startDate));
     const endDate = new Date(String(req.query.endDate));
     const result = await AnalyticsService.getPoolAnalyticsForChart(pool, startDate, endDate);

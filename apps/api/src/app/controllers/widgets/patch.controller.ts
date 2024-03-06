@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { Widget } from '@thxnetwork/api/services/WidgetService';
+import { Widget } from '@thxnetwork/api/models';
 
 const validation = [
     body('isPublished').optional().isBoolean(),
@@ -13,7 +13,6 @@ const validation = [
 ];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Widgets']
     const widget = await Widget.findOneAndUpdate(
         { uuid: req.params.uuid },
         {

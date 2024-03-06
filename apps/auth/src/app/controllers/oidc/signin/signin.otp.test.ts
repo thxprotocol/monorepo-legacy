@@ -5,7 +5,8 @@ import bcrypt from 'bcrypt';
 import { API_URL, DASHBOARD_URL, INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { AccountService } from '../../../services/AccountService';
 import { mockWalletProxy } from '../../../util/jest/mock';
-import { AccessTokenKind } from '@thxnetwork/types/index';
+import { AccessTokenKind } from '@thxnetwork/common/enums';
+import TokenService from '@thxnetwork/auth/services/TokenService';
 
 const http = request.agent(app);
 
@@ -85,8 +86,7 @@ describe('Sign In', () => {
             const hashedOtp = await bcrypt.hash(otp, 10);
             const account = await AccountService.getByEmail(email);
 
-            account.setToken({ kind: AccessTokenKind.Auth, accessToken: hashedOtp });
-            await account.save();
+            await TokenService.setToken(account, { kind: AccessTokenKind.Auth, accessToken: hashedOtp });
 
             const res = await http.post(`/oidc/${uid}/signin/otp`).send(`otp=${otp}`);
             expect(res.status).toEqual(303);

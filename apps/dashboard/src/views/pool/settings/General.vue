@@ -101,7 +101,7 @@
                     <template #description>
                         Your assets are stored in
                         <b-link
-                            :href="`https://app.safe.global/apps/open?safe=matic:${pool.safe && pool.safeAddress}`"
+                            :href="`https://app.safe.global/apps/home?safe=matic:${pool.safe && pool.safeAddress}`"
                             target="_blank"
                         >
                             Safe's battle-tested multisigs
@@ -119,10 +119,8 @@
                         <b-form-checkbox @change="onChangeSettings" v-model="isPublished" class="mr-3">
                             <strong>Public Campaign</strong><br />
                             <span class="text-muted">
-                                List your campaign on
-                                <b-link href="https://campaign.thx.network" target="_blank">
-                                    campaign.thx.network
-                                </b-link>
+                                List your campaign in
+                                <b-link :href="widgetUrl" target="_blank"> Campaign Discovery </b-link>
                                 <i
                                     v-b-tooltip
                                     title="Campaigns must contain at least 1 quest and 1 reward."
@@ -176,8 +174,6 @@ import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import { hasBasicAccess } from '@thxnetwork/common';
-import type { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
 import BaseListItemCollaborator from '@thxnetwork/dashboard/components/list-items/BaseListItemCollaborator.vue';
 import BaseDateDuration, { parseDateTime } from '@thxnetwork/dashboard/components/form-group/BaseDateDuration.vue';
 import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
@@ -210,7 +206,6 @@ export default class SettingsView extends Vue {
     isPublished = false;
     startDate: Date | null = null;
     endDate: Date | null = null;
-    hasBasicAccess = hasBasicAccess;
     slugify = slugify;
     slug = '';
     isValidSlug: boolean | null = null;

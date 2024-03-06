@@ -1,7 +1,5 @@
 import { AUTH_URL } from '@thxnetwork/api/config/secrets';
-import { AssetPool } from '@thxnetwork/api/models/AssetPool';
-import Brand from '@thxnetwork/api/models/Brand';
-import { Widget } from '@thxnetwork/api/models/Widget';
+import { Brand, Pool, Widget } from '@thxnetwork/api/models';
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
 
@@ -9,7 +7,7 @@ const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
     const widget = await Widget.findOne({ poolId: req.params.id });
-    const pool = await AssetPool.findById(req.params.id);
+    const pool = await Pool.findById(req.params.id);
     const brand = await Brand.findOne({ poolId: req.params.id });
 
     res.json({

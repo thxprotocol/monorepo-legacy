@@ -5,8 +5,7 @@ import crypto from 'crypto';
 import { AccountDocument } from '../models/Account';
 import { createRandomToken } from '../util/tokens';
 import { assetsPath } from '../util/path';
-import { AccessTokenKind } from '@thxnetwork/types/enums/AccessTokenKind';
-import { IAccessToken } from '@thxnetwork/types/interfaces';
+import { AccessTokenKind } from '@thxnetwork/common/enums/AccessTokenKind';
 import { get24HoursExpiryTimestamp } from '../util/time';
 import {
     AWS_ACCESS_KEY_ID,
@@ -16,8 +15,9 @@ import {
     NODE_ENV,
     CYPRESS_EMAIL,
 } from '../config/secrets';
-import { sendMail } from '@thxnetwork/common/lib/mail';
+import { sendMail } from '@thxnetwork/common/mail';
 import { logger } from '../util/logger';
+import TokenService from './TokenService';
 
 const mailTemplatePath = path.join(assetsPath, 'views', 'mail');
 
@@ -38,31 +38,31 @@ export class MailService {
         sendMail(to, subject, html);
     }
 
-    static async sendVerificationEmail(account: AccountDocument, returnUrl: string) {
-        if (!account.email) {
-            throw new Error('Account email not set.');
-        }
-        const token = {
+    static async sendVerificationEmail(account: AccountDocument, email: string, returnUrl: string) {
+        const accessToken = createRandomToken();
+        const expiry = get24HoursExpiryTimestamp();
+        const token = await TokenService.setToken(account, {
             kind: AccessTokenKind.VerifyEmail,
-            accessToken: createRandomToken(),
-            expiry: get24HoursExpiryTimestamp(),
-        } as IAccessToken;
-        account.setToken(token);
+            accessToken,
+            expiry,
+        });
+        const verifyURL = new URL(returnUrl);
+        verifyURL.pathname = '/verify_email';
+        verifyURL.searchParams.append('verifyEmailToken', token.accessTokenEncrypted);
+        verifyURL.searchParams.append('return_url', returnUrl);
 
-        const verifyUrl = `${returnUrl}verify_email?verifyEmailToken=${token.accessToken}&return_url=${returnUrl}`;
         const html = await ejs.renderFile(
-            path.join(mailTemplatePath, 'email-verify.ejs'),
-            {
-                verifyUrl,
-                returnUrl,
-                baseUrl: AUTH_URL,
-            },
+            path.join(mailTemplatePath, '/email-verify.ejs'),
+            { verifyURL: verifyURL.toString(), returnUrl, baseUrl: AUTH_URL },
             { async: true },
         );
 
-        this.sendMail(account.email, 'Please complete the e-mail verification for your THX Account', html, verifyUrl);
-
-        await account.save();
+        this.sendMail(
+            email,
+            'Please complete the e-mail verification for your THX Account',
+            html,
+            verifyURL.toString(),
+        );
     }
 
     static async sendOTPMail(account: AccountDocument) {
@@ -76,12 +76,10 @@ export class MailService {
 
         this.sendMail(account.email, 'Request: Sign in', html);
 
-        account.setToken({
+        await TokenService.setToken(account, {
             kind: AccessTokenKind.Auth,
             accessToken: hashedOtp,
             expiry: Date.now() + 60 * 60 * 1000, // 60 minutes
         });
-
-        await account.save();
     }
 }

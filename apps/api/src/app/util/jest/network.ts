@@ -1,6 +1,6 @@
 import { VOTER_PK, DEPOSITOR_PK } from './constants';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { ChainId } from '@thxnetwork/types/enums';
+import { ChainId } from '@thxnetwork/common/enums';
 import { ethers } from 'ethers';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { HARDHAT_RPC } from '@thxnetwork/api/config/secrets';
@@ -30,6 +30,11 @@ export const timeTravel = async (seconds: number) => {
         ],
     });
     await (web3 as any).increaseTime(seconds);
+};
+
+export const signMessage = (privateKey: string, message: string) => {
+    const wallet = createWallet(privateKey);
+    return wallet.sign(message).signature;
 };
 
 export async function signTxHash(safeAddress: string, safeTxHash: string, privateKey: string) {

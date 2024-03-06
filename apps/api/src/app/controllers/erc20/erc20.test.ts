@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
-import { ChainId, ERC20Type } from '@thxnetwork/types/enums';
+import { ChainId, ERC20Type } from '@thxnetwork/common/enums';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
 import { isAddress } from 'ethers/lib/utils';
 import { dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';

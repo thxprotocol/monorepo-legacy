@@ -1,14 +1,11 @@
 import { body } from 'express-validator';
 import { Request, Response } from 'express';
-import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
-import { ERC721 } from '@thxnetwork/api/models/ERC721';
+import { ERC721, ERC721Token, ERC721Metadata } from '@thxnetwork/api/models';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import { ERC721TokenState } from '@thxnetwork/types/interfaces';
 import { getNFTsForOwner } from '@thxnetwork/api/util/alchemy';
-import { ChainId, NFTVariant } from '@thxnetwork/types/enums';
-import PoolService from '@thxnetwork/api/services/PoolService';
+import { ChainId, ERC721TokenState, NFTVariant } from '@thxnetwork/common/enums';
 import { toChecksumAddress } from 'web3-utils';
-import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
+import PoolService from '@thxnetwork/api/services/PoolService';
 
 const validation = [body('contractAddress').exists(), body('chainId').exists().isNumeric()];
 
@@ -53,6 +50,7 @@ const controller = async (req: Request, res: Response) => {
                         externalUrl: rawMetadata.external_url,
                     });
                     const erc721Token = await ERC721Token.create({
+                        walletId: String(pool.safe._id),
                         erc721Id: String(erc721._id),
                         recipient: pool.safeAddress,
                         state: ERC721TokenState.Minted,

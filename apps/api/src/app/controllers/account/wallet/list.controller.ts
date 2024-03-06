@@ -1,35 +1,15 @@
 import { Request, Response } from 'express';
 import { query } from 'express-validator';
-import { TransactionState } from '@thxnetwork/types/enums';
-import { Transaction } from '@thxnetwork/api/models/Transaction';
-import { WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { getChainId } from '@thxnetwork/api/services/ContractService';
-import SafeService from '@thxnetwork/api/services/SafeService';
+import WalletService from '@thxnetwork/api/services/WalletService';
+import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 
 const validation = [query('chainId').optional().isNumeric()];
 
 const controller = async (req: Request, res: Response) => {
-    const wallet = await SafeService.findPrimary(
-        req.auth.sub,
-        req.query.chainId ? Number(req.query.chainId) : getChainId(),
-    );
-    const wallets = [];
-    if (wallet) wallets.push(wallet);
+    const account = await AccountProxy.findById(req.auth.sub);
+    const wallets = await WalletService.list(account);
 
-    const result = await Promise.all(
-        wallets.map(async (wallet: WalletDocument) => {
-            const pendingTransactions = await Transaction.find({
-                walletId: String(wallet._id),
-                state: TransactionState.Confirmed,
-            });
-            return {
-                ...wallet.toJSON(),
-                pendingTransactions,
-            };
-        }),
-    );
-
-    res.json(result);
+    res.json(wallets);
 };
 
 export default { controller, validation };

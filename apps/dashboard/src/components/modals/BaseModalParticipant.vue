@@ -17,7 +17,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { TParticipant } from '@thxnetwork/common/lib/types';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 
 @Component({
@@ -37,7 +36,7 @@ export default class BaseModalParticipant extends Vue {
     @Prop() participant!: TParticipant;
 
     onShow() {
-        this.pointBalance = this.participant.pointBalance;
+        this.pointBalance = this.participant.balance;
     }
 
     get isPointBalanceValid() {
@@ -60,7 +59,7 @@ export default class BaseModalParticipant extends Vue {
             });
             this.$bvModal.hide(this.id);
         } catch (error) {
-            this.error = error.message;
+            this.error = (error as Error).message;
         } finally {
             this.isLoading = false;
         }

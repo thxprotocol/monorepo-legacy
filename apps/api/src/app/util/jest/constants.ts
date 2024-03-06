@@ -1,7 +1,6 @@
-import { AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountPlanType, AccountVariant } from '@thxnetwork/common/enums';
 import { getToken } from './jwt';
 import { toWei } from 'web3-utils';
-import { AccountVariant } from '@thxnetwork/types/interfaces';
 import { CYPRESS_EMAIL } from '@thxnetwork/api/config/secrets';
 
 export const tokenName = 'Volunteers United';
@@ -23,23 +22,29 @@ export const MaxUint256 = '11579208923731619542357098500868790785326998466564056
 export const sub = '6074cbdd1459355fae4b6a14';
 export const sub2 = '6074cbdd1459355fae4b6a15';
 export const sub3 = '6074cbdd1459355fae4b6a16';
+export const sub4 = '6074cbdd1459355fae4b6a17';
 export const userWalletAddress = '0x960911a62FdDf7BA84D0d3aD016EF7D15966F7Dc';
 export const userWalletAddress2 = '0xaf9d56684466fcFcEA0a2B7fC137AB864d642946';
 export const userWalletAddress3 = '0x861EFc0989DF42d793e3147214FfFcA4D124cAE8';
+export const userWalletAddress4 = '0x6e781b0af6204c3dc23b4a7fe049202125a4f849';
 export const userWalletPrivateKey = '0x794a8efb7e73278907197b0f65e1c32724810f0399e1a12feb1e6af6fb77dbff';
 export const userWalletPrivateKey2 = '0x97093724e1748ebfa6aa2d2ec4ec68df8678423ab9a12eb2d27ddc74e35e5db9';
 export const userWalletPrivateKey3 = '0x5a05e38394194379795422d2e8c1d33e90033d90defec4880174c39198f707e3';
+export const userWalletPrivateKey4 = '0x3b7fdd74a6c50a03d6e37f2d2c54e6fc73d67ff7d32858e55d80b2a5c9946b79';
+
 export const account = {
     sub,
     plan: AccountPlanType.Basic,
     email: CYPRESS_EMAIL,
     address: userWalletAddress,
+    tokens: [],
 };
 export const account2 = {
     sub: sub2,
     plan: AccountPlanType.Basic,
     email: CYPRESS_EMAIL,
     address: userWalletAddress2,
+    tokens: [],
 };
 
 export const account3 = {
@@ -47,6 +52,14 @@ export const account3 = {
     plan: AccountPlanType.Basic,
     variant: AccountVariant.EmailPassword,
     address: userWalletAddress3,
+    tokens: [],
+};
+
+export const account4 = {
+    sub: sub4,
+    plan: AccountPlanType.Basic,
+    variant: AccountVariant.Metamask,
+    address: userWalletAddress4,
 };
 
 export const rewardId = 1;
@@ -72,4 +85,5 @@ export const walletAccessToken3 = getToken(walletScopes, sub2);
 export const widgetAccessToken = getToken(widgetScopes, sub);
 export const widgetAccessToken2 = getToken(widgetScopes, sub2);
 export const widgetAccessToken3 = getToken(widgetScopes, sub3);
+export const widgetAccessToken4 = getToken(widgetScopes, sub4);
 export const authAccessToken = getToken(authScopes);

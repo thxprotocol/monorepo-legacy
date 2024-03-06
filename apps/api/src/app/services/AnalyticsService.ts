@@ -1,33 +1,39 @@
 import mongoose from 'mongoose';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { DailyRewardDocument } from '@thxnetwork/api/models/DailyReward';
-import { ERC20PerkDocument, ERC20Perk } from '@thxnetwork/api/models/ERC20Perk';
-import { ERC721PerkDocument, ERC721Perk } from '@thxnetwork/api/models/ERC721Perk';
-import { MilestoneRewardDocument, MilestoneReward } from '@thxnetwork/api/models/MilestoneReward';
-import { PointRewardDocument } from '@thxnetwork/api/models/PointReward';
-import { ReferralRewardDocument, ReferralReward } from '@thxnetwork/api/models/ReferralReward';
-import { DailyReward } from './DailyRewardService';
-import { PointReward } from './PointRewardService';
-import AccountProxy from '../proxies/AccountProxy';
-import { ERC20PerkPayment } from '@thxnetwork/api/models/ERC20PerkPayment';
-import { DailyRewardClaim } from '@thxnetwork/api/models/DailyRewardClaims';
-import { ERC721PerkPayment } from '@thxnetwork/api/models/ERC721PerkPayment';
-import { MilestoneRewardClaim } from '@thxnetwork/api/models/MilestoneRewardClaims';
-import { PointRewardClaim } from '@thxnetwork/api/models/PointRewardClaim';
-import { ReferralRewardClaim } from '@thxnetwork/api/models/ReferralRewardClaim';
-import { Wallet, WalletDocument } from '@thxnetwork/api/models/Wallet';
-import { TAccount } from '@thxnetwork/types/interfaces';
-import { CustomReward, CustomRewardDocument } from '../models/CustomReward';
-import { Web3Quest, Web3QuestDocument } from '../models/Web3Quest';
-import { Web3QuestClaim } from '../models/Web3QuestClaim';
-import { CustomRewardPayment } from '../models/CustomRewardPayment';
-import { DiscordRoleRewardPayment } from '../models/DiscordRoleRewardPayment';
-import { CouponRewardPayment } from '../models/CouponRewardPayment';
-import { Participant } from '../models/Participant';
-import { DiscordRoleReward, DiscordRoleRewardDocument } from '../models/DiscordRoleReward';
-import { CouponReward, CouponRewardDocument } from '../models/CouponReward';
+import { RewardCoinDocument, RewardCoin } from '@thxnetwork/api/models/RewardCoin';
+import { RewardNFTDocument, RewardNFT } from '@thxnetwork/api/models/RewardNFT';
+import { QuestInviteDocument, QuestInvite } from '@thxnetwork/api/models/QuestInvite';
+import {
+    PoolDocument,
+    RewardCustomDocument,
+    QuestCustomDocument,
+    QuestSocialDocument,
+    QuestWeb3Document,
+    QuestWeb3,
+    QuestSocialEntry,
+    QuestInviteEntry,
+    QuestWeb3Entry,
+    RewardCoinPayment,
+    RewardNFTPayment,
+    WalletDocument,
+    Participant,
+    RewardCouponDocument,
+    RewardCustom,
+    RewardDiscordRoleDocument,
+    RewardCouponPayment,
+    RewardCustomPayment,
+    RewardDiscordRolePayment,
+    RewardCoupon,
+    RewardDiscordRole,
+    QuestCustomEntry,
+    QuestDailyEntry,
+    QuestCustom,
+    QuestSocial,
+    QuestDailyDocument,
+    QuestDaily,
+    Wallet,
+} from '@thxnetwork/api/models';
 
-async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date, endDate: Date) {
+async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, endDate: Date) {
     // Rewards
     const [
         erc20PerksQueryResult,
@@ -36,42 +42,42 @@ async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date
         couponRewardsQueryResult,
         discordRoleRewardsQueryResult,
     ] = await Promise.all([
-        queryRewardRedemptions<ERC20PerkDocument>({
-            collectionName: 'erc20perkpayments',
-            key: 'perkId',
-            model: ERC20Perk,
+        queryRewardRedemptions<RewardCoinDocument>({
+            collectionName: 'rewardcoinpayment',
+            key: 'rewardId',
+            model: RewardCoin,
             poolId: String(pool._id),
             startDate,
             endDate,
         }),
-        queryRewardRedemptions<ERC721PerkDocument>({
-            collectionName: 'erc721perkpayments',
-            key: 'perkId',
-            model: ERC721Perk,
+        queryRewardRedemptions<RewardNFTDocument>({
+            collectionName: 'rewardnftpayment',
+            key: 'rewardId',
+            model: RewardNFT,
             poolId: String(pool._id),
             startDate,
             endDate,
         }),
-        queryRewardRedemptions<CustomRewardDocument>({
-            collectionName: 'customrewardpayments',
-            key: 'perkId',
-            model: CustomReward,
+        queryRewardRedemptions<RewardCustomDocument>({
+            collectionName: 'rewardcustompayment',
+            key: 'rewardId',
+            model: RewardCustom,
             poolId: String(pool._id),
             startDate,
             endDate,
         }),
-        queryRewardRedemptions<CouponRewardDocument>({
-            collectionName: 'couponrewardpayments',
-            key: 'perkId',
-            model: CouponReward,
+        queryRewardRedemptions<RewardCouponDocument>({
+            collectionName: 'rewardcouponpayment',
+            key: 'rewardId',
+            model: RewardCoupon,
             poolId: String(pool._id),
             startDate,
             endDate,
         }),
-        queryRewardRedemptions<DiscordRoleRewardDocument>({
-            collectionName: 'discordrolerewardpayments',
-            key: 'perkId',
-            model: DiscordRoleReward,
+        queryRewardRedemptions<RewardDiscordRoleDocument>({
+            collectionName: 'rewarddiscordrolepayment',
+            key: 'rewardId',
+            model: RewardDiscordRole,
             poolId: String(pool._id),
             startDate,
             endDate,
@@ -86,51 +92,51 @@ async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date
         dailyRewardsQueryResult,
         web3QuestsQueryResult,
     ] = await Promise.all([
-        queryQuestEntries<MilestoneRewardDocument>({
-            collectionName: 'milestonerewardclaims',
+        queryQuestEntries<QuestCustomDocument>({
+            collectionName: 'questcustomentry',
             key: 'questId',
-            model: MilestoneReward,
+            model: QuestCustom,
             poolId: String(pool._id),
             startDate,
             endDate,
             extraFilter: { isClaimed: true },
         }),
-        queryQuestEntries<ReferralRewardDocument>({
-            collectionName: 'referralrewardclaims',
-            key: 'referralRewardId',
-            model: ReferralReward,
+        queryQuestEntries<QuestInviteDocument>({
+            collectionName: 'questinviteentry',
+            key: 'questId',
+            model: QuestInvite,
             poolId: String(pool._id),
             startDate,
             endDate,
             extraFilter: { isApproved: true },
         }),
-        queryQuestEntries<PointRewardDocument>({
-            collectionName: 'pointrewardclaims',
+        queryQuestEntries<QuestSocialDocument>({
+            collectionName: 'questsocialentry',
             key: 'questId',
-            model: PointReward,
+            model: QuestSocial,
             poolId: String(pool._id),
             startDate,
             endDate,
         }),
-        queryQuestEntries<DailyRewardDocument>({
-            collectionName: 'dailyrewardclaims',
+        queryQuestEntries<QuestDailyDocument>({
+            collectionName: 'questdailyentry',
             key: 'questId',
-            model: DailyReward,
+            model: QuestDaily,
             poolId: String(pool._id),
             startDate,
             endDate,
         }),
-        queryQuestEntries<Web3QuestDocument>({
-            collectionName: 'web3questclaims',
+        queryQuestEntries<QuestWeb3Document>({
+            collectionName: 'questweb3entry',
             key: 'questId',
-            model: Web3Quest,
+            model: QuestWeb3,
             poolId: String(pool._id),
             startDate,
             endDate,
         }),
     ]);
 
-    const result: any = {
+    const result = {
         _id: pool._id,
         erc20Perks: erc20PerksQueryResult.map((x) => {
             return {
@@ -166,49 +172,49 @@ async function getPoolAnalyticsForChart(pool: AssetPoolDocument, startDate: Date
         dailyRewards: dailyRewardsQueryResult.map((x) => {
             return {
                 day: x._id,
-                totalClaimPoints: x.total_amount,
+                totalAmount: x.total_amount,
             };
         }),
         milestoneRewards: milestoneRewardsQueryResult.map((x) => {
             return {
                 day: x._id,
-                totalClaimPoints: x.total_amount,
+                totalAmount: x.total_amount,
             };
         }),
         referralRewards: referralRewardsQueryResult.map((x) => {
             return {
                 day: x._id,
-                totalClaimPoints: x.total_amount,
+                totalAmount: x.total_amount,
             };
         }),
         pointRewards: pointRewardsQueryResult.map((x) => {
             return {
                 day: x._id,
-                totalClaimPoints: x.total_amount,
+                totalAmount: x.total_amount,
             };
         }),
         web3Quests: web3QuestsQueryResult.map((x) => {
             return {
                 day: x._id,
-                totalClaimPoints: x.total_amount,
+                totalAmount: x.total_amount,
             };
         }),
     };
     return result;
 }
 
-async function getPoolMetrics(pool: AssetPoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
+async function getPoolMetrics(pool: PoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
     const collections = [
-        DailyRewardClaim,
-        PointRewardClaim,
-        ReferralRewardClaim,
-        MilestoneRewardClaim,
-        Web3QuestClaim,
-        ERC20PerkPayment,
-        ERC721PerkPayment,
-        CustomRewardPayment,
-        CouponRewardPayment,
-        DiscordRoleRewardPayment,
+        QuestDailyEntry,
+        QuestSocialEntry,
+        QuestInviteEntry,
+        QuestCustomEntry,
+        QuestWeb3Entry,
+        RewardCoinPayment,
+        RewardNFTPayment,
+        RewardCustomPayment,
+        RewardCouponPayment,
+        RewardDiscordRolePayment,
     ];
     const [
         dailyQuest,
@@ -230,10 +236,10 @@ async function getPoolMetrics(pool: AssetPoolDocument, dateRange?: { startDate: 
 
             // Extend the $match filter with model specific properties
             switch (Model) {
-                case DailyRewardClaim:
+                case QuestDailyEntry:
                     $match['state'] = 1;
                     break;
-                case MilestoneRewardClaim:
+                case QuestCustomEntry:
                     $match['isClaimed'] = true;
                     break;
             }
@@ -277,8 +283,8 @@ async function getPoolMetrics(pool: AssetPoolDocument, dateRange?: { startDate: 
     };
 }
 
-async function createLeaderboard(pool: AssetPoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
-    const collections = [DailyRewardClaim, PointRewardClaim, ReferralRewardClaim, MilestoneRewardClaim, Web3QuestClaim];
+async function createLeaderboard(pool: PoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
+    const collections = [QuestDailyEntry, QuestSocialEntry, QuestInviteEntry, QuestCustomEntry, QuestWeb3Entry];
     const result = await Promise.all(
         collections.map(async (Model) => {
             const $match = { poolId: String(pool._id) };
@@ -290,10 +296,10 @@ async function createLeaderboard(pool: AssetPoolDocument, dateRange?: { startDat
 
             // Extend the $match filter with model specific properties
             switch (Model) {
-                case DailyRewardClaim:
+                case QuestDailyEntry:
                     $match['state'] = 1;
                     break;
-                case MilestoneRewardClaim:
+                case QuestCustomEntry:
                     $match['isClaimed'] = true;
                     break;
             }
@@ -414,16 +420,8 @@ async function queryQuestEntries<T>(args: {
                         date: { $toDate: '$entries.createdAt' },
                     },
                 },
-                paymentsCount: {
-                    $count: {},
-                },
                 total_amount: {
-                    $sum: {
-                        $convert: {
-                            input: '$entries.amount',
-                            to: 'int',
-                        },
-                    },
+                    $sum: 1,
                 },
             },
         },
@@ -493,16 +491,8 @@ async function queryRewardRedemptions<T>(args: {
                         date: { $toDate: '$entries.createdAt' },
                     },
                 },
-                paymentsCount: {
-                    $count: {},
-                },
                 total_amount: {
-                    $sum: {
-                        $convert: {
-                            input: '$entries.amount',
-                            to: 'int',
-                        },
-                    },
+                    $sum: 1,
                 },
             },
         },

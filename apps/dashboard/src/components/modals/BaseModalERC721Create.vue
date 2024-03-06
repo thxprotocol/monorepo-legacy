@@ -52,7 +52,7 @@ import { ERC721Variant, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Vue } from 'vue-property-decorator';
 import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
 import BaseModal from './BaseModal.vue';
-import { NFTVariant } from '@thxnetwork/types/enums';
+import { NFTVariant } from '@thxnetwork/common/enums';
 
 @Component({
     components: {

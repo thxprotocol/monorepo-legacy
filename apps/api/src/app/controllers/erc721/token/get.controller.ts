@@ -6,10 +6,9 @@ import { ERC721Metadata } from '@thxnetwork/api/models/ERC721Metadata';
 import { ERC721Token } from '@thxnetwork/api/models/ERC721Token';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 
-const validation = [param('id').exists().isMongoId()];
+const validation = [param('id').isMongoId()];
 
 const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['ERC721 Token']
     const token = await ERC721Token.findById(req.params.id);
     if (!token) throw new NotFoundError('ERC721Token not found');
 

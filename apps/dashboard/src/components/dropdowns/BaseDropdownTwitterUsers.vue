@@ -40,7 +40,7 @@ export default class BaseDropdownTwitterUsers extends Vue {
 
     async mounted() {
         if (this.content && this.contentMetadata) {
-            const { profileImgUrl, name, id, username, minFollowersCount } = JSON.parse(this.contentMetadata);
+            const { profileImgUrl, name, id, username, minFollowersCount } = this.contentMetadata;
             this.preview = {
                 profile_image_url: profileImgUrl,
                 name,

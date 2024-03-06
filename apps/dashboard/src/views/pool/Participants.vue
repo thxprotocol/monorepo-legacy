@@ -30,10 +30,7 @@
                 <template #head(email)>
                     <BaseBtnSort @click="onClickSort('email', $event)">E-mail</BaseBtnSort>
                 </template>
-                <template #head(connectedAccounts)> Connected </template>
-                <template #head(wallet)>
-                    <BaseBtnSort @click="onClickSort('wallet', $event)">Wallet</BaseBtnSort>
-                </template>
+                <template #head(tokens)> Connected </template>
                 <template #head(pointBalance)>
                     <BaseBtnSort @click="onClickSort('pointBalance', $event)">Point Balance</BaseBtnSort>
                 </template>
@@ -51,22 +48,15 @@
                 </template>
                 <template #cell(account)="{ item }"> <BaseParticipantAccount :account="item.account" /> </template>
                 <template #cell(email)="{ item }"> {{ item.email }} </template>
-                <template #cell(connectedAccounts)="{ item }">
-                    <BaseParticipantConnectedAccount
-                        :account="a"
-                        :key="key"
-                        v-for="(a, key) in item.connectedAccounts"
-                    />
-                </template>
-                <template #cell(wallet)="{ item }">
-                    <BaseParticipantWallet :wallet="item.wallet" />
+                <template #cell(tokens)="{ item }">
+                    <BaseParticipantConnectedAccount :account="token" :key="key" v-for="(token, key) in item.tokens" />
                 </template>
                 <template #cell(pointBalance)="{ item }">
                     <strong class="text-primary">{{ item.pointBalance }}</strong>
                 </template>
                 <template #cell(subscription)="{ item }">
                     <small class="text-muted">
-                        {{ item.subscription ? format(new Date(item.subscription.createdAt), 'dd-MM-yyyy HH:mm') : '' }}
+                        {{ item.subscription }}
                     </small>
                 </template>
                 <template #cell(createdAt)="{ item }">
@@ -100,7 +90,6 @@ import { mapGetters } from 'vuex';
 import BaseBtnSort from '@thxnetwork/dashboard/components/buttons/BaseBtnSort.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
-import BaseParticipantWallet, { parseWallet } from '@thxnetwork/dashboard/components/BaseParticipantWallet.vue';
 import BaseModalParticipant from '@thxnetwork/dashboard/components/modals/BaseModalParticipant.vue';
 import BaseParticipantConnectedAccount, {
     parseConnectedAccounts,
@@ -113,7 +102,6 @@ import { IPools, TParticipantState } from '@thxnetwork/dashboard/store/modules/p
         BaseBtnSort,
         BaseCardTableHeader,
         BaseParticipantAccount,
-        BaseParticipantWallet,
         BaseParticipantConnectedAccount,
         BaseModalParticipant,
     },
@@ -152,13 +140,6 @@ export default class ViewParticipants extends Vue {
             if (emailA > emailB) return 1;
             return 0;
         },
-        wallet: (a, b) => {
-            const addressA = a.wallet && a.wallet.address.toLowerCase();
-            const addressB = b.wallet && b.wallet.address.toLowerCase();
-            if (addressA < addressB) return -1;
-            if (addressA > addressB) return 1;
-            return 0;
-        },
         pointBalance: (a, b) => b.pointBalance - a.pointBalance,
         subscription: (a, b) => {
             const dateA: any = a.subscription && new Date(a.subscription.createdAt);
@@ -186,10 +167,9 @@ export default class ViewParticipants extends Vue {
             rank: p.rank,
             account: parseAccount({ id: p._id, account: p.account }),
             email: p.account && p.account.email,
-            connectedAccounts: p.account && parseConnectedAccounts(p.account.connectedAccounts),
-            wallet: parseWallet(p.wallet),
-            pointBalance: p.pointBalance,
-            subscription: p.subscription,
+            tokens: p.account && parseConnectedAccounts(p.account),
+            pointBalance: p.balance,
+            subscription: p.isSubscribed ? 'Yes' : 'No',
             createdAt: p.createdAt,
             participant: p,
         }));

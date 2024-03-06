@@ -51,24 +51,6 @@
                 </b-form-group>
             </b-col>
         </b-form-row>
-        <hr />
-        <b-form-row>
-            <b-col md="4">
-                <strong>Authentication</strong>
-                <div class="text-muted">Enable the available login methods for your widget.</div>
-            </b-col>
-            <b-col md="8">
-                <b-form-checkbox-group
-                    disabled
-                    v-model="selectedAuthenticationMethods"
-                    :options="authenticationMethods"
-                    value-field="key"
-                    text-field="text"
-                    @change="onChangeSettings"
-                >
-                </b-form-checkbox-group>
-            </b-col>
-        </b-form-row>
     </div>
 </template>
 
@@ -78,10 +60,9 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
-import type { TAccount, TPoolSettings } from '@thxnetwork/types/interfaces';
-import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
-import { AccountVariant } from '@thxnetwork/dashboard/types/enums/AccountVariant';
+import { AccountVariant } from '@thxnetwork/common/enums';
+import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 
 @Component({
     components: {

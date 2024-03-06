@@ -254,8 +254,7 @@ import BaseWidgetAlertPreview from '@thxnetwork/dashboard/components/widget/Base
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import Color from 'color';
 import { WIDGET_URL, AUTH_URL, BASE_URL } from '@thxnetwork/dashboard/config/secrets';
-import { DEFAULT_ELEMENTS, DEFAULT_COLORS } from '@thxnetwork/types/contants';
-import { TBrand } from '@thxnetwork/types/interfaces';
+import { DEFAULT_ELEMENTS, DEFAULT_COLORS } from '@thxnetwork/common/constants';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 
 @Component({

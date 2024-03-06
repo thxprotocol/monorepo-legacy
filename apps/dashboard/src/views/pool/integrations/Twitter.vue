@@ -1,14 +1,9 @@
 <template>
-    <div>
-        <b-alert
-            v-if="pool.owner && !pool.owner.twitterAccess && pool.owner.sub === account.sub"
-            show
-            variant="warning"
-            class="d-flex align-items-center"
-        >
+    <div v-if="pool">
+        <b-alert v-if="isOwner && !twitterToken" show variant="primary" class="d-flex align-items-center">
             <i class="fab fa-discord mr-2" />
             Please connect your Twitter account!
-            <b-button size="sm" variant="primary" to="/account" class="ml-auto">Connect Twitter</b-button>
+            <b-button size="sm" variant="primary" @click="onClickConnect" class="ml-auto">Connect Twitter</b-button>
         </b-alert>
         <b-form-row>
             <b-col md="4">
@@ -21,18 +16,14 @@
                 <b-form-group description="Searches for new posts in your connected account every 15 minutes">
                     <b-form-checkbox
                         v-model="isTwitterSyncEnabled"
-                        :disabled="!isTwitterSyncEnabled && account && !account.twitterAccess"
+                        :disabled="!isOwner || !twitterToken"
                         @change="updateSettings"
                         class="m-0"
                     >
                         Enable automated <strong>Twitter Quests</strong>
-                        <template v-if="pool.owner && pool.owner.twitterAccess && pool.owner.twitterUsername">
+                        <template v-if="twitterToken && twitterToken.metadata">
                             for
-                            <code>
-                                @{{
-                                    pool.owner.connectedAccounts.find(({ kind }) => kind == 'twitter').metadata.username
-                                }}
-                            </code>
+                            <code> @{{ twitterToken.metadata.username }} </code>
                         </template>
                     </b-form-checkbox>
                 </b-form-group>
@@ -70,7 +61,7 @@
                             <b-row>
                                 <b-col md="8">
                                     <b-form-input
-                                        :disabled="!isTwitterSyncEnabled"
+                                        :disabled="isDisabled"
                                         placeholder="Quest title"
                                         v-model="defaultConditionalRewardTitle"
                                         @change="updateSettings"
@@ -78,7 +69,7 @@
                                 </b-col>
                                 <b-col md="4">
                                     <b-form-input
-                                        :disabled="!isTwitterSyncEnabled"
+                                        :disabled="isDisabled"
                                         placeholder="Points"
                                         type="number"
                                         v-model="defaultConditionalRewardAmount"
@@ -97,6 +88,7 @@
                         </b-form-group>
                         <b-form-group label="Quest Locks">
                             <b-form-select
+                                :disabled="isDisabled"
                                 @change="updateSettings"
                                 v-model="defaultConditionalRewardLocks"
                                 :options="options"
@@ -106,7 +98,7 @@
                         <b-form-group class="mb-0">
                             <b-form-checkbox
                                 v-model="defaultConditionalRewardIsPublished"
-                                :disabled="!isTwitterSyncEnabled"
+                                :disabled="isDisabled"
                                 @change="updateSettings"
                             >
                                 Publish new quests instantly
@@ -122,8 +114,7 @@
 import { IPools, TQuestState } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { AccessTokenKind, RewardConditionInteraction, TPoolSettings } from '@thxnetwork/types/index';
-import type { TAccount, TQuest, TQuestLock } from '@thxnetwork/types/interfaces';
+import { AccessTokenKind, OAuthRequiredScopes, QuestSocialRequirement } from '@thxnetwork/common/enums';
 
 @Component({
     computed: {
@@ -134,15 +125,14 @@ import type { TAccount, TQuest, TQuestLock } from '@thxnetwork/types/interfaces'
         }),
     },
 })
-export default class IntegrationTelegramView extends Vue {
+export default class IntegrationTwitterView extends Vue {
     account!: TAccount;
     pools!: IPools;
     questList!: TQuestState;
     AccessTokenKind = AccessTokenKind;
-    RewardConditionInteraction = RewardConditionInteraction;
-    settings: TPoolSettings | null = null;
+    QuestSocialRequirement = QuestSocialRequirement;
     isTwitterSyncEnabled = false;
-    defaultConditionalRewardInteraction = RewardConditionInteraction.TwitterRetweet;
+    defaultConditionalRewardInteraction = QuestSocialRequirement.TwitterRetweet;
     defaultConditionalHashtag = '';
     defaultConditionalRewardTitle = '';
     defaultConditionalRewardDescription = '';
@@ -163,6 +153,24 @@ export default class IntegrationTelegramView extends Vue {
         return this.quests.map((quest: TQuest) => {
             return { text: quest.title, value: { variant: quest.variant, questId: quest._id } };
         });
+    }
+
+    get isOwner() {
+        if (!this.pool.owner) return false;
+        return this.pool.owner.sub === this.account.sub;
+    }
+
+    get twitterToken() {
+        if (!this.pool.owner) return;
+        return this.pool.owner.tokens.find(
+            ({ kind, scopes }) =>
+                kind === AccessTokenKind.Twitter &&
+                OAuthRequiredScopes.TwitterAutoQuest.every((scope) => scopes.includes(scope)),
+        );
+    }
+
+    get isDisabled() {
+        return !this.isOwner || !this.twitterToken || !this.isTwitterSyncEnabled;
     }
 
     async mounted() {
@@ -202,6 +210,14 @@ export default class IntegrationTelegramView extends Vue {
                     },
                 },
             },
+        });
+    }
+
+    onClickConnect() {
+        this.$store.dispatch('account/connectRedirect', {
+            kind: AccessTokenKind.Twitter,
+            scopes: OAuthRequiredScopes.TwitterAutoQuest,
+            returnUrl: window.location.href,
         });
     }
 }

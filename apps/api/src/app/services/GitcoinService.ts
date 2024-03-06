@@ -17,11 +17,11 @@ async function getScoreUniqueHumanity(scorerId: number, address: string) {
     try {
         await submitPassport(scorerId, address);
 
-        const response = await axios({
+        const { data } = await axios({
             url: `https://api.scorer.gitcoin.co/registry/score/${scorerId}/${address}`,
             headers: { 'X-API-KEY': GITCOIN_API_KEY },
         });
-        return { score: response.data.score };
+        return { score: data.score === '0E-9' ? 0 : data.score };
     } catch (error) {
         logger.error(error.message);
         return { error: `Could not get a score for ${address}.` };

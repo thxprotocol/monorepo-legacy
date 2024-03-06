@@ -1,0 +1,1 @@
+type TJob = Job;

@@ -4,8 +4,7 @@ import db from '../../../util/database';
 import { AccountService } from '../../../services/AccountService';
 import { INITIAL_ACCESS_TOKEN } from '../../../config/secrets';
 import { accountEmail } from '../../../util/jest';
-import { AccountVariant } from '@thxnetwork/types/interfaces';
-import { AccountPlanType } from '@thxnetwork/types/enums';
+import { AccountVariant, AccountPlanType } from '@thxnetwork/common/enums';
 
 const http = request.agent(app);
 
@@ -15,7 +14,7 @@ describe('OAuth2 Grants', () => {
     beforeAll(async () => {
         await db.truncate();
 
-        const account = await AccountService.signup({
+        const account = await AccountService.create({
             plan: AccountPlanType.Free,
             email: accountEmail,
             variant: AccountVariant.EmailPassword,
@@ -35,9 +34,9 @@ describe('OAuth2 Grants', () => {
         });
     });
 
-    describe('GET /account', () => {
+    describe('GET /accounts', () => {
         it('HTTP 401 Unauthorized', async () => {
-            const res = await http.get('/account');
+            const res = await http.get('/accounts');
             expect(res.status).toBe(401);
         });
     });
@@ -138,7 +137,7 @@ describe('OAuth2 Grants', () => {
     describe('GET /account/:id', () => {
         it('HTTP 200', async () => {
             const res = await http
-                .get(`/account/${sub}`)
+                .get(`/accounts/${sub}`)
                 .set({ Authorization: `Bearer ${accessToken}` })
                 .send();
             expect(res.status).toBe(200);

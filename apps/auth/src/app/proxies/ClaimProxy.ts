@@ -1,25 +1,14 @@
 import { apiClient, getAuthAccessToken } from '../util/api';
 
 export default {
-    get: async (claimUuid: string) => {
-        const r = await apiClient({
+    get: async (uuid: string) => {
+        const { data } = await apiClient({
             method: 'GET',
-            url: `/v1/claims/${claimUuid}`,
+            url: `/v1/qr-codes/${uuid}`,
             headers: {
                 Authorization: await getAuthAccessToken(),
             },
         });
-        return r.data;
-    },
-
-    getByHash: async (hash: string) => {
-        const r = await apiClient({
-            method: 'GET',
-            url: `/v1/claims/hash/${hash}`,
-            headers: {
-                Authorization: await getAuthAccessToken(),
-            },
-        });
-        return r.data;
+        return data;
     },
 };

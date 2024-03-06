@@ -9,8 +9,8 @@ export const corsHandler = cors(async (req: any, callback: any) => {
         DASHBOARD_URL,
         WIDGET_URL,
         PUBLIC_URL,
-        'https://campaign.thx.network',
-        'https://dev-campaign.thx.network',
+        'https://app.thx.network',
+        'https://dev-app.thx.network',
     ];
 
     if (!origin || allowedOrigins.indexOf(origin) > -1) {

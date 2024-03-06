@@ -1,33 +1,31 @@
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 import { TransactionReceipt } from 'web3-eth-accounts/node_modules/web3-core';
+import { ChainId, TransactionState, ERC1155TokenState } from '@thxnetwork/common/enums';
 import {
     getAbiForContractName,
     getByteCodeForContractName,
     getContractFromName,
 } from '@thxnetwork/api/services/ContractService';
-import { AssetPoolDocument } from '@thxnetwork/api/models/AssetPool';
-import { ERC1155, ERC1155Document, IERC1155Updates } from '@thxnetwork/api/models/ERC1155';
-import { ERC1155Metadata, ERC1155MetadataDocument } from '@thxnetwork/api/models/ERC1155Metadata';
-import { ERC1155Token, ERC1155TokenDocument } from '@thxnetwork/api/models/ERC1155Token';
-import { Transaction } from '@thxnetwork/api/models/Transaction';
-import { ChainId, TransactionState } from '@thxnetwork/types/enums';
-import { ERC1155TokenState } from '@thxnetwork/types/interfaces';
-import {
-    TERC1155DeployCallbackArgs,
-    TERC1155TokenMintCallbackArgs,
-    TERC1155TransferFromCallbackArgs,
-} from '@thxnetwork/api/types/TTransaction';
-import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { paginatedResults } from '@thxnetwork/api/util/pagination';
-import PoolService from './PoolService';
+import { assertEvent, ExpectedEventNotFound, findEvent, parseLogs } from '@thxnetwork/api/util/events';
+import { API_URL, VERSION } from '../config/secrets';
 import TransactionService from './TransactionService';
-import type { TAccount, TERC1155, TERC1155Metadata, TERC1155Token } from '@thxnetwork/types/interfaces';
-import { WalletDocument } from '../models/Wallet';
+import PoolService from './PoolService';
 import IPFSService from './IPFSService';
 import SafeService from './SafeService';
-import { API_URL, VERSION } from '../config/secrets';
-import { ERC721Perk } from '../models/ERC721Perk';
+import {
+    Transaction,
+    ERC1155Document,
+    ERC1155,
+    PoolDocument,
+    RewardNFT,
+    ERC1155MetadataDocument,
+    ERC1155Metadata,
+    WalletDocument,
+    ERC1155TokenDocument,
+    ERC1155Token,
+} from '@thxnetwork/api/models';
 
 const contractName = 'THX_ERC1155';
 
@@ -78,7 +76,7 @@ function getBaseURL(erc1155: ERC1155Document) {
     return `${API_URL}/${VERSION}/metadata/erc1155/${String(erc1155._id)}/{id}`;
 }
 
-const initialize = async (pool: AssetPoolDocument, address: string) => {
+const initialize = async (pool: PoolDocument, address: string) => {
     const erc1155 = await findByQuery({ address, chainId: pool.chainId });
     await addMinter(erc1155, pool.safeAddress);
 };
@@ -92,7 +90,7 @@ export async function findById(id: string): Promise<ERC1155Document> {
 
 export async function findBySub(sub: string): Promise<ERC1155Document[]> {
     const pools = await PoolService.getAllBySub(sub);
-    const nftRewards = await ERC721Perk.find({ poolId: pools.map((p) => String(p._id)) });
+    const nftRewards = await RewardNFT.find({ poolId: pools.map((p) => String(p._id)) });
     const erc1155Ids = nftRewards.map((c) => c.erc1155Id);
     const erc1155s = await ERC1155.find({ sub });
 
@@ -183,10 +181,10 @@ export async function transferFrom(
     erc1155: ERC1155Document,
     wallet: WalletDocument,
     to: string,
-    amount: string,
     erc1155Token: ERC1155TokenDocument,
+    amount: string,
 ): Promise<ERC1155TokenDocument> {
-    const toWallet = await SafeService.findOneByAddress(to);
+    const toWallet = await SafeService.findOne({ address: to, chainId: erc1155.chainId });
     const tx = await TransactionService.sendSafeAsync(
         wallet,
         erc1155.address,
@@ -196,7 +194,7 @@ export async function transferFrom(
             args: {
                 erc1155Id: String(erc1155._id),
                 erc1155TokenId: String(erc1155Token._id),
-                sub: toWallet && toWallet.sub,
+                walletId: toWallet && toWallet.id,
             },
         },
     );
@@ -230,19 +228,18 @@ export async function transferFrom(
 }
 
 export async function transferFromCallback(args: TERC1155TransferFromCallbackArgs, receipt: TransactionReceipt) {
-    const { erc1155Id, erc1155TokenId, sub } = args;
-    const { chainId } = await ERC1155.findById(erc1155Id);
+    const { erc1155TokenId, walletId } = args;
     const abi = getAbiForContractName('THX_ERC1155');
     const events = parseLogs(abi, receipt.logs);
     const event = assertEvent('TransferSingle', events);
-    const wallet = sub && (await SafeService.findPrimary(sub, chainId));
+    const wallet = await SafeService.findById(walletId);
 
     await ERC1155Token.findByIdAndUpdate(erc1155TokenId, {
-        sub,
         state: ERC1155TokenState.Transferred,
         tokenId: event.args.id,
         recipient: event.args.to,
-        walletId: wallet && String(wallet._id),
+        sub: wallet && wallet.sub,
+        walletId: wallet && wallet.id,
     });
 }
 
@@ -258,6 +255,10 @@ async function addMinter(erc1155: ERC1155Document, address: string) {
     );
 
     assertEvent('RoleGranted', parseLogs(erc1155.contract.options.jsonInterface, receipt.logs));
+}
+
+async function findMetadataByToken(token: TERC1155Token) {
+    return ERC1155Metadata.findById(token.metadataId);
 }
 
 async function findTokenById(id: string): Promise<ERC1155TokenDocument> {
@@ -276,7 +277,7 @@ async function findTokensByWallet(wallet: WalletDocument): Promise<ERC1155TokenD
     return ERC1155Token.find({ walletId: wallet._id });
 }
 
-async function findMetadataById(id: string): Promise<ERC1155MetadataDocument> {
+async function findMetadataById(id: string) {
     return ERC1155Metadata.findById(id);
 }
 
@@ -293,15 +294,8 @@ async function findTokensByMetadata(metadata: ERC1155MetadataDocument): Promise<
     return ERC1155Token.find({ metadataId: String(metadata._id) });
 }
 
-async function findMetadataByNFT(erc1155Id: string, page = 1, limit = 10, q?: string) {
-    let query;
-    if (q && q != 'null' && q != 'undefined') {
-        query = { erc1155Id, title: { $regex: `.*${q}.*`, $options: 'i' } };
-    } else {
-        query = { erc1155Id };
-    }
-
-    const paginatedResult = await paginatedResults(ERC1155Metadata, page, limit, query);
+async function findMetadataByNFT(erc1155Id: string, page = 1, limit = 10) {
+    const paginatedResult = await paginatedResults(ERC1155Metadata, page, limit, { erc1155Id });
     const results: TERC1155Metadata[] = [];
     for (const metadata of paginatedResult.results) {
         const tokens = (await this.findTokensByMetadata(metadata)).map((m: ERC1155MetadataDocument) => m.toJSON());
@@ -315,7 +309,7 @@ async function findByQuery(query: { poolAddress?: string; address?: string; chai
     return ERC1155.findOne(query);
 }
 
-export const update = (erc1155: ERC1155Document, updates: IERC1155Updates) => {
+export const update = (erc1155: ERC1155Document, updates: Partial<TERC1155>) => {
     return ERC1155.findByIdAndUpdate(erc1155._id, updates, { new: true });
 };
 
@@ -353,4 +347,5 @@ export default {
     queryDeployTransaction,
     getOnChainERC1155Token,
     findTokensByWallet,
+    findMetadataByToken,
 };
