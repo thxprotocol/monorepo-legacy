@@ -17,6 +17,10 @@ async function controller(req: Request, res: Response) {
     let claim, brand;
     const { uid, params } = req.interaction;
 
+    if (params.otpAttempts >= 5) {
+        throw new Error('You have reached the maximum number of attempts.');
+    }
+
     if (params.claim_id) {
         claim = await ClaimProxy.get(params.claim_id);
         brand = await BrandProxy.get(claim.pool._id);
@@ -25,6 +29,12 @@ async function controller(req: Request, res: Response) {
     try {
         const account = await AccountService.get(params.sub);
         if (!account) throw new Error('No account could be found for this one-time password.');
+
+        // Store OTP attempt in interaction
+        req.interaction.params.otpAttempts = (params.otpAttempts || 0) + 1;
+
+        // Interaction TTL is set to 10min and will expire after
+        await req.interaction.save(Date.now() + 10 * 60 * 1000);
 
         const isValid = await AuthService.isOTPValid(account, req.body.otp);
         if (!isValid) throw new Error('Your one-time password is incorrect.');
