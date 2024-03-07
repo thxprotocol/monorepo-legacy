@@ -108,6 +108,19 @@ export default class AuthService {
 
         return await oidc.interactionFinished(req, res, { login: { accountId: String(account._id) } });
     }
+
+    static async getOTPAttempt(req: Request) {
+        const { params } = req.interaction;
+
+        // Store OTP attempt in interaction
+        req.interaction.params.otpAttempts = (params.otpAttempts || 0) + 1;
+
+        // Interaction TTL is set to 10min and will expire after
+        await req.interaction.save(Date.now() + 10 * 60 * 1000);
+
+        return req.interaction.params.otpAttempts;
+    }
+
     static async redirectOTP(req: Request, res: Response, { email }: { email: string }) {
         const { params } = req.interaction;
         let account = await AccountService.findAccountForEmail(email);
