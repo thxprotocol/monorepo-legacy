@@ -284,18 +284,29 @@ async function findDefaultTokens(wallet: WalletDocument) {
             symbol: '20USDC-80THX-gauge',
             decimals: 18,
             chainId: wallet.chainId,
-            address: contractNetworks[wallet.chainId].BPT,
+            address: contractNetworks[wallet.chainId].BPTGauge,
+            logoImgUrl: 'https://assets.coingecko.com/coins/images/21323/standard/logo-thx-resized-200-200.png',
+        },
+        {
+            type: ERC20Type.Unknown,
+            name: 'Voting Escrow 20USDC-80THX-gauge',
+            symbol: 'veTHX',
+            decimals: 18,
+            chainId: wallet.chainId,
+            address: contractNetworks[wallet.chainId].VotingEscrow,
             logoImgUrl: 'https://assets.coingecko.com/coins/images/21323/standard/logo-thx-resized-200-200.png',
         },
     ];
 
     const promises = defaultContracts.map(async (erc20) => {
         const contract = getContractFromName(erc20.chainId, 'LimitedSupplyToken', erc20.address);
+        const walletBalanceInWei = await contract.methods.balanceOf(wallet.address).call();
+        const walletBalance = Number(fromWei(walletBalanceInWei));
         return {
             sub: wallet.sub,
             erc20Id: '',
             walletId: wallet.id,
-            walletBalance: await contract.methods.balanceOf(wallet.address).call(),
+            walletBalance,
             erc20,
         };
     });

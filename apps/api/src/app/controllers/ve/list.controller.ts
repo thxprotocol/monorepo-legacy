@@ -52,8 +52,8 @@ export const controller = async (req: Request, res: Response) => {
     const rewards = calls
         .filter((result) => result.status === 'fulfilled')
         .map((call) => ({ tokenAddress: call[0], amount: call[1] }));
-    const veTHX = await ve.methods.balanceOf(wallet.address).call();
+    const balance = await ve.methods.balanceOf(wallet.address).call();
 
-    res.status(200).json([{ veTHX, amount: Number(amount), end: parseMs(end), now: parseMs(now), rewards }]);
+    res.status(200).json([{ balance, amount: Number(amount), end: parseMs(end), now: parseMs(now), rewards }]);
 };
 export default { controller, validation };

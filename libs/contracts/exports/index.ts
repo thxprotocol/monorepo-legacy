@@ -1,15 +1,17 @@
 import { version as currentVersion } from '../package.json';
 import { AbiItem } from 'web3-utils';
-import BPTToken from './abis/BPTToken.json';
+import Launchpad from './abis/Launchpad.json';
+import VotingEscrow from './abis/VotingEscrow.json';
 import RewardDistributor from './abis/RewardDistributor.json';
 import SmartWalletWhitelist from './abis/SmartWalletWhitelist.json';
-import VotingEscrow from './abis/VotingEscrow.json';
-import TestToken from './abis/TestToken.json';
 import RewardFaucet from './abis/RewardFaucet.json';
 import LensReward from './abis/LensReward.json';
-import BalToken from './abis/BalancerToken.json';
 import BalMinter from './abis/BalancerMinter.json';
-import Launchpad from './abis/Launchpad.json';
+import BPT from './abis/BPT.json';
+import BPTGauge from './abis/BPTGauge.json';
+import BAL from './abis/BAL.json';
+import THX from './abis/THX.json';
+import USDC from './abis/USDC.json';
 import { ContractNetworksConfig } from '@safe-global/protocol-kit';
 
 export const contractNetworks = {
@@ -23,17 +25,18 @@ export const contractNetworks = {
         signMessageLibAddress: '0x658FAD2acB6d1E615f295E566ee9a6d32Cc97b10',
         createCallAddress: '0x40Efd8a16485213445E6d8b9a4266Fd2dFf7C69a',
         simulateTxAccessorAddress: '0xFF1eE64b8806C0891e8F73b37f8403F441b552E1',
-        // Balancer
-        BPT: '0x439F0128d07f005e0703602f366599ACaaBfEA18',
-        BPTGauge: '0x76aBe9ec9b15947ba1Ca910695B8b6CffeD8E6CA',
+        // Tokens
+        BPT: '0xc368fA6A4057BcFD9E49221d8354d5fA6B88945a',
+        BPTGauge: '0x439F0128d07f005e0703602f366599ACaaBfEA18',
         BAL: '0x24E91C3a2822bDc4bc73512872ab07fD93c8101b',
-        USDC: '0xc368fA6A4057BcFD9E49221d8354d5fA6B88945a',
+        USDC: '0x7Cb8d1EAd6303C079c501e93F3ba28C227cd7000',
+        THX: '0x76aBe9ec9b15947ba1Ca910695B8b6CffeD8E6CA',
         // veTHX
-        VotingEscrow: '0xdb8549fdb720C35b926fC3fFF2FfBec61383E994',
-        RewardDistributor: '0xD98E8ac8D53e3330b5DBc3425FB178810128A9e5',
-        RewardFaucet: '0x3e3B1997c3Bc3Cf512359EEa6d9cAd19394D51B4',
-        SmartWalletWhitelist: '0x774442713f32fa98bf27bEc78c96fb7186f7C223',
-        LensReward: '0xb2Bea6009625407C3c3cF7158185125Ed2C7f101',
+        VotingEscrow: '0xde46F6e0F666A42536e1AeD3d5Efa081089d4491',
+        RewardDistributor: '0x09884893517b396DA808E5165b33091bAe866401',
+        RewardFaucet: '0x7d19C8cd97AAD3d97688eB60C54785c99997a1Bf',
+        SmartWalletWhitelist: '0x5E0A87862f9175493Cc1d02199ad18Eff87Eb400',
+        LensReward: '0xe2092A19f37D2DBBfa9c41C9b83CBAAA1294548f',
         // Tokens
         // LimitedSupplyToken: '0xf228ADAa4c3D07C8285C1025421afe2c4F320C59',
         // UnlimitedSupplyToken: '0x8613B8E442219e4349fa5602C69431131a7ED114',
@@ -41,11 +44,12 @@ export const contractNetworks = {
         // THX_ERC1155: '0xeDdBA2bDeE7c9006944aCF9379Daa64478E02290',
     },
     '137': {
-        // Balancer
+        // Tokens
         BPT: '0xb204bf10bc3a5435017d3db247f56da601dfe08a',
         BPTGauge: '0xf16BECC1Bcaf0fF0b865024a644a4da1A2f8585c',
         BAL: '0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3',
         USDC: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
+        THX: '0x2934b36ca9a4b31e633c5be670c8c8b28b6aa015',
         // veTHX
         VotingEscrow: '0xE3B8E734e7BCcB64B63e032795896CC57012A51D',
         RewardDistributor: '0xCc62c812EfF9cA4c35623103B2Bb63E22f465E09',
@@ -56,32 +60,35 @@ export const contractNetworks = {
 } as ContractNetworksConfig & any;
 
 export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: string } } = {
-    TestToken,
     RewardFaucet,
     RewardDistributor,
     SmartWalletWhitelist,
-    VotingEscrow,
     Launchpad,
     LensReward,
-    // TOkens
-    BPTToken,
-    USDCToken: BPTToken,
-    THXToken: BPTToken,
-    BalToken,
     BalMinter,
+    VotingEscrow,
+    BPT,
+    BPTGauge,
+    USDC,
+    THX,
+    BAL,
 };
-
 export const networkNames = ['matic', 'maticdev', 'hardhat'] as const;
 export type TNetworkName = typeof networkNames[number];
 
 export const contractNames = ['BalancerVault'] as const;
 export const tokenContractNames = [
-    'BPT',
     'LimitedSupplyToken',
     'UnlimitedSupplyToken',
     'NonFungibleToken',
     'UnlimitedSupplyToken',
     'THX_ERC1155',
+    'VotingEscrow',
+    'BPT',
+    'BPTGauge',
+    'USDC',
+    'THX',
+    'BAL',
 ] as const;
 export type TokenContractName = typeof tokenContractNames[number];
 

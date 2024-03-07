@@ -39,7 +39,7 @@ export default async function main() {
         contractArtifacts['RewardDistributor'].abi,
         signer,
     );
-    const bpt = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BPTToken'].abi, signer);
+    const bpt = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BPT'].abi, signer);
     const bal = new ethers.Contract(contractNetworks[chainId].BAL, contractArtifacts['BalToken'].abi, signer);
     const usdc = new ethers.Contract(contractNetworks[chainId].USDC, contractArtifacts['USDCToken'].abi, signer);
 

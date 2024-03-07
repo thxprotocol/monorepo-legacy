@@ -24,40 +24,74 @@ async function getNetworkDetails(chainId: ChainId) {
             contractArtifacts['RewardFaucet'].abi,
             signer,
         );
-        const bpt = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BPTToken'].abi, signer);
-        const bal = new ethers.Contract(contractNetworks[chainId].BAL, contractArtifacts['BalToken'].abi, signer);
-        const balances = await Promise.all([
+        const bpt = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BPT'].abi, signer);
+        const bptGauge = new ethers.Contract(
+            contractNetworks[chainId].BPTGauge,
+            contractArtifacts['BPTGauge'].abi,
+            signer,
+        );
+        // const veTHX = new ethers.Contract(
+        //     contractNetworks[chainId].VotingEscrow,
+        //     contractArtifacts['VotingEscrow'].abi,
+        //     signer,
+        // );
+        const bal = new ethers.Contract(contractNetworks[chainId].BAL, contractArtifacts['BAL'].abi, signer);
+        const thx = new ethers.Contract(contractNetworks[chainId].THX, contractArtifacts['THX'].abi, signer);
+        const usdc = new ethers.Contract(contractNetworks[chainId].USDC, contractArtifacts['USDC'].abi, signer);
+
+        const address = {
+            relayer: defaultAccount,
+            bptGauge: bptGauge.address,
+            bpt: bpt.address,
+            bal: bal.address,
+            thx: contractNetworks[chainId].THX,
+            usdc: contractNetworks[chainId].USDC,
+        };
+        const relayer = await Promise.all([
             {
                 matic: fromWei(String(await web3.eth.getBalance(defaultAccount)), 'ether'),
-                bpt: fromWei(String(await bpt.balanceOf(rfthx.address)), 'ether'),
-                bal: fromWei(String(await bal.balanceOf(rfthx.address)), 'ether'),
-            },
-        ]);
-        const supply = await Promise.all([
-            fromWei(String(await rfthx.totalTokenRewards(bpt.address)), 'ether'),
-            fromWei(String(await rfthx.totalTokenRewards(bal.address)), 'ether'),
-        ]);
-        const rewards = await Promise.all([
-            {
-                bpt: (
-                    await rfthx.getUpcomingRewardsForNWeeks(bpt.address, 4)
-                ).map((amount: BigNumber) => fromWei(String(amount))),
-                bal: (
-                    await rfthx.getUpcomingRewardsForNWeeks(bal.address, 4)
-                ).map((amount: BigNumber) => fromWei(String(amount))),
+                gauge: fromWei(String(await bptGauge.balanceOf(defaultAccount)), 'ether'),
+                bpt: fromWei(String(await bpt.balanceOf(defaultAccount)), 'ether'),
+                bal: fromWei(String(await bal.balanceOf(defaultAccount)), 'ether'),
+                thx: fromWei(String(await thx.balanceOf(defaultAccount)), 'ether'),
+                usdc: fromWei(String(await usdc.balanceOf(defaultAccount)), 'ether'),
             },
         ]);
 
+        const gauge = {
+            staked: fromWei(String(await bpt.balanceOf(bptGauge.address)), 'ether'),
+        };
+
+        const distributor = {
+            balances: await Promise.all([
+                {
+                    bpt: fromWei(String(await bpt.balanceOf(rfthx.address)), 'ether'),
+                    bal: fromWei(String(await bal.balanceOf(rfthx.address)), 'ether'),
+                },
+            ]),
+            rewards: await Promise.all([
+                {
+                    bpt: (
+                        await rfthx.getUpcomingRewardsForNWeeks(bpt.address, 4)
+                    ).map((amount: BigNumber) => fromWei(String(amount))),
+                    bal: (
+                        await rfthx.getUpcomingRewardsForNWeeks(bal.address, 4)
+                    ).map((amount: BigNumber) => fromWei(String(amount))),
+                },
+            ]),
+        };
+
+        // const supply = await Promise.all([
+        //     fromWei(String(await rfthx.totalTokenRewards(bpt.address)), 'ether'),
+        //     fromWei(String(await rfthx.totalTokenRewards(bal.address)), 'ether'),
+        // ]);
+
         return {
-            addresses: {
-                relayer: defaultAccount,
-                bpt: bpt.address,
-                bal: bal.address,
-                usdc: contractNetworks[chainId].USDC,
-            },
-            balances,
-            supply,
-            rewards,
+            address,
+            ve,
+            relayer,
+            gauge,
+            distributor,
         };
     } catch (error) {
         return handleError(error);
@@ -65,20 +99,17 @@ async function getNetworkDetails(chainId: ChainId) {
 }
 
 const controller = async (req: Request, res: Response) => {
-    logger.info(`IP Forwarded For: ${req.headers['x-forwarded-for']}`);
-    logger.info(`IP: ${req.ip}`);
-
-    const result: any = {
+    const result = {
         name,
         version,
         license,
+        networks: {},
     };
 
-    if (NODE_ENV !== 'production') {
-        result.hardhat = await getNetworkDetails(ChainId.Hardhat);
-    } else {
-        result.mainnet = await getNetworkDetails(ChainId.Polygon);
+    if (NODE_ENV === 'production') {
+        result.networks[ChainId.Polygon] = await getNetworkDetails(ChainId.Polygon);
     }
+    result.networks[ChainId.Hardhat] = await getNetworkDetails(ChainId.Hardhat);
 
     res.header('Content-Type', 'application/json').send(JSON.stringify(result, null, 4));
 };

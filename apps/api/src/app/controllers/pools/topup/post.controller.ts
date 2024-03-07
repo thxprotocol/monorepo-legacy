@@ -1,17 +1,10 @@
 import { Request, Response } from 'express';
-import { InsufficientBalanceError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { body, param } from 'express-validator';
-import { getAbiForContractName } from '@thxnetwork/api/services/ContractService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import SafeService from '@thxnetwork/api/services/SafeService';
-import { MetaTransactionData } from '@safe-global/safe-core-sdk-types';
-import { BigNumber, ContractInterface } from 'ethers';
-import {
-    USDC_ADDRESS,
-    COMPANY_SAFE_ADDRESS,
-    BALANCER_VAULT_ADDRESS,
-    BALANCER_POOL_ID,
-} from '@thxnetwork/api/services/LiquidityService';
+
+import {} from '@thxnetwork/api/services/LiquidityService';
 
 export const validation = [param('id').isMongoId(), body('erc20Id').exists().isMongoId(), body('amount').exists()];
 

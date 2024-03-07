@@ -2,7 +2,7 @@ import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { DeployFunction } from 'hardhat-deploy/types';
 import { ContractFactory, Signer } from 'ethers';
 import { contractArtifacts } from '../exports';
-import { getChainId } from 'hardhat';
+import { parseUnits } from 'ethers/lib/utils';
 
 const deploy = async (contractName: string, args: string[], signer: Signer) => {
     const artifact = contractArtifacts[contractName];
@@ -16,15 +16,22 @@ const deploy = async (contractName: string, args: string[], signer: Signer) => {
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { ethers, getNamedAccounts, network } = hre;
     const { owner, balReceiver } = await getNamedAccounts();
-    const chainId = await getChainId();
     const signer = await ethers.getSigner(owner);
+
+    // Deploy implementations
     const votingEscrowImpl = await deploy('VotingEscrow', [], signer);
     const rewardDistributorImpl = await deploy('RewardDistributor', [], signer);
     const rewardFaucetImpl = await deploy('RewardFaucet', [], signer);
 
-    const usdcToken = await deploy('USDCToken', [], signer);
-    const bptToken = await deploy('BPTToken', [], signer);
-    const balToken = await deploy('BalToken', [], signer);
+    // Deploy VE tokens
+    const bptToken = await deploy('BPT', [signer.address, parseUnits('1000000', 'ether').toString()], signer);
+    const bptGaugeToken = await deploy('BPTGauge', [bptToken.address], signer);
+    const balToken = await deploy('BAL', [signer.address, parseUnits('1000000', 'ether').toString()], signer);
+
+    // Deploy Liquidity tokens
+    await deploy('THX', [signer.address, parseUnits('1000000', 'ether').toString()], signer);
+    await deploy('USDC', [signer.address, parseUnits('1000000', 'ether').toString()], signer);
+
     const balMinter = await deploy('BalMinter', [balToken.address], signer);
     const launchpad = await deploy(
         'Launchpad',
@@ -51,9 +58,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     @param rewardReceiver The receiver address of claimed BAL-token rewards
     */
     let tx = await launchpad.deploy(
-        bptToken.address,
-        'Voted Escrow THX',
-        'VeTHX',
+        bptGaugeToken.address,
+        'Voted Escrow 20USDC-80THX-gauge',
+        'veTHX',
         7776000, // 90 days
         Math.ceil(Date.now() / 1000) + 60 * 60 * 24 * 7, // 7 days from now
         owner, // admin_unlock_all
@@ -71,9 +78,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const vethx = new ethers.Contract(votingEscrow, contractArtifacts['VotingEscrow'].abi, signer);
     const rdthx = new ethers.Contract(rewardDistributor, contractArtifacts['RewardDistributor'].abi, signer);
-    const rfthx = new ethers.Contract(rewardFaucet, contractArtifacts['RewardFaucet'].abi, signer);
     const smartCheckerList = await deploy('SmartWalletWhitelist', [owner], signer);
-    const lensReward = await deploy('LensReward', [], signer);
+
+    await deploy('LensReward', [], signer);
 
     // Configure reward tokens in reward distributor
     await rdthx.addAllowedRewardTokens([balToken.address, bptToken.address]);
@@ -81,16 +88,18 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     // Add smart wallet whitelist checker
     await vethx.commit_smart_wallet_checker(smartCheckerList.address);
     await vethx.commit_smart_wallet_checker(smartCheckerList.address);
-    console.log('VeTHX:', 'commit_smart_wallet_checker', smartCheckerList.address);
+    console.log('veTHX:', 'commit_smart_wallet_checker', smartCheckerList.address);
+
     await vethx.apply_smart_wallet_checker();
-    console.log('VeTHX:', 'apply_smart_wallet_checker', true);
+    console.log('veTHX:', 'apply_smart_wallet_checker', true);
+
     await vethx.set_early_unlock(true);
-    console.log('VeTHX:', 'set_early_unlock', true);
+    console.log('veTHX:', 'set_early_unlock', true);
     // await vethx.set_early_unlock_penalty_speed(1);
 
     // Set early exit penalty treasury to reward distributor
     await vethx.set_penalty_treasury(rewardDistributor);
-    console.log('VeTHX:', 'set_penalty_treasury', rewardDistributor);
+    console.log('veTHX:', 'set_penalty_treasury', rewardDistributor);
 
     return network.live; // Makes sure we don't redeploy on live networks
 };

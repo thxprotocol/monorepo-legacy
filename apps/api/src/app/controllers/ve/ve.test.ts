@@ -12,7 +12,7 @@ import { poll } from '@thxnetwork/api/util/polling';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
 const user = request.agent(app);
-const { signer, defaultAccount } = getProvider(ChainId.Hardhat);
+const { signer } = getProvider(ChainId.Hardhat);
 
 describe('VESytem', () => {
     beforeAll(beforeAllCallback);
@@ -23,6 +23,7 @@ describe('VESytem', () => {
 
     let safeWallet!: WalletDocument,
         testBPT!: Contract,
+        testBPTGauge!: Contract,
         testBAL!: Contract,
         vethx!: Contract,
         rdthx!: Contract,
@@ -30,12 +31,16 @@ describe('VESytem', () => {
         scthx!: Contract;
 
     it('Deploy Tokens', async () => {
-        safeWallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
+        safeWallet = await SafeService.findOne({ sub, poolId: { $exists: false }, safeVersion: { $exists: true } });
         expect(safeWallet.address).toBeDefined();
 
         testBAL = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BalToken'].abi, signer);
-        testBPT = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BPTToken'].abi, signer);
-        expect(testBPT.address).toBe(contractNetworks[chainId].BPT);
+        testBPT = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BPT'].abi, signer);
+        testBPTGauge = new ethers.Contract(
+            contractNetworks[chainId].BPTGauge,
+            contractArtifacts['BPTGauge'].abi,
+            signer,
+        );
 
         vethx = new ethers.Contract(
             contractNetworks[chainId].VotingEscrow,
@@ -59,13 +64,13 @@ describe('VESytem', () => {
         );
     });
 
-    describe('Deposit BPT ', () => {
+    describe('Deposit BPT-gauge ', () => {
         it('Balance = total', async () => {
-            let tx = await testBPT.mint(safeWallet.address, amountInWei);
+            let tx = await testBPTGauge.mint(safeWallet.address, amountInWei);
             tx = await tx.wait();
             const event = tx.events.find((ev) => ev.event === 'Transfer');
             expect(event).toBeDefined();
-            const balanceInWei = await testBPT.balanceOf(safeWallet.address);
+            const balanceInWei = await testBPTGauge.balanceOf(safeWallet.address);
             expect(balanceInWei.eq(amountInWei)).toBe(true);
         });
 
@@ -99,7 +104,7 @@ describe('VESytem', () => {
         it('Wait for approved amount', async () => {
             // Replace with API call
             await poll(
-                () => testBPT.allowance(safeWallet.address, vethx.address),
+                () => testBPTGauge.allowance(safeWallet.address, vethx.address),
                 (result: BigNumber) => result.eq(0),
                 1000,
             );
@@ -131,8 +136,8 @@ describe('VESytem', () => {
                 1000,
             );
 
-            const balanceInWei = await testBPT.balanceOf(safeWallet.address);
-            const rdBalanceInWei = await testBPT.balanceOf(rdthx.address);
+            const balanceInWei = await testBPTGauge.balanceOf(safeWallet.address);
+            const rdBalanceInWei = await testBPTGauge.balanceOf(rdthx.address);
             const totalMinDeposit = BigNumber.from(amountInWei).sub(amountInWei);
 
             expect(rdBalanceInWei.eq(0)).toBe(true);
@@ -159,11 +164,6 @@ describe('VESytem', () => {
             // Add test THX as allowed reward token (incentive)
             await rdthx.addAllowedRewardTokens([testBPT.address, testBAL.address]);
 
-            // Mint 10000 tokens for relayer to deposit into reward distributor
-            await testBPT.mint(defaultAccount, amountBPT);
-            // Mint 100 BAL for relayer to deposit into reward distributor
-            await testBAL.mint(defaultAccount, amountBAL);
-
             // Deposit 10000 tokens into rdthx
             await testBPT.approve(rfthx.address, amountBPT);
             await testBAL.approve(rfthx.address, amountBAL);
@@ -175,25 +175,25 @@ describe('VESytem', () => {
             // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 2)));
             // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 4)));
         });
-        // it('Claim Tokens (after 8 days)', async () => {
-        //     // Travel past end date of the first reward eligible week
-        //     await timeTravel(60 * 60 * 24 * 8);
+        it('Claim Tokens (after 8 days)', async () => {
+            // Travel past end date of the first reward eligible week
+            await timeTravel(60 * 60 * 24 * 8);
 
-        //     const balance = await testBPT.balanceOf(safeWallet.address);
-        //     expect(balance).toBeDefined();
+            const balance = await testBPT.balanceOf(safeWallet.address);
+            expect(balance).toBeDefined();
 
-        //     let tx = await rdthx.claimToken(safeWallet.address, testBPT.address);
-        //     tx = await tx.wait();
+            let tx = await rdthx.claimToken(safeWallet.address, testBPT.address);
+            tx = await tx.wait();
 
-        //     const event = tx.events.find((ev) => ev.event === 'TokenCheckpointed');
-        //     expect(event).toBeDefined();
+            const event = tx.events.find((ev) => ev.event === 'TokenCheckpointed');
+            expect(event).toBeDefined();
 
-        //     const balanceAfterClaim = await testBPT.balanceOf(safeWallet.address);
-        //     expect(BigNumber.from(balance).lt(balanceAfterClaim)).toBe(true);
-        // });
+            const balanceAfterClaim = await testBPT.balanceOf(safeWallet.address);
+            expect(BigNumber.from(balance).lt(balanceAfterClaim)).toBe(true);
+        });
     });
 
-    describe('Withdraw BPT', () => {
+    describe('Withdraw BPT-gauge', () => {
         it('Withdraw', async () => {
             const { status, body } = await user
                 .post('/v1/ve/withdraw')

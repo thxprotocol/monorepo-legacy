@@ -16,13 +16,13 @@ async function isApprovedAddress(address: string, chainId: ChainId) {
 
 async function getAllowance(wallet: WalletDocument, tokenAddress: string, spender: string) {
     const { web3 } = getProvider(ChainId.Hardhat);
-    const bpt = new web3.eth.Contract(contractArtifacts['BPTToken'].abi, tokenAddress);
+    const bpt = new web3.eth.Contract(contractArtifacts['BPT'].abi, tokenAddress);
     return await bpt.methods.allowance(wallet.address, spender).call();
 }
 
 async function approve(wallet: WalletDocument, tokenAddress: string, spender: string, amount: string) {
     const { web3 } = getProvider(ChainId.Hardhat);
-    const bpt = new web3.eth.Contract(contractArtifacts['BPTToken'].abi, tokenAddress);
+    const bpt = new web3.eth.Contract(contractArtifacts['BPT'].abi, tokenAddress);
     const fn = bpt.methods.approve(spender, amount);
 
     // Propose tx data to relayer and return safeTxHash to client to sign

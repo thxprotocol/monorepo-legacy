@@ -1,27 +1,37 @@
 import { ethers } from 'ethers';
-import { getAbiForContractName } from '@thxnetwork/api/services/ContractService';
 import { PRIVATE_KEY } from '@thxnetwork/api/config/secrets';
 import { contractArtifacts, contractNetworks } from '@thxnetwork/contracts/exports';
 import { ChainId } from '@thxnetwork/common/enums';
+import { parseUnits } from 'ethers/lib/utils';
+
+async function increaseBlockTime(provider, seconds) {
+    await provider.send('evm_increaseTime', [seconds]);
+    await provider.send('evm_mine', []);
+}
 
 export default async function main() {
     const HARDHAT_RPC = 'http://127.0.0.1:8545/';
-    const MINT_TO = '0x9013ae40FCd95D46BA4902F3974A71C40793680B';
-    const MINT_AMOUNT = '1000';
-    const chainId = ChainId.Hardhat;
     const hardhatProvider = new ethers.providers.JsonRpcProvider(HARDHAT_RPC);
+    const TO = '0x9013ae40FCd95D46BA4902F3974A71C40793680B';
+    const AMOUNT = parseUnits('10000').toString();
+    const chainId = ChainId.Hardhat;
     const signer = new ethers.Wallet(PRIVATE_KEY, hardhatProvider) as unknown as ethers.Signer;
-    const bpt = new ethers.Contract(
-        contractNetworks[chainId].BPT,
-        getAbiForContractName('BPT') as unknown as ethers.ContractInterface,
-        signer,
-    );
-    await bpt.mint(MINT_TO, MINT_AMOUNT);
+
+    const bpt = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BPT'].abi, signer);
+    const thx = new ethers.Contract(contractNetworks[chainId].THX, contractArtifacts['THX'].abi, signer);
+    const usdc = new ethers.Contract(contractNetworks[chainId].USDC, contractArtifacts['USDC'].abi, signer);
+
+    await bpt.transfer(TO, AMOUNT);
+    await thx.transfer(TO, AMOUNT);
+    await usdc.transfer(TO, AMOUNT);
 
     const whitelist = new ethers.Contract(
         contractNetworks[chainId].SmartWalletWhitelist,
         contractArtifacts['SmartWalletWhitelist'].abi,
         signer,
     );
-    await whitelist.approveWallet(MINT_TO);
+    await whitelist.approveWallet(TO);
+
+    // Travel past first week else this throws "Reward distribution has not started yet"
+    await increaseBlockTime(hardhatProvider, 60 * 60 * 24 * 7);
 }

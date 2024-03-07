@@ -16,10 +16,10 @@ export const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findOne({ sub: req.auth.sub, chainId });
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
 
-    // Check sufficient BPT approval
+    // Check sufficient BPTGauge approval
     const amount = await VoteEscrowService.getAllowance(
         wallet,
-        contractNetworks[chainId].BPT,
+        contractNetworks[chainId].BPTGauge,
         contractNetworks[chainId].VotingEscrow,
     );
     if (BigNumber.from(amount).lt(req.body.amountInWei)) throw new ForbiddenError('Insufficient allowance');

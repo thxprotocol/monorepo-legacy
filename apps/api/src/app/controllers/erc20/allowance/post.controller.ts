@@ -21,7 +21,7 @@ export const controller = async (req: Request, res: Response) => {
 
     const { web3 } = getProvider();
     // Check sufficient BPT Balance
-    const bpt = new web3.eth.Contract(contractArtifacts['BPTToken'].abi, req.query.tokenAddress as string);
+    const bpt = new web3.eth.Contract(contractArtifacts['BPTGauge'].abi, req.query.tokenAddress as string);
     const amount = await bpt.methods.balanceOf(wallet.address).call();
     if (BigNumber.from(amount).lt(BigNumber.from(req.body.amountInWei))) {
         throw new ForbiddenError('Insufficient balance');
