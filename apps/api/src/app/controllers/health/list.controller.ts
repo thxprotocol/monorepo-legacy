@@ -47,6 +47,9 @@ async function getNetworkDetails(chainId: ChainId) {
             thx: contractNetworks[chainId].THX,
             usdc: contractNetworks[chainId].USDC,
         };
+
+        const ve = await Promise.all([]);
+
         const relayer = await Promise.all([
             {
                 matic: fromWei(String(await web3.eth.getBalance(defaultAccount)), 'ether'),
