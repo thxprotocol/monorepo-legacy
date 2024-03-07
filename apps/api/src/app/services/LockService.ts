@@ -1,8 +1,20 @@
+import { QuestSocialDocument } from '../models';
+import QuestService from './QuestService';
 import { serviceMap } from './interfaces/IQuestService';
 
 async function getIsUnlocked(lock: TQuestLock, account: TAccount): Promise<boolean> {
+    const ids: any = [{ sub: account.sub }];
+
+    // For these social quests we also search for existing entries by platformUserId
+    const quest = (await QuestService.findById(lock.variant, lock.questId)) as QuestSocialDocument;
+    if (quest.interaction) {
+        const platformUserId = QuestService.findUserIdForInteraction(account, quest.interaction);
+        if (platformUserId) ids.push({ platformUserId });
+    }
+
     const Entry = serviceMap[lock.variant].models.entry;
-    const exists = await Entry.exists({ questId: lock.questId, sub: account.sub });
+    const exists = await Entry.exists({ questId: lock.questId, $or: ids });
+
     return !!exists;
 }
 
