@@ -62,7 +62,6 @@ export default class ModalRewardCreate extends Vue {
     isSubmitDisabled = false;
     isSubmitImage = false;
 
-    error = '';
     name = '';
     description = '';
     externalUrl = '';
