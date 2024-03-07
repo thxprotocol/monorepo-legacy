@@ -1,26 +1,28 @@
 import { Request, Response } from 'express';
-import { body } from 'express-validator';
+import { body, query } from 'express-validator';
 import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { BigNumber } from 'ethers';
 import { getProvider } from '@thxnetwork/api/util/network';
-import { getChainId } from '@thxnetwork/api/services/ContractService';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
-import SafeService from '@thxnetwork/api/services/SafeService';
 import VoteEscrowService from '@thxnetwork/api/services/VoteEscrowService';
+import WalletService from '@thxnetwork/api/services/WalletService';
 
-export const validation = [body('amountInWei').isString(), body('lockEndTimestamp').isInt()];
+export const validation = [
+    body('amountInWei').isString(),
+    body('lockEndTimestamp').isInt(),
+    query('walletId').isMongoId(),
+];
 
 export const controller = async (req: Request, res: Response) => {
-    const chainId = getChainId(); // TODO Replace wity query.walletId and derive chainId from wallet
-
-    const wallet = await SafeService.findOne({ sub: req.auth.sub, chainId });
-    if (!wallet) throw new NotFoundError('Could not find wallet for account');
+    const walletId = req.query.walletId as string;
+    const wallet = await WalletService.findById(walletId);
+    if (!wallet) throw new NotFoundError('Wallet not found');
 
     // Check sufficient BPTGauge approval
     const amount = await VoteEscrowService.getAllowance(
         wallet,
-        contractNetworks[chainId].BPTGauge,
-        contractNetworks[chainId].VotingEscrow,
+        contractNetworks[wallet.chainId].BPTGauge,
+        contractNetworks[wallet.chainId].VotingEscrow,
     );
     if (BigNumber.from(amount).lt(req.body.amountInWei)) throw new ForbiddenError('Insufficient allowance');
 

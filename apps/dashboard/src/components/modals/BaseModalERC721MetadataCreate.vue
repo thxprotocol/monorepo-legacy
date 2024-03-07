@@ -102,8 +102,8 @@ export default class ModalRewardCreate extends Vue {
                         ...this.metadata,
                         name: this.name,
                         description: this.description,
-                        externalUrl: this.externalUrl,
                         imageUrl: this.imageUrl,
+                        externalUrl: this.externalUrl && this.externalUrl,
                     },
                 },
             );

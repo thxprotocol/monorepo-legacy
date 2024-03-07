@@ -64,105 +64,170 @@ describe('VESytem', () => {
         );
     });
 
-    // describe('Deposit BPT-gauge ', () => {
-    //     it('Balance = total', async () => {
-    //         let tx = await testBPTGauge.mint(safeWallet.address, amountInWei);
-    //         tx = await tx.wait();
-    //         const event = tx.events.find((ev) => ev.event === 'Transfer');
-    //         expect(event).toBeDefined();
-    //         const balanceInWei = await testBPTGauge.balanceOf(safeWallet.address);
-    //         expect(balanceInWei.eq(amountInWei)).toBe(true);
-    //     });
+    describe('Stake BPT ', () => {
+        it('Balance = total', async () => {
+            let tx = await testBPT.transfer(safeWallet.address, amountInWei);
+            tx = await tx.wait();
+            const event = tx.events.find((ev) => ev.event === 'Transfer');
+            expect(event).toBeDefined();
+            const balanceInWei = await testBPT.balanceOf(safeWallet.address);
+            expect(balanceInWei.eq(amountInWei)).toBe(true);
+        });
+        it('Approve', async () => {
+            const { status, body } = await user
+                .post('/v1/ve/approve')
+                .set({ Authorization: widgetAccessToken })
+                .query({ walletId: String(safeWallet._id) })
+                .send({ tokenAddress: testBPT.address, amountInWei, spender: testBPTGauge.address });
+            expect(status).toBe(201);
 
-    //     it('WhiteList Safe Wallet', async () => {
-    //         // Move this to step 1 in VE UI modals
-    //         let tx = await scthx.approveWallet(safeWallet.address);
-    //         tx = await tx.wait();
-    //         const event = tx.events.find((ev) => ev.event === 'ApproveWallet');
-    //         expect(event).toBeDefined();
-    //     });
+            for (const tx of body) {
+                expect(tx.safeTxHash).toBeDefined();
 
-    //     it('Approve', async () => {
-    //         const { status, body } = await user
-    //             .post('/v1/ve/approve')
-    //             .set({ Authorization: widgetAccessToken })
-    //             .send({ amountInWei, spender: contractNetworks[chainId].VotingEscrow });
-    //         expect(status).toBe(201);
+                const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
+                await user
+                    .post('/v1/account/wallets/confirm')
+                    .set({ Authorization: widgetAccessToken })
+                    .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
+                    .expect(200);
+            }
+        });
 
-    //         for (const tx of body) {
-    //             expect(tx.safeTxHash).toBeDefined();
+        it('Wait for approved amount', async () => {
+            // Replace with API call
+            await poll(
+                () => testBPT.allowance(safeWallet.address, testBPTGauge.address),
+                (result: BigNumber) => result.eq(0),
+                1000,
+            );
+        });
 
-    //             const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
-    //             await user
-    //                 .post('/v1/account/wallets/confirm')
-    //                 .set({ Authorization: widgetAccessToken })
-    //                 .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
-    //                 .expect(200);
-    //         }
-    //     });
+        it('Stake 1000 BPT', async () => {
+            const { status, body } = await user
+                .post('/v1/liquidity/stake')
+                .set({ Authorization: widgetAccessToken })
+                .query({ walletId: String(safeWallet._id) })
+                .send({ amountInWei });
+            expect(status).toBe(201);
+            for (const tx of body) {
+                expect(tx.safeTxHash).toBeDefined();
 
-    //     it('Wait for approved amount', async () => {
-    //         // Replace with API call
-    //         await poll(
-    //             () => testBPTGauge.allowance(safeWallet.address, vethx.address),
-    //             (result: BigNumber) => result.eq(0),
-    //             1000,
-    //         );
-    //     });
+                const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
+                await user
+                    .post('/v1/account/wallets/confirm')
+                    .set({ Authorization: widgetAccessToken })
+                    .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
+                    .expect(200);
+            }
+        });
 
-    //     it('Deposit 1000', async () => {
-    //         const lockEndTimestamp = Math.ceil(Date.now() / 1000) + 60 * 60 * 24 * 7 * 12; // 12 weeks from now
-    //         const { status, body } = await user
-    //             .post('/v1/ve/deposit')
-    //             .set({ Authorization: widgetAccessToken })
-    //             .send({ amountInWei, lockEndTimestamp });
-    //         expect(status).toBe(201);
-    //         for (const tx of body) {
-    //             expect(tx.safeTxHash).toBeDefined();
+        it('User received BPT-gauge', async () => {
+            await poll(
+                () => testBPTGauge.balanceOf(safeWallet.address),
+                (amount: BigNumber) => BigNumber.from(amount).eq(0),
+                1000,
+            );
 
-    //             const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
-    //             await user
-    //                 .post('/v1/account/wallets/confirm')
-    //                 .set({ Authorization: widgetAccessToken })
-    //                 .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
-    //                 .expect(200);
-    //         }
-    //     });
+            const balanceInWei = await testBPTGauge.balanceOf(safeWallet.address);
 
-    //     it('Balance = total - deposit', async () => {
-    //         await poll(
-    //             () => vethx.locked(safeWallet.address),
-    //             (result: { amount: BigNumber }) => BigNumber.from(result.amount).eq(0),
-    //             1000,
-    //         );
+            expect(balanceInWei.gt(0)).toBe(true);
+        });
+    });
 
-    //         const balanceInWei = await testBPTGauge.balanceOf(safeWallet.address);
-    //         const rdBalanceInWei = await testBPTGauge.balanceOf(rdthx.address);
-    //         const totalMinDeposit = BigNumber.from(amountInWei).sub(amountInWei);
+    describe('Lock BPT-gauge ', () => {
+        it('WhiteList Safe Wallet', async () => {
+            // Move this to step 1 in VE UI modals
+            let tx = await scthx.approveWallet(safeWallet.address);
+            tx = await tx.wait();
+            const event = tx.events.find((ev) => ev.event === 'ApproveWallet');
+            expect(event).toBeDefined();
+        });
 
-    //         expect(rdBalanceInWei.eq(0)).toBe(true);
-    //         expect(balanceInWei.eq(totalMinDeposit)).toBe(true);
-    //     });
+        it('Approve', async () => {
+            const { status, body } = await user
+                .post('/v1/ve/approve')
+                .set({ Authorization: widgetAccessToken })
+                .query({ walletId: String(safeWallet._id) })
+                .send({
+                    tokenAddress: contractNetworks[chainId].BPTGauge,
+                    amountInWei,
+                    spender: contractNetworks[chainId].VotingEscrow,
+                });
+            expect(status).toBe(201);
 
-    //     it('List locks ', async () => {
-    //         const { status, body } = await user.get('/v1/ve').set({ Authorization: widgetAccessToken }).send();
+            for (const tx of body) {
+                expect(tx.safeTxHash).toBeDefined();
 
-    //         expect(Number(body[0].end)).toBeGreaterThan(Number(body[0].now));
-    //         expect(body[0].amount).toBe(Number(amountInWei));
-    //         expect(status).toBe(200);
-    //     });
-    // });
+                const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
+                await user
+                    .post('/v1/account/wallets/confirm')
+                    .set({ Authorization: widgetAccessToken })
+                    .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
+                    .expect(200);
+            }
+        });
+
+        it('Wait for approved amount', async () => {
+            // Replace with API call
+            await poll(
+                () => testBPTGauge.allowance(safeWallet.address, vethx.address),
+                (result: BigNumber) => result.eq(0),
+                1000,
+            );
+        });
+
+        it('Deposit 1000', async () => {
+            const lockEndTimestamp = Math.ceil(Date.now() / 1000) + 60 * 60 * 24 * 7 * 12; // 12 weeks from now
+            const { status, body } = await user
+                .post('/v1/ve/deposit')
+                .set({ Authorization: widgetAccessToken })
+                .query({ walletId: String(safeWallet._id) })
+                .send({ amountInWei, lockEndTimestamp });
+            expect(status).toBe(201);
+            for (const tx of body) {
+                expect(tx.safeTxHash).toBeDefined();
+
+                const { signature } = await signTxHash(safeWallet.address, tx.safeTxHash, userWalletPrivateKey);
+                await user
+                    .post('/v1/account/wallets/confirm')
+                    .set({ Authorization: widgetAccessToken })
+                    .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
+                    .expect(200);
+            }
+        });
+
+        it('Balance = total - deposit', async () => {
+            await poll(
+                () => vethx.locked(safeWallet.address),
+                (result: { amount: BigNumber }) => BigNumber.from(result.amount).eq(0),
+                1000,
+            );
+
+            const balanceInWei = await testBPTGauge.balanceOf(safeWallet.address);
+            const totalMinDeposit = BigNumber.from(amountInWei).sub(amountInWei);
+
+            expect(balanceInWei.eq(totalMinDeposit)).toBe(true);
+        });
+
+        it('List locks ', async () => {
+            const { status, body } = await user.get('/v1/ve').set({ Authorization: widgetAccessToken }).send();
+
+            expect(Number(body[0].end)).toBeGreaterThan(Number(body[0].now));
+            expect(body[0].amount).toBe(Number(amountInWei));
+            expect(status).toBe(200);
+        });
+    });
 
     // describe('Claim THX incentives', () => {
     //     it('Create Reward Distribution after first week', async () => {
     //         const amountBPT = String(ethers.utils.parseUnits('100000', 'ether'));
     //         const amountBAL = String(ethers.utils.parseUnits('1000', 'ether'));
 
-    //         // Travel past first week else this throws "Reward distribution has not started yet"
-    //         await timeTravel(60 * 60 * 24 * 7);
-
     //         // Add test THX as allowed reward token (incentive)
     //         await rdthx.addAllowedRewardTokens([testBPT.address, testBAL.address]);
+
+    //         // Travel past first week else this throws "Reward distribution has not started yet"
+    //         await timeTravel(60 * 60 * 24 * 7);
 
     //         // Deposit 10000 tokens into rdthx
     //         await testBPT.approve(rfthx.address, amountBPT);

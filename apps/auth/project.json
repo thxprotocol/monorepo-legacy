@@ -61,6 +61,7 @@
             "outputs": ["{workspaceRoot}/coverage/apps/auth"],
             "options": {
                 "jestConfig": "apps/auth/jest.config.ts",
+                "bail": true,
                 "passWithNoTests": true,
                 "runInBand": true,
                 "codeCoverage": true,
