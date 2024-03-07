@@ -17,6 +17,7 @@ export const controller = async (req: Request, res: Response) => {
     const walletId = req.query.walletId as string;
     const wallet = await WalletService.findById(walletId);
     if (!wallet) throw new NotFoundError('Wallet not found');
+    if (wallet.sub !== req.auth.sub) throw new ForbiddenError('Wallet not owned by sub.');
 
     // Check sufficient BPTGauge approval
     const amount = await VoteEscrowService.getAllowance(

@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
 import { query } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
-import ContractService, { getChainId } from '@thxnetwork/api/services/ContractService';
-import SafeService from '@thxnetwork/api/services/SafeService';
+import ContractService from '@thxnetwork/api/services/ContractService';
+import WalletService from '@thxnetwork/api/services/WalletService';
 
-const validation = [query('tokenAddress').isEthereumAddress()];
+const validation = [query('walletId').isMongoId(), query('tokenAddress').isEthereumAddress()];
 
 export const controller = async (req: Request, res: Response) => {
-    const chainId = getChainId();
-    const wallet = await SafeService.findOne({ sub: req.auth.sub, chainId });
-    if (!wallet) throw new NotFoundError('Could not find wallet for account');
+    const walletId = req.query.walletId as string;
+    const wallet = await WalletService.findById(walletId);
+    if (!wallet) throw new NotFoundError('Wallet not found');
 
     const contract = ContractService.getContractFromAbi(
         wallet.chainId,

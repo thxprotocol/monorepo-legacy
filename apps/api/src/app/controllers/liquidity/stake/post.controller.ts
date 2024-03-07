@@ -1,5 +1,5 @@
 import { contractArtifacts } from '@thxnetwork/api/services/ContractService';
-import { BadRequestError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { BadRequestError, ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { BigNumber } from 'ethers';
@@ -14,6 +14,7 @@ export const controller = async (req: Request, res: Response) => {
     const walletId = req.query.walletId as string;
     const wallet = await WalletService.findById(walletId);
     if (!wallet) throw new NotFoundError('Wallet not found');
+    if (wallet.sub !== req.auth.sub) throw new ForbiddenError('Wallet not owned by sub.');
 
     const { web3 } = getProvider(wallet.chainId);
     const bpt = new web3.eth.Contract(contractArtifacts['BPT'].abi, contractNetworks[wallet.chainId].BPT);
