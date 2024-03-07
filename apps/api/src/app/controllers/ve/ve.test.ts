@@ -34,7 +34,7 @@ describe('VESytem', () => {
         safeWallet = await SafeService.findOne({ sub, poolId: { $exists: false }, safeVersion: { $exists: true } });
         expect(safeWallet.address).toBeDefined();
 
-        testBAL = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BalToken'].abi, signer);
+        testBAL = new ethers.Contract(contractNetworks[chainId].BAL, contractArtifacts['BAL'].abi, signer);
         testBPT = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BPT'].abi, signer);
         testBPTGauge = new ethers.Contract(
             contractNetworks[chainId].BPTGauge,
