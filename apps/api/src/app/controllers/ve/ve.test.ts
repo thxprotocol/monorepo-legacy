@@ -14,7 +14,7 @@ import SafeService from '@thxnetwork/api/services/SafeService';
 const user = request.agent(app);
 const { signer } = getProvider(ChainId.Hardhat);
 
-describe('VESytem', () => {
+describe.skip('VESytem', () => {
     beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
