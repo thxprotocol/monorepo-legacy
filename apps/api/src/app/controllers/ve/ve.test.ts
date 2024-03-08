@@ -5,7 +5,7 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { ChainId } from '@thxnetwork/common/enums';
 import { contractArtifacts, contractNetworks } from '@thxnetwork/contracts/exports';
-import { sub, userWalletPrivateKey, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
+import { sub, userWalletAddress, userWalletPrivateKey, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { signTxHash, timeTravel } from '@thxnetwork/api/util/jest/network';
 import { poll } from '@thxnetwork/api/util/polling';
@@ -31,7 +31,7 @@ describe('VESytem', () => {
         scthx!: Contract;
 
     it('Deploy Tokens', async () => {
-        safeWallet = await SafeService.findOne({ sub, poolId: { $exists: false }, safeVersion: { $exists: true } });
+        safeWallet = await SafeService.findOne({ address: userWalletAddress });
         expect(safeWallet.address).toBeDefined();
 
         testBAL = new ethers.Contract(contractNetworks[chainId].BAL, contractArtifacts['BAL'].abi, signer);
