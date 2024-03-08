@@ -132,7 +132,7 @@ describe('QR Codes', () => {
     });
 
     it('PATCH /qr-codes/:uuid should succeed', (done) => {
-        user.patch(`/v1/qr-codes/${qrcodes[0].uuid}/entries`)
+        user.patch(`/v1/qr-codes/${qrcodes[0].uuid}`)
             .query({ walletId: String(wallet._id) })
             .set({ Authorization: widgetAccessToken })
             .expect(({ body }: request.Response) => {
@@ -159,7 +159,7 @@ describe('QR Codes', () => {
     });
 
     it('PATCH /qr-codes/:uuid should fail', (done) => {
-        user.patch(`/v1/qr-codes/${qrcodes[0].uuid}/entries`)
+        user.patch(`/v1/qr-codes/${qrcodes[0].uuid}`)
             .query({ walletId: String(wallet._id) })
             .set({ Authorization: widgetAccessToken })
             .expect(({ body }: request.Response) => {
@@ -169,7 +169,7 @@ describe('QR Codes', () => {
     });
 
     it('PATCH /qr-codes/:uuid from other account should also fail', (done) => {
-        user.patch(`/v1/qr-codes/${qrcodes[0].uuid}/entries`)
+        user.patch(`/v1/qr-codes/${qrcodes[0].uuid}`)
             .query({ walletId: String(wallet._id) })
             .set({ Authorization: widgetAccessToken2 })
             .expect(({ body }: request.Response) => {
@@ -179,7 +179,7 @@ describe('QR Codes', () => {
     });
 
     it('First attempt other claim for other account should succeed', (done) => {
-        user.patch(`/v1/qr-codes/${qrcodes[1].uuid}/entries`)
+        user.patch(`/v1/qr-codes/${qrcodes[1].uuid}`)
             .query({ walletId: String(wallet._id) })
             .set({ Authorization: widgetAccessToken2 })
             .expect(({ body }: request.Response) => {
