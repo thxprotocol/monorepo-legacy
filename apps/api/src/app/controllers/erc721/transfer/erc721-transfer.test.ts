@@ -173,6 +173,7 @@ describe('ERC721 Transfer', () => {
         const res2 = await user
             .post(`/v1/account/wallets/confirm`)
             .set({ Authorization: widgetAccessToken })
+            .set({ walletId: String(wallet._id) })
             .send({ chainId: ChainId.Hardhat, safeTxHash, signature });
 
         expect(res2.status).toBe(200);
