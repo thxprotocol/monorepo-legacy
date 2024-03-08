@@ -13,7 +13,7 @@ import {
     userWalletAddress3,
     userWalletAddress4,
 } from './constants';
-import { Wallet } from '@thxnetwork/api/services/SafeService';
+import { Wallet } from '@thxnetwork/api/models';
 import Safe, { SafeFactory } from '@safe-global/protocol-kit';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { poll } from '../polling';

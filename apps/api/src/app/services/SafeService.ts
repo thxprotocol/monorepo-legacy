@@ -1,4 +1,4 @@
-import { Wallet as WalletModel, WalletDocument } from '@thxnetwork/api/models/Wallet';
+import { Wallet, WalletDocument, Pool, PoolDocument, Transaction } from '@thxnetwork/api/models';
 import { ChainId, WalletVariant } from '@thxnetwork/common/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
@@ -14,12 +14,8 @@ import {
 import { logger } from '@thxnetwork/api/util/logger';
 import { agenda, JobType } from '@thxnetwork/api/util/agenda';
 import { Job } from '@hokify/agenda';
-import { Pool, PoolDocument } from '@thxnetwork/api/models';
-import { Transaction } from '../models/Transaction';
-import TransactionService from './TransactionService';
 import { convertObjectIdToNumber } from '../util';
-
-export const Wallet = WalletModel;
+import TransactionService from './TransactionService';
 
 function getSafeSDK(chainId: ChainId) {
     const { txServiceUrl, ethAdapter } = getProvider(chainId);

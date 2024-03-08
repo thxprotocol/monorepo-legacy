@@ -15,9 +15,9 @@ import {
     PoolDocument,
     RewardCoin,
     Transaction,
+    Wallet,
     WalletDocument,
 } from '@thxnetwork/api/models';
-import { Wallet } from './SafeService';
 import TransactionService from './TransactionService';
 import PoolService from './PoolService';
 import { fromWei } from 'web3-utils';

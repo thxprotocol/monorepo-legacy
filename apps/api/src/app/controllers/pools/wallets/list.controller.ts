@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { param } from 'express-validator';
-import { Wallet } from '@thxnetwork/api/services/SafeService';
+import { Wallet } from '@thxnetwork/api/models';
 
 const validation = [param('id').isMongoId()];
 

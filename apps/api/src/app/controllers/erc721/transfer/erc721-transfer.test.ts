@@ -170,13 +170,13 @@ describe('ERC721 Transfer', () => {
     it('Confirm tx', async () => {
         const wallet = await SafeService.findOne({ sub, safeVersion: { $exists: true } });
         const { signature } = await signTxHash(wallet.address, safeTxHash, userWalletPrivateKey);
-        const res2 = await user
+        const { status, body } = await user
             .post(`/v1/account/wallets/confirm`)
             .set({ Authorization: widgetAccessToken })
             .set({ walletId: String(wallet._id) })
             .send({ chainId: ChainId.Hardhat, safeTxHash, signature });
-
-        expect(res2.status).toBe(200);
+        console.log(body, String(wallet._id));
+        expect(status).toBe(200);
     });
 
     it('Wait for ownerOf', async () => {
