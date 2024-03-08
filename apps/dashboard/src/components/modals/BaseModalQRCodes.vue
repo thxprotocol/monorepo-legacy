@@ -91,7 +91,9 @@
                                 <template #button-content>
                                     <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                                 </template>
-                                <b-dropdown-item @click="() => item" disabled> Delete </b-dropdown-item>
+                                <b-dropdown-item @click="onClickDelete(item.entry.uuid)" :disabled="item.entry.sub">
+                                    Delete
+                                </b-dropdown-item>
                             </b-dropdown>
                         </template>
                     </BTable>
@@ -157,18 +159,20 @@
                                 description="Download a Zip file containing all QR codes or a spreadsheet (CSV) containing all URL's."
                             >
                                 <b-button-group class="w-100">
-                                    <b-button variant="primary" @click="onClickDownloadZipAll">
+                                    <b-button variant="primary" @click="onClickDownloadZipAll" :disabled="isLoadingAll">
                                         <b-spinner small variant="light" v-if="index" />
                                         <template v-else>Zip</template>
                                     </b-button>
-                                    <b-button variant="primary" @click="onClickDownloadCSVAll"> CSV </b-button>
+                                    <b-button variant="primary" @click="onClickDownloadCSVAll" :disabled="isLoadingAll">
+                                        CSV
+                                    </b-button>
                                 </b-button-group>
                             </b-form-group>
 
                             <b-progress
                                 v-if="index"
                                 :value="index"
-                                :max="selectedQRCodeEntries.length"
+                                :max="allCodes.length"
                                 variant="primary"
                                 show-value
                                 class="mt-2"
@@ -233,6 +237,7 @@ function hex2Rgb(hex: string) {
 export default class BaseModalQRCodes extends Vue {
     format = format;
     isSubmitDisabled = false;
+    isLoadingAll = false;
     isLoading = false;
     color = '000000';
     size = 256;
@@ -242,6 +247,7 @@ export default class BaseModalQRCodes extends Vue {
     selectedFormat = 'png';
     selectedUnit = unitList[0];
     selectedQRCodeEntries: string[] = [];
+    allCodes = [];
 
     limit = 25;
     page = 1;
@@ -302,6 +308,7 @@ export default class BaseModalQRCodes extends Vue {
 
     async listEntries() {
         this.isLoading = true;
+        this.page = 1;
         await this.$store.dispatch('qrcodes/list', { reward: this.reward, page: this.page, limit: this.limit });
         this.isLoading = false;
     }
@@ -324,32 +331,56 @@ export default class BaseModalQRCodes extends Vue {
         this.listEntries();
     }
 
-    onClickDownloadZipAll() {
-        this.selectedQRCodeEntries = this.qrCodeEntries.map((c) => c.entry.uuid);
-        this.onClickCreateZip();
+    async listAll() {
+        this.allCodes = await this.$store.dispatch('qrcodes/listAll', { reward: this.reward, page: 1, limit: 5000 });
     }
 
-    onClickDownloadCSVAll() {
-        this.selectedQRCodeEntries = this.qrCodeEntries.map((c) => c.entry.uuid);
-        this.onClickCreateCSV();
+    async onClickDownloadZipAll() {
+        this.isLoadingAll = true;
+
+        // Fetch all codes (max 5000)
+        await this.listAll();
+
+        // Create the zip
+        await this.onClickCreateZip(this.allCodes);
+
+        this.isLoadingAll = false;
     }
 
-    onClickDelete() {
-        //
+    async onClickDownloadCSVAll() {
+        this.isLoadingAll = true;
+        // Fetch all codes (max 5000)
+        await this.listAll();
+
+        // Create the CSV
+        this.onClickCreateCSV(this.allCodes);
+
+        this.isLoadingAll = false;
     }
 
-    onClickAction(action: { variant: number; label: string }) {
+    onClickDelete(uuid: string) {
+        this.removeQRCode(uuid);
+    }
+
+    async removeQRCode(uuid: string) {
+        await this.$store.dispatch('qrcodes/remove', uuid);
+    }
+
+    async onClickAction(action: { variant: number; label: string }) {
         switch (action.variant) {
             case 0:
-                for (const id of Object.values(this.selectedQRCodeEntries)) {
-                    console.log('Delete claim', id);
+                this.isLoading = true;
+                for (const uuid of Object.values(this.selectedQRCodeEntries)) {
+                    await this.removeQRCode(uuid);
                 }
+                await this.listEntries();
+                this.isLoading = false;
                 break;
             case 1:
-                this.onClickCreateZip();
+                this.onClickCreateZip(this.selectedQRCodeEntries);
                 break;
             case 2:
-                this.onClickCreateCSV();
+                this.onClickCreateCSV(this.selectedQRCodeEntries);
                 break;
         }
     }
@@ -423,13 +454,13 @@ export default class BaseModalQRCodes extends Vue {
         return url.toString();
     }
 
-    async onClickCreateZip() {
+    async onClickCreateZip(codes: string[]) {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_qr_codes`;
         const zip = new JSZip();
         const archive = zip.folder(filename) as JSZip;
         const format = this.selectedFormat;
 
-        for (const uuid of this.selectedQRCodeEntries) {
+        for (const uuid of codes) {
             let data: string | ArrayBuffer;
             const url = this.getUrl(uuid);
 
@@ -457,9 +488,9 @@ export default class BaseModalQRCodes extends Vue {
         this.index = 0;
     }
 
-    onClickCreateCSV() {
+    onClickCreateCSV(codes: string[]) {
         const filename = `${new Date().getTime()}_${this.pool._id}_claim_urls`;
-        const data = this.selectedQRCodeEntries.map((uuid) => [this.getUrl(uuid)]);
+        const data = codes.map((uuid) => [this.getUrl(uuid)]);
         const csvContent = 'data:text/csv;charset=utf-8,' + data.map((e) => e.join(',')).join('\n');
         saveAs(encodeURI(csvContent), `${filename}.csv`);
     }

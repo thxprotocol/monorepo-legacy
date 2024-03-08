@@ -32,7 +32,7 @@
             <b-button
                 :disabled="isLocked || isSubmitDisabled"
                 class="rounded-pill"
-                @click="submit()"
+                @click="onClickSubmit"
                 variant="primary"
                 block
             >
@@ -89,7 +89,7 @@ export default class ModalRewardCreate extends Vue {
         this.error = '';
     }
 
-    async submit() {
+    async onClickSubmit() {
         try {
             this.isSubmitDisabled = true;
             await this.$store.dispatch(
@@ -102,7 +102,7 @@ export default class ModalRewardCreate extends Vue {
                         name: this.name,
                         description: this.description,
                         imageUrl: this.imageUrl,
-                        externalUrl: this.externalUrl && this.externalUrl,
+                        ...(this.externalUrl && { externalUrl: this.externalUrl }),
                     },
                 },
             );

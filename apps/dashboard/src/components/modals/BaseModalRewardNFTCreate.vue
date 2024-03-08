@@ -166,6 +166,7 @@ export default class ModalRewardNFTCreate extends Vue {
                 metadataId: this.metadataId,
             });
             this.$bvModal.hide(this.id);
+            this.$emit('submit');
         } catch (error) {
             this.error = (error as Error).toString();
         } finally {

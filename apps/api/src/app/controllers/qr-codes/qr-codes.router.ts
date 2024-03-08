@@ -3,6 +3,7 @@ import { assertRequestInput, checkJwt, corsHandler, guard } from '@thxnetwork/ap
 import ListEntry from './list.controller';
 import CreateEntry from './post.controller';
 import ReadEntry from './get.controller';
+import DeleteEntryController from './delete.controller';
 import ReadRedirectEntry from './redirect/get.controller';
 import UpdateEntryController from './collect/post.controller';
 
@@ -16,10 +17,17 @@ router.get('/', guard.check(['pools:read']), assertRequestInput(ListEntry.valida
 router.post('/', guard.check(['pools:read']), assertRequestInput(CreateEntry.validation), CreateEntry.controller);
 
 router.patch(
-    '/:uuid/entries',
+    '/:uuid',
     guard.check(['claims:read']),
     assertRequestInput(UpdateEntryController.validation),
     UpdateEntryController.controller,
+);
+
+router.delete(
+    '/:uuid',
+    guard.check(['pools:write']),
+    assertRequestInput(DeleteEntryController.validation),
+    DeleteEntryController.controller,
 );
 
 export default router;

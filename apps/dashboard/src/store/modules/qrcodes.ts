@@ -38,6 +38,14 @@ class QRCodeModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async remove(uuid: string) {
+        await axios({
+            method: 'DELETE',
+            url: `/qr-codes/${uuid}`,
+        });
+    }
+
+    @Action({ rawError: true })
     async list({ reward, limit, page }: { reward: TRewardNFT; limit: number; page: number }) {
         const { data } = await axios({
             method: 'GET',
@@ -50,6 +58,21 @@ class QRCodeModule extends VuexModule {
         });
 
         this.context.commit('setQRCodes', { rewardId: reward._id, result: data });
+    }
+
+    @Action({ rawError: true })
+    async listAll({ reward, limit, page }: { reward: TRewardNFT; limit: number; page: number }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/qr-codes`,
+            params: {
+                rewardId: reward._id,
+                limit,
+                page,
+            },
+        });
+
+        return data.results.map((entry: TQRCodeEntry) => entry.uuid);
     }
 }
 
