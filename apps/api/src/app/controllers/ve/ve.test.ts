@@ -5,7 +5,7 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { ChainId } from '@thxnetwork/common/enums';
 import { contractArtifacts, contractNetworks } from '@thxnetwork/contracts/exports';
-import { sub, userWalletAddress, userWalletPrivateKey, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
+import { sub, userWalletPrivateKey, widgetAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { signTxHash, timeTravel } from '@thxnetwork/api/util/jest/network';
 import { poll } from '@thxnetwork/api/util/polling';
@@ -31,7 +31,7 @@ describe('VESytem', () => {
         scthx!: Contract;
 
     it('Deploy Tokens', async () => {
-        safeWallet = await SafeService.findOne({ address: userWalletAddress });
+        safeWallet = await SafeService.findOne({ sub, poolId: { $exists: false }, safeVersion: { $exists: true } });
         expect(safeWallet.address).toBeDefined();
 
         testBAL = new ethers.Contract(contractNetworks[chainId].BAL, contractArtifacts['BAL'].abi, signer);
@@ -88,6 +88,7 @@ describe('VESytem', () => {
                 await user
                     .post('/v1/account/wallets/confirm')
                     .set({ Authorization: widgetAccessToken })
+                    .query({ walletId: String(safeWallet._id) })
                     .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);
             }
@@ -116,6 +117,7 @@ describe('VESytem', () => {
                 await user
                     .post('/v1/account/wallets/confirm')
                     .set({ Authorization: widgetAccessToken })
+                    .query({ walletId: String(safeWallet._id) })
                     .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);
             }
@@ -162,6 +164,7 @@ describe('VESytem', () => {
                 await user
                     .post('/v1/account/wallets/confirm')
                     .set({ Authorization: widgetAccessToken })
+                    .query({ walletId: String(safeWallet._id) })
                     .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);
             }
@@ -191,6 +194,7 @@ describe('VESytem', () => {
                 await user
                     .post('/v1/account/wallets/confirm')
                     .set({ Authorization: widgetAccessToken })
+                    .query({ walletId: String(safeWallet._id) })
                     .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);
             }
@@ -260,6 +264,7 @@ describe('VESytem', () => {
             const { status, body } = await user
                 .post('/v1/ve/withdraw')
                 .set({ Authorization: widgetAccessToken })
+                .query({ walletId: String(safeWallet._id) })
                 .send({ isEarlyAttempt: false });
             expect(status).toBe(403);
             expect(body.error.message).toBe('Funds are locked');
@@ -269,6 +274,7 @@ describe('VESytem', () => {
             const { status, body } = await user
                 .post('/v1/ve/withdraw')
                 .set({ Authorization: widgetAccessToken })
+                .query({ walletId: String(safeWallet._id) })
                 .send({ isEarlyAttempt: true });
             expect(status).toBe(201);
             for (const tx of body) {
@@ -278,6 +284,7 @@ describe('VESytem', () => {
                 await user
                     .post('/v1/account/wallets/confirm')
                     .set({ Authorization: widgetAccessToken })
+                    .query({ walletId: String(safeWallet._id) })
                     .send({ chainId: ChainId.Hardhat, safeTxHash: tx.safeTxHash, signature })
                     .expect(200);
             }
