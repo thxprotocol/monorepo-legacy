@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 import { HardhatUserConfig } from 'hardhat/types/config';
 import '@nomiclabs/hardhat-waffle';
-import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-web3';
+import '@nomicfoundation/hardhat-verify';
 import 'hardhat-gas-reporter';
 import 'hardhat-deploy';
 import '@openzeppelin/hardhat-upgrades';
@@ -152,6 +152,9 @@ if (POLYGON_PRIVATE_KEY_DEV && INFURA_PROJECT_ID && config.networks) {
 if (process.env.ETHERSCAN_API) {
     config.etherscan = {
         apiKey: process.env.ETHERSCAN_API,
+    };
+    config.sourcify = {
+        enabled: true,
     };
 }
 
