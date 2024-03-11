@@ -1,8 +1,12 @@
 <template>
     <div :class="toggle ? 'fixed-top bg-white shadow' : 'fixed-top'">
         <b-alert show variant="primary" class="text-center p-2">
-            <b-link href="https://docs.thx.network/rewards/qr-codes" target="_blank">
-                <strong>Unlock Rewards with QR Codes 🚀</strong> A Featured Campaign by the Royal Dutch Mint
+            <b-link
+                href="https://medium.com/thxprotocol/revolutionizing-gaming-with-thx-networks-new-vote-escrowed-tokenomics-18ef24239e46"
+                target="_blank"
+            >
+                <strong>Discover Staking Now 🎁</strong> Stake Your $THX on Balancer & Collect 70% of the Protocol Fees.
+                Early Stakers Get Extra Rewards
                 <i class="fas fa-chevron-right ml-2" />
             </b-link>
         </b-alert>
