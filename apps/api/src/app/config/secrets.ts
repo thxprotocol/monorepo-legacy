@@ -108,8 +108,7 @@ export const SAFE_TXS_SERVICE = process.env.SAFE_TXS_SERVICE || 'https://safe-tr
 export const BOT_TOKEN = process.env.BOT_TOKEN;
 export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID;
 export const GITCOIN_API_KEY = process.env.GITCOIN_API_KEY;
-export const BALANCER_POOL_ID =
-    process.env.BALANCER_POOL_ID || '0xb204bf10bc3a5435017d3db247f56da601dfe08a0002000000000000000000fe';
+export const BALANCER_POOL_ID = '0xb204bf10bc3a5435017d3db247f56da601dfe08a0002000000000000000000fe';
 export const PINATA_API_JWT = process.env.PINATA_API_JWT || '';
 export const ALLOWED_API_CLIENT_ID = process.env.ALLOWED_API_CLIENT_ID || '';
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;

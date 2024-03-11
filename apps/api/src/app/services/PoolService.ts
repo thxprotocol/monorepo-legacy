@@ -196,7 +196,7 @@ async function findParticipants(pool: PoolDocument, page: number, limit: number)
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
     const poolId = String(pool._id);
-    const total = await Participant.find({ poolId }).countDocuments();
+    const total = await Participant.countDocuments({ poolId });
     const participants = {
         previous: startIndex > 0 && {
             page: page - 1,

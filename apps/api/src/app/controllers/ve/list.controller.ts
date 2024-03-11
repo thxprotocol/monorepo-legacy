@@ -4,22 +4,24 @@ import { ChainId } from '@thxnetwork/common/enums';
 import { contractArtifacts, contractNetworks } from '@thxnetwork/contracts/exports';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { toChecksumAddress } from 'web3-utils';
-import { getChainId } from '@thxnetwork/api/services/ContractService';
-import SafeService from '@thxnetwork/api/services/SafeService';
+import WalletService from '@thxnetwork/api/services/WalletService';
+import { query } from 'express-validator';
 
-export const validation = [];
+export const validation = [query('walletId').isMongoId()];
 
 const parseMs = (s) => Number(s) * 1000;
 
 export const controller = async (req: Request, res: Response) => {
-    const chainId = getChainId(); // TODO Replace with query.walletId and derive chainId from wallet
-
-    const wallet = await SafeService.findOne({ sub: req.auth.sub, chainId });
-    if (!wallet) throw new NotFoundError('Could not find wallet for account');
+    const walletId = req.query.walletId as string;
+    const wallet = await WalletService.findById(walletId);
+    if (!wallet) throw new NotFoundError('Wallet not found.');
 
     const { web3 } = getProvider(ChainId.Hardhat);
-    const ve = new web3.eth.Contract(contractArtifacts['VotingEscrow'].abi, contractNetworks[chainId].VotingEscrow);
-    const lr = new web3.eth.Contract(contractArtifacts['LensReward'].abi, contractNetworks[chainId].LensRewar);
+    const ve = new web3.eth.Contract(
+        contractArtifacts['VotingEscrow'].abi,
+        contractNetworks[wallet.chainId].VotingEscrow,
+    );
+    const lr = new web3.eth.Contract(contractArtifacts['LensReward'].abi, contractNetworks[wallet.chainId].LensReward);
 
     // Check for lock and determine ve fn to call
     const { amount, end } = await ve.methods.locked(wallet.address).call();
@@ -27,7 +29,7 @@ export const controller = async (req: Request, res: Response) => {
     const now = (await web3.eth.getBlock(latest)).timestamp;
     const callStatic = async (fn) => {
         const result = await web3.eth.call({
-            to: contractNetworks[chainId].LensReward,
+            to: contractNetworks[wallet.chainId].LensReward,
             data: fn.encodeABI(),
             from: toChecksumAddress(wallet.address),
         });
@@ -36,16 +38,16 @@ export const controller = async (req: Request, res: Response) => {
     const calls = await Promise.allSettled([
         callStatic(
             lr.methods.getUserClaimableReward(
-                contractNetworks[chainId].RewardDistributor,
+                contractNetworks[wallet.chainId].RewardDistributor,
                 toChecksumAddress(wallet.address),
-                contractNetworks[chainId].BAL,
+                contractNetworks[wallet.chainId].BAL,
             ),
         ),
         callStatic(
             lr.methods.getUserClaimableReward(
-                contractNetworks[chainId].RewardDistributor,
+                contractNetworks[wallet.chainId].RewardDistributor,
                 toChecksumAddress(wallet.address),
-                contractNetworks[chainId].BPT,
+                contractNetworks[wallet.chainId].BPT,
             ),
         ),
     ]);
