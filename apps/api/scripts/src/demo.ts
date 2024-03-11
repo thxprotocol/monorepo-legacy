@@ -69,6 +69,8 @@ export default async function main() {
                 pool = await createPool(sub, gameName, gameDomain);
             }
 
+            await pool.updateOne({ chainId: ChainId.Polygon });
+
             const poolId = pool._id;
 
             // Remove all existing data

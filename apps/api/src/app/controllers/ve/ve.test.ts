@@ -214,7 +214,11 @@ describe('VESytem', () => {
         });
 
         it('List locks ', async () => {
-            const { status, body } = await user.get('/v1/ve').set({ Authorization: widgetAccessToken }).send();
+            const { status, body } = await user
+                .get('/v1/ve')
+                .query({ walletId: String(safeWallet._id) })
+                .set({ Authorization: widgetAccessToken })
+                .send();
 
             expect(Number(body[0].end)).toBeGreaterThan(Number(body[0].now));
             expect(body[0].amount).toBe(Number(amountInWei));
