@@ -205,8 +205,10 @@ export default async function main() {
                 let titleSuggestion, descriptionSuggestion;
                 if (['Daily', 'Custom'].includes(questType)) {
                     titleSuggestion = await getSuggestion(sql[`Q${i} - Title`], 40);
+                    // titleSuggestion = sql[`Q${i} - Title`];
                     tokens += titleSuggestion.tokensUsed;
                     descriptionSuggestion = await getSuggestion(sql[`Q${i} - Description`], 100);
+                    // descriptionSuggestion = sql[`Q${i} - Description`];
                     tokens += descriptionSuggestion.tokensUsed;
                 }
 

@@ -1,11 +1,11 @@
 import fs from 'fs';
+import OpenAI from 'openai';
 import csvParser from 'csv-parser';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { DEFAULT_COLORS, DEFAULT_ELEMENTS } from '@thxnetwork/common/constants';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { v4 } from 'uuid';
 import { twitterClient } from '@thxnetwork/api/util/twitter';
-import { OpenAIApi, Configuration } from 'openai';
 
 async function readCSV(csvFilePath: string) {
     const data: any = [];
@@ -55,19 +55,20 @@ async function createPool(sub: string, title: string, gameUrl: string) {
     return pool;
 }
 
-const configuration = new Configuration({
+const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 async function getSuggestion(content: string, length: number) {
+    console.log('START SUGGESTION');
     if (!content) return;
 
     const prompt = `You are a content writer for games. Please rephrase this text in a short, engaging and active form. Apply a maximum character length of ${length} characters:`;
-    const { data } = await openai.createChatCompletion({
+    const data = await openai.chat.completions.create({
         model: 'gpt-3.5-turbo',
         messages: [{ role: 'user', content: prompt + content }],
     });
+    console.log(data);
 
     return {
         content: data.choices[0].message.content,
