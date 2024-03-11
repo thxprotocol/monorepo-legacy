@@ -19,11 +19,11 @@
         "paths": {
             "@thxnetwork/api*": ["apps/api/src/app*"],
             "@thxnetwork/auth*": ["apps/auth/src/app*"],
+            "@thxnetwork/common*": ["libs/common/src/lib*"],
+            "@thxnetwork/contracts*": ["libs/contracts*"],
             "@thxnetwork/dashboard*": ["apps/dashboard/src*"],
             "@thxnetwork/public*": ["apps/public/src*"],
-            "@thxnetwork/contracts*": ["libs/contracts*"],
-            "@thxnetwork/sdk*": ["libs/sdk/src/lib*"],
-            "@thxnetwork/common*": ["libs/common/src/lib*"]
+            "@thxnetwork/sdk*": ["libs/sdk/src/lib*"]
         }
     },
     "exclude": ["node_modules", "tmp"]
