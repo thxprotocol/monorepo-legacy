@@ -78,7 +78,7 @@ describe('VESytem', () => {
         });
         it('Approve', async () => {
             const { status, body } = await user
-                .post('/v1/ve/approve')
+                .post('/v1/erc20/allowance')
                 .set({ Authorization: widgetAccessToken })
                 .query({ walletId: String(safeWallet._id) })
                 .send({ tokenAddress: testBPT.address, amountInWei, spender: testBPTGauge.address });
@@ -150,7 +150,7 @@ describe('VESytem', () => {
 
         it('Approve', async () => {
             const { status, body } = await user
-                .post('/v1/ve/approve')
+                .post('/v1/erc20/allowance')
                 .set({ Authorization: widgetAccessToken })
                 .query({ walletId: String(safeWallet._id) })
                 .send({
