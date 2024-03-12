@@ -82,8 +82,8 @@ export default class QuestDiscordService implements IQuestService {
     }
 
     private async isAvailableMessage({ quest, account }: { quest: TQuestSocial; account?: TAccount }) {
-        const amount = await this.getAmount({ quest, account });
-        const isAvailable = amount > 0;
+        const { pointsAvailable } = await this.getMessagePoints({ quest, account });
+        const isAvailable = pointsAvailable > 0;
         if (isAvailable) return { result: true, reason: '' };
 
         return { result: false, reason: 'You have not earned any points with messages yet.' };
