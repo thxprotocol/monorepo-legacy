@@ -43,17 +43,14 @@ async function deposit(wallet: WalletDocument, amountInWei: string, endTimestamp
 
     // Define helpers
     const createLock = () => {
-        console.log(amountInWei, endTimestamp, 'create_lock');
         const fn = ve.methods.create_lock(amountInWei, endTimestamp);
         return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
     };
     const increaseAmount = () => {
-        console.log(amountInWei, 'increase_amount');
         const fn = ve.methods.increase_amount(amountInWei);
         return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
     };
     const increaseUnlockTime = () => {
-        console.log(endTimestamp, 'increase_unlock_time');
         const fn = ve.methods.increase_unlock_time(endTimestamp);
         return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
     };

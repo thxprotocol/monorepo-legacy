@@ -34,8 +34,8 @@ describe('VESytem', () => {
         safeWallet = await SafeService.findOne({ sub, poolId: { $exists: false }, safeVersion: { $exists: true } });
         expect(safeWallet.address).toBeDefined();
 
-        // // Travel past first week else this throws "Reward distribution has not started yet"
-        // await timeTravel(60 * 60 * 24 * 7);
+        // Travel past first week else this throws "Reward distribution has not started yet"
+        await timeTravel(60 * 60 * 24 * 7);
 
         testBAL = new ethers.Contract(contractNetworks[chainId].BAL, contractArtifacts['BAL'].abi, signer);
         testBPT = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BPT'].abi, signer);
@@ -65,6 +65,24 @@ describe('VESytem', () => {
             contractArtifacts['SmartWalletWhitelist'].abi,
             signer,
         );
+    });
+
+    describe('Claim THX incentives', () => {
+        it('Create Reward Distribution after first week', async () => {
+            const amountBPT = String(ethers.utils.parseUnits('100000', 'ether'));
+            const amountBAL = String(ethers.utils.parseUnits('1000', 'ether'));
+
+            // Deposit 10000 tokens into rdthx
+            await testBPT.approve(rfthx.address, amountBPT);
+            await testBAL.approve(rfthx.address, amountBAL);
+            await rfthx.depositEqualWeeksPeriod(testBPT.address, amountBPT, '4');
+            await rfthx.depositEqualWeeksPeriod(testBAL.address, amountBAL, '4');
+
+            // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 0)));
+            // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 1)));
+            // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 2)));
+            // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 4)));
+        });
     });
 
     describe('Stake BPT ', () => {
@@ -230,21 +248,6 @@ describe('VESytem', () => {
     });
 
     describe('Claim THX incentives', () => {
-        it('Create Reward Distribution after first week', async () => {
-            const amountBPT = String(ethers.utils.parseUnits('100000', 'ether'));
-            const amountBAL = String(ethers.utils.parseUnits('1000', 'ether'));
-
-            // Deposit 10000 tokens into rdthx
-            await testBPT.approve(rfthx.address, amountBPT);
-            await testBAL.approve(rfthx.address, amountBAL);
-            await rfthx.depositEqualWeeksPeriod(testBPT.address, amountBPT, '4');
-            await rfthx.depositEqualWeeksPeriod(testBAL.address, amountBAL, '4');
-
-            // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 0)));
-            // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 1)));
-            // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 2)));
-            // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 4)));
-        });
         it('Claim Tokens (after 8 days)', async () => {
             // Travel past end date of the first reward eligible week
             await timeTravel(60 * 60 * 24 * 8);
