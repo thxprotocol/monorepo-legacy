@@ -259,7 +259,7 @@ describe('VESytem', () => {
             expect(event).toBeDefined();
 
             const balanceAfterClaim = await testBPT.balanceOf(safeWallet.address);
-            expect(BigNumber.from(balance).gt(balanceAfterClaim)).toBe(true);
+            expect(BigNumber.from(balance).lt(balanceAfterClaim)).toBe(true);
         });
     });
 
