@@ -246,6 +246,9 @@ describe('VESytem', () => {
             // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 4)));
         });
         it('Claim Tokens (after 8 days)', async () => {
+            // Travel past current week
+            await timeTravel(60 * 60 * 24 * 7);
+
             // Travel past end date of the first reward eligible week
             await timeTravel(60 * 60 * 24 * 8);
 
