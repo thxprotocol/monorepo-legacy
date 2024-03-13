@@ -84,12 +84,10 @@ async function getNetworkDetails(chainId: ChainId) {
             ]),
         };
 
-        // const supply = await Promise.all([
-        //     fromWei(String(await rfthx.totalTokenRewards(bpt.address)), 'ether'),
-        //     fromWei(String(await rfthx.totalTokenRewards(bal.address)), 'ether'),
-        // ]);
+        const currentBlock = await web3.eth.getBlock('latest');
 
         return {
+            blockTime: new Date(Number(currentBlock.timestamp) * 1000),
             address,
             ve,
             relayer,

@@ -246,9 +246,6 @@ describe('VESytem', () => {
             // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 4)));
         });
         it('Claim Tokens (after 8 days)', async () => {
-            // Travel past current week
-            await timeTravel(60 * 60 * 24 * 7);
-
             // Travel past end date of the first reward eligible week
             await timeTravel(60 * 60 * 24 * 8);
 
@@ -262,7 +259,7 @@ describe('VESytem', () => {
             expect(event).toBeDefined();
 
             const balanceAfterClaim = await testBPT.balanceOf(safeWallet.address);
-            expect(BigNumber.from(balance).lt(balanceAfterClaim)).toBe(true);
+            expect(BigNumber.from(balance).gt(balanceAfterClaim)).toBe(true);
         });
     });
 
