@@ -34,9 +34,6 @@ describe('VESytem', () => {
         safeWallet = await SafeService.findOne({ sub, poolId: { $exists: false }, safeVersion: { $exists: true } });
         expect(safeWallet.address).toBeDefined();
 
-        // Travel past first week else this throws "Reward distribution has not started yet"
-        await timeTravel(60 * 60 * 24 * 7);
-
         testBAL = new ethers.Contract(contractNetworks[chainId].BAL, contractArtifacts['BAL'].abi, signer);
         testBPT = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BPT'].abi, signer);
         testBPTGauge = new ethers.Contract(
@@ -67,7 +64,7 @@ describe('VESytem', () => {
         );
     });
 
-    describe('Claim THX incentives', () => {
+    describe('Create Reward Distribution', () => {
         it('Create Reward Distribution after first week', async () => {
             const amountBPT = String(ethers.utils.parseUnits('100000', 'ether'));
             const amountBAL = String(ethers.utils.parseUnits('1000', 'ether'));
@@ -77,6 +74,9 @@ describe('VESytem', () => {
             await testBAL.approve(rfthx.address, amountBAL);
             await rfthx.depositEqualWeeksPeriod(testBPT.address, amountBPT, '4');
             await rfthx.depositEqualWeeksPeriod(testBAL.address, amountBAL, '4');
+
+            // Travel past first week else this throws "Reward distribution has not started yet"
+            await timeTravel(60 * 60 * 24 * 7);
 
             // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 0)));
             // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 1)));

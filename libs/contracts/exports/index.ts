@@ -54,8 +54,8 @@ export const contractNetworks = {
         VotingEscrow: '0xE3B8E734e7BCcB64B63e032795896CC57012A51D',
         RewardDistributor: '0xCc62c812EfF9cA4c35623103B2Bb63E22f465E09',
         RewardFaucet: '0xA1D7671f73FbcB5e079d4dC4Cffb7dDD0967EA7E',
-        SmartWalletWhitelist: '',
-        LensReward: '',
+        SmartWalletWhitelist: '0x876625a92cEAa7f1Bddd40908B8eb5C6080cB83C',
+        LensReward: '0xe8d9624e0b7f839540e7c13577550e3eff3fc8aa',
     },
 } as ContractNetworksConfig & any;
 

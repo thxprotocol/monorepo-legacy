@@ -92,8 +92,17 @@ async function withdraw(wallet: WalletDocument, isEarlyWithdraw: boolean) {
 }
 
 async function listRewards(wallet: WalletDocument) {
-    const { web3 } = getProvider();
+    const { web3 } = getProvider(wallet.chainId);
+
+    // Get reward tokens
+    const rd = new web3.eth.Contract(
+        contractArtifacts['RewardDistributor'].abi,
+        contractNetworks[wallet.chainId].RewardDistributor,
+    );
     const lr = new web3.eth.Contract(contractArtifacts['LensReward'].abi, contractNetworks[wallet.chainId].LensReward);
+
+    const rewardTokens = await rd.methods.getAllowedRewardTokens().call();
+    // Call static
     const callStatic = async (fn) => {
         const result = await web3.eth.call({
             to: contractNetworks[wallet.chainId].LensReward,
@@ -113,14 +122,16 @@ async function listRewards(wallet: WalletDocument) {
             result,
         );
     };
+
+    // Call static on rewards
     const rewards = await callStatic(
         lr.methods.getUserClaimableRewardsAll(
             contractNetworks[wallet.chainId].RewardDistributor,
             toChecksumAddress(wallet.address),
-            [contractNetworks[wallet.chainId].BAL, contractNetworks[wallet.chainId].BPT],
+            rewardTokens,
         ),
     );
-    console.log(rewards['0']);
+
     return rewards['0'].map(({ tokenAddress, amount }) => ({ tokenAddress, amount }));
 }
 

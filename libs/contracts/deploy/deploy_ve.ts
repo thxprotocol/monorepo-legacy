@@ -87,7 +87,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     // Add smart wallet whitelist checker
     await vethx.commit_smart_wallet_checker(smartCheckerList.address);
-    await vethx.commit_smart_wallet_checker(smartCheckerList.address);
     console.log('veTHX:', 'commit_smart_wallet_checker', smartCheckerList.address);
 
     await vethx.apply_smart_wallet_checker();
