@@ -76,7 +76,7 @@ describe('VESytem', () => {
             await rfthx.depositEqualWeeksPeriod(testBAL.address, amountBAL, '4');
 
             // Travel past first week else this throws "Reward distribution has not started yet"
-            await timeTravel(60 * 60 * 24 * 7);
+            await timeTravel(60 * 60 * 24 * 8);
 
             // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 0)));
             // console.log(String(await rfthx.getUpcomingRewardsForNWeeks(testBPT.address, 1)));
