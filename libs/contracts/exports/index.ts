@@ -37,11 +37,6 @@ export const contractNetworks = {
         RewardFaucet: '0x7d19C8cd97AAD3d97688eB60C54785c99997a1Bf',
         SmartWalletWhitelist: '0x5E0A87862f9175493Cc1d02199ad18Eff87Eb400',
         LensReward: '0xe2092A19f37D2DBBfa9c41C9b83CBAAA1294548f',
-        // Tokens
-        // LimitedSupplyToken: '0xf228ADAa4c3D07C8285C1025421afe2c4F320C59',
-        // UnlimitedSupplyToken: '0x8613B8E442219e4349fa5602C69431131a7ED114',
-        // NonFungibleToken: '0x8B219D3d1FC64e03F6cF3491E7C7A732bF253EC8',
-        // THX_ERC1155: '0xeDdBA2bDeE7c9006944aCF9379Daa64478E02290',
     },
     '137': {
         // Tokens

@@ -30,6 +30,7 @@ export const controller = async (req: Request, res: Response) => {
     const balance = await ve.methods.balanceOf(wallet.address).call();
     const rewards = await VoteEscrowService.listRewards(wallet);
 
-    res.json([{ balance, amount: Number(amount), end: parseMs(end), now: parseMs(now), rewards }]);
+    res.json([{ balance, amount, end: parseMs(end), now: parseMs(now), rewards }]);
 };
+
 export default { controller, validation };

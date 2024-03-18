@@ -27,7 +27,8 @@ export const controller = async (req: Request, res: Response) => {
     const amount = await contract.methods.balanceOf(wallet.address).call();
 
     // Check sufficient BPT Balance
-    if (BigNumber.from(amount).lt(req.body.amountInWei)) throw new ForbiddenError('Insufficient balance');
+    if (BigNumber.from(amount).lt(BigNumber.from(req.body.amountInWei)))
+        throw new ForbiddenError('Insufficient balance');
 
     const fn = contract.methods.approve(req.body.spender, req.body.amountInWei);
 
