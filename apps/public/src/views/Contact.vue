@@ -151,7 +151,11 @@
                             <span class="btn-icon bg-dark rounded-circle text-secondary m-0 mr-3">
                                 <i class="fas fa-comments"></i>
                             </span>
-                            <a href="https://thx.page.link/discord" target="_blank" class="text-dark font-weight-bold">
+                            <a
+                                href="https://discord.gg/thx-network-836147176270856243"
+                                target="_blank"
+                                class="text-dark font-weight-bold"
+                            >
                                 Ask us anything on Discord
                             </a>
                         </li>

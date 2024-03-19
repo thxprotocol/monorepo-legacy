@@ -43,17 +43,14 @@ async function deposit(wallet: WalletDocument, amountInWei: string, endTimestamp
 
     // Define helpers
     const createLock = () => {
-        console.log(amountInWei, endTimestamp, 'create_lock');
         const fn = ve.methods.create_lock(amountInWei, endTimestamp);
         return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
     };
     const increaseAmount = () => {
-        console.log(amountInWei, 'increase_amount');
         const fn = ve.methods.increase_amount(amountInWei);
         return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
     };
     const increaseUnlockTime = () => {
-        console.log(endTimestamp, 'increase_unlock_time');
         const fn = ve.methods.increase_unlock_time(endTimestamp);
         return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
     };
@@ -95,8 +92,13 @@ async function withdraw(wallet: WalletDocument, isEarlyWithdraw: boolean) {
 }
 
 async function listRewards(wallet: WalletDocument) {
-    const { web3 } = getProvider();
+    const { web3 } = getProvider(wallet.chainId);
+
+    // Get reward tokens
     const lr = new web3.eth.Contract(contractArtifacts['LensReward'].abi, contractNetworks[wallet.chainId].LensReward);
+
+    // Call static
+    const rewardTokens = [contractNetworks[wallet.chainId].BAL, contractNetworks[wallet.chainId].BPT];
     const callStatic = async (fn) => {
         const result = await web3.eth.call({
             to: contractNetworks[wallet.chainId].LensReward,
@@ -116,15 +118,51 @@ async function listRewards(wallet: WalletDocument) {
             result,
         );
     };
+
+    // Call static on rewards
     const rewards = await callStatic(
         lr.methods.getUserClaimableRewardsAll(
             contractNetworks[wallet.chainId].RewardDistributor,
             toChecksumAddress(wallet.address),
-            [contractNetworks[wallet.chainId].BAL, contractNetworks[wallet.chainId].BPT],
+            rewardTokens,
         ),
     );
-    console.log(rewards['0']);
-    return rewards['0'].map(({ tokenAddress, amount }) => ({ tokenAddress, amount }));
+
+    // Util functions to get amount for tokenAddress from call
+    const getAmount = (tokenAddress: string) => {
+        return rewards['0'].find((r) => r.tokenAddress === tokenAddress)?.amount;
+    };
+    const { BAL, BPT } = contractNetworks[wallet.chainId];
+
+    return [
+        {
+            tokenAddress: BAL,
+            amount: getAmount(BAL),
+            symbol: 'BAL',
+        },
+        {
+            tokenAddress: BPT,
+            amount: getAmount(BPT),
+            symbol: '20USDC-80THX',
+        },
+    ];
 }
 
-export default { isApprovedAddress, approve, getAllowance, deposit, withdraw, listRewards };
+async function claimTokens(wallet: WalletDocument) {
+    const { web3 } = getProvider();
+    const rewardDistributor = new web3.eth.Contract(
+        contractArtifacts['RewardDistributor'].abi,
+        contractNetworks[wallet.chainId].RewardDistributor,
+    );
+
+    // List reward tokens and build function call
+    const rewardTokens = await rewardDistributor.methods.getAllowedRewardTokens().call();
+    const fn = rewardDistributor.methods.claimTokens(wallet.address, rewardTokens);
+
+    // Propose tx data to relayer and return safeTxHash to client to sign
+    const tx = await TransactionService.sendSafeAsync(wallet, rewardDistributor.options.address, fn);
+
+    return [tx];
+}
+
+export default { isApprovedAddress, approve, getAllowance, deposit, withdraw, listRewards, claimTokens };

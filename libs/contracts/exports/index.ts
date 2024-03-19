@@ -37,11 +37,6 @@ export const contractNetworks = {
         RewardFaucet: '0x7d19C8cd97AAD3d97688eB60C54785c99997a1Bf',
         SmartWalletWhitelist: '0x5E0A87862f9175493Cc1d02199ad18Eff87Eb400',
         LensReward: '0xe2092A19f37D2DBBfa9c41C9b83CBAAA1294548f',
-        // Tokens
-        // LimitedSupplyToken: '0xf228ADAa4c3D07C8285C1025421afe2c4F320C59',
-        // UnlimitedSupplyToken: '0x8613B8E442219e4349fa5602C69431131a7ED114',
-        // NonFungibleToken: '0x8B219D3d1FC64e03F6cF3491E7C7A732bF253EC8',
-        // THX_ERC1155: '0xeDdBA2bDeE7c9006944aCF9379Daa64478E02290',
     },
     '137': {
         // Tokens
@@ -54,8 +49,8 @@ export const contractNetworks = {
         VotingEscrow: '0xE3B8E734e7BCcB64B63e032795896CC57012A51D',
         RewardDistributor: '0xCc62c812EfF9cA4c35623103B2Bb63E22f465E09',
         RewardFaucet: '0xA1D7671f73FbcB5e079d4dC4Cffb7dDD0967EA7E',
-        SmartWalletWhitelist: '',
-        LensReward: '',
+        SmartWalletWhitelist: '0x876625a92cEAa7f1Bddd40908B8eb5C6080cB83C',
+        LensReward: '0xe8d9624e0b7f839540e7c13577550e3eff3fc8aa',
     },
 } as ContractNetworksConfig & any;
 

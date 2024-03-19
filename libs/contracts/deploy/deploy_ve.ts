@@ -15,7 +15,7 @@ const deploy = async (contractName: string, args: string[], signer: Signer) => {
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const { ethers, getNamedAccounts, network } = hre;
-    const { owner, balReceiver } = await getNamedAccounts();
+    const { owner } = await getNamedAccounts();
     const signer = await ethers.getSigner(owner);
 
     // Deploy implementations
@@ -65,7 +65,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         Math.ceil(Date.now() / 1000) + 60 * 60 * 24 * 7, // 7 days from now
         owner, // admin_unlock_all
         owner, // admin_early_unlock
-        balReceiver, // rewardReceiver 0xaf9d56684466fcFcEA0a2B7fC137AB864d642946
+        '0x0000000000000000000000000000000000000000', // empty will set it to the rewardDistributor
     );
 
     tx = await tx.wait();
@@ -87,7 +87,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     // Add smart wallet whitelist checker
     await vethx.commit_smart_wallet_checker(smartCheckerList.address);
-    await vethx.commit_smart_wallet_checker(smartCheckerList.address);
     console.log('veTHX:', 'commit_smart_wallet_checker', smartCheckerList.address);
 
     await vethx.apply_smart_wallet_checker();
@@ -95,7 +94,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     await vethx.set_early_unlock(true);
     console.log('veTHX:', 'set_early_unlock', true);
-    // await vethx.set_early_unlock_penalty_speed(1);
+    // await vethx.set_early_unlock_penalty_speed(1); //Default
 
     // Set early exit penalty treasury to reward distributor
     await vethx.set_penalty_treasury(rewardDistributor);

@@ -7,7 +7,7 @@ const sdkConfig = {
 };
 const balancer = new BalancerSDK(sdkConfig);
 
-async function getSpotPrice(balancerPoolId: string) {
+async function getPricing(balancerPoolId: string) {
     const pool = await balancer.pools.find(balancerPoolId);
     const [usdc, thx] = pool.tokens as unknown as {
         symbol: string;
@@ -15,23 +15,21 @@ async function getSpotPrice(balancerPoolId: string) {
         token: { latestUSDPrice: number };
     }[];
     const totalShares = pool.totalShares as unknown as number;
-    const btpPrice = calculateBPTSpotPrice(usdc, thx, totalShares);
+    const thxValue = thx.balance * thx.token.latestUSDPrice;
+    const usdcValue = usdc.balance * usdc.token.latestUSDPrice;
+    const btpPrice = (thxValue + usdcValue) / totalShares;
+    // const balPrice = await balancer.pricing.getSpotPrice(
+    //     contractNetworks[ChainId.Polygon].BAL,
+    //     contractNetworks[ChainId.Polygon].USDC,
+    // );
 
     return {
         [pool.name]: btpPrice,
+        // ['BAL']: balPrice,
+        ['BAL']: 6.11,
         [usdc.symbol]: Number(usdc.token.latestUSDPrice),
         [thx.symbol]: Number(thx.token.latestUSDPrice),
     };
 }
 
-function calculateBPTSpotPrice(
-    usdc: { balance: number; token: { latestUSDPrice: number } },
-    thx: { balance: number; token: { latestUSDPrice: number } },
-    bptSupply: number,
-) {
-    const thxValue = thx.balance * thx.token.latestUSDPrice;
-    const usdcValue = usdc.balance * usdc.token.latestUSDPrice;
-    return (thxValue + usdcValue) / bptSupply;
-}
-
-export default { getSpotPrice };
+export default { getPricing };

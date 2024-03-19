@@ -72,6 +72,7 @@ export default async function main() {
             await pool.updateOne({ chainId: ChainId.Polygon });
 
             const poolId = pool._id;
+            await pool.updateOne({ chainId });
 
             // Remove all existing data
             await Promise.all([
