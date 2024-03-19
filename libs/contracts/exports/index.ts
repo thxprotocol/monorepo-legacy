@@ -40,17 +40,17 @@ export const contractNetworks = {
     },
     '137': {
         // Tokens
-        BPT: '0xb204bf10bc3a5435017d3db247f56da601dfe08a',
+        BPT: '0xb204BF10bc3a5435017D3db247f56dA601dFe08A',
         BPTGauge: '0xf16BECC1Bcaf0fF0b865024a644a4da1A2f8585c',
         BAL: '0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3',
-        USDC: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
-        THX: '0x2934b36ca9a4b31e633c5be670c8c8b28b6aa015',
+        USDC: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+        THX: '0x2934b36ca9A4B31E633C5BE670C8C8b28b6aA015',
         // veTHX
         VotingEscrow: '0xE3B8E734e7BCcB64B63e032795896CC57012A51D',
         RewardDistributor: '0xCc62c812EfF9cA4c35623103B2Bb63E22f465E09',
         RewardFaucet: '0xA1D7671f73FbcB5e079d4dC4Cffb7dDD0967EA7E',
         SmartWalletWhitelist: '0x876625a92cEAa7f1Bddd40908B8eb5C6080cB83C',
-        LensReward: '0xe8d9624e0b7f839540e7c13577550e3eff3fc8aa',
+        LensReward: '0xE8D9624E0B7f839540E7c13577550E3Eff3FC8aA',
     },
 } as ContractNetworksConfig & any;
 
