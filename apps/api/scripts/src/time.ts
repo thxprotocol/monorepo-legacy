@@ -10,5 +10,5 @@ export default async function main() {
     const hardhatProvider = new ethers.providers.JsonRpcProvider(HARDHAT_RPC);
 
     // Travel past first week else this throws "Reward distribution has not started yet"
-    await increaseBlockTime(hardhatProvider, 60 * 60 * 24 * 3);
+    await increaseBlockTime(hardhatProvider, 60 * 60 * 24 * 1);
 }

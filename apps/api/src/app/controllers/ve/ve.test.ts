@@ -237,7 +237,7 @@ describe('VESytem', () => {
 
             expect(Number(body[0].rewards)).toBe;
             expect(Number(body[0].end)).toBeGreaterThan(Number(body[0].now));
-            expect(body[0].amount).toBe(Number(amountInWei));
+            expect(body[0].amount).toBe(amountInWei);
             expect(status).toBe(200);
         });
     });
