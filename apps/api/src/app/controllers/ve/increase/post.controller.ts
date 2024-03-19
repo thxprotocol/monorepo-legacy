@@ -43,13 +43,13 @@ export const controller = async (req: Request, res: Response) => {
         const { web3 } = getProvider();
         const latest = await web3.eth.getBlockNumber();
         const now = (await web3.eth.getBlock(latest)).timestamp;
-        if (now > req.body.lockEndTimestamp) {
+        if (req.body.lockEndTimestamp < now) {
             throw new ForbiddenError('lockEndTimestamp needs be larger than today');
         }
 
         // Check if lockEndTimestamp is more than current lock end
         const lock = await VoteEscrowService.list(wallet);
-        if (req.body.lockEndTimestamp > Number(lock.end)) {
+        if (req.body.lockEndTimestamp < Number(lock.end)) {
             throw new ForbiddenError('lockEndTimestamp needs be larger than current lock end');
         }
 
