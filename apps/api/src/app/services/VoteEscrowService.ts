@@ -65,29 +65,8 @@ async function deposit(wallet: WalletDocument, amountInWei: string, endTimestamp
         contractArtifacts['VotingEscrow'].abi,
         contractNetworks[wallet.chainId].VotingEscrow,
     );
-
     const fn = ve.methods.create_lock(amountInWei, endTimestamp);
     return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
-
-    // // Check for lock and determine ve fn to call
-    // const lock = await ve.methods.locked(wallet.address).call();
-    // const isLocked = BigNumber.from(lock.amount).gt(0);
-
-    // // Build tx array
-    // const transactions: TransactionDocument[] = [];
-    // if (!isLocked) {
-    //     transactions.push(await createLock());
-    // }
-
-    // // If there is a lock and amount is > 0
-    // if (isLocked && BigNumber.from(amountInWei).gt(0)) {
-    //     transactions.push(await increaseAmount());
-    // }
-
-    // // If there a lock and endTimestamp is > lock.end
-    // if (isLocked && endTimestamp > Number(lock.end)) {
-    //     transactions.push(await increaseUnlockTime());
-    // }
 }
 
 async function withdraw(wallet: WalletDocument, isEarlyWithdraw: boolean) {
