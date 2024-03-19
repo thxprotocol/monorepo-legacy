@@ -71,7 +71,6 @@
 </template>
 
 <script lang="ts">
-import type { TInfoLink, TPool, TQuestLock, TQuestWeb3 } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { isAddress } from 'web3-utils';
@@ -104,7 +103,7 @@ export default class ModalQuestWeb3Create extends Vue {
     description = '';
     amount = 0;
     methodName = '';
-    threshold = 0;
+    threshold = '0';
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     contracts: { chainId: ChainId; address: string }[] = [{ chainId: ChainId.Polygon, address: '' }];
     expiryDate: Date | number | null = null;

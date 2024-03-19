@@ -1,7 +1,7 @@
 type TQuestWeb3 = TBaseQuest & {
     amount: number;
     methodName: string;
-    threshold: number;
+    threshold: string;
     contracts: { chainId: ChainId; address: string }[];
 };
 

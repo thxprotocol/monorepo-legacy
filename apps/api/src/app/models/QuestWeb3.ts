@@ -15,7 +15,7 @@ export const QuestWeb3 = mongoose.model<QuestWeb3Document>(
                 address: String,
             }),
             methodName: String,
-            threshold: Number,
+            threshold: String,
         },
         { timestamps: true },
     ),

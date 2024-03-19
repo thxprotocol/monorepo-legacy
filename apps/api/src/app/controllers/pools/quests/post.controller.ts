@@ -44,7 +44,7 @@ const validationBaseQuest = [
             );
         }),
     body('methodName').optional().isString(),
-    body('threshold').optional().isInt(),
+    body('threshold').optional().isString(),
     // Gitcoin
     //
 ];
