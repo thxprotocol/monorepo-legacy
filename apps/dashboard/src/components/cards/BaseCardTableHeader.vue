@@ -42,18 +42,16 @@
             </b-dropdown>
         </div>
         <div class="d-flex align-items-center">
-            <b-input-group size="sm" class="mr-5" v-if="!hideQuery">
-                <template #prepend>
-                    <b-input-group-text><i class="fas fa-search"></i></b-input-group-text>
-                </template>
-                <b-form-input
-                    :debounce="1000"
-                    :value="query"
-                    size="sm"
-                    placeholder="Search..."
-                    @input="$emit('query', $event)"
-                />
-            </b-input-group>
+            <b-form-input
+                class="mr-5"
+                v-if="!hideQuery"
+                :debounce="1000"
+                :value="query"
+                size="sm"
+                placeholder="Search..."
+                @input="$emit('query', $event)"
+                @change="$emit('query-submit', $event)"
+            />
             <div class="d-flex align-items-center mr-5" v-if="toggleLabel">
                 <span class="text-muted mr-2">{{ toggleLabel }}</span>
                 <b-form-checkbox :checked="true" @change="$emit('toggle', $event)" />
@@ -96,7 +94,7 @@ export default class BaseCardTableHeader extends Vue {
     @Prop() pool!: TPool;
     @Prop() totalRows!: number;
     @Prop() query!: string;
-    @Prop() hideQuery!: { type: boolean; default: true };
+    @Prop({ default: true }) hideQuery!: boolean;
     @Prop() toggleLabel!: string;
     @Prop() published!: boolean;
 

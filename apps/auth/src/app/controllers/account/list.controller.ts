@@ -11,16 +11,17 @@ const validation = [
             return Array.isArray(JSON.parse(subs));
         })
         .customSanitizer((subs) => subs && JSON.parse(subs)),
-    body('username').optional().isString(),
+    body('query').optional().isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {
     let accounts = [];
-    if (req.body.subs.length) {
+    const { subs, query } = req.body;
+    if (subs && subs.length) {
         accounts = await AccountService.find({ _id: req.body.subs });
     }
-    if (req.body.username) {
-        accounts = await AccountService.findByUsername({ username: req.body.username });
+    if (query) {
+        accounts = await AccountService.findByQuery({ query: req.body.query });
     }
 
     const result = await Promise.all(

@@ -11,8 +11,8 @@
                 :actions="[]"
                 :hide-query="false"
                 :query="query"
-                @query="onChangeQuery"
-                @query-submit="getParticipants"
+                @query="onInputQuery"
+                @query-submit="onChangeQuery"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
@@ -182,11 +182,16 @@ export default class ViewParticipants extends Vue {
     }
 
     mounted() {
-        this.getParticipants();
         this.query = this.$route.params.username;
+        this.getParticipants();
     }
 
-    onChangeQuery(query: string) {
+    onChangeQuery() {
+        if (this.query && this.query.length < 3) return;
+        this.getParticipants();
+    }
+
+    onInputQuery(query: string) {
         this.query = query;
 
         // Updates URL in addressbar
@@ -201,7 +206,7 @@ export default class ViewParticipants extends Vue {
             pool: this.pool,
             page: this.page,
             limit: this.limit,
-            query: this.query,
+            query: this.query ? this.query : undefined,
         });
         this.isLoading = false;
     }

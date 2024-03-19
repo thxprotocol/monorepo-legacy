@@ -56,11 +56,11 @@ export default class AccountProxy {
         });
     }
 
-    static find({ subs, username }: Partial<{ subs: string[]; username: string }>): Promise<TAccount[]> {
+    static find({ subs, query }: Partial<{ subs: string[]; query: string }>): Promise<TAccount[]> {
         return this.request({
             method: 'POST',
             url: '/accounts',
-            data: { subs: JSON.stringify(subs), username },
+            data: { subs: JSON.stringify(subs), query },
         });
     }
 

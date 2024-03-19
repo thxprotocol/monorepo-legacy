@@ -62,8 +62,8 @@ export class AccountService {
         return Account.find({ _id: { $in: query._id } });
     }
 
-    static findByUsername(query: { username: string }) {
-        return Account.find({ username: { $regex: query.username } });
+    static findByQuery({ query }: { query: string }) {
+        return Account.find({ $or: [{ username: new RegExp(query, 'i') }, { email: new RegExp(query, 'i') }] });
     }
 
     static getByEmail(email: string) {
