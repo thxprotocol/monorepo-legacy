@@ -7,13 +7,13 @@ export const validation = [
     query('page').isInt(),
     query('limit').isInt(),
     query('page').optional().isString(),
+    query('query').optional().isString().isLength({ min: 3 }),
 ];
 
 export const controller = async (req: Request, res: Response) => {
-    // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
-    const { page, limit } = req.query;
-    const participants = await PoolService.findParticipants(pool, Number(page), Number(limit));
+    const { page, limit, query } = req.query;
+    const participants = await PoolService.findParticipants(pool, Number(page), Number(limit), query as string);
 
     res.json(participants);
 };

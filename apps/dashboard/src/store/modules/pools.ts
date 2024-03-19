@@ -699,7 +699,19 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async listParticipants({ pool, page, limit, sort }: { pool: TPool; page: string; limit: string; sort: string }) {
+    async listParticipants({
+        pool,
+        page,
+        limit,
+        sort,
+        query,
+    }: {
+        pool: TPool;
+        page: string;
+        limit: string;
+        sort: string;
+        query: string;
+    }) {
         const { data } = await axios({
             method: 'GET',
             url: `/pools/${pool._id}/participants`,
@@ -708,6 +720,7 @@ class PoolModule extends VuexModule {
                 page,
                 limit,
                 sort,
+                query,
             },
         });
         this.context.commit('setParticipants', { poolId: pool._id, result: data });

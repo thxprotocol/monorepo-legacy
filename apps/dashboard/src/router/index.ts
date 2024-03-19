@@ -49,6 +49,13 @@ const routes: Array<RouteConfig> = [
                 name: 'participants',
                 path: 'participants',
                 component: () => import('../views/pool/Participants.vue'),
+                children: [
+                    {
+                        name: 'username',
+                        path: ':username',
+                        component: () => import('../views/pool/Participants.vue'),
+                    },
+                ],
             },
             {
                 name: 'integrations',

@@ -1,16 +1,18 @@
 <template>
-    <b-media v-if="account">
-        <template #aside>
-            <b-avatar
-                v-b-tooltip
-                :title="`${account.id} (${account.variant})`"
-                :src="account.profileImg"
-                size="sm"
-                variant="light"
-            />
-        </template>
-        {{ account.username }}
-    </b-media>
+    <b-link :to="`/pool/${$route.params.id}/participants/${account.username.toLowerCase()}`">
+        <b-media v-if="account">
+            <template #aside>
+                <b-avatar
+                    v-b-tooltip
+                    :title="`${account.id} (${account.variant})`"
+                    :src="account.profileImg"
+                    size="sm"
+                    variant="light"
+                />
+            </template>
+            {{ account.username }}
+        </b-media>
+    </b-link>
 </template>
 
 <script lang="ts">

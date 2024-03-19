@@ -192,11 +192,50 @@ async function findCouponCodes(query: { couponRewardId: string }, page: number, 
     };
 }
 
-async function findParticipants(pool: PoolDocument, page: number, limit: number) {
+async function findParticipants(pool: PoolDocument, page: number, limit: number, query = '') {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
     const poolId = String(pool._id);
     const total = await Participant.countDocuments({ poolId });
+    const $match = { poolId };
+
+    let accounts = [],
+        subs = [];
+
+    // If a query is provided first get the accounts and subs based on the query
+    if (query) {
+        accounts = await AccountProxy.find({ query });
+        subs = accounts.map((a) => a.sub);
+        console.log({ query, accounts, subs });
+        $match['sub'] = { $in: subs };
+        console.log({ $match });
+    }
+
+    const results = await Participant.aggregate([
+        { $match },
+        {
+            $addFields: {
+                rankSort: {
+                    $cond: {
+                        if: { $gt: ['$rank', 0] },
+                        then: '$rank',
+                        else: Number.MAX_SAFE_INTEGER,
+                    },
+                },
+            },
+        },
+        { $sort: { rankSort: 1 } },
+        { $skip: startIndex },
+        { $limit: limit },
+    ]).exec();
+
+    // If a query was provided dont get accounts and subs based on participants
+    if (!query) {
+        subs = results.map((p) => p.sub);
+        accounts = await AccountProxy.find({ subs });
+    }
+
+    // Format the output
     const participants = {
         previous: startIndex > 0 && {
             page: page - 1,
@@ -205,27 +244,8 @@ async function findParticipants(pool: PoolDocument, page: number, limit: number)
             page: page + 1,
         },
         total,
-        results: await Participant.aggregate([
-            { $match: { poolId } },
-            {
-                $addFields: {
-                    rankSort: {
-                        $cond: {
-                            if: { $gt: ['$rank', 0] },
-                            then: '$rank',
-                            else: Number.MAX_SAFE_INTEGER,
-                        },
-                    },
-                },
-            },
-            { $sort: { rankSort: 1 } },
-            { $skip: startIndex },
-            { $limit: limit },
-        ]).exec(),
+        results,
     };
-
-    const subs = participants.results.map((p) => p.sub);
-    const accounts = await AccountProxy.find({ subs });
 
     participants.results = await Promise.all(
         participants.results.map(async (participant) => {
