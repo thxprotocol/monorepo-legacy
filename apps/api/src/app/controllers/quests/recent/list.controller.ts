@@ -35,7 +35,7 @@ const controller = async (req: Request, res: Response) => {
         ...questLookupSteps,
         {
             $lookup: {
-                from: 'widgets',
+                from: 'widget',
                 localField: 'poolId',
                 foreignField: 'poolId',
                 as: 'widgets',
@@ -43,7 +43,7 @@ const controller = async (req: Request, res: Response) => {
         },
         {
             $lookup: {
-                from: 'brands',
+                from: 'brand',
                 localField: 'poolId',
                 foreignField: 'poolId',
                 as: 'brands',
