@@ -1,5 +1,5 @@
 <template>
-    <b-link :to="`/pool/${$route.params.id}/participants/${account.username.toLowerCase()}`">
+    <b-link :to="account.username ? `/pool/${$route.params.id}/participants/${account.username.toLowerCase()}` : null">
         <b-media v-if="account">
             <template #aside>
                 <b-avatar
