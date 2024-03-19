@@ -15,6 +15,15 @@ async function isApprovedAddress(address: string, chainId: ChainId) {
     return await whitelist.methods.check(address).call();
 }
 
+async function list(wallet: WalletDocument) {
+    const { web3 } = getProvider(wallet.chainId);
+    const ve = new web3.eth.Contract(
+        contractArtifacts['VotingEscrow'].abi,
+        contractNetworks[wallet.chainId].VotingEscrow,
+    );
+    return await ve.methods.locked(wallet.address).call();
+}
+
 async function getAllowance(wallet: WalletDocument, tokenAddress: string, spender: string) {
     const { web3 } = getProvider(wallet.chainId);
     const bpt = new web3.eth.Contract(contractArtifacts['BPT'].abi, tokenAddress);
@@ -30,6 +39,26 @@ async function approve(wallet: WalletDocument, tokenAddress: string, spender: st
     return await TransactionService.sendSafeAsync(wallet, bpt.options.address, fn);
 }
 
+async function increaseAmount(wallet: WalletDocument, amountInWei: string) {
+    const { web3 } = getProvider(wallet.chainId);
+    const ve = new web3.eth.Contract(
+        contractArtifacts['VotingEscrow'].abi,
+        contractNetworks[wallet.chainId].VotingEscrow,
+    );
+    const fn = ve.methods.increase_amount(amountInWei);
+    return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
+}
+
+async function increaseUnlockTime(wallet: WalletDocument, endTimestamp: number) {
+    const { web3 } = getProvider(wallet.chainId);
+    const ve = new web3.eth.Contract(
+        contractArtifacts['VotingEscrow'].abi,
+        contractNetworks[wallet.chainId].VotingEscrow,
+    );
+    const fn = ve.methods.increase_unlock_time(endTimestamp);
+    return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
+}
+
 async function deposit(wallet: WalletDocument, amountInWei: string, endTimestamp: number) {
     const { web3 } = getProvider(wallet.chainId);
     const ve = new web3.eth.Contract(
@@ -37,42 +66,28 @@ async function deposit(wallet: WalletDocument, amountInWei: string, endTimestamp
         contractNetworks[wallet.chainId].VotingEscrow,
     );
 
-    // Check for lock and determine ve fn to call
-    const lock = await ve.methods.locked(wallet.address).call();
-    const isLocked = BigNumber.from(lock.amount).gt(0);
+    const fn = ve.methods.create_lock(amountInWei, endTimestamp);
+    return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
 
-    // Define helpers
-    const createLock = () => {
-        const fn = ve.methods.create_lock(amountInWei, endTimestamp);
-        return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
-    };
-    const increaseAmount = () => {
-        const fn = ve.methods.increase_amount(amountInWei);
-        return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
-    };
-    const increaseUnlockTime = () => {
-        const fn = ve.methods.increase_unlock_time(endTimestamp);
-        return TransactionService.sendSafeAsync(wallet, contractNetworks[wallet.chainId].VotingEscrow, fn);
-    };
+    // // Check for lock and determine ve fn to call
+    // const lock = await ve.methods.locked(wallet.address).call();
+    // const isLocked = BigNumber.from(lock.amount).gt(0);
 
-    // Build tx array
-    const transactions: TransactionDocument[] = [];
-    if (!isLocked) {
-        transactions.push(await createLock());
-    }
+    // // Build tx array
+    // const transactions: TransactionDocument[] = [];
+    // if (!isLocked) {
+    //     transactions.push(await createLock());
+    // }
 
-    // If there is a lock and amount is > 0
-    if (isLocked && BigNumber.from(amountInWei).gt(0)) {
-        transactions.push(await increaseAmount());
-    }
+    // // If there is a lock and amount is > 0
+    // if (isLocked && BigNumber.from(amountInWei).gt(0)) {
+    //     transactions.push(await increaseAmount());
+    // }
 
-    // If there a lock and endTimestamp is > lock.end
-    if (isLocked && endTimestamp > Number(lock.end)) {
-        transactions.push(await increaseUnlockTime());
-    }
-
-    // Propose safeTxHashes to client to sign
-    return transactions;
+    // // If there a lock and endTimestamp is > lock.end
+    // if (isLocked && endTimestamp > Number(lock.end)) {
+    //     transactions.push(await increaseUnlockTime());
+    // }
 }
 
 async function withdraw(wallet: WalletDocument, isEarlyWithdraw: boolean) {
@@ -165,4 +180,15 @@ async function claimTokens(wallet: WalletDocument) {
     return [tx];
 }
 
-export default { isApprovedAddress, approve, getAllowance, deposit, withdraw, listRewards, claimTokens };
+export default {
+    list,
+    isApprovedAddress,
+    approve,
+    getAllowance,
+    deposit,
+    withdraw,
+    listRewards,
+    claimTokens,
+    increaseAmount,
+    increaseUnlockTime,
+};

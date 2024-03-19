@@ -22,7 +22,7 @@ export const controller = async (req: Request, res: Response) => {
     );
 
     // Check for lock and determine ve fn to call
-    const { amount, end } = await ve.methods.locked(wallet.address).call();
+    const { amount, end } = await VoteEscrowService.list(wallet);
     const latest = await web3.eth.getBlockNumber();
     const now = (await web3.eth.getBlock(latest)).timestamp;
 

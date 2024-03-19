@@ -6,12 +6,12 @@ const validation = [query('page').isInt(), query('limit').isInt(), query('search
 
 const controller = async (req: Request, res: Response) => {
     const questLookupSteps = [
-        { collectionName: 'dailyrewards', target: 'dailyquests' },
-        { collectionName: 'referralrewards', target: 'invitequests' },
-        { collectionName: 'pointrewards', target: 'socialquests' },
-        { collectionName: 'milestonerewards', target: 'customquests' },
-        { collectionName: 'web3quests', target: 'web3quests' },
-        { collectionName: 'gitcoinquests', target: 'gitcoinquests' },
+        { collectionName: 'questdaily', target: 'dailyquests' },
+        { collectionName: 'questinvite', target: 'invitequests' },
+        { collectionName: 'questsocial', target: 'socialquests' },
+        { collectionName: 'questcustom', target: 'customquests' },
+        { collectionName: 'questweb3', target: 'web3quests' },
+        { collectionName: 'questgitcoin', target: 'gitcoinquests' },
     ].map(({ collectionName, target }) => ({
         $lookup: {
             from: collectionName,
