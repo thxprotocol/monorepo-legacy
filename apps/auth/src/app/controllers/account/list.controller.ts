@@ -6,14 +6,23 @@ import { AccessTokenKind } from '@thxnetwork/common/enums';
 
 const validation = [
     body('subs')
+        .optional()
         .custom((subs) => {
             return Array.isArray(JSON.parse(subs));
         })
         .customSanitizer((subs) => subs && JSON.parse(subs)),
+    body('username').optional().isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {
-    const accounts = await AccountService.find({ _id: req.body.subs });
+    let accounts = [];
+    if (req.body.subs.length) {
+        accounts = await AccountService.find({ _id: req.body.subs });
+    }
+    if (req.body.username) {
+        accounts = await AccountService.findByUsername({ username: req.body.username });
+    }
+
     const result = await Promise.all(
         accounts.map(async (account) => {
             const sub = String(account._id);

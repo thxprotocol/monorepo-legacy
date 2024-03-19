@@ -7,6 +7,7 @@ export const validation = [
     query('page').isInt(),
     query('limit').isInt(),
     query('page').optional().isString(),
+    query('query').optional().isString(),
 ];
 
 export const controller = async (req: Request, res: Response) => {

@@ -192,10 +192,16 @@ async function findCouponCodes(query: { couponRewardId: string }, page: number, 
     };
 }
 
-async function findParticipants(pool: PoolDocument, page: number, limit: number) {
+async function findParticipants(pool: PoolDocument, page: number, limit: number, query = '') {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
     const poolId = String(pool._id);
+
+    // If there is a query we first get the matching subs for the accounts
+    if (query && query.length > 2) {
+        const subs = await AccountProxy.find({ username: query });
+    }
+
     const total = await Participant.countDocuments({ poolId });
     const participants = {
         previous: startIndex > 0 && {

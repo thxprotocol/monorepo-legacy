@@ -9,6 +9,10 @@
                 :total-rows="participants.total"
                 :selectedItems="[]"
                 :actions="[]"
+                :hide-query="false"
+                :query="query"
+                @query="onChangeQuery"
+                @query-submit="getParticipants"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
@@ -96,6 +100,7 @@ import BaseParticipantConnectedAccount, {
 } from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
 import { format } from 'date-fns';
 import { IPools, TParticipantState } from '@thxnetwork/dashboard/store/modules/pools';
+import { on } from 'events';
 
 @Component({
     components: {
@@ -118,6 +123,7 @@ export default class ViewParticipants extends Vue {
     participantList!: TParticipantState;
     page = 1;
     limit = 10;
+    query = '';
     sorts = {
         rank: (a, b) => {
             const rankA = a.rank ? a.rank : 0;
@@ -177,6 +183,16 @@ export default class ViewParticipants extends Vue {
 
     mounted() {
         this.getParticipants();
+        this.query = this.$route.params.username;
+    }
+
+    onChangeQuery(query: string) {
+        this.query = query;
+
+        // Updates URL in addressbar
+        const url = new URL(window.location.href);
+        url.pathname = `/pool/${this.pool._id}/participants/${query}`;
+        history.pushState(null, '', url);
     }
 
     async getParticipants() {
@@ -185,6 +201,7 @@ export default class ViewParticipants extends Vue {
             pool: this.pool,
             page: this.page,
             limit: this.limit,
+            query: this.query,
         });
         this.isLoading = false;
     }
