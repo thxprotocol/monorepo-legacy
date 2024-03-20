@@ -12,7 +12,7 @@ export default class AccountProxy {
             },
         });
 
-        if (status >= 400 && status <= 500) {
+        if (status >= 400 && status <= 500 && data.error) {
             throw new BadRequestError(data.error.message);
         }
 
