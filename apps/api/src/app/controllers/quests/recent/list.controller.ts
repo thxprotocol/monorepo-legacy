@@ -38,7 +38,7 @@ const controller = async (req: Request, res: Response) => {
                 from: 'widget',
                 localField: 'poolId',
                 foreignField: 'poolId',
-                as: 'widgets',
+                as: 'widget',
             },
         },
         {
@@ -46,7 +46,7 @@ const controller = async (req: Request, res: Response) => {
                 from: 'brand',
                 localField: 'poolId',
                 foreignField: 'poolId',
-                as: 'brands',
+                as: 'brand',
             },
         },
         {
@@ -63,9 +63,9 @@ const controller = async (req: Request, res: Response) => {
             const mapper = (q) => ({
                 ...q,
                 amount: q.amounts ? q.amounts[q.amounts.length - 1] : q.amount,
-                widget: result.widget,
-                domain: result.widgets[0].domain,
-                brand: result.brands[0],
+                widget: result.widget[0],
+                domain: result.widget[0] && result.widgets[0].domain,
+                brand: result.brand[0],
             });
             return {
                 quests: [
