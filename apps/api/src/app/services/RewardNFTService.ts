@@ -95,7 +95,7 @@ export default class RewardNFTService implements IRewardService {
             metadata = await this.findMetadataByToken(nft, token);
 
             // Transfer the token from safe to wallet address
-            token = await this.services[nft.variant].transferFrom(nft, safe, wallet, token, erc1155Amount);
+            token = await this.services[nft.variant].transferFrom(nft, safe, wallet.address, token, erc1155Amount);
         }
 
         // Register the payment
