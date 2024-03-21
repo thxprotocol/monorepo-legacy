@@ -19,13 +19,17 @@ export default class GalachainService {
     static async invokeContract(options: { contract: TGalachainContract; dto: TransferTokenDto; privateKey: string }) {
         const url = new URL(GALACHAIN_URL);
         url.pathname = `${options.contract.channelName}/${options.contract.chaincodeName}`;
+        console.log(url.toString(), {
+            method: 'GalaChainToken:TransferToken',
+            args: [JSON.stringify(options.dto.signed(options.privateKey))],
+        });
+
         const res = await axios({
             method: 'POST',
             url: url.toString(),
             data: {
                 method: 'GalaChainToken:TransferToken',
-                args: [options.dto.signed(options.privateKey)],
-                // transient: options.dto, // TODO should we pass this?
+                args: [JSON.stringify(options.dto.signed(options.privateKey))],
             },
         });
         console.log(res);

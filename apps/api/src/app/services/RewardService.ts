@@ -42,7 +42,6 @@ export default class RewardService {
                     { expiryDate: { $exists: false } },
                 ],
             });
-
             return await Promise.all(
                 rewards.map(async (reward) => {
                     try {

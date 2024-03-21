@@ -7,6 +7,7 @@ import {
     RewardCoin,
     RewardDiscordRole,
     RewardCustom,
+    RewardGalachain,
 } from '@thxnetwork/api/models';
 import { RewardVariant } from '@thxnetwork/common/enums';
 
@@ -32,6 +33,7 @@ const controller = async (req: Request, res: Response) => {
         { $unionWith: { coll: RewardCoupon.collection.name } },
         { $unionWith: { coll: RewardCustom.collection.name } },
         { $unionWith: { coll: RewardDiscordRole.collection.name } },
+        { $unionWith: { coll: RewardGalachain.collection.name } },
         { $match },
     ];
     const arr = await Promise.all(

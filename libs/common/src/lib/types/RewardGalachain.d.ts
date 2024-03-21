@@ -1,6 +1,11 @@
 type TRewardGalachain = TReward & {
-    contract: TGalachainContract;
-    token: TGalachainToken;
+    contractChannelName: string;
+    contractChaincodeName: string;
+    contractContractName: string;
+    tokenCollection: string;
+    tokenCategory: string;
+    tokenType: string;
+    tokenAdditionalKey: string;
     amount: string;
     privateKey: string;
 };

@@ -142,6 +142,7 @@ import BaseModalRewardNFTCreate from '@thxnetwork/dashboard/components/modals/Ba
 import BaseModalRewardCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCustomCreate.vue';
 import BaseModalRewardCouponCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCouponCreate.vue';
 import BaseModalRewardDiscordRoleCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardDiscordRoleCreate.vue';
+import BaseModalRewardGalachainCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardGalachainCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalQRCodes from '@thxnetwork/dashboard/components/modals/BaseModalQRCodes.vue';
 import BaseButtonRewardPayments from '@thxnetwork/dashboard/components/buttons/BaseButtonRewardPayments.vue';
@@ -154,6 +155,7 @@ import BaseButtonRewardPayments from '@thxnetwork/dashboard/components/buttons/B
         BaseModalRewardCustomCreate,
         BaseModalRewardCouponCreate,
         BaseModalRewardDiscordRoleCreate,
+        BaseModalRewardGalachainCreate,
         BaseCardTableHeader,
         BaseModalQRCodes,
     },
@@ -182,6 +184,7 @@ export default class RewardsView extends Vue {
         [RewardVariant.Custom]: 'BaseModalRewardCustomCreate',
         [RewardVariant.Coupon]: 'BaseModalRewardCouponCreate',
         [RewardVariant.DiscordRole]: 'BaseModalRewardDiscordRoleCreate',
+        [RewardVariant.Galachain]: 'BaseModalRewardGalachainCreate',
     };
     rewardIconClassMap = {
         [RewardVariant.Coin]: 'fas fa-coins',
@@ -189,6 +192,7 @@ export default class RewardsView extends Vue {
         [RewardVariant.Custom]: 'fas fa-gift',
         [RewardVariant.Coupon]: 'fas fa-tags',
         [RewardVariant.DiscordRole]: 'fab fa-discord',
+        [RewardVariant.Galachain]: 'fas fa-box',
     };
 
     pools!: IPools;

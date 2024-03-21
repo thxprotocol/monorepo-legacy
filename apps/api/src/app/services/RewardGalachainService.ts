@@ -1,6 +1,8 @@
 import { RewardGalachain, RewardGalachainPayment, WalletDocument } from '../models';
 import GalachainService from './GalachainService';
 import { IRewardService } from './interfaces/IRewardService';
+import { BigNumber } from 'bignumber.js';
+import PoolService from './PoolService';
 
 export default class RewardGalachainService implements IRewardService {
     models = {
@@ -9,7 +11,7 @@ export default class RewardGalachainService implements IRewardService {
     };
 
     decorate({ reward }: { reward: TRewardGalachain; account?: TAccount }): Promise<any> {
-        return reward;
+        return reward.toJSON();
     }
 
     decoratePayment(payment: TRewardPayment): Promise<TRewardGalachainPayment> {
@@ -45,12 +47,27 @@ export default class RewardGalachainService implements IRewardService {
         safe: WalletDocument;
         wallet?: WalletDocument;
     }): Promise<void | TValidationResult> {
+        const { tokenCollection, tokenCategory, tokenType, tokenAdditionalKey } = reward;
+        const token = {
+            collection: tokenCollection,
+            category: tokenCategory,
+            type: tokenType,
+            additionalKey: tokenAdditionalKey,
+            instance: new BigNumber(0),
+        };
         const dto = await GalachainService.createTransferDto({
             to: wallet.address,
             amount: reward.amount,
-            token: reward.token,
+            token,
         });
-        return await GalachainService.invokeContract({ contract: reward.contract, dto, privateKey: reward.privateKey });
+        const contract = {
+            channelName: reward.contractChannelName,
+            chaincodeName: reward.contractChaincodeName,
+            contractName: reward.contractContractName,
+        };
+        const pool = await PoolService.getById(reward.poolId);
+
+        return await GalachainService.invokeContract({ contract, dto, privateKey: pool.settings.galachainPrivateKey });
     }
     //
 }

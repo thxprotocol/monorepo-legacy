@@ -52,6 +52,7 @@ type TPoolSettings = {
     isWeeklyDigestEnabled: boolean;
     isTwitterSyncEnabled: boolean;
     discordWebhookUrl: string;
+    galachainPrivateKey: string;
     defaults: {
         discordMessage: string;
         conditionalRewards: TQuestSocial & { hashtag: string };

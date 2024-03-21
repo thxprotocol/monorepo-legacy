@@ -9,5 +9,4 @@ type TGalachainToken = {
     category: string;
     type: string;
     additionalKey: string;
-    instance: number;
 };

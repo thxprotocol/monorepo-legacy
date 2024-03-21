@@ -24,6 +24,7 @@ const schema = new mongoose.Schema(
             isWeeklyDigestEnabled: { type: Boolean, default: true },
             isTwitterSyncEnabled: { type: Boolean, default: false },
             discordWebhookUrl: String,
+            galachainPrivateKey: String,
             defaults: {
                 discordMessage: String,
                 conditionalRewards: {

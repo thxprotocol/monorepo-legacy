@@ -1,4 +1,4 @@
-import { body, param } from 'express-validator';
+import { body, checkSchema, param } from 'express-validator';
 import { Request, Response } from 'express';
 import { defaults } from '@thxnetwork/api/util/validation';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
@@ -33,15 +33,13 @@ const validationBaseQuest = [
     // DiscordRole
     body('discordRoleId').optional().isString(),
     // Galachain
-    body('contract.channelName').optional().isString(),
-    body('contract.chaincodeName').optional().isString(),
-    body('contract.contractName').optional().isString(),
-    body('contract.contractName').optional().isString(),
-    body('token.collection').optional().isString(),
-    body('token.category').optional().isString(),
-    body('token.type').optional().isString(),
-    body('token.additionalKey').optional().isString(),
-    body('token.instance').optional().isInt(),
+    body('contractChannelName').optional().isString(),
+    body('contractChaincodeName').optional().isString(),
+    body('contractContractName').optional().isString(),
+    body('tokenCollection').optional().isString(),
+    body('tokenCategory').optional().isString(),
+    body('tokenType').optional().isString(),
+    body('tokenAdditionalKey').optional().isString(),
     body('amount').optional().isInt({ gt: 0 }),
 ];
 
