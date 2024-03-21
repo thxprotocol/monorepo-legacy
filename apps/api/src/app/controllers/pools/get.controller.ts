@@ -7,6 +7,7 @@ import { logger } from '@thxnetwork/api/util/logger';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import { ethers } from 'ethers';
 
 export const validation = [param('id').isMongoId()];
 
@@ -23,6 +24,11 @@ export const controller = async (req: Request, res: Response) => {
             poolId: req.params.id,
         });
         logger.info(`[${req.params.id}] Deployed Campaign Safe ${safe.address}`);
+    }
+
+    if (!pool.settings.galachainPrivateKey) {
+        const privateKey = ethers.Wallet.createRandom().privateKey;
+        await pool.updateOne({ 'settings.galachainPrivateKey': privateKey });
     }
 
     const [widget, brand, wallets, collaborators, owner, events, identities, subscriberCount] = await Promise.all([

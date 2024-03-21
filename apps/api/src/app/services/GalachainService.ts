@@ -6,8 +6,8 @@ import { NODE_ENV } from '../config/secrets';
 import { logger } from '../util/logger';
 import { BadRequestError } from '../util/errors';
 
-const GALACHAIN_URL =
-    NODE_ENV === 'production' ? 'https://gateway.stage.galachain.com/api/hackathonXX' : 'http://localhost:8801/invoke';
+const isProd = NODE_ENV === 'production';
+const GALACHAIN_URL = isProd ? 'https://gateway.stage.galachain.com/api/hackathon20' : 'http://localhost:8801/invoke';
 
 export default class GalachainService {
     static async createTransferDto(options: { to: string; amount: string; token: TGalachainToken }) {
@@ -30,16 +30,19 @@ export default class GalachainService {
 
         const signedDto = options.dto.signed(options.privateKey);
         try {
+            const payload = JSON.stringify(signedDto);
             const res = await axios({
                 method: 'POST',
                 url: url.toString(),
                 headers: {
                     Authorization: `Bearer ${signedDto.signature}`,
                 },
-                data: {
-                    method: 'GalaChainToken:TransferToken',
-                    args: [JSON.stringify(signedDto)],
-                },
+                data: isProd
+                    ? payload
+                    : {
+                          method: 'GalaChainToken:TransferToken',
+                          args: [payload],
+                      },
             });
             console.log(res);
         } catch (error) {
