@@ -32,6 +32,17 @@ const validationBaseQuest = [
     body('metadata').optional().isString(),
     // DiscordRole
     body('discordRoleId').optional().isString(),
+    // Galachain
+    body('contract.channelName').optional().isString(),
+    body('contract.chaincodeName').optional().isString(),
+    body('contract.contractName').optional().isString(),
+    body('contract.contractName').optional().isString(),
+    body('token.collection').optional().isString(),
+    body('token.category').optional().isString(),
+    body('token.type').optional().isString(),
+    body('token.additionalKey').optional().isString(),
+    body('token.instance').optional().isInt(),
+    body('amount').optional().isInt({ gt: 0 }),
 ];
 
 const validation = [param('id').isMongoId(), ...validationBaseQuest];

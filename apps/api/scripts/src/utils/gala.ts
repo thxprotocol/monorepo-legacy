@@ -13,6 +13,7 @@ import {
     TokenAllowance,
     TokenBalance,
     FetchBalancesDto,
+    TransferTokenDto,
 } from '@gala-chain/api';
 import { ChainUser, ChainClient } from '@gala-chain/client';
 import { instanceToPlain, plainToClass as plainToInstance } from 'class-transformer';
@@ -48,6 +49,7 @@ interface CustomTokenAPI {
     ERC20Create({ name, symbol, decimals, maxSupply }: ERC20TokenCreate, privateKey: string): Promise<TokenClassKey>;
     ERC20Approve(options: { spender: ChainUser; amount: number }, privateKey: string): Promise<any>;
     ERC20Mint(options: { to: ChainUser; amount: number }, privateKey: string): Promise<TokenClassKey>;
+    ERC20Transfer(options: { to: ChainUser; amount: number }, privateKey: string): Promise<any>;
     ERC721Create({ name, description, image }: ERC721TokenCreate, privateKey: string): Promise<TokenClassKey>;
 }
 
@@ -78,6 +80,7 @@ const erc20ClassKey: TokenClassKey = plainToInstance(TokenClassKey, {
     category: 'Coins',
     type: 'none',
     additionalKey: 'none',
+    instance: 0,
 });
 
 function customTokenAPI(client: ChainClient): CustomTokenAPI {
@@ -113,7 +116,11 @@ function customTokenAPI(client: ChainClient): CustomTokenAPI {
                 ...instanceToPlain(erc20ClassKey),
             });
             const response = await client.evaluateTransaction('FetchBalances', dto, TokenBalance);
-            return response.Data;
+            if (GalaChainResponse.isError(response)) {
+                throw new Error(`Cannot Fetch ERC20 Balances: ${response.Message} (${response.ErrorKey})`);
+            } else {
+                return response.Data;
+            }
         },
         async ERC20Approve({ spender, amount }: { spender: ChainUser; amount: number }, privateKey: string) {
             const dto = await createValidDTO<GrantAllowanceDto>(GrantAllowanceDto, {
@@ -122,12 +129,16 @@ function customTokenAPI(client: ChainClient): CustomTokenAPI {
                 quantities: [{ user: spender.identityKey, quantity: new BigNumber(amount) as any }],
                 uses: new BigNumber(10) as any,
             });
-            const galaResult = await client.submitTransaction<TokenAllowance[]>(
+            const response = await client.submitTransaction<TokenAllowance[]>(
                 'GrantAllowance',
                 dto.signed(privateKey),
                 TokenAllowance,
             );
-            return galaResult;
+            if (GalaChainResponse.isError(response)) {
+                throw new Error(`Cannot Approve ERC20 Transfer: ${response.Message} (${response.ErrorKey})`);
+            } else {
+                return response.Data;
+            }
         },
         async ERC20Mint({ to, amount }: { to: ChainUser; amount: number }, privateKey: string) {
             const dto = await createValidDTO<MintTokenDto>(MintTokenDto, {
@@ -137,7 +148,7 @@ function customTokenAPI(client: ChainClient): CustomTokenAPI {
             });
             const response = await client.submitTransaction('MintToken', dto.signed(privateKey), TokenClassKey);
             if (GalaChainResponse.isError(response)) {
-                throw new Error(`Cannot Mint: ${response.Message} (${response.ErrorKey})`);
+                throw new Error(`Cannot Mint ERC20: ${response.Message} (${response.ErrorKey})`);
             } else {
                 return response.Data;
             }
@@ -163,6 +174,23 @@ function customTokenAPI(client: ChainClient): CustomTokenAPI {
             );
             if (GalaChainResponse.isError(response)) {
                 throw new Error(`Cannot Create ERC721: ${response.Message} (${response.ErrorKey})`);
+            } else {
+                return response.Data;
+            }
+        },
+        async ERC20Transfer(options: { to: ChainUser; amount: number }, privateKey: string) {
+            const tokenInstance = plainToInstance(TokenInstanceKey, {
+                ...erc20ClassKey,
+                instance: new BigNumber(0),
+            });
+            const dto = await createValidDTO<TransferTokenDto>(TransferTokenDto, {
+                to: options.to.identityKey,
+                tokenInstance,
+                quantity: new BigNumber(options.amount) as any,
+            });
+            const response = await client.submitTransaction('TransferToken', dto.signed(privateKey));
+            if (GalaChainResponse.isError(response)) {
+                throw new Error(`Cannot Create ERC20 Transfer: ${response.Message} (${response.ErrorKey})`);
             } else {
                 return response.Data;
             }

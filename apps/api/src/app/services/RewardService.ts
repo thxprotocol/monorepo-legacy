@@ -14,6 +14,7 @@ import PointBalanceService from './PointBalanceService';
 import MailService from './MailService';
 import RewardDiscordRoleService from './RewardDiscordRoleService';
 import RewardCustomService from './RewardCustomService';
+import RewardGalachainService from './RewardGalachainService';
 
 const serviceMap = {
     [RewardVariant.Coin]: new RewardCoinService(),
@@ -21,6 +22,7 @@ const serviceMap = {
     [RewardVariant.Custom]: new RewardCustomService(),
     [RewardVariant.Coupon]: new RewardCouponService(),
     [RewardVariant.DiscordRole]: new RewardDiscordRoleService(),
+    [RewardVariant.Galachain]: new RewardGalachainService(),
 };
 
 export default class RewardService {

@@ -4,7 +4,7 @@ type TInfoLink = {
 };
 
 type TQuestLock = { variant: QuestVariant; questId: string };
-type TReward = TRewardCoin | TRewardNFT | TRewardCustom | TRewardCoupon | TRewardDiscordRole;
+type TReward = TRewardCoin | TRewardNFT | TRewardCustom | TRewardCoupon | TRewardDiscordRole | TRewardGalachain;
 type TBaseReward = {
     _id: string;
     variant: RewardVariant;
@@ -41,4 +41,5 @@ type TRewardPayment =
     | TRewardNFTPayment
     | TRewardCustomPayment
     | TRewardCouponPayment
-    | TRewardDiscordRolePayment;
+    | TRewardDiscordRolePayment
+    | TRewardGalachainPayment;

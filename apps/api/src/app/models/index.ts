@@ -44,6 +44,8 @@ export { RewardDiscordRole, RewardDiscordRoleDocument } from './RewardDiscordRol
 export { RewardDiscordRolePayment, RewardDiscordRolePaymentDocument } from './RewardDiscordRolePayment';
 export { RewardNFT, RewardNFTDocument } from './RewardNFT';
 export { RewardNFTPayment, RewardNFTPaymentDocument } from './RewardNFTPayment';
+export { RewardGalachain, RewardGalachainDocument } from './RewardGalachain';
+export { RewardGalachainPayment, RewardGalachainPaymentDocument } from './RewardGalachainPayment';
 export { Transaction, TransactionDocument } from './Transaction';
 export { TwitterFollower, TwitterFollowerDocument } from './TwitterFollower';
 export { TwitterLike, TwitterLikeDocument } from './TwitterLike';
