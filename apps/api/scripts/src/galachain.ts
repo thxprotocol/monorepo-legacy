@@ -1,9 +1,8 @@
 import path from 'path';
-import { ChainUser, RestApiClientConfig, gcclient } from '@gala-chain/client';
-import { customAPI, customTokenAPI, getAdminPrivateKey, NETWORK_ROOT } from './utils/gala';
+import { RestApiClientConfig, gcclient } from '@gala-chain/client';
+import { customAPI, customTokenAPI, getAdminPrivateKey, NETWORK_ROOT, PRIVATE_KEY_DISTRIBUTOR } from './utils/gala';
 import { BigNumber } from 'bignumber.js';
-import axios from 'axios';
-import { MaxUint256 } from '@thxnetwork/api/util/network';
+import { ethers } from 'ethers';
 
 const adminPrivateKey = getAdminPrivateKey();
 
@@ -40,15 +39,15 @@ export default async function main() {
     console.log(adminProfile);
 
     // Create a token distributor
-    const tokenDistributor = ChainUser.withRandomKeys();
-    console.log(tokenDistributor.privateKey);
+    // const tokenDistributor = ChainUser.withRandomKeys();
+    // console.log(tokenDistributor.privateKey);
 
     // Register token distributor
-    await client.RegisterEthUser(tokenDistributor);
-
     // Get profile for token distributor
-    const tokenDistributorProfile = await client.GetProfile(tokenDistributor.privateKey);
-    console.log({ tokenDistributor });
+    const publicKey = new ethers.Wallet(PRIVATE_KEY_DISTRIBUTOR).publicKey;
+    const tokenDistributor = await client.RegisterEthUser(publicKey);
+    const tokenDistributorProfile = await client.GetProfile(PRIVATE_KEY_DISTRIBUTOR);
+    console.log({ tokenDistributorProfile });
 
     // Deploy a Coin
     // const coin = await tokenClient.ERC20Create(
@@ -65,24 +64,24 @@ export default async function main() {
     // console.log(coin);
 
     // Approve
-    await tokenClient.ERC20Approve(
-        {
-            spender: tokenDistributor,
-            amount: 100000000,
-        },
-        adminPrivateKey,
-    );
+    // await tokenClient.ERC20Approve(
+    //     {
+    //         spender: tokenDistributorProfile.alias,
+    //         amount: 100000000,
+    //     },
+    //     adminPrivateKey,
+    // );
 
-    // Mint
-    await tokenClient.ERC20Mint(
-        {
-            to: tokenDistributor,
-            amount: 100000000,
-        },
-        tokenDistributor.privateKey,
-    );
+    // // Mint
+    // await tokenClient.ERC20Mint(
+    //     {
+    //         to: tokenDistributorProfile.alias,
+    //         amount: 100000000,
+    //     },
+    //     adminPrivateKey,
+    // );
 
     // Get Balance
-    const [balance] = await tokenClient.ERC20BalanceOf({ owner: tokenDistributor });
+    const [balance] = await tokenClient.ERC20BalanceOf({ owner: tokenDistributorProfile.alias });
     console.log(new BigNumber(balance.quantity).toNumber());
 }

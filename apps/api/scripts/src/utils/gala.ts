@@ -21,6 +21,7 @@ import { BigNumber } from 'bignumber.js';
 
 const NETWORK_ROOT = '/Users/peterpolman/Sites/galachain';
 const PRIVATE_KEY = '62172f65ecab45f423f7088128eee8946c5b3c03911cb0b061b1dd9032337271';
+const PRIVATE_KEY_DISTRIBUTOR = '1ff36b62099c5c82d2b5606fdea70dc9f8e87676eb7958cf3b765358ee8b7051';
 
 type ERC20TokenCreate = {
     image: string;
@@ -41,15 +42,15 @@ type ERC721TokenCreate = {
 
 interface CustomAPI {
     GetProfile(privateKey: string): Promise<UserProfile>;
-    RegisterEthUser(newUser: ChainUser): Promise<RegisterUserDto>;
+    RegisterEthUser(publicKey: string): Promise<RegisterUserDto>;
 }
 
 interface CustomTokenAPI {
-    ERC20BalanceOf({ owner }: { owner: ChainUser }): Promise<any>;
+    ERC20BalanceOf({ owner }: { owner: string }): Promise<any>;
     ERC20Create({ name, symbol, decimals, maxSupply }: ERC20TokenCreate, privateKey: string): Promise<TokenClassKey>;
-    ERC20Approve(options: { spender: ChainUser; amount: number }, privateKey: string): Promise<any>;
-    ERC20Mint(options: { to: ChainUser; amount: number }, privateKey: string): Promise<TokenClassKey>;
-    ERC20Transfer(options: { to: ChainUser; amount: number }, privateKey: string): Promise<any>;
+    ERC20Approve(options: { spender: string; amount: number }, privateKey: string): Promise<any>;
+    ERC20Mint(options: { to: string; amount: number }, privateKey: string): Promise<TokenClassKey>;
+    ERC20Transfer(options: { to: string; amount: number }, privateKey: string): Promise<any>;
     ERC721Create({ name, description, image }: ERC721TokenCreate, privateKey: string): Promise<TokenClassKey>;
 }
 
@@ -64,9 +65,9 @@ function customAPI(client: ChainClient): CustomAPI {
                 return response.Data as UserProfile;
             }
         },
-        async RegisterEthUser(newUser: ChainUser) {
+        async RegisterEthUser(publicKey: string) {
             const dto = new RegisterUserDto();
-            dto.publicKey = newUser.publicKey;
+            dto.publicKey = publicKey;
             dto.sign(getAdminPrivateKey(), false);
 
             const response = await client.submitTransaction('RegisterEthUser', dto, RegisterUserDto);
@@ -110,9 +111,9 @@ function customTokenAPI(client: ChainClient): CustomTokenAPI {
                 return response.Data;
             }
         },
-        async ERC20BalanceOf({ owner }: { owner: ChainUser }) {
+        async ERC20BalanceOf({ owner }: { owner: string }) {
             const dto = await createValidDTO(FetchBalancesDto, {
-                owner: owner.identityKey,
+                owner,
                 ...instanceToPlain(erc20ClassKey),
             });
             const response = await client.evaluateTransaction('FetchBalances', dto, TokenBalance);
@@ -122,11 +123,11 @@ function customTokenAPI(client: ChainClient): CustomTokenAPI {
                 return response.Data;
             }
         },
-        async ERC20Approve({ spender, amount }: { spender: ChainUser; amount: number }, privateKey: string) {
+        async ERC20Approve({ spender, amount }: { spender; amount: number }, privateKey: string) {
             const dto = await createValidDTO<GrantAllowanceDto>(GrantAllowanceDto, {
                 tokenInstance: TokenInstanceKey.fungibleKey(erc20ClassKey).toQueryKey(),
                 allowanceType: AllowanceType.Mint,
-                quantities: [{ user: spender.identityKey, quantity: new BigNumber(amount) as any }],
+                quantities: [{ user: spender, quantity: new BigNumber(amount) as any }],
                 uses: new BigNumber(10) as any,
             });
             const response = await client.submitTransaction<TokenAllowance[]>(
@@ -140,9 +141,9 @@ function customTokenAPI(client: ChainClient): CustomTokenAPI {
                 return response.Data;
             }
         },
-        async ERC20Mint({ to, amount }: { to: ChainUser; amount: number }, privateKey: string) {
+        async ERC20Mint({ to, amount }: { to; amount: number }, privateKey: string) {
             const dto = await createValidDTO<MintTokenDto>(MintTokenDto, {
-                owner: to.identityKey,
+                owner: to,
                 tokenClass: erc20ClassKey,
                 quantity: new BigNumber(amount) as any,
             });
@@ -178,13 +179,13 @@ function customTokenAPI(client: ChainClient): CustomTokenAPI {
                 return response.Data;
             }
         },
-        async ERC20Transfer(options: { to: ChainUser; amount: number }, privateKey: string) {
+        async ERC20Transfer(options: { to; amount: number }, privateKey: string) {
             const tokenInstance = plainToInstance(TokenInstanceKey, {
                 ...erc20ClassKey,
                 instance: new BigNumber(0),
             });
             const dto = await createValidDTO<TransferTokenDto>(TransferTokenDto, {
-                to: options.to.identityKey,
+                to: options.to,
                 tokenInstance,
                 quantity: new BigNumber(options.amount) as any,
             });
@@ -202,4 +203,12 @@ function getAdminPrivateKey() {
     return PRIVATE_KEY;
 }
 
-export { NETWORK_ROOT, CustomAPI, CustomTokenAPI, getAdminPrivateKey, customAPI, customTokenAPI };
+export {
+    PRIVATE_KEY_DISTRIBUTOR,
+    NETWORK_ROOT,
+    CustomAPI,
+    CustomTokenAPI,
+    getAdminPrivateKey,
+    customAPI,
+    customTokenAPI,
+};
