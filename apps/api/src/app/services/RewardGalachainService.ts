@@ -8,33 +8,37 @@ export default class RewardGalachainService implements IRewardService {
         payment: RewardGalachainPayment,
     };
 
-    decorate(data: { reward: any; account?: TAccount }): Promise<any> {
-        throw new Error('Method not implemented.');
+    decorate({ reward }: { reward: TRewardGalachain; account?: TAccount }): Promise<any> {
+        return reward;
     }
-    decoratePayment(payment: any): Promise<any> {
-        throw new Error('Method not implemented.');
+
+    decoratePayment(payment: TRewardPayment): Promise<TRewardGalachainPayment> {
+        return this.models.reward.findById(payment.rewardId);
     }
-    getValidationResult(data: { reward: any; account?: TAccount }): Promise<TValidationResult> {
-        throw new Error('Method not implemented.');
+
+    async getValidationResult(data: { reward: any; account?: TAccount }): Promise<TValidationResult> {
+        return { result: true, reason: '' };
     }
+
     create(data: any): Promise<any> {
-        throw new Error('Method not implemented.');
+        return this.models.reward.create(data);
     }
-    update(reward: any, updates: any): Promise<any> {
-        throw new Error('Method not implemented.');
+
+    update(reward: TReward, updates: Partial<TReward>): Promise<TReward> {
+        return this.models.reward.findByIdAndUpdate(reward, updates, { new: true });
     }
-    remove(reward: any): Promise<void> {
-        throw new Error('Method not implemented.');
+
+    remove(reward: TReward): Promise<void> {
+        return this.models.reward.findByIdAndDelete(reward._id);
     }
-    findById(id: string): Promise<any> {
-        throw new Error('Method not implemented.');
+
+    findById(id: string) {
+        return this.models.reward.findById(id);
     }
 
     async createPayment({
         reward,
         wallet,
-        account,
-        safe,
     }: {
         reward: TRewardGalachain;
         account: TAccount;
