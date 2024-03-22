@@ -21,6 +21,7 @@
             <b-form-input v-model="tokenCategory" class="mb-2" placeholder="Category" />
             <b-form-input v-model="tokenType" class="mb-2" placeholder="Type" />
             <b-form-input v-model="tokenAdditionalKey" class="mb-2" placeholder="AdditionalKey" />
+            <b-form-input v-model="tokenInstance" class="mb-2" type="number" placeholder="Instance" />
         </b-form-group>
     </BaseModalRewardCreate>
 </template>
@@ -49,6 +50,7 @@ export default class ModalRewardGalachainCreate extends Vue {
     tokenCategory = '';
     tokenType = '';
     tokenAdditionalKey = '';
+    tokenInstance = 0;
     amount = 0;
 
     @Prop() id!: string;
@@ -64,6 +66,7 @@ export default class ModalRewardGalachainCreate extends Vue {
         this.tokenCategory = this.reward ? this.reward.tokenCategory : this.tokenCategory;
         this.tokenType = this.reward ? this.reward.tokenType : this.tokenType;
         this.tokenAdditionalKey = this.reward ? this.reward.tokenAdditionalKey : this.tokenAdditionalKey;
+        this.tokenInstance = this.reward ? this.reward.tokenInstance : this.tokenInstance;
     }
 
     async onSubmit(payload: TReward) {
@@ -81,6 +84,7 @@ export default class ModalRewardGalachainCreate extends Vue {
                 tokenCategory: this.tokenCategory,
                 tokenType: this.tokenType,
                 tokenAdditionalKey: this.tokenAdditionalKey,
+                tokenInstance: this.tokenInstance,
             });
             this.$bvModal.hide(this.id);
             this.$emit('submit');

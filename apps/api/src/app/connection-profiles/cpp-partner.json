@@ -1,0 +1,41 @@
+{
+  "name": "test-network-PartnerOrg1",
+  "version": "1.0.0",
+  "client": {
+    "organization": "PartnerOrg1"
+  },
+  "organizations": {
+    "PartnerOrg1": {
+      "mspid": "PartnerOrg1",
+      "peers": [
+        "peer0.partner1.local"
+      ],
+      "certificateAuthorities": [
+        "ca.partner1.local"
+      ]
+    }
+  },
+  "peers": {
+    "peer0.partner1.local": {
+      "url": "grpcs://localhost:7061",
+      "tlsCACerts": {
+        "path": "/Users/peterpolman/Sites/galachain/test-network/fablo-target/fabric-config/crypto-config/peerOrganizations/partner1.local/peers/peer0.partner1.local/tls/ca.crt"
+      },
+      "grpcOptions": {
+        "ssl-target-name-override": "peer0.partner1.local"
+      }
+    }
+  },
+  "certificateAuthorities": {
+    "ca.partner1.local": {
+      "url": "https://localhost:7060",
+      "caName": "ca.partner1.local",
+      "tlsCACerts": {
+        "path": "/Users/peterpolman/Sites/galachain/test-network/fablo-target/fabric-config/crypto-config/peerOrganizations/partner1.local/peers/ca.partner1.local/tls/ca.crt"
+      },
+      "httpOptions": {
+        "verify": false
+      }
+    }
+  }
+}

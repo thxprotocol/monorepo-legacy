@@ -10,15 +10,69 @@ export default class RewardGalachainService implements IRewardService {
         payment: RewardGalachainPayment,
     };
 
-    decorate({ reward }: { reward: TRewardGalachain; account?: TAccount }): Promise<any> {
-        return reward.toJSON();
+    async decorate({ reward }: { reward: TRewardGalachain; account?: TAccount }): Promise<any> {
+        const contract = {
+            channelName: reward.contractChannelName,
+            chaincodeName: reward.contractChaincodeName,
+            contractName: reward.contractContractName,
+        };
+        const token = {
+            collection: reward.tokenCollection,
+            category: reward.tokenCategory,
+            type: reward.tokenType,
+            additionalKey: reward.tokenAdditionalKey,
+            instance: new BigNumber(0),
+        };
+        const pool = await PoolService.getById(reward.poolId);
+        const [balance] = (await GalachainService.BalanceOf(
+            contract,
+            token,
+            pool.settings.galachainPrivateKey,
+        )) as any[];
+        const paymentCount = await this.models.payment.countDocuments({
+            rewardId: reward._id,
+        });
+        const progress = {
+            count: paymentCount,
+            limit: Number(balance.quantity) + paymentCount,
+        };
+
+        return { ...reward.toJSON(), progress, limit: balance.quantity };
     }
 
-    decoratePayment(payment: TRewardPayment): Promise<TRewardGalachainPayment> {
-        return this.models.reward.findById(payment.rewardId);
+    async decoratePayment(payment: TRewardPayment): Promise<TRewardGalachainPayment> {
+        const reward = await this.models.reward.findById(payment.rewardId);
+        return { reward, ...payment.toJSON() };
     }
 
-    async getValidationResult(data: { reward: any; account?: TAccount }): Promise<TValidationResult> {
+    async getValidationResult({ reward }: { reward: any; account?: TAccount }): Promise<TValidationResult> {
+        const { tokenCollection, tokenCategory, tokenType, tokenAdditionalKey } = reward;
+        const token = {
+            collection: tokenCollection,
+            category: tokenCategory,
+            type: tokenType,
+            additionalKey: tokenAdditionalKey,
+            instance: new BigNumber(0),
+        };
+        const contract = {
+            channelName: reward.contractChannelName,
+            chaincodeName: reward.contractChaincodeName,
+            contractName: reward.contractContractName,
+            methodName: 'TransferToken',
+        };
+        const pool = await PoolService.getById(reward.poolId);
+
+        // Check balance of the distributor
+        const [balance] = (await GalachainService.BalanceOf(
+            contract,
+            token,
+            pool.settings.galachainPrivateKey,
+        )) as any[];
+        console.log(balance);
+        if (Number(balance.quantity) < reward.amount) {
+            return { result: false, reason: 'Distributor has an insufficient balance' };
+        }
+
         return { result: true, reason: '' };
     }
 
@@ -47,27 +101,56 @@ export default class RewardGalachainService implements IRewardService {
         safe: WalletDocument;
         wallet?: WalletDocument;
     }): Promise<void | TValidationResult> {
-        const { tokenCollection, tokenCategory, tokenType, tokenAdditionalKey } = reward;
-        const token = {
-            collection: tokenCollection,
-            category: tokenCategory,
-            type: tokenType,
-            additionalKey: tokenAdditionalKey,
-            instance: new BigNumber(0),
-        };
-        const dto = await GalachainService.createTransferDto({
-            to: wallet.address,
-            amount: reward.amount,
+        const token = this.getToken(reward);
+        const contract = this.getContract(reward);
+        const pool = await PoolService.getById(reward.poolId);
+
+        // Get first token from balance
+        const instanceId = await this.getInstance(contract, token, pool);
+
+        // Transfer token to user wallet
+        await GalachainService.Transfer(
+            contract,
             token,
+            wallet.address,
+            Number(reward.amount),
+            instanceId,
+            pool.settings.galachainPrivateKey,
+        );
+
+        // Register payment
+        await this.models.payment.create({
+            sub: wallet.sub,
+            walletId: wallet._id,
+            rewardId: reward._id,
+            amount: reward.amount,
         });
-        const contract = {
+    }
+
+    private async getInstance(contract: TGalachainContract, token: TGalachainToken, pool: TPool) {
+        const [balance] = (await GalachainService.BalanceOf(
+            contract,
+            token,
+            pool.settings.galachainPrivateKey,
+        )) as any[];
+        const [instanceId] = balance.instanceIds;
+        return instanceId;
+    }
+
+    private getToken(reward: TRewardGalachain) {
+        return {
+            collection: reward.tokenCollection,
+            category: reward.tokenCategory,
+            type: reward.tokenType,
+            additionalKey: reward.tokenAdditionalKey,
+        };
+    }
+
+    private getContract(reward: TRewardGalachain) {
+        return {
             channelName: reward.contractChannelName,
             chaincodeName: reward.contractChaincodeName,
             contractName: reward.contractContractName,
         };
-        const pool = await PoolService.getById(reward.poolId);
-
-        return await GalachainService.invokeContract({ contract, dto, privateKey: pool.settings.galachainPrivateKey });
     }
-    //
 }

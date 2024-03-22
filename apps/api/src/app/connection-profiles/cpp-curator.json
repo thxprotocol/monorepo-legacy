@@ -1,0 +1,37 @@
+{
+    "name": "test-network-CuratorOrg",
+    "version": "1.0.0",
+    "client": {
+        "organization": "CuratorOrg"
+    },
+    "organizations": {
+        "CuratorOrg": {
+            "mspid": "CuratorOrg",
+            "peers": ["peer0.curator.local"],
+            "certificateAuthorities": ["ca.curator.local"]
+        }
+    },
+    "peers": {
+        "peer0.curator.local": {
+            "url": "grpcs://localhost:7041",
+            "tlsCACerts": {
+                "path": "/Users/peterpolman/Sites/galachain/test-network/fablo-target/fabric-config/crypto-config/peerOrganizations/curator.local/peers/peer0.curator.local/tls/ca.crt"
+            },
+            "grpcOptions": {
+                "ssl-target-name-override": "peer0.curator.local"
+            }
+        }
+    },
+    "certificateAuthorities": {
+        "ca.curator.local": {
+            "url": "https://localhost:7040",
+            "caName": "ca.curator.local",
+            "tlsCACerts": {
+                "path": "/Users/peterpolman/Sites/galachain/test-network/fablo-target/fabric-config/crypto-config/peerOrganizations/curator.local/peers/ca.curator.local/tls/ca.crt"
+            },
+            "httpOptions": {
+                "verify": false
+            }
+        }
+    }
+}

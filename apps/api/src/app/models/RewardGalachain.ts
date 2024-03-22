@@ -18,6 +18,7 @@ export const RewardGalachain = mongoose.model<RewardGalachainDocument>(
             tokenCategory: { type: String, required: true },
             tokenType: { type: String, required: true },
             tokenAdditionalKey: { type: String, required: true },
+            tokenInstance: { type: Number, required: true },
         },
         { timestamps: true },
     ),

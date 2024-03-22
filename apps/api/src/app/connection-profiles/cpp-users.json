@@ -1,0 +1,59 @@
+{
+  "name": "test-network-UsersOrg1",
+  "version": "1.0.0",
+  "client": {
+    "organization": "UsersOrg1"
+  },
+  "organizations": {
+    "CuratorOrg": {
+      "mspid": "CuratorOrg",
+      "peers": [
+        "peer0.curator.local"
+      ]
+    },
+    "PartnerOrg1": {
+      "mspid": "PartnerOrg1",
+      "peers": [
+        "peer0.partner1.local"
+      ]
+    },
+    "UsersOrg1": {
+      "mspid": "UsersOrg1",
+      "certificateAuthorities": [
+        "ca.users1.local"
+      ]
+    }
+  },
+  "peers": {
+    "peer0.curator.local": {
+      "url": "grpcs://localhost:7041",
+      "tlsCACerts": {
+        "path": "/Users/peterpolman/Sites/galachain/test-network/fablo-target/fabric-config/crypto-config/peerOrganizations/curator.local/peers/peer0.curator.local/tls/ca.crt"
+      },
+      "grpcOptions": {
+        "ssl-target-name-override": "peer0.curator.local"
+      }
+    },
+    "peer0.partner1.local": {
+      "url": "grpcs://localhost:7061",
+      "tlsCACerts": {
+        "path": "/Users/peterpolman/Sites/galachain/test-network/fablo-target/fabric-config/crypto-config/peerOrganizations/partner1.local/peers/peer0.partner1.local/tls/ca.crt"
+      },
+      "grpcOptions": {
+        "ssl-target-name-override": "peer0.partner1.local"
+      }
+    }
+  },
+  "certificateAuthorities": {
+    "ca.users1.local": {
+      "url": "https://localhost:7080",
+      "caName": "ca.users1.local",
+      "tlsCACerts": {
+        "path": "/Users/peterpolman/Sites/galachain/test-network/fablo-target/fabric-config/crypto-config/peerOrganizations/users1.local/peers/ca.users1.local/tls/ca.crt"
+      },
+      "httpOptions": {
+        "verify": false
+      }
+    }
+  }
+}

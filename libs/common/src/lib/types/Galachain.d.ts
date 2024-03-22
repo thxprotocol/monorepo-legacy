@@ -2,6 +2,7 @@ type TGalachainContract = {
     channelName: string;
     chaincodeName: string;
     contractName: string;
+    methodName?: string;
 };
 
 type TGalachainToken = {

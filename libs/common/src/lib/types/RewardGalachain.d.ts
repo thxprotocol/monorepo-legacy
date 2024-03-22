@@ -6,6 +6,7 @@ type TRewardGalachain = TReward & {
     tokenCategory: string;
     tokenType: string;
     tokenAdditionalKey: string;
+    tokenInstance: number;
     amount: string;
     privateKey: string;
 };
