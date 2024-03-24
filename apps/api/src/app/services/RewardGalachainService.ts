@@ -24,7 +24,7 @@ export default class RewardGalachainService implements IRewardService {
             instance: new BigNumber(0),
         };
         const pool = await PoolService.getById(reward.poolId);
-        const [balance] = (await GalachainService.BalanceOf(
+        const [balance] = (await GalachainService.balanceOf(
             contract,
             token,
             pool.settings.galachainPrivateKey,
@@ -63,7 +63,7 @@ export default class RewardGalachainService implements IRewardService {
         const pool = await PoolService.getById(reward.poolId);
 
         // Check balance of the distributor
-        const [balance] = (await GalachainService.BalanceOf(
+        const [balance] = (await GalachainService.balanceOf(
             contract,
             token,
             pool.settings.galachainPrivateKey,
@@ -109,7 +109,7 @@ export default class RewardGalachainService implements IRewardService {
         const instanceId = await this.getInstance(contract, token, pool);
 
         // Transfer token to user wallet
-        await GalachainService.Transfer(
+        await GalachainService.transfer(
             contract,
             token,
             wallet.address,
@@ -128,7 +128,7 @@ export default class RewardGalachainService implements IRewardService {
     }
 
     private async getInstance(contract: TGalachainContract, token: TGalachainToken, pool: TPool) {
-        const [balance] = (await GalachainService.BalanceOf(
+        const [balance] = (await GalachainService.balanceOf(
             contract,
             token,
             pool.settings.galachainPrivateKey,

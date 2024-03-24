@@ -21,6 +21,7 @@ import {
 } from '@gala-chain/api';
 import { GalachainRole, getClient } from '../util/galachain';
 import { Wallet } from 'ethers';
+import { NODE_ENV } from '../config/secrets';
 
 const GALACHAIN_URL = 'https://gateway.stage.galachain.com/api';
 const identityKey = (address: string) => `eth|${address.replace(/^0x/, '')}`;
@@ -32,13 +33,19 @@ export default class GalachainService {
         dto: ChainCallDTO,
         privateKey: string,
     ) {
-        //
-        return this.evaluateTransactionLocal(methodName, contract, dto, privateKey);
+        const methodMap = {
+            development: this.evaluateTransactionLocal.bind(this),
+            production: this.submitTransactonREST.bind(this),
+        };
+        return methodMap[NODE_ENV](methodName, contract, dto, privateKey);
     }
 
     static submitTransaction(methodName: string, contract: TGalachainContract, dto: ChainCallDTO, privateKey: string) {
-        // Determine local or REST
-        return this.submitTransactionLocal(methodName, contract, dto, privateKey);
+        const methodMap = {
+            development: this.submitTransactionLocal.bind(this),
+            production: this.submitTransactonREST.bind(this),
+        };
+        return methodMap[NODE_ENV](methodName, contract, dto, privateKey);
     }
 
     static async evaluateTransactionLocal(
@@ -57,36 +64,13 @@ export default class GalachainService {
         }
     }
 
-    // static async evaluateTransactionREST(
-    //     methodName: string,
-    //     contract: TGalachainContract,
-    //     dto: ChainCallDTO,
-    //     privateKey: string,
-    // ) {
-    //     const signedDto = dto.signed(privateKey);
-    //     const url = new URL(GALACHAIN_URL);
-    //     url.pathname = `${url.pathname}/${contract.channelName}/${contract.chaincodeName}-${contract.contractName}/${methodName}`;
-    //     try {
-    //         const res = await axios({
-    //             method: 'POST',
-    //             url: url.toString(),
-    //             headers: {},
-    //             data: instanceToPlain(signedDto),
-    //         });
-    //         return res.data;
-    //     } catch (error) {
-    //         logger.error(error.response.data);
-    //         throw new BadRequestError(error.response.data.message);
-    //     }
-    // }
-
     static async submitTransactionLocal(
         methodName: string,
         contract: TGalachainContract,
         dto: ChainCallDTO,
         privateKey: string,
     ) {
-        const client = getClient(GalachainRole.Curator); // Make this dynamic
+        const client = getClient(GalachainRole.Curator); // TODO Make this dynamic
         const response = await client.forContract(contract).submitTransaction(methodName, dto.signed(privateKey));
 
         if (GalaChainResponse.isError(response)) {
@@ -96,7 +80,7 @@ export default class GalachainService {
         }
     }
 
-    static async submitTransactionREST(
+    static async submitTransactonREST(
         methodName: string,
         contract: TGalachainContract,
         dto: ChainCallDTO,
@@ -105,14 +89,15 @@ export default class GalachainService {
         const signedDto = dto.signed(privateKey);
         const url = new URL(GALACHAIN_URL);
         url.pathname = `${url.pathname}/${contract.channelName}/${contract.chaincodeName}-${contract.contractName}/${methodName}`;
+
         try {
-            const { data } = await axios({
+            const res = await axios({
                 method: 'POST',
                 url: url.toString(),
                 headers: {},
                 data: instanceToPlain(signedDto),
             });
-            return data;
+            return res.data;
         } catch (error) {
             logger.error(error.response.data);
             throw new BadRequestError(error.response.data.message);
@@ -132,7 +117,7 @@ export default class GalachainService {
         return this.submitTransaction('RegisterEthUser', contract, dto, privateKey);
     }
 
-    static async BalanceOf(contract: TGalachainContract, tokenClassKey: TGalachainToken, privateKey: string) {
+    static async balanceOf(contract: TGalachainContract, tokenClassKey: TGalachainToken, privateKey: string) {
         const tokenClass = plainToInstance(TokenInstanceKey, tokenClassKey);
         const owner = new Wallet(privateKey).address;
         const dto = await createValidDTO(FetchBalancesDto, {
@@ -142,7 +127,7 @@ export default class GalachainService {
         return this.evaluateTransaction('FetchBalances', contract, dto, privateKey);
     }
 
-    static async Create(
+    static async create(
         contract: TGalachainContract,
         tokenInfo: {
             image: string;
@@ -164,7 +149,7 @@ export default class GalachainService {
         return this.submitTransaction('CreateTokenClass', contract, dto, privateKey);
     }
 
-    static async Mint(
+    static async mint(
         contract: TGalachainContract,
         tokenClassKey: TGalachainToken,
         to: string,
@@ -181,7 +166,7 @@ export default class GalachainService {
         return this.submitTransaction('MintToken', contract, dto, privateKey);
     }
 
-    static async Approve(
+    static async approve(
         contract: TGalachainContract,
         tokenClassKey: TGalachainToken,
         spender: string,
@@ -199,7 +184,7 @@ export default class GalachainService {
         return this.submitTransaction('GrantAllowance', contract, dto, privateKey);
     }
 
-    static async Transfer(
+    static async transfer(
         contract: TGalachainContract,
         tokenClassKey: TGalachainToken,
         to: string,

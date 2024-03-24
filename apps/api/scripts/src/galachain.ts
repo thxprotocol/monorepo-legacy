@@ -20,7 +20,7 @@ export default async function main() {
         decimals: 0,
         tokenClass: nftClassKey,
         name: 'Sting',
-        symbol: 'W-B-Sting',
+        symbol: 'WBSting',
         description: 'This collection holds weapons of any sort!',
         image: 'https://pbs.twimg.com/profile_images/1640708099177877505/4U-ya--t_400x400.jpg',
         isNonFungible: true,
@@ -48,19 +48,15 @@ export default async function main() {
     console.log(distributor);
 
     // Register user
-    // const user = await GalachainService.registerUser(profileContract, walletUser.publicKey, PRIVATE_KEY_ADMIN);
-    // console.log(user);
-
-    // Get profile for user
-    const profile = await GalachainService.getProfile(profileContract, PRIVATE_KEY_USER);
-    console.log(profile);
+    const user = await GalachainService.registerUser(profileContract, walletUser.publicKey, PRIVATE_KEY_ADMIN);
+    console.log(user);
 
     // Admin creates an NFT
-    const nft = await GalachainService.Create(tokenContract, tokenInfo, nftClassKey, PRIVATE_KEY_ADMIN);
+    const nft = await GalachainService.create(tokenContract, tokenInfo, nftClassKey, PRIVATE_KEY_ADMIN);
     console.log(nft);
 
     // Approve minting of maxsupply for admin
-    const result = await GalachainService.Approve(
+    const result = await GalachainService.approve(
         tokenContract,
         nftClassKey,
         walletDistributor.address,
@@ -71,16 +67,16 @@ export default async function main() {
     console.log(result);
 
     // Distributor mints 5 tokens
-    await GalachainService.Mint(tokenContract, nftClassKey, walletDistributor.address, 5, PRIVATE_KEY_DISTRIBUTOR);
+    await GalachainService.mint(tokenContract, nftClassKey, walletDistributor.address, 5, PRIVATE_KEY_DISTRIBUTOR);
 
     // Get balance of tokens for distributor
-    const balances = (await GalachainService.BalanceOf(tokenContract, nftClassKey, PRIVATE_KEY_DISTRIBUTOR)) as {
+    const balances = (await GalachainService.balanceOf(tokenContract, nftClassKey, PRIVATE_KEY_DISTRIBUTOR)) as {
         quantity: number;
     }[];
     console.log(balances);
 
     // Balance of the user
-    const [balanceUser] = (await GalachainService.BalanceOf(tokenContract, nftClassKey, PRIVATE_KEY_USER)) as {
+    const [balanceUser] = (await GalachainService.balanceOf(tokenContract, nftClassKey, PRIVATE_KEY_USER)) as {
         quantity: number;
     }[];
     console.log(balanceUser);
