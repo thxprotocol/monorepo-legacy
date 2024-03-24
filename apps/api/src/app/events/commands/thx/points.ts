@@ -10,29 +10,43 @@ export enum DiscordCommandVariant {
     RemovePoints = 1,
 }
 
-async function removePoints(pool: PoolDocument, account: TAccount, sender: User, receiver: User, amount: number) {
-    await PointBalanceService.subtract(pool, account, amount);
+async function removePoints(
+    pool: PoolDocument,
+    sender: TAccount,
+    receiver: TAccount,
+    senderUser: User,
+    receiverUser: User,
+    amount: number,
+) {
+    await PointBalanceService.subtract(pool, receiver, amount);
 
     const participant = await Participant.findOne({
         poolId: pool._id,
-        sub: account.sub,
+        sub: receiver.sub,
     });
 
-    const senderMessage = `The balance of <@${receiver.id}> has been decreased with **${amount} points** and is now **${participant.balance}**.`;
-    const receiverMessage = `<@${sender.id}> decreased your balance with **${amount}** resulting in a total of **${participant.balance} points**.`;
+    const senderMessage = `The balance of <@${receiverUser.id}> has been decreased with **${amount} points** and is now **${participant.balance}**.`;
+    const receiverMessage = `<@${senderUser.id}> decreased your balance with **${amount}** resulting in a total of **${participant.balance} points**.`;
 
     return { senderMessage, receiverMessage };
 }
 
-async function addPoints(pool: PoolDocument, account: TAccount, sender: User, receiver: User, amount: number) {
-    await PointBalanceService.add(pool, account, amount);
+async function addPoints(
+    pool: PoolDocument,
+    sender: TAccount,
+    receiver: TAccount,
+    senderUser: User,
+    receiverUser: User,
+    amount: number,
+) {
+    await PointBalanceService.add(pool, receiver, amount);
 
     const participant = await Participant.findOne({
         poolId: pool._id,
-        sub: account.sub,
+        sub: receiver.sub,
     });
-    const senderMessage = `The balance of <@${receiver.id}> has been increased with **${amount} points** and is now **${participant.balance}**!`;
-    const receiverMessage = `<@${sender.id}> increased your balance with **${amount}** resulting in a total of **${participant.balance} points**.`;
+    const senderMessage = `The balance of <@${receiverUser.id}> has been increased with **${amount} points** and is now **${participant.balance}**!`;
+    const receiverMessage = `<@${senderUser.id}> increased your balance with **${amount}** resulting in a total of **${participant.balance} points**.`;
 
     return { senderMessage, receiverMessage };
 }
@@ -91,15 +105,16 @@ export const onSubcommandPoints = async (interaction: CommandInteraction, varian
         const receiver = await AccountProxy.getByDiscordId(user.id);
         if (!receiver) {
             user.send({
-                content: `<@${interaction.user.id}> failed to send you ${amount.value} points. Please [sign in](${WIDGET_URL}/c/${pool._id}) and connect Discord!`,
+                content: `<@${interaction.user.id}> failed to send you ${amount.value} points. Please [sign in](${WIDGET_URL}/c/${pool._id}), connect Discord and notify the sender!`,
             });
-            throw new Error('Please, ask receiver to connect his Discord account.');
+            throw new Error('Please, ask the receiver to connect a Discord account.');
         }
 
         // Determine if we should add or remove using pointsFunctionMap
         const { senderMessage, receiverMessage } = await pointsFunctionMap[variant](
             pool,
             account,
+            receiver,
             interaction.user,
             user,
             Number(amount.value),
