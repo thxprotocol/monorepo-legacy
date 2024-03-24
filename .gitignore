@@ -74,11 +74,8 @@ libs/contracts/deployments/localhost
 .openzeppelin
 *.tsbuildinfo
 
-cypress/screenshots/*
-cypress/videos/*
-
 docker/data/**/*
 .cache
 
-#Playwright
-playwright-report/
+# Playwright
+playwright-report
