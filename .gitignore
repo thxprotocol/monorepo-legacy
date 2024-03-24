@@ -79,3 +79,4 @@ docker/data/**/*
 
 # Playwright
 playwright-report
+test-results

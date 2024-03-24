@@ -9,7 +9,7 @@ import rateLimit from 'express-rate-limit';
 
 const router = express.Router({ mergeParams: true });
 
-router.use(rateLimit({ windowMs: 60 * 1000, max: 10 }));
+router.use(rateLimit({ windowMs: 60 * 1000, max: 60 }));
 
 router.get('/', assertInteraction, Read.controller);
 router.get('/otp', assertInteraction, ReadOTP.controller);
