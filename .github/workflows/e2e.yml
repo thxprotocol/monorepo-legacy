@@ -1,9 +1,9 @@
 name: E2E CI
 
-on:
-    push:
-        branches:
-            - develop
+# on:
+#     push:
+#         branches:
+#             - develop
 
 jobs:
     tests:
