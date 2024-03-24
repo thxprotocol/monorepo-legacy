@@ -42,5 +42,8 @@ jobs:
                   path: ./node_modules
                   key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
 
-            - name: Build SDK
-              run: yarn test:e2e
+            - name: Install playwright browsers
+              run: npx playwright install --with-deps
+
+            - name: Run tests
+              run: yarn playwright test
