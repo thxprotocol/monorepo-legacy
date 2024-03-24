@@ -11,7 +11,6 @@ export const validation = [
     body('erc20Id').isMongoId(),
     body('to').isString(),
     body('amount').isString(),
-    body('chainId').isNumeric(),
 ];
 
 export const controller = async (req: Request, res: Response) => {
