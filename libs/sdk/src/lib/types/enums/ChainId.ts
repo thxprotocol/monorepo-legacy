@@ -6,4 +6,5 @@ export enum ChainId {
     PolygonMumbai = 80001,
     Polygon = 137,
     PolygonZK = 1101,
+    Linea = 59144,
 }

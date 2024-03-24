@@ -33,6 +33,12 @@ const chainList: { [chainId: number]: ChainInfo } = {
         blockExplorer: 'https://zkevm.polygonscan.com',
         rpc: 'https://zkevm-rpc.com',
     },
+    [ChainId.Linea]: {
+        chainId: ChainId.Linea,
+        name: 'Linea',
+        blockExplorer: 'https://lineascan.build',
+        rpc: 'https://rpc.linea.build',
+    },
 };
 
 if (process.env['NODE_ENV'] !== 'production') {
