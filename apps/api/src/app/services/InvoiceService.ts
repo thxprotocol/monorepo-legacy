@@ -105,7 +105,6 @@ export default class InvoiceService {
                 },
             },
         ]).exec();
-        console.log(questEntriesByCampaign);
 
         // Get the pool owner accounts to send the invoices
         const subs = questEntriesByCampaign.map(({ poolSub }) => poolSub);

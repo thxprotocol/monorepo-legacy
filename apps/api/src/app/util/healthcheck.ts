@@ -4,7 +4,6 @@ import { connection } from 'mongoose';
 import { HealthCheck } from '@godaddy/terminus';
 
 import migrateMongoConfig from '../config/migrate-mongo';
-import InvoiceService from '../services/InvoiceService';
 
 const dbConnected = async () => {
     // https://mongoosejs.com/docs/api.html#connection_Connection-readyState
@@ -30,8 +29,6 @@ const migrationsApplied = async () => {
 };
 
 export const healthCheck: HealthCheck = async () => {
-    await InvoiceService.upsertJob();
-
     newrelic.getTransaction().ignore();
     return Promise.all([dbConnected(), migrationsApplied()]);
 };
