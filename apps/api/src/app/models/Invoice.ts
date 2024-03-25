@@ -13,6 +13,8 @@ export const Invoice = mongoose.model<InvoiceDocument>(
             costTotal: Number,
             currency: String,
             plan: Number,
+            mapCount: Number,
+            mapLimit: Number,
             periodStartDate: Date,
             periodEndDate: Date,
         },

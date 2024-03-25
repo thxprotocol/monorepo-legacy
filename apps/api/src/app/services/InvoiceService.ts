@@ -123,6 +123,8 @@ export default class InvoiceService {
                                 poolId: poolId,
                                 periodStartDate: invoicePeriodstartDate,
                                 periodEndDate: invoicePeriodEndDate,
+                                mapCount,
+                                mapLimit: planPricingMap[account.plan].subscriptionLimit,
                                 ...this.createInvoiceDetails(account, mapCount),
                             },
                         },
