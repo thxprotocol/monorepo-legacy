@@ -15,7 +15,7 @@ describe('OAuth2 Grants', () => {
         await db.truncate();
 
         const account = await AccountService.create({
-            plan: AccountPlanType.Free,
+            plan: AccountPlanType.Lite,
             email: accountEmail,
             variant: AccountVariant.EmailPassword,
             active: true,

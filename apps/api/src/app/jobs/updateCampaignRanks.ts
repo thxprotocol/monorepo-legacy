@@ -13,6 +13,7 @@ import {
     QuestCustom,
     QuestWeb3,
     QuestGitcoin,
+    Participant,
 } from '@thxnetwork/api/models';
 import { NODE_ENV } from '@thxnetwork/api/config/secrets';
 import { logger } from '../util/logger';
@@ -49,10 +50,10 @@ export async function updateCampaignRanks() {
             },
             {
                 $lookup: {
-                    from: 'participants',
+                    from: Participant.collection.name,
                     localField: 'id',
                     foreignField: 'poolId',
-                    as: 'participants',
+                    as: Participant.collection.name,
                 },
             },
             // Rewards
@@ -60,7 +61,7 @@ export async function updateCampaignRanks() {
             ...rewardLookupStages,
             {
                 $addFields: {
-                    participantCount: { $size: '$participants' },
+                    participantCount: { $size: `$${Participant.collection.name}` },
                     totalQuestCount: {
                         $size: {
                             $concatArrays: questModels.map((model) => `$${model.collection.name}`),

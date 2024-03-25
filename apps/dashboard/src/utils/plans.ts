@@ -2,7 +2,7 @@ import { AccountPlanType } from '../types/account';
 
 export const plans = [
     {
-        type: AccountPlanType.Basic,
+        type: AccountPlanType.Lite,
         name: 'Basic',
         text: '&euro;0/month',
     },

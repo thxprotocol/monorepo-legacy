@@ -34,14 +34,14 @@ export const userWalletPrivateKey4 = '0x3b7fdd74a6c50a03d6e37f2d2c54e6fc73d67ff7
 
 export const account = {
     sub,
-    plan: AccountPlanType.Basic,
+    plan: AccountPlanType.Lite,
     email: CYPRESS_EMAIL,
     address: userWalletAddress,
     tokens: [],
 };
 export const account2 = {
     sub: sub2,
-    plan: AccountPlanType.Basic,
+    plan: AccountPlanType.Lite,
     email: CYPRESS_EMAIL,
     address: userWalletAddress2,
     tokens: [],
@@ -49,7 +49,7 @@ export const account2 = {
 
 export const account3 = {
     sub: sub3,
-    plan: AccountPlanType.Basic,
+    plan: AccountPlanType.Lite,
     variant: AccountVariant.EmailPassword,
     address: userWalletAddress3,
     tokens: [],
@@ -57,7 +57,7 @@ export const account3 = {
 
 export const account4 = {
     sub: sub4,
-    plan: AccountPlanType.Basic,
+    plan: AccountPlanType.Lite,
     variant: AccountVariant.Metamask,
     address: userWalletAddress4,
 };

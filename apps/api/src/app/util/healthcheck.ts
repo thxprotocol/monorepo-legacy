@@ -1,3 +1,4 @@
+import { agenda, JobType } from './agenda';
 import newrelic from 'newrelic';
 import { config, status } from 'migrate-mongo';
 import { connection } from 'mongoose';
@@ -28,7 +29,10 @@ const migrationsApplied = async () => {
     }
 };
 
-export const healthCheck: HealthCheck = () => {
+export const healthCheck: HealthCheck = async () => {
+    // Test run
+    await agenda.now(JobType.UpsertInvoices);
+
     newrelic.getTransaction().ignore();
     return Promise.all([dbConnected(), migrationsApplied()]);
 };
