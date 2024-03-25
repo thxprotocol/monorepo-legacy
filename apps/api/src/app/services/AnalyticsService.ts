@@ -30,7 +30,13 @@ import {
     QuestSocial,
     QuestDailyDocument,
     QuestDaily,
+    QuestGitcoin,
+    QuestGitcoinEntry,
     Wallet,
+    RewardGalachainDocument,
+    RewardGalachain,
+    QuestGitcoinDocument,
+    RewardGalachainPayment,
 } from '@thxnetwork/api/models';
 
 async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, endDate: Date) {
@@ -41,6 +47,7 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
         customRewardsQueryResult,
         couponRewardsQueryResult,
         discordRoleRewardsQueryResult,
+        galachainRewardsQueryResult,
     ] = await Promise.all([
         queryRewardRedemptions<RewardCoinDocument>({
             collectionName: 'rewardcoinpayment',
@@ -82,6 +89,14 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
             startDate,
             endDate,
         }),
+        queryRewardRedemptions<RewardGalachainDocument>({
+            collectionName: 'rewargalachainpayment',
+            key: 'rewardId',
+            model: RewardGalachain,
+            poolId: String(pool._id),
+            startDate,
+            endDate,
+        }),
     ]);
 
     // Quests
@@ -91,6 +106,7 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
         pointRewardsQueryResult,
         dailyRewardsQueryResult,
         web3QuestsQueryResult,
+        gitcoinQuestsQueryResult,
     ] = await Promise.all([
         queryQuestEntries<QuestCustomDocument>({
             collectionName: 'questcustomentry',
@@ -134,6 +150,14 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
             startDate,
             endDate,
         }),
+        queryQuestEntries<QuestGitcoinDocument>({
+            collectionName: 'questgitcoinentry',
+            key: 'questId',
+            model: QuestGitcoin,
+            poolId: String(pool._id),
+            startDate,
+            endDate,
+        }),
     ]);
 
     const result = {
@@ -163,6 +187,12 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
             };
         }),
         discordRoleRewards: discordRoleRewardsQueryResult.map((x) => {
+            return {
+                day: x._id,
+                totalAmount: x.total_amount,
+            };
+        }),
+        galachainRewards: galachainRewardsQueryResult.map((x) => {
             return {
                 day: x._id,
                 totalAmount: x.total_amount,
@@ -199,6 +229,12 @@ async function getPoolAnalyticsForChart(pool: PoolDocument, startDate: Date, end
                 totalAmount: x.total_amount,
             };
         }),
+        gitcoinQuests: gitcoinQuestsQueryResult.map((x) => {
+            return {
+                day: x._id,
+                totalAmount: x.total_amount,
+            };
+        }),
     };
     return result;
 }
@@ -210,11 +246,13 @@ async function getPoolMetrics(pool: PoolDocument, dateRange?: { startDate: Date;
         QuestInviteEntry,
         QuestCustomEntry,
         QuestWeb3Entry,
+        QuestGitcoinEntry,
         RewardCoinPayment,
         RewardNFTPayment,
         RewardCustomPayment,
         RewardCouponPayment,
         RewardDiscordRolePayment,
+        RewardGalachainPayment,
     ];
     const [
         dailyQuest,
@@ -222,11 +260,13 @@ async function getPoolMetrics(pool: PoolDocument, dateRange?: { startDate: Date;
         inviteQuest,
         customQuest,
         web3Quest,
+        gitcoinQuest,
         coinReward,
         nftReward,
         customReward,
         couponReward,
         discordRoleReward,
+        galachainReward,
     ] = await Promise.all(
         collections.map(async (Model) => {
             const $match = { poolId: String(pool._id) };
@@ -275,16 +315,25 @@ async function getPoolMetrics(pool: PoolDocument, dateRange?: { startDate: Date;
         inviteQuest,
         customQuest,
         web3Quest,
+        gitcoinQuest,
         coinReward,
         nftReward,
         customReward,
         couponReward,
         discordRoleReward,
+        galachainReward,
     };
 }
 
 async function createLeaderboard(pool: PoolDocument, dateRange?: { startDate: Date; endDate: Date }) {
-    const collections = [QuestDailyEntry, QuestSocialEntry, QuestInviteEntry, QuestCustomEntry, QuestWeb3Entry];
+    const collections = [
+        QuestDailyEntry,
+        QuestSocialEntry,
+        QuestInviteEntry,
+        QuestCustomEntry,
+        QuestWeb3Entry,
+        QuestGitcoinEntry,
+    ];
     const result = await Promise.all(
         collections.map(async (Model) => {
             const $match = { poolId: String(pool._id) };
