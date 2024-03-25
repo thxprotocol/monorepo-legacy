@@ -17,7 +17,8 @@
                             class="fas fa-info-circle"
                             v-b-tooltip
                             title="Monthly Active Participants represent the unique number of campaign participants who create at least one quest entry during the campaign's invoice period."
-                    /></template>
+                        />
+                    </template>
                     <template #head(costAdditional)> Additional </template>
                     <template #head(costTotal)> Total Costs </template>
 
@@ -59,7 +60,7 @@ export default class WidgetsView extends Vue {
     toFiatPrice = toFiatPrice;
 
     poolList!: IPools;
-    invoices!: TInvoiceState;
+    invoiceList!: TInvoiceState;
 
     get pool() {
         return this.poolList[this.$route.params.id];
@@ -85,7 +86,6 @@ export default class WidgetsView extends Vue {
     }
 
     mounted() {
-        debugger;
         this.getInvoices();
     }
 
