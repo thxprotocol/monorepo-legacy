@@ -6,10 +6,14 @@ import Read from './get';
 import Create from './post';
 import CreateORPRetry from './retry/post';
 import rateLimit from 'express-rate-limit';
+import { API_URL, NODE_ENV } from '@thxnetwork/auth/config/secrets';
 
 const router = express.Router({ mergeParams: true });
 
-router.use(rateLimit({ windowMs: 60 * 1000, max: 60 }));
+// Apply rate limit in production only
+if (NODE_ENV === 'production' && API_URL.startsWith('https://api.')) {
+    router.use(rateLimit({ windowMs: 60 * 1000, max: 60 }));
+}
 
 router.get('/', assertInteraction, Read.controller);
 router.get('/otp', assertInteraction, ReadOTP.controller);
