@@ -30,25 +30,23 @@ router.post(
     assertRequestInput(CreateController.validation),
     CreateController.controller,
 );
-router.use(assertPoolAccess);
+
+router.use('/:id', assertPoolAccess);
 router.get(
     '/:id',
     guard.check(['pools:read']),
-    assertPoolAccess,
     assertRequestInput(ReadController.validation),
     ReadController.controller,
 );
 router.patch(
     '/:id',
     guard.check(['pools:read', 'pools:write']),
-    assertPoolAccess,
     assertRequestInput(UpdateController.validation),
     UpdateController.controller,
 );
 router.delete(
     '/:id',
     guard.check(['pools:write']),
-    assertPoolAccess,
     assertRequestInput(DeleteController.validation),
     DeleteController.controller,
 );
