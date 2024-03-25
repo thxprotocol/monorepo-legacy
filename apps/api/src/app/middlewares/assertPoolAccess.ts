@@ -8,8 +8,9 @@ export async function assertPoolAccess(
     res: Response,
     next: NextFunction,
 ) {
-    if (req.auth.aud === ALLOWED_API_CLIENT_ID) return next();
+    if (req.auth.aud === ALLOWED_API_CLIENT_ID && ALLOWED_API_CLIENT_ID) return next();
 
+    console.log(req.body, req.params);
     const poolId = req.header('X-PoolId') || req.params.id; // Deprecate the header non pool child resources are tested
     if (!poolId) throw new ForbiddenError('Missing id param or X-PoolId header');
 

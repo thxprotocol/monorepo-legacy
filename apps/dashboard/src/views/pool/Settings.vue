@@ -55,6 +55,11 @@ export default class SettingsView extends Vue {
             class: 'fas fa-share-alt',
             route: 'widget',
         },
+        {
+            name: 'Billing',
+            class: 'fas fa-credit-card',
+            route: 'billing',
+        },
     ];
 
     get pool() {
