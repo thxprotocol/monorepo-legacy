@@ -77,25 +77,44 @@ export default class InvoiceService {
                     })),
                 },
             },
+            {
+                $unwind: '$allQuestEntries', // Deconstruct the allQuestEntries array
+            },
+            {
+                $group: {
+                    _id: {
+                        poolId: '$_id', // Group by pool._id
+                        sub: '$allQuestEntries.sub', // Group by the "sub" field
+                        poolSub: '$sub', // Include pool.sub value
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: '$_id.poolId', // Group by pool._id
+                    poolSub: { $first: '$_id.poolSub' }, // Store the pool.sub value
+                    mapCount: { $sum: 1 }, // Count the distinct values
+                },
+            },
+            {
+                $project: {
+                    _id: 0, // Exclude the _id field from the result
+                    poolId: { $toString: '$_id' }, // Include pool._id as string
+                    poolSub: 1, // Include the pool.sub value
+                    mapCount: 1, // Include the count field
+                },
+            },
         ]).exec();
-
-        // Count the amount of distinct subs for the list of quest entries
-        const mapCounts = questEntriesByCampaign.map((pool) => {
-            const distinctSubs: Set<string> = new Set();
-            pool.allQuestEntries.forEach((quest) => {
-                distinctSubs.add(quest.sub);
-            });
-            return { pool, mapCount: distinctSubs.size };
-        });
+        console.log(questEntriesByCampaign);
 
         // Get the pool owner accounts to send the invoices
-        const subs = questEntriesByCampaign.map((pool) => pool.sub);
+        const subs = questEntriesByCampaign.map(({ poolSub }) => poolSub);
         const accounts = await AccountProxy.find({ subs });
 
         // Build operations array for the current month metrics
-        const operations = mapCounts.map(({ pool, mapCount }) => {
+        const operations = questEntriesByCampaign.map(({ poolId, poolSub, mapCount }) => {
             try {
-                const account = accounts.find((a) => a.sub === pool.sub);
+                const account = accounts.find((a) => a.sub === poolSub);
                 // If the account can not be found, has no email or plan then notify admin.
                 // Continue with invoice generation for future reference
                 // @todo: notify admin
@@ -112,13 +131,13 @@ export default class InvoiceService {
                 return {
                     updateOne: {
                         filter: {
-                            poolId: pool.id,
+                            poolId,
                             periodStartDate: invoicePeriodstartDate,
                             periodEndDate: invoicePeriodEndDate,
                         },
                         update: {
                             $set: {
-                                poolId: pool.id,
+                                poolId,
                                 periodStartDate: invoicePeriodstartDate,
                                 periodEndDate: invoicePeriodEndDate,
                                 mapCount,
