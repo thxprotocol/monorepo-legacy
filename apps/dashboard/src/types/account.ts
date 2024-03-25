@@ -1,9 +1,3 @@
-export enum AccountPlanType {
-    Starter = 0,
-    Basic = 1,
-    Premium = 2,
-}
-
 export interface IYoutube {
     channels: unknown;
     videos: unknown;

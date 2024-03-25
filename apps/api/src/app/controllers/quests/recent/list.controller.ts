@@ -1,25 +1,28 @@
 import { Request, Response } from 'express';
 import { query } from 'express-validator';
-import { Pool } from '@thxnetwork/api/models';
-
+import {
+    Pool,
+    QuestDaily,
+    QuestInvite,
+    QuestSocial,
+    QuestCustom,
+    QuestWeb3,
+    QuestGitcoin,
+} from '@thxnetwork/api/models';
 const validation = [query('page').isInt(), query('limit').isInt(), query('search').optional().isString()];
 
 const controller = async (req: Request, res: Response) => {
-    const questLookupSteps = [
-        { collectionName: 'questdaily', target: 'dailyquests' },
-        { collectionName: 'questinvite', target: 'invitequests' },
-        { collectionName: 'questsocial', target: 'socialquests' },
-        { collectionName: 'questcustom', target: 'customquests' },
-        { collectionName: 'questweb3', target: 'web3quests' },
-        { collectionName: 'questgitcoin', target: 'gitcoinquests' },
-    ].map(({ collectionName, target }) => ({
-        $lookup: {
-            from: collectionName,
-            localField: 'poolId',
-            foreignField: 'poolId',
-            as: target,
-        },
-    }));
+    const questModels = [QuestDaily, QuestInvite, QuestSocial, QuestCustom, QuestWeb3, QuestGitcoin];
+    const questLookupStages = questModels.map((model) => {
+        return {
+            $lookup: {
+                from: model.collection.name,
+                localField: 'id',
+                foreignField: 'poolId',
+                as: model.collection.name,
+            },
+        };
+    });
 
     const decoratedPools = await Pool.aggregate([
         {
@@ -32,7 +35,7 @@ const controller = async (req: Request, res: Response) => {
                 },
             },
         },
-        ...questLookupSteps,
+        ...questLookupStages,
         {
             $lookup: {
                 from: 'widget',
@@ -63,18 +66,18 @@ const controller = async (req: Request, res: Response) => {
             const mapper = (q) => ({
                 ...q,
                 amount: q.amounts ? q.amounts[q.amounts.length - 1] : q.amount,
-                widget: result.widget[0],
-                domain: result.widget[0] && result.widgets[0].domain,
+                widget: result.widget && result.widget[0],
+                domain: result.widget && result.widget[0] && result.widgets[0].domain,
                 brand: result.brand[0],
             });
             return {
                 quests: [
-                    ...result.dailyquests.map(mapper).sort(sortByDate),
-                    ...result.invitequests.map(mapper).sort(sortByDate),
-                    ...result.socialquests.map(mapper).sort(sortByDate),
-                    ...result.customquests.map(mapper).sort(sortByDate),
-                    ...result.web3quests.map(mapper).sort(sortByDate),
-                    ...result.gitcoinquests.map(mapper).sort(sortByDate),
+                    ...result[QuestDaily.collection.name].map(mapper).sort(sortByDate),
+                    ...result[QuestInvite.collection.name].map(mapper).sort(sortByDate),
+                    ...result[QuestSocial.collection.name].map(mapper).sort(sortByDate),
+                    ...result[QuestCustom.collection.name].map(mapper).sort(sortByDate),
+                    ...result[QuestWeb3.collection.name].map(mapper).sort(sortByDate),
+                    ...result[QuestGitcoin.collection.name].map(mapper).sort(sortByDate),
                 ],
             };
         })

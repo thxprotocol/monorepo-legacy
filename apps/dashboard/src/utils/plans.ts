@@ -1,4 +1,4 @@
-import { AccountPlanType } from '../types/account';
+import { AccountPlanType } from '@thxnetwork/common/enums';
 
 export const plans = [
     {
