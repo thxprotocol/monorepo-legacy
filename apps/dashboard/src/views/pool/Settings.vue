@@ -56,9 +56,9 @@ export default class SettingsView extends Vue {
             route: 'widget',
         },
         {
-            name: 'Billing',
+            name: 'Invoices',
             class: 'fas fa-credit-card',
-            route: 'billing',
+            route: 'invoices',
         },
     ];
 

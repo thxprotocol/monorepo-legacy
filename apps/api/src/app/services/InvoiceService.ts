@@ -23,6 +23,15 @@ export default class InvoiceService {
         const invoicePeriodstartDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
         const invoicePeriodEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
+        await this.upsertInvoices(invoicePeriodstartDate, invoicePeriodEndDate);
+    }
+
+    /**
+     * Upsert invoices for a given period. Used independently for testing and backfills.
+     * @param invoicePeriodstartDate
+     * @param invoicePeriodEndDate
+     */
+    static async upsertInvoices(invoicePeriodstartDate: Date, invoicePeriodEndDate: Date) {
         // Determine the lookup stages for the quest entries in the pools pipeline
         const questEntryModels = [
             QuestDailyEntry,
