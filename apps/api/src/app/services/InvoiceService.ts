@@ -85,19 +85,17 @@ export default class InvoiceService {
             pool.allQuestEntries.forEach((quest) => {
                 distinctSubs.add(quest.sub);
             });
-            return { sub: pool.sub, poolId: pool.id, mapCount: distinctSubs.size };
+            return { pool, mapCount: distinctSubs.size };
         });
 
         // Get the pool owner accounts to send the invoices
-        const subs = questEntriesByCampaign.map((campaign) => campaign.sub);
+        const subs = questEntriesByCampaign.map((pool) => pool.sub);
         const accounts = await AccountProxy.find({ subs });
 
         // Build operations array for the current month metrics
-        const operations = mapCounts.map(({ sub, poolId, mapCount }) => {
+        const operations = mapCounts.map(({ pool, mapCount }) => {
             try {
-                const account = accounts.find((a) => a.sub === sub);
-                console.log({ account });
-
+                const account = accounts.find((a) => a.sub === pool.sub);
                 // If the account can not be found, has no email or plan then notify admin.
                 // Continue with invoice generation for future reference
                 // @todo: notify admin
@@ -114,13 +112,13 @@ export default class InvoiceService {
                 return {
                     updateOne: {
                         filter: {
-                            poolId: poolId,
+                            poolId: pool.id,
                             periodStartDate: invoicePeriodstartDate,
                             periodEndDate: invoicePeriodEndDate,
                         },
                         update: {
                             $set: {
-                                poolId: poolId,
+                                poolId: pool.id,
                                 periodStartDate: invoicePeriodstartDate,
                                 periodEndDate: invoicePeriodEndDate,
                                 mapCount,

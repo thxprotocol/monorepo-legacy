@@ -160,7 +160,7 @@
 </template>
 
 <script lang="ts">
-import { AccountPlanType } from '@thxnetwork/dashboard/types/account';
+import { AccountPlanType } from '@thxnetwork/common/enums';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseModalRequestAccountEmailUpdate from '@thxnetwork/dashboard/components/modals/BaseModalRequestAccountEmailUpdate.vue';
