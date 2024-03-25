@@ -11,7 +11,7 @@ import TokenService from './TokenService';
 export class AccountService {
     static create(data: Partial<AccountDocument>) {
         return Account.create({
-            plan: AccountPlanType.Free,
+            plan: AccountPlanType.Lite,
             username: generateUsername(),
             ...data,
             email: data.email && data.email.toLowerCase(),
@@ -104,7 +104,7 @@ export class AccountService {
         if (account) return account;
         return await Account.create({
             variant: AccountVariant.Metamask,
-            plan: AccountPlanType.Free,
+            plan: AccountPlanType.Lite,
             address,
         });
     }

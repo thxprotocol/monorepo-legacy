@@ -166,8 +166,13 @@ export type TCouponCodeState = {
         [rewardId: string]: TPaginationResult & { results: TCouponCode[] };
     };
 };
+
 export type TParticipantState = {
     [poolId: string]: TPaginationResult & { results: TParticipant[] };
+};
+
+export type TInvoiceState = {
+    [poolId: string]: TInvoice[];
 };
 
 @Module({ namespaced: true })
@@ -185,9 +190,14 @@ class PoolModule extends VuexModule {
     _analytics: IPoolAnalytics = {};
     _analyticsLeaderBoard: IPoolAnalyticsLeaderBoard = {};
     _analyticsMetrics: IPoolAnalyticsLeaderBoard = {};
+    _invoices: TInvoiceState = {};
 
     get all() {
         return this._all;
+    }
+
+    get invoices() {
+        return this._invoices;
     }
 
     get identities() {
@@ -393,6 +403,11 @@ class PoolModule extends VuexModule {
     setParticipant(data: TParticipant) {
         const index = this._participants[data.poolId].results.findIndex((p) => p._id === data._id);
         Vue.set(this._participants[data.poolId].results, index, data);
+    }
+
+    @Mutation
+    setInvoices(data: TInvoice[]) {
+        Vue.set(this._invoices, data[0].poolId, data);
     }
 
     @Action({ rawError: true })
@@ -660,6 +675,16 @@ class PoolModule extends VuexModule {
         });
         this.context.commit('setAnalyticsMetrics', { _id: payload.poolId, ...r.data });
         return r.data;
+    }
+
+    @Action({ rawError: true })
+    async listInvoices({ pool }: { pool: TPool }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/invoices`,
+            headers: { 'X-PoolId': pool._id },
+        });
+        this.context.commit('setInvoices', data);
     }
 
     @Action({ rawError: true })

@@ -48,7 +48,7 @@ describe('Account Controller', () => {
         authHeader = await requestToken();
 
         const account = await AuthService.signup({
-            plan: AccountPlanType.Free,
+            plan: AccountPlanType.Lite,
             email: accountEmail,
             variant: AccountVariant.EmailPassword,
             active: true,

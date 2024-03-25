@@ -144,6 +144,11 @@ const routes: Array<RouteConfig> = [
                         path: 'widget',
                         component: () => import('../views/pool/settings/Widget.vue'),
                     },
+                    {
+                        name: 'SettingsInvoices',
+                        path: 'invoices',
+                        component: () => import('../views/pool/settings/Invoices.vue'),
+                    },
                 ],
             },
         ],

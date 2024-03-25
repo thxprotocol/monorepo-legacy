@@ -18,6 +18,7 @@ export { ERC721Token, ERC721TokenDocument } from './ERC721Token';
 export { ERC721Transfer, ERC721TransferDocument } from './ERC721Transfer';
 export { Event, EventDocument } from './Event';
 export { Identity, IdentityDocument } from './Identity';
+export { Invoice, InvoiceDocument } from './Invoice';
 export { Job, JobDocument } from './Job';
 export { Notification, NotificationDocument } from './Notification';
 export { Participant, ParticipantDocument } from './Participant';

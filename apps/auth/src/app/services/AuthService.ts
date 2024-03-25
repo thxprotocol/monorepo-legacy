@@ -128,7 +128,7 @@ export default class AuthService {
         // Create and return account if none found the given email
         if (!account) {
             const variant = AccountVariant.EmailPassword;
-            const plan = params.signup_plan ? Number(params.signup_plan) : AccountPlanType.Free;
+            const plan = params.signup_plan ? Number(params.signup_plan) : AccountPlanType.Lite;
 
             account = await AccountService.create({ email, plan, variant });
         }

@@ -12,6 +12,7 @@ import SafeService from '@thxnetwork/api/services/SafeService';
 import WebhookService from '../services/WebhookService';
 import QuestService from '../services/QuestService';
 import TwitterCacheService from '../services/TwitterCacheService';
+import InvoiceService from '../services/InvoiceService';
 
 const agenda = new Agenda({
     db: {
@@ -33,12 +34,14 @@ agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
 agenda.define(JobType.RequestAttemp, (job: Job) => WebhookService.requestAttemptJob(job));
 agenda.define(JobType.UpdateTwitterLikeCache, (job: Job) => TwitterCacheService.updateLikeCacheJob(job));
 agenda.define(JobType.UpdateTwitterRepostCache, (job: Job) => TwitterCacheService.updateRepostCacheJob(job));
+agenda.define(JobType.UpsertInvoices, () => InvoiceService.upsertJob());
 
 db.connection.once('open', async () => {
     await agenda.start();
 
     await agenda.every('5 minutes', JobType.UpdateCampaignRanks);
     await agenda.every('10 seconds', JobType.UpdatePendingTransactions);
+    await agenda.every('5 minutes', JobType.UpsertInvoices);
     await agenda.every('15 minutes', JobType.CreateTwitterQuests);
     await agenda.every('0 9 * * MON', JobType.SendCampaignReport);
 

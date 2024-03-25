@@ -1,4 +1,17 @@
-import { Goal, Role } from './enums';
+import { AccountPlanType, Goal, Role } from './enums';
+
+export const planPricingMap = {
+    [AccountPlanType.Lite]: {
+        subscriptionLimit: 100,
+        costSubscription: 1900,
+        costPerUnit: 8,
+    },
+    [AccountPlanType.Premium]: {
+        subscriptionLimit: 5000,
+        costSubscription: 48900,
+        costPerUnit: 5,
+    },
+};
 
 export const GITHUB_API_ENDPOINT = 'https://api.github.com';
 export const TWITTER_API_ENDPOINT = 'https://api.twitter.com/2';

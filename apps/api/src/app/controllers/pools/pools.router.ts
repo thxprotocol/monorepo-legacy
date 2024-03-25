@@ -19,34 +19,34 @@ import RouterWallets from './wallets/wallets.router';
 import RouterERC20 from './erc20/erc20.router';
 import RouterER1155 from './erc1155/erc1155.router';
 import RouterIdentities from './identities/identities.router';
+import RouterInvoices from './invoices/invoices.router';
 
 const router = express.Router({ mergeParams: true });
 
 router.get('/', guard.check(['pools:read']), assertRequestInput(ListController.validation), ListController.controller);
-router.get(
-    '/:id',
-    guard.check(['pools:read']),
-    assertPoolAccess,
-    assertRequestInput(ReadController.validation),
-    ReadController.controller,
-);
 router.post(
     '/',
     guard.check(['pools:read', 'pools:write']),
     assertRequestInput(CreateController.validation),
     CreateController.controller,
 );
+
+router.use('/:id', assertPoolAccess);
+router.get(
+    '/:id',
+    guard.check(['pools:read']),
+    assertRequestInput(ReadController.validation),
+    ReadController.controller,
+);
 router.patch(
     '/:id',
     guard.check(['pools:read', 'pools:write']),
-    assertPoolAccess,
     assertRequestInput(UpdateController.validation),
     UpdateController.controller,
 );
 router.delete(
     '/:id',
     guard.check(['pools:write']),
-    assertPoolAccess,
     assertRequestInput(DeleteController.validation),
     DeleteController.controller,
 );
@@ -63,5 +63,6 @@ router.use('/:id/guilds', RouterGuilds);
 router.use('/:id/erc20', RouterERC20);
 router.use('/:id/erc1155', RouterER1155);
 router.use('/:id/identities', RouterIdentities);
+router.use('/:id/invoices', RouterInvoices);
 
 export default router;
