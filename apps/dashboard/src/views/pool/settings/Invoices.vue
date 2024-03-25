@@ -3,7 +3,7 @@
         <b-form-row>
             <b-col md="4">
                 <strong>Invoices</strong>
-                <p class="text-muted">Invoice data is updated every 5 minutes.</p>
+                <p class="text-muted">Invoice data is updated every 15 minutes.</p>
             </b-col>
             <b-col md="8">
                 <BTable class="table-invoices" :items="invoices" hover show-empty responsive="lg">

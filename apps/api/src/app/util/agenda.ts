@@ -41,7 +41,7 @@ db.connection.once('open', async () => {
 
     await agenda.every('5 minutes', JobType.UpdateCampaignRanks);
     await agenda.every('10 seconds', JobType.UpdatePendingTransactions);
-    await agenda.every('5 minutes', JobType.UpsertInvoices);
+    await agenda.every('15 minutes', JobType.UpsertInvoices);
     await agenda.every('15 minutes', JobType.CreateTwitterQuests);
     await agenda.every('0 9 * * MON', JobType.SendCampaignReport);
 

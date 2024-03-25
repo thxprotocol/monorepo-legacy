@@ -15,14 +15,6 @@
         "module": "commonjs",
         "types": ["node", "jest"]
     },
-    "include": ["**/*.ts", "../../libs/common/**/*", "../../QuestDailyService.ts"],
+    "include": ["**/*.ts", "../../libs/common/**/*"],
     "exclude": []
-    // "include": [
-    //     "../../libs/common/**/*",
-    //     "../../libs/contracts/**/*",
-    //     "../../package.json",
-    //     "scripts/**/*.ts",
-    //     "src/**/*.ts",
-    //     "./package.json"
-    // ]
 }

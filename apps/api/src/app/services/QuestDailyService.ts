@@ -1,5 +1,5 @@
 import { Event, Identity, QuestDaily, QuestDailyEntry } from '@thxnetwork/api/models';
-import { IQuestService } from './apps/api/src/app/services/interfaces/IQuestService';
+import { IQuestService } from './interfaces/IQuestService';
 
 const ONE_DAY_MS = 86400 * 1000; // 24 hours in milliseconds
 

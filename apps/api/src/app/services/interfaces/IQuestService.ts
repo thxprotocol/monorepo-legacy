@@ -3,7 +3,7 @@ import QuestInviteService from '../QuestInviteService';
 import QuestDiscordService from '../QuestDiscordService';
 import QuestTwitterService from '../QuestSocialService'; // Split
 import QuestYouTubeService from '../QuestSocialService'; // Split
-import QuestDailyService from '../../../../../../QuestDailyService';
+import QuestDailyService from '../QuestDailyService';
 import QuestCustomService from '../QuestCustomService';
 import QuestGitcoinService from '../QuestGitcoinService';
 import QuestWeb3Service from '../QuestWeb3Service';
