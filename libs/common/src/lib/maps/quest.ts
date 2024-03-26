@@ -17,7 +17,7 @@ export const recaptchaActionMap = {
     [QuestVariant.Twitter]: ReCaptchaAction.QuestSocialEntryCreate,
     [QuestVariant.YouTube]: ReCaptchaAction.QuestSocialEntryCreate,
     [QuestVariant.Discord]: ReCaptchaAction.QuestSocialEntryCreate,
-    [QuestVariant.Custom]: ReCaptchaAction.QuestSocialEntryCreate,
-    [QuestVariant.Gitcoin]: ReCaptchaAction.QuestSocialEntryCreate,
-    [QuestVariant.Web3]: ReCaptchaAction.QuestSocialEntryCreate,
+    [QuestVariant.Custom]: ReCaptchaAction.QuestCustomEntryCreate,
+    [QuestVariant.Gitcoin]: ReCaptchaAction.QuestGitcoinEntryCreate,
+    [QuestVariant.Web3]: ReCaptchaAction.QuestWeb3EntryCreate,
 };
