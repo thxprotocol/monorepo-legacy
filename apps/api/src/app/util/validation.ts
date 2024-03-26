@@ -14,8 +14,8 @@ export const validate = (validations: any) => {
 export const defaults = {
     quest: [
         body('index').optional().isInt(),
-        body('title').optional().isString(),
-        body('description').optional().isString(),
+        body('title').optional().isString().trim().escape(),
+        body('description').optional().isString().trim().escape(),
         body('expiryDate').optional().isISO8601(),
         body('isPublished')
             .optional()
@@ -40,8 +40,8 @@ export const defaults = {
             .customSanitizer((locks) => locks && JSON.parse(locks)),
     ],
     reward: [
-        body('title').optional().isString(),
-        body('description').optional().isString(),
+        body('title').optional().isString().trim().escape(),
+        body('description').optional().isString().trim().escape(),
         body('expiryDate').optional().isISO8601(),
         body('limit').optional().isNumeric(),
         body('pointPrice').optional().isNumeric(),

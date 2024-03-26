@@ -8,7 +8,12 @@ import QuestService from '@thxnetwork/api/services/QuestService';
 import { chainList } from '@thxnetwork/common/chains';
 import { JobType, QuestVariant } from '@thxnetwork/common/enums';
 
-const validation = [param('id').isMongoId(), body('signature').isString(), body('chainId').isInt()];
+const validation = [
+    param('id').isMongoId(),
+    body('signature').isString(),
+    body('chainId').isInt(),
+    body('recaptcha').isString(),
+];
 
 const controller = async ({ account, body, params }: Request, res: Response) => {
     const quest = await QuestWeb3.findById(params.id);
@@ -20,7 +25,7 @@ const controller = async ({ account, body, params }: Request, res: Response) => 
     const { rpc, name } = chainList[body.chainId];
     if (!rpc) throw new NotFoundError(`Could not find RPC for ${name}`);
 
-    const data = { address, rpc, chainId: body.chainId };
+    const data = { address, rpc, chainId: body.chainId, recaptcha: body.recaptcha };
     const { result, reason } = await QuestService.getValidationResult(quest.variant, {
         quest,
         account,

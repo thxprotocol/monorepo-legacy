@@ -12,6 +12,7 @@ export const Participant = mongoose.model<ParticipantDocument>(
             score: Number,
             balance: { type: Number, default: 0 },
             questEntryCount: Number,
+            riskAnalysis: { score: Number, reasons: [String] },
             isSubscribed: { type: Boolean, default: false },
         },
         { timestamps: true },

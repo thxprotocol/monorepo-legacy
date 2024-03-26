@@ -1,4 +1,4 @@
-import { QuestVariant, QuestSocialRequirement } from '../enums';
+import { QuestVariant, QuestSocialRequirement, ReCaptchaAction } from '../enums';
 
 export const questInteractionVariantMap = {
     [QuestSocialRequirement.TwitterFollow]: QuestVariant.Twitter,
@@ -11,4 +11,13 @@ export const questInteractionVariantMap = {
     [QuestSocialRequirement.DiscordGuildJoined]: QuestVariant.Discord,
     [QuestSocialRequirement.DiscordMessage]: QuestVariant.Discord,
     [QuestSocialRequirement.DiscordMessageReaction]: QuestVariant.Discord,
+};
+export const recaptchaActionMap = {
+    [QuestVariant.Daily]: ReCaptchaAction.QuestDailyEntryCreate,
+    [QuestVariant.Twitter]: ReCaptchaAction.QuestSocialEntryCreate,
+    [QuestVariant.YouTube]: ReCaptchaAction.QuestSocialEntryCreate,
+    [QuestVariant.Discord]: ReCaptchaAction.QuestSocialEntryCreate,
+    [QuestVariant.Custom]: ReCaptchaAction.QuestSocialEntryCreate,
+    [QuestVariant.Gitcoin]: ReCaptchaAction.QuestSocialEntryCreate,
+    [QuestVariant.Web3]: ReCaptchaAction.QuestSocialEntryCreate,
 };

@@ -7,14 +7,19 @@ import { QuestGitcoin } from '@thxnetwork/api/models';
 import { agenda } from '@thxnetwork/api/util/agenda';
 import QuestService from '@thxnetwork/api/services/QuestService';
 
-const validation = [param('id').isMongoId(), body('signature').isString(), body('chainId').isInt()];
+const validation = [
+    param('id').isMongoId(),
+    body('signature').isString(),
+    body('chainId').isInt(),
+    body('recaptcha').isString(),
+];
 
 const controller = async ({ account, body, params }: Request, res: Response) => {
     const quest = await QuestGitcoin.findById(params.id);
     if (!quest) throw new NotFoundError('Quest not found');
 
     const address = recoverSigner(body.message, body.signature);
-    const data = { address };
+    const data = { address, recaptcha: body.recaptcha };
     const { result, reason } = await QuestService.getValidationResult(quest.variant, { quest, account, data });
     if (!result) return res.json({ error: reason });
 

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { param } from 'express-validator';
+import { body, param } from 'express-validator';
 import { JobType, agenda } from '@thxnetwork/api/util/agenda';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import QuestService from '@thxnetwork/api/services/QuestService';
@@ -9,9 +9,9 @@ import { logger } from '@thxnetwork/api/util/logger';
 import { questInteractionVariantMap } from '@thxnetwork/common/maps';
 import { QuestSocial } from '@thxnetwork/api/models';
 
-const validation = [param('id').isMongoId()];
+const validation = [param('id').isMongoId(), body('recaptcha').isString()];
 
-const controller = async ({ params, account }: Request, res: Response) => {
+const controller = async ({ params, body, account }: Request, res: Response) => {
     // Get the quest document
     const quest = await QuestSocial.findById(params.id);
     if (!quest) throw new NotFoundError('Quest not found');
@@ -24,7 +24,7 @@ const controller = async ({ params, account }: Request, res: Response) => {
     if (!platformUserId) return res.json({ error: 'Could not find platform user id.' });
 
     // Get validation result for this quest entry
-    const data = { platformUserId };
+    const data = { platformUserId, recaptcha: body.recaptcha };
     const { result, reason } = await QuestService.getValidationResult(variant, { quest, account, data });
     if (!result) {
         // Reason includes part of the rate limit error so we log

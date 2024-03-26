@@ -1,5 +1,6 @@
 import { Document } from 'mongoose';
-import { TwitterUser } from '../models';
+import { Participant, TwitterUser } from '../models';
+import ReCaptchaService from '@thxnetwork/api/services/ReCaptchaService';
 
 export default class ParticipantService {
     static async decorate(
@@ -21,5 +22,20 @@ export default class ParticipantService {
             account: { ...account, tokens },
             pointBalance: pointBalance ? pointBalance.balance : 0,
         };
+    }
+
+    static async updateRiskScore(
+        account: TAccount,
+        poolId: string,
+        { token, recaptchaAction }: { token: string; recaptchaAction: string },
+    ) {
+        // Get risk score from Google
+        const riskAnalysis = await ReCaptchaService.getRiskAnalysis({
+            token,
+            recaptchaAction,
+        });
+
+        // Update the participant's risk score
+        return await Participant.findOneAndUpdate({ sub: account.sub, poolId }, { riskAnalysis }, { new: true });
     }
 }

@@ -6,6 +6,7 @@ import { logger } from '../util/logger';
 import { Job } from '@hokify/agenda';
 import { serviceMap } from './interfaces/IQuestService';
 import { tokenInteractionMap } from './maps/quests';
+import { recaptchaActionMap } from '@thxnetwork/common/maps';
 import PoolService from './PoolService';
 import NotificationService from './NotificationService';
 import PointBalanceService from './PointBalanceService';
@@ -120,14 +121,47 @@ export default class QuestService {
         return await serviceMap[variant].isAvailable(options);
     }
 
+    static async isBotUser(
+        variant: QuestVariant,
+        options: { quest: TQuest; account: TAccount; data: Partial<TQuestEntry & { rpc: string; recaptcha: string }> },
+    ) {
+        // Define the recaptcha action for this quest variant
+        const recaptchaAction = recaptchaActionMap[variant];
+
+        // Update the participant's risk score
+        const {
+            riskAnalysis: { score },
+        } = await ParticipantService.updateRiskScore(options.account, options.quest.poolId, {
+            token: options.data.recaptcha,
+            recaptchaAction,
+        });
+
+        // Defaults: 0.1, 0.3, 0.7 and 0.9. Ranges from 0 (Bot) to 1 (User)
+        if (score >= 0.9) {
+            return { result: true, reasons: '' };
+        }
+
+        logger.info({
+            sub: options.account.sub,
+            poolId: options.quest.poolId,
+            score,
+            action: recaptchaAction,
+        });
+
+        return { result: false, reason: 'This request has been indentified as potentially automated.' };
+    }
+
     static async getValidationResult(
         variant: QuestVariant,
         options: {
             quest: TQuest;
             account: TAccount;
-            data: Partial<TQuestEntry & { rpc: string }>;
+            data: Partial<TQuestEntry & { rpc: string; recaptcha: string }>;
         },
     ) {
+        const isBotUser = await this.isBotUser(variant, options);
+        if (!isBotUser.result) return isBotUser;
+
         const isAvailable = await this.isAvailable(variant, options);
         if (!isAvailable.result) return isAvailable;
 

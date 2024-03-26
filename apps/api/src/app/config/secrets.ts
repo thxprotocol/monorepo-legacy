@@ -18,6 +18,7 @@ const required = [
     'AWS_S3_PRIVATE_BUCKET_REGION',
     'SAFE_TXS_SERVICE',
     'CWD',
+    'GCLOUD_RECAPTCHA_API_KEY',
 ];
 
 if (process.env.NODE_ENV === 'production') {
@@ -113,3 +114,6 @@ export const PINATA_API_JWT = process.env.PINATA_API_JWT || '';
 export const ALLOWED_API_CLIENT_ID = process.env.ALLOWED_API_CLIENT_ID || '';
 export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+export const GCLOUD_PROJECT_ID = process.env.GCLOUD_PROJECT_ID;
+export const GCLOUD_RECAPTCHA_API_KEY = process.env.GCLOUD_RECAPTCHA_API_KEY;
+export const GCLOUD_RECAPTCHA_SITE_KEY = process.env.GCLOUD_RECAPTCHA_SITE_KEY;

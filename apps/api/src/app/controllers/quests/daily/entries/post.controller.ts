@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
-import { param } from 'express-validator';
+import { body, param } from 'express-validator';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { JobType, QuestVariant } from '@thxnetwork/common/enums';
 import { agenda } from '@thxnetwork/api/util/agenda';
 import { QuestDaily } from '@thxnetwork/api/models';
-import QuestService from '@thxnetwork/api/services/QuestService';
 import { getIP } from '@thxnetwork/api/util/ip';
+import QuestService from '@thxnetwork/api/services/QuestService';
 
-const validation = [param('id').isMongoId()];
+const validation = [param('id').isMongoId(), body('recaptcha').isString()];
 
 const controller = async (req: Request, res: Response) => {
     const { params, account } = req;
@@ -15,7 +15,7 @@ const controller = async (req: Request, res: Response) => {
     if (!quest) throw new NotFoundError('Could not find the Daily Reward');
 
     // Only do this is no event requirement is set
-    const data = {};
+    const data = { recaptcha: req.body.recaptcha };
     const ip = getIP(req);
     if (!quest.eventName && ip) {
         data['ip'] = ip;
