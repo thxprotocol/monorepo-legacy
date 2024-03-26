@@ -6,7 +6,6 @@ export default class ReCaptchaService {
     static async getRiskAnalysis({ token, recaptchaAction }) {
         const url = new URL('https://recaptchaenterprise.googleapis.com');
         url.pathname = `/v1/projects/${GCLOUD_PROJECT_ID}/assessments`;
-        console.log(GCLOUD_PROJECT_ID, GCLOUD_RECAPTCHA_API_KEY, GCLOUD_RECAPTCHA_SITE_KEY);
 
         const { data } = await axios({
             method: 'POST',

@@ -141,12 +141,7 @@ export default class QuestService {
             return { result: true, reasons: '' };
         }
 
-        logger.info({
-            sub: options.account.sub,
-            poolId: options.quest.poolId,
-            score,
-            action: recaptchaAction,
-        });
+        logger.info({ sub: options.account.sub, poolId: options.quest.poolId, score, action: recaptchaAction });
 
         return { result: false, reason: 'This request has been indentified as potentially automated.' };
     }
