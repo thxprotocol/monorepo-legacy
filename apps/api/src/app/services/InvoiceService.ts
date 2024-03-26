@@ -34,7 +34,7 @@ export default class InvoiceService {
     static async upsertInvoices(invoicePeriodstartDate: Date, invoicePeriodEndDate: Date) {
         // Determine the lookup stages for the quest entries in the pools pipeline
         const questEntryModels = [
-            QuestDailyEntry,
+            // QuestDailyEntry, // Temporary disabled due to botting issues
             QuestInviteEntry,
             QuestSocialEntry,
             QuestCustomEntry,
