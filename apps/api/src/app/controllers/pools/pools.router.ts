@@ -30,7 +30,7 @@ router.post(
     assertRequestInput(CreateController.validation),
     CreateController.controller,
 );
-
+router.use('/:id/collaborators', RouterCollaborators);
 router.use('/:id', assertPoolAccess);
 router.get(
     '/:id',
@@ -51,7 +51,6 @@ router.delete(
     DeleteController.controller,
 );
 
-router.use('/:id/collaborators', RouterCollaborators);
 router.use('/:id/participants', RouterParticipants);
 router.use('/:id/analytics', RouterAnalytics);
 router.use('/:id/topup', RouterTopups);
