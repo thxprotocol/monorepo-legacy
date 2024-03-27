@@ -175,7 +175,6 @@ describe('ERC721 Transfer', () => {
             .set({ Authorization: widgetAccessToken })
             .query({ walletId: String(wallet._id) })
             .send({ chainId: ChainId.Hardhat, safeTxHash, signature });
-        console.log(body, String(wallet._id));
         expect(status).toBe(200);
     });
 

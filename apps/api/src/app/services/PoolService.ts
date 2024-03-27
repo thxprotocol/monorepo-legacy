@@ -206,9 +206,7 @@ async function findParticipants(pool: PoolDocument, page: number, limit: number,
     if (query) {
         accounts = await AccountProxy.find({ query });
         subs = accounts.map((a) => a.sub);
-        console.log({ query, accounts, subs });
         $match['sub'] = { $in: subs };
-        console.log({ $match });
     }
 
     const results = await Participant.aggregate([

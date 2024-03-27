@@ -121,8 +121,7 @@ export default class BaseModalParticipants extends Vue {
     }
 
     mounted() {
-        console.log();
-        debugger;
+        //
     }
 
     async getPayments() {

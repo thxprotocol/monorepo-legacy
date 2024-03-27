@@ -68,7 +68,7 @@ export default class RewardGalachainService implements IRewardService {
             token,
             pool.settings.galachainPrivateKey,
         )) as any[];
-        console.log(balance);
+
         if (Number(balance.quantity) < reward.amount) {
             return { result: false, reason: 'Distributor has an insufficient balance' };
         }
