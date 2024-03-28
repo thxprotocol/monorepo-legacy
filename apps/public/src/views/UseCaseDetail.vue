@@ -200,7 +200,7 @@ export const features = {
     'discord-role-reward': {
         tag: 'Discord Role Reward',
         image: require('../../public/assets/img/quest-custom.png'),
-        title: 'Exclive Discord Roles',
+        title: 'Exclusive Discord Roles',
         description:
             'Use our Discord Bot to reward users with an exclusive Discord role that for example gives access to a hidden channel.',
         list: ['Grow your Discord server', 'Enhance community participation', 'Boost server activity'],
@@ -217,6 +217,21 @@ export const features = {
 };
 
 export const content = {
+    'gala': {
+        logo: require('../../public/assets/img/logo-gala-white.png'),
+        title: 'Gala',
+        lead: "Gala rewards it's community using social quest and coupon rewards.",
+        description: 'Complete social quests for $GALA coupon codes and special Discord Roles.',
+        features: [
+            features['daily-quest'],
+            features['youtube-quest'],
+            features['twitter-quest'],
+            features['coupon-reward'],
+            features['discord-role-reward'],
+        ],
+        video: 'https://www.youtube.com/embed/GWkzpRithHY?rel=0',
+        to: '/use-cases/gala',
+    },
     'titanborn': {
         logo: require('../../public/assets/img/logo-titanborn.png'),
         title: 'Titanborn',
@@ -237,7 +252,7 @@ export const content = {
         lead: 'The Royal Dutch Mint provides a digital twin NFT using QR codes on their coincard packaging.',
         description: 'Claim your $RDM NFT collectible when you purchase your coincard.',
         features: [features['qr-codes'], features['nft-reward']],
-        video: '',
+        video: 'https://www.youtube.com/watch?v=VC3cGMdTF5k?rel=0',
         to: '/use-cases/royal-dutch-mint',
     },
     'forest-knight': {
@@ -265,22 +280,19 @@ export const content = {
         video: 'https://www.youtube.com/embed/P16POP4Y1qs?rel=0',
         to: '/use-cases/carbify',
     },
-    'apeswap': {
-        logo: require('../../public/assets/img/logo-apeswap.png'),
-        title: 'ApeSwap',
-        lead: 'ApeSwap leverages THX Network for an engaging community experience.',
-        description:
-            "Unlock exciting rewards with ApeSwap's Twitter Quests and Youtube Quests. Join the ApeSwap community and earn coins for your active participation.",
+    'apebond': {
+        logo: require('../../public/assets/img/logo-apebond.png'),
+        title: 'ApeBond',
+        lead: 'ApeBond leverages Web3 quests to drive bond sales.',
+        description: 'Buy bonds and claim points using Web3 Quests to get rewarded in $ABOND and $THX tokens.',
         features: [
-            features['custom-quest'],
-            features['daily-quest'],
-            features['invite-quest'],
+            features['web3-quest'],
             features['youtube-quest'],
             features['twitter-quest'],
             features['coin-reward'],
         ],
-        video: 'https://www.youtube.com/embed/zbWKdEVAsh8?rel=0',
-        to: '/use-cases/apeswap',
+        video: 'https://www.youtube.com/embed/wu9arfmIAHo?rel=0',
+        to: '/use-cases/apebond',
     },
     '2tokens': {
         logo: require('../../public/assets/img/logo-2tokens.webp'),
