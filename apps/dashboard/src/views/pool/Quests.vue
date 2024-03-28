@@ -119,10 +119,12 @@
                         v-if="
                             [
                                 QuestVariant.Daily,
-                                QuestVariant.Custom,
                                 QuestVariant.Twitter,
                                 QuestVariant.YouTube,
                                 QuestVariant.Discord,
+                                QuestVariant.Custom,
+                                QuestVariant.Web3,
+                                QuestVariant.Gitcoin,
                             ].includes(item.quest.variant)
                         "
                         :pool="pool"
