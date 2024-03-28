@@ -7,7 +7,6 @@ import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/c
 import { QuestDailyDocument } from '@thxnetwork/api/models';
 import { poll } from '@thxnetwork/api/util/polling';
 import { Job } from '@thxnetwork/api/models/Job';
-import { IJobParameters } from '@hokify/agenda';
 import { v4 } from 'uuid';
 
 const user = request.agent(app);
@@ -70,7 +69,7 @@ describe('Daily Rewards WebHooks', () => {
         const { status, body } = await user
             .post(`/v1/quests/daily/${dailyReward._id}/entries`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken4 })
-            .send();
+            .send({ recaptcha: 'test' });
         expect(body.jobId).toBeDefined();
         expect(status).toBe(200);
 
@@ -80,14 +79,14 @@ describe('Daily Rewards WebHooks', () => {
             1000,
         );
 
-        const job = (await Job.findById(body.jobId)) as IJobParameters;
+        const job = await Job.findById(body.jobId);
         expect(job.lastRunAt).toBeDefined();
     });
 
     it('POST /quests/daily/:id/entries should throw an error', (done) => {
         user.post(`/v1/quests/daily/${dailyReward._id}/entries`)
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken4 })
-            .send()
+            .send({ recaptcha: 'test' })
             .expect(({ body }: request.Response) => {
                 expect(body.error).toBe('You have completed this quest within the last 24 hours.');
             })

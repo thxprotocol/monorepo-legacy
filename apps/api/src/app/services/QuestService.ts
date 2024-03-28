@@ -14,6 +14,7 @@ import LockService from './LockService';
 import ImageService from './ImageService';
 import AccountProxy from '../proxies/AccountProxy';
 import ParticipantService from './ParticipantService';
+import { NODE_ENV } from '../config/secrets';
 
 export default class QuestService {
     static async list({ pool, data, account }: { pool: PoolDocument; data: Partial<TQuestEntry>; account?: TAccount }) {
@@ -125,6 +126,9 @@ export default class QuestService {
         variant: QuestVariant,
         options: { quest: TQuest; account: TAccount; data: Partial<TQuestEntry & { rpc: string; recaptcha: string }> },
     ) {
+        // Skip recaptcha check in test environment
+        if (NODE_ENV === 'test') return { result: true, reasons: '' };
+
         // Define the recaptcha action for this quest variant
         const recaptchaAction = recaptchaActionMap[variant];
 

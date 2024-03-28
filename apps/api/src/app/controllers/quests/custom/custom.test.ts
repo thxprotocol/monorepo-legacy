@@ -77,7 +77,7 @@ describe('Quests Custom ', () => {
             const { status } = await user
                 .post(`/v1/quests/custom/${customQuest._id}/entries`)
                 .set({ 'X-PoolId': pool._id, 'Authorization': widgetAccessToken2 })
-                .send();
+                .send({ recaptcha: 'test' });
             expect(status).toBe(200);
         });
     });

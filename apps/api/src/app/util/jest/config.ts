@@ -86,5 +86,7 @@ export async function afterAllCallback() {
         });
     });
     await agenda.stop();
+    await agenda.cancel({});
+    await agenda.purge();
     await db.truncate();
 }
