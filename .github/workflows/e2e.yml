@@ -2,9 +2,10 @@ name: E2E CI
 
 on:
     push:
-        - develop
+        branches:
+            - develop
     workflow_run:
-        workflows: [API CI]
+        workflows: ['API CI']
         types:
             - completed
 
