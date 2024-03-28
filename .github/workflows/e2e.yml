@@ -1,9 +1,12 @@
 name: E2E CI
 
 on:
-    push:
-        branches:
-            - develop
+    branch:
+        - develop
+    workflow_run:
+        workflows: ['API CI']
+        types:
+            - completed
 
 jobs:
     tests:
@@ -11,7 +14,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                node-version: [16.x] # Add other versions if needed
+                node-version: [18.x] # Add other versions if needed
 
         steps:
             - name: Checkout repository
@@ -37,13 +40,12 @@ jobs:
 
             - name: Cache Node.js dependencies
               uses: actions/cache/save@v3
-              if: always()
               with:
                   path: ./node_modules
                   key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
 
-            - name: Install playwright browsers
+            - name: Install Playwright browsers
               run: npx playwright install --with-deps
 
             - name: Run tests
-              run: yarn playwright test --workers 1
+              run: npx playwright test --workers=1 --report=list
