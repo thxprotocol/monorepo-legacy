@@ -22,15 +22,15 @@ export const controller = async (req: Request, res: Response) => {
     );
 
     // Check for lock and determine ve fn to call
-    const { amount, end } = await VoteEscrowService.list(wallet);
-    const latest = await web3.eth.getBlockNumber();
-    const now = (await web3.eth.getBlock(latest)).timestamp;
-
     // Get veTHX balance and pending rewards
-    const balance = await ve.methods.balanceOf(wallet.address).call();
-    const rewards = await VoteEscrowService.listRewards(wallet);
+    const [{ amount, end }, latestBlock, balance, rewards] = await Promise.all([
+        VoteEscrowService.list(wallet),
+        web3.eth.getBlock('latest'),
+        ve.methods.balanceOf(wallet.address).call(),
+        VoteEscrowService.listRewards(wallet),
+    ]);
 
-    res.json([{ balance, amount, end: parseMs(end), now: parseMs(now), rewards }]);
+    res.json([{ balance, amount, end: parseMs(end), now: parseMs(latestBlock.timestamp), rewards }]);
 };
 
 export default { controller, validation };

@@ -16,11 +16,4 @@ export default async function main() {
     const bpt = new ethers.Contract(contractNetworks[chainId].BPT, contractArtifacts['BPT'].abi, signer);
 
     await bpt.transfer(TO, AMOUNT);
-
-    const whitelist = new ethers.Contract(
-        contractNetworks[chainId].SmartWalletWhitelist,
-        contractArtifacts['SmartWalletWhitelist'].abi,
-        signer,
-    );
-    await whitelist.approveWallet(TO);
 }

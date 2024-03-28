@@ -1,10 +1,10 @@
-import { BigNumber, Wallet } from 'ethers';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { contractArtifacts, contractNetworks } from '@thxnetwork/contracts/exports';
 import { ChainId } from '@thxnetwork/common/enums';
-import { WalletDocument, TransactionDocument } from '@thxnetwork/api/models';
+import { WalletDocument } from '@thxnetwork/api/models';
 import { toChecksumAddress } from 'web3-utils';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
+import Web3 from 'web3';
 
 async function isApprovedAddress(address: string, chainId: ChainId) {
     const { web3 } = getProvider(chainId);
@@ -143,7 +143,7 @@ async function listRewards(wallet: WalletDocument) {
 }
 
 async function claimTokens(wallet: WalletDocument) {
-    const { web3 } = getProvider();
+    const { web3 } = getProvider(wallet.chainId);
     const rewardDistributor = new web3.eth.Contract(
         contractArtifacts['RewardDistributor'].abi,
         contractNetworks[wallet.chainId].RewardDistributor,

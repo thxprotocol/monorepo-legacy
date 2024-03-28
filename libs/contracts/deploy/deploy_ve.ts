@@ -100,6 +100,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await vethx.set_penalty_treasury(rewardDistributor);
     console.log('veTHX:', 'set_penalty_treasury', rewardDistributor);
 
+    // Allow all contract wallets
+    await smartCheckerList.setAllowAll(true);
+
     return network.live; // Makes sure we don't redeploy on live networks
 };
 export default func;

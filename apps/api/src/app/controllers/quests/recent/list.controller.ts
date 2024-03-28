@@ -17,7 +17,7 @@ const controller = async (req: Request, res: Response) => {
         return {
             $lookup: {
                 from: model.collection.name,
-                localField: 'id',
+                localField: 'poolId',
                 foreignField: 'poolId',
                 as: model.collection.name,
             },
@@ -59,7 +59,9 @@ const controller = async (req: Request, res: Response) => {
             },
         },
     ]).exec();
+
     const sortByDate = (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+
     const result = decoratedPools
         // Format and sort all quests per pool
         .map((result) => {
@@ -67,18 +69,22 @@ const controller = async (req: Request, res: Response) => {
                 ...q,
                 amount: q.amounts ? q.amounts[q.amounts.length - 1] : q.amount,
                 widget: result.widget && result.widget[0],
-                domain: result.widget && result.widget[0] && result.widgets[0].domain,
-                brand: result.brand[0],
+                domain: result.widget && result.widget[0] && result.widget[0].domain,
+                brand: result.brand && result.brand[0],
             });
+
+            const quests = [
+                ...result[QuestDaily.collection.name].map(mapper).sort(sortByDate),
+                ...result[QuestInvite.collection.name].map(mapper).sort(sortByDate),
+                ...result[QuestSocial.collection.name].map(mapper).sort(sortByDate),
+                ...result[QuestCustom.collection.name].map(mapper).sort(sortByDate),
+                ...result[QuestWeb3.collection.name].map(mapper).sort(sortByDate),
+                ...result[QuestGitcoin.collection.name].map(mapper).sort(sortByDate),
+            ];
+            console.log(quests);
+
             return {
-                quests: [
-                    ...result[QuestDaily.collection.name].map(mapper).sort(sortByDate),
-                    ...result[QuestInvite.collection.name].map(mapper).sort(sortByDate),
-                    ...result[QuestSocial.collection.name].map(mapper).sort(sortByDate),
-                    ...result[QuestCustom.collection.name].map(mapper).sort(sortByDate),
-                    ...result[QuestWeb3.collection.name].map(mapper).sort(sortByDate),
-                    ...result[QuestGitcoin.collection.name].map(mapper).sort(sortByDate),
-                ],
+                quests,
             };
         })
         // Last quest per pool

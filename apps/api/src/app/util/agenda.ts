@@ -13,6 +13,7 @@ import WebhookService from '../services/WebhookService';
 import QuestService from '../services/QuestService';
 import TwitterCacheService from '../services/TwitterCacheService';
 import InvoiceService from '../services/InvoiceService';
+import PriceService from '../services/PriceService';
 
 const agenda = new Agenda({
     db: {
@@ -35,11 +36,13 @@ agenda.define(JobType.RequestAttemp, (job: Job) => WebhookService.requestAttempt
 agenda.define(JobType.UpdateTwitterLikeCache, (job: Job) => TwitterCacheService.updateLikeCacheJob(job));
 agenda.define(JobType.UpdateTwitterRepostCache, (job: Job) => TwitterCacheService.updateRepostCacheJob(job));
 agenda.define(JobType.UpsertInvoices, () => InvoiceService.upsertJob());
+agenda.define(JobType.UpdatePrices, () => PriceService.updatePricesJob());
 
 db.connection.once('open', async () => {
     await agenda.start();
 
     await agenda.every('5 minutes', JobType.UpdateCampaignRanks);
+    await agenda.every('10 seconds', JobType.UpdatePrices);
     await agenda.every('10 seconds', JobType.UpdatePendingTransactions);
     await agenda.every('15 minutes', JobType.UpsertInvoices);
     await agenda.every('15 minutes', JobType.CreateTwitterQuests);

@@ -129,19 +129,22 @@ export default class QuestService {
         const recaptchaAction = recaptchaActionMap[variant];
 
         // Update the participant's risk score
-        const {
-            riskAnalysis: { score },
-        } = await ParticipantService.updateRiskScore(options.account, options.quest.poolId, {
+        const { riskAnalysis } = await ParticipantService.updateRiskScore(options.account, options.quest.poolId, {
             token: options.data.recaptcha,
             recaptchaAction,
         });
 
+        logger.info('ReCaptcha result', {
+            sub: options.account.sub,
+            poolId: options.quest.poolId,
+            riskAnalysis,
+            recaptchaAction,
+        });
+
         // Defaults: 0.1, 0.3, 0.7 and 0.9. Ranges from 0 (Bot) to 1 (User)
-        if (score >= 0.9) {
+        if (riskAnalysis.score >= 0.9) {
             return { result: true, reasons: '' };
         }
-
-        logger.info({ sub: options.account.sub, poolId: options.quest.poolId, score, action: recaptchaAction });
 
         return { result: false, reason: 'This request has been indentified as potentially automated.' };
     }
