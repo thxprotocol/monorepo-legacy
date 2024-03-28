@@ -49,4 +49,4 @@ jobs:
               run: npx playwright install --with-deps
 
             - name: Run tests
-              run: npx playwright test --workers=1 --report=list
+              run: npx playwright test --workers 1 --reporter list
