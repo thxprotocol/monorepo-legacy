@@ -81,7 +81,6 @@ const controller = async (req: Request, res: Response) => {
                 ...result[QuestWeb3.collection.name].map(mapper).sort(sortByDate),
                 ...result[QuestGitcoin.collection.name].map(mapper).sort(sortByDate),
             ];
-            console.log(quests);
 
             return {
                 quests,

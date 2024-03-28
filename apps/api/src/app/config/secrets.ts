@@ -18,12 +18,12 @@ const required = [
     'AWS_S3_PRIVATE_BUCKET_REGION',
     'SAFE_TXS_SERVICE',
     'CWD',
-    'GCLOUD_RECAPTCHA_API_KEY',
 ];
 
 if (process.env.NODE_ENV === 'production') {
     required.push(
         ...[
+            'GCLOUD_RECAPTCHA_API_KEY',
             'POLYGON_RPC',
             'POLYGON_NAME',
             'POLYGON_RELAYER',
