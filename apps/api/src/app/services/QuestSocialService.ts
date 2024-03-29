@@ -3,7 +3,6 @@ import { WalletDocument } from '@thxnetwork/api/models/Wallet';
 import { IQuestService } from './interfaces/IQuestService';
 import { requirementMap } from './maps/quests';
 import { logger } from '../util/logger';
-import QuestService from './QuestService';
 import { QuestVariant } from '@thxnetwork/common/enums';
 
 export default class QuestSocialService implements IQuestService {
@@ -19,7 +18,7 @@ export default class QuestSocialService implements IQuestService {
     }: {
         quest: TQuestSocial;
         account?: TAccount;
-        data: Partial<TQuestEntry>;
+        data: Partial<TQuestSocialEntry>;
     }): Promise<TQuestSocial & { isAvailable: boolean }> {
         const isAvailable = await this.isAvailable({ quest, account, data });
 
@@ -33,20 +32,18 @@ export default class QuestSocialService implements IQuestService {
     async isAvailable({
         quest,
         account,
+        data,
     }: {
         quest: TQuestSocial;
         account: TAccount;
-        data: Partial<TQuestEntry>;
+        data: Partial<TQuestSocialEntry>;
     }): Promise<TValidationResult> {
         if (!account) return { result: true, reason: '' };
 
         // We validate for both here since there are entries that only contain a sub
         // and should not be claimed again.
         const ids: any[] = [{ sub: account.sub }];
-
-        // TODO Could be derived from `data`
-        const platformUserId = QuestService.findUserIdForInteraction(account, quest.interaction);
-        if (platformUserId) ids.push({ platformUserId });
+        if (data.metadata.platformUserId) ids.push({ platformUserId: data.metadata.platformUserId });
 
         // If no entry exist the quest is available
         const isCompleted = await QuestSocialEntry.exists({
@@ -68,7 +65,7 @@ export default class QuestSocialService implements IQuestService {
     }: {
         quest: TQuestSocial;
         account: TAccount;
-        data: Partial<TQuestEntry>;
+        data: Partial<TQuestSocialEntry>;
     }): Promise<TValidationResult> {
         try {
             // Check quest requirements

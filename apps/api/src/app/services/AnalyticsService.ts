@@ -354,7 +354,7 @@ async function createLeaderboard(pool: PoolDocument, dateRange?: { startDate: Da
             }
 
             const $group = {
-                _id: '$walletId',
+                _id: '$sub',
                 totalCompleted: { $sum: 1 },
                 totalAmount: { $sum: { $convert: { input: '$amount', to: 'int' } } },
             };

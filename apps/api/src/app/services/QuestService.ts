@@ -15,6 +15,7 @@ import ImageService from './ImageService';
 import AccountProxy from '../proxies/AccountProxy';
 import ParticipantService from './ParticipantService';
 import { NODE_ENV } from '../config/secrets';
+import { BigNumber } from 'ethers';
 
 export default class QuestService {
     static async list({ pool, data, account }: { pool: PoolDocument; data: Partial<TQuestEntry>; account?: TAccount }) {
@@ -158,7 +159,7 @@ export default class QuestService {
         options: {
             quest: TQuest;
             account: TAccount;
-            data: Partial<TQuestEntry & { rpc: string; recaptcha: string }>;
+            data: Partial<TQuestEntry & { rpc: string; callResult: BigNumber; recaptcha: string }>;
         },
     ) {
         const isAvailable = await this.isAvailable(variant, options);
@@ -170,6 +171,7 @@ export default class QuestService {
     static async createEntryJob(job: Job) {
         try {
             const { variant, questId, sub, data } = job.attrs.data as any;
+            console.log(data);
             const Entry = serviceMap[Number(variant)].models.entry;
             const account = await AccountProxy.findById(sub);
             const quest = await this.findById(variant, questId);

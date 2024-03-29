@@ -23,7 +23,7 @@ const controller = async ({ params, body, account }: Request, res: Response) => 
     const platformUserId = QuestService.findUserIdForInteraction(account, quest.interaction);
     if (!platformUserId) return res.json({ error: 'Could not find platform user id.' });
 
-    const data = { platformUserId, recaptcha: body.recaptcha };
+    const data = { metadata: { platformUserId }, recaptcha: body.recaptcha };
 
     // Running separately to avoid issues when getting validation results from Discord interactions
     const isBotUser = await QuestService.isBotUser(quest.variant, { quest, account, data });
@@ -42,7 +42,7 @@ const controller = async ({ params, body, account }: Request, res: Response) => 
     // Little exception here in order to store public metrics with the entry
     if (variant === QuestVariant.Twitter) {
         const user = await TwitterUser.findOne({ userId: platformUserId });
-        data['publicMetrics'] = user.publicMetrics;
+        data.metadata['publicMetrics'] = user.publicMetrics;
     }
 
     // Schedule serial job

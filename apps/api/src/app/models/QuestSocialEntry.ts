@@ -10,13 +10,15 @@ export const QuestSocialEntry = mongoose.model<QuestSocialEntryDocument>(
             sub: String,
             amount: Number,
             poolId: String,
-            platformUserId: String,
-            publicMetrics: {
-                followersCount: Number,
-                followingCount: Number,
-                tweetCount: Number,
-                listedCount: Number,
-                likeCount: Number,
+            metadata: {
+                platformUserId: String,
+                publicMetrics: {
+                    followersCount: Number,
+                    followingCount: Number,
+                    tweetCount: Number,
+                    listedCount: Number,
+                    likeCount: Number,
+                },
             },
         },
         { timestamps: true },

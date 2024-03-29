@@ -7,6 +7,8 @@ type TQuestEntry =
     | TQuestWeb3Entry
     | TGitcoinQuestEntry;
 
+type TQuestEntryMetadata = TQuestSocialEntryMetadata | TQuestWeb3EntryMetadata;
+
 type TValidationResult = {
     reason: string;
     result: boolean;

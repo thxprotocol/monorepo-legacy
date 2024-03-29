@@ -7,7 +7,7 @@ export const QuestCustomEntry = mongoose.model<QuestCustomEntryDocument>(
     new mongoose.Schema(
         {
             questId: String,
-            sub: { type: String, index: 'hashed' },
+            sub: String,
             uuid: String,
             amount: Number,
             isClaimed: Boolean,

@@ -6,6 +6,7 @@ import { JobType, QuestVariant } from '@thxnetwork/common/enums';
 import { QuestGitcoin } from '@thxnetwork/api/models';
 import { agenda } from '@thxnetwork/api/util/agenda';
 import QuestService from '@thxnetwork/api/services/QuestService';
+import GitcoinService from '@thxnetwork/api/services/GitcoinService';
 
 const validation = [
     param('id').isMongoId(),
@@ -19,11 +20,19 @@ const controller = async ({ account, body, params }: Request, res: Response) => 
     if (!quest) throw new NotFoundError('Quest not found');
 
     const address = recoverSigner(body.message, body.signature);
-    const data = { address, recaptcha: body.recaptcha };
+    const data = { recaptcha: body.recaptcha, metadata: { address } };
 
     // Running separately to avoid issues when getting validation results from Discord interactions
     const isBotUser = await QuestService.isBotUser(quest.variant, { quest, account, data });
     if (!isBotUser) return res.json({ error: isBotUser.reason });
+
+    // Get score for address
+    const { score, error } = await GitcoinService.getScoreUniqueHumanity(
+        quest.scorerId,
+        data.metadata.address.toLowerCase(),
+    );
+    if (error) return res.json({ error });
+    data.metadata['score'] = score;
 
     const { result, reason } = await QuestService.getValidationResult(quest.variant, { quest, account, data });
     if (!result) return res.json({ error: reason });

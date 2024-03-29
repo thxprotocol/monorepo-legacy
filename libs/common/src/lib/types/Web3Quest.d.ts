@@ -10,7 +10,13 @@ type TQuestWeb3Entry = {
     sub: string;
     amount: number;
     poolId: string;
+    createdAt: Date;
+    metadata: TQuestWeb3EntryMetadata;
+};
+
+type TQuestWeb3EntryMetadata = {
+    callResult: string;
     chainId: ChainId;
     address: string;
-    createdAt: Date;
+    rpc?: string;
 };

@@ -9,6 +9,11 @@ type TGitcoinQuestEntry = {
     questId: string;
     sub: string;
     amount: number;
-    address: string;
     createdAt: Date;
+    metadata: TQuestGitcoinEntryMetadata;
+};
+
+type TQuestGitcoinEntryMetadata = {
+    address: string;
+    score: number;
 };

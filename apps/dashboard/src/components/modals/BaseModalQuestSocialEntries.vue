@@ -35,19 +35,15 @@
                 >
                     <!-- Head formatting -->
                     <template #head(account)> Username </template>
-                    <template #head(email)> E-mail</template>
                     <template #head(tokens)> Connected </template>
-                    <template #head(pointBalance)> Point Balance </template>
                     <template #head(amount)> Amount </template>
+                    <template #head(metadata)> Metadata </template>
                     <template #head(duration)> Duration </template>
                     <template #head(entry)> Created </template>
 
                     <!-- Cell formatting -->
                     <template #cell(account)="{ item }">
                         <BaseParticipantAccount :account="item.account" />
-                    </template>
-                    <template #cell(email)="{ item }">
-                        {{ item.email }}
                     </template>
                     <template #cell(tokens)="{ item }">
                         <BaseParticipantConnectedAccount
@@ -57,11 +53,11 @@
                             v-for="(a, key) in item.tokens"
                         />
                     </template>
-                    <template #cell(pointBalance)="{ item }">
-                        <strong class="text-primary">{{ item.pointBalance }}</strong>
-                    </template>
                     <template #cell(amount)="{ item }">
                         <strong>{{ item.amount }}</strong>
+                    </template>
+                    <template #cell(metadata)="{ item }">
+                        <code>{{ item.metadata }}</code>
                     </template>
                     <template #cell(duration)="{ item }">
                         <code>{{ item.duration }}</code>
@@ -154,10 +150,9 @@ export default class BaseModalQuestSocialEntries extends Vue {
             .sort((a: TQuestEntry, b: TQuestEntry) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((entry: any) => ({
                 account: parseAccount({ id: entry._id, account: entry.account }),
-                email: entry.account && entry.account.email,
                 tokens: entry.account && parseConnectedAccounts(entry.account),
-                pointBalance: entry.pointBalance,
                 amount: entry.amount,
+                metadata: entry.metadata,
                 duration: this.getDuration(this.quest, entry),
                 entry,
             }));

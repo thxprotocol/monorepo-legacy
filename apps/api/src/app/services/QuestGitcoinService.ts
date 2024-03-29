@@ -40,7 +40,7 @@ export default class QuestGitcoinService implements IQuestService {
         if (!account) return { result: true, reason: '' };
 
         const ids: { [key: string]: string }[] = [{ sub: account.sub }];
-        if (data && data.address) ids.push({ address: data.address });
+        if (data.metadata.address) ids.push({ address: data.metadata.address });
 
         const isCompleted = await QuestGitcoinEntry.exists({
             questId: quest._id,
@@ -63,20 +63,18 @@ export default class QuestGitcoinService implements IQuestService {
         account: TAccount;
         data: Partial<TGitcoinQuestEntry>;
     }): Promise<TValidationResult> {
-        if (!data.address) return { result: false, reason: 'Could not find an address during validation.' };
+        if (!data.metadata.address) return { result: false, reason: 'Could not find an address during validation.' };
+        if (data.metadata.score < quest.score) {
+            const reason = `Your score ${data.metadata.score.toString() || 0}/100 does not meet the minimum of ${
+                quest.score
+            }/100.`;
 
-        const { score, error } = await GitcoinService.getScoreUniqueHumanity(
-            quest.scorerId,
-            data.address.toLowerCase(),
-        );
-        if (error) return { result: false, reason: error };
-        if (score < quest.score) {
             return {
                 result: false,
-                reason: `Your score ${score.toString() || 0}/100 does not meet the minimum of ${quest.score}/100.`,
+                reason,
             };
         }
-        if (score >= quest.score) return { result: true, reason: '' };
+        if (data.metadata.score >= quest.score) return { result: true, reason: '' };
     }
 
     async getScore(scorerId: number, address: string) {
