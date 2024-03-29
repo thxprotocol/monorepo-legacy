@@ -6,7 +6,7 @@ import { logger } from '../util/logger';
 import { Job } from '@hokify/agenda';
 import { serviceMap } from './interfaces/IQuestService';
 import { tokenInteractionMap } from './maps/quests';
-import { recaptchaActionMap } from '@thxnetwork/common/maps';
+import { NODE_ENV } from '../config/secrets';
 import PoolService from './PoolService';
 import NotificationService from './NotificationService';
 import PointBalanceService from './PointBalanceService';
@@ -14,8 +14,6 @@ import LockService from './LockService';
 import ImageService from './ImageService';
 import AccountProxy from '../proxies/AccountProxy';
 import ParticipantService from './ParticipantService';
-import { NODE_ENV } from '../config/secrets';
-import { BigNumber } from 'ethers';
 
 export default class QuestService {
     static async list({ pool, data, account }: { pool: PoolDocument; data: Partial<TQuestEntry>; account?: TAccount }) {
@@ -123,15 +121,15 @@ export default class QuestService {
         return await serviceMap[variant].isAvailable(options);
     }
 
-    static async isBotUser(
+    static async isRealUser(
         variant: QuestVariant,
-        options: { quest: TQuest; account: TAccount; data: Partial<TQuestEntry & { rpc: string; recaptcha: string }> },
+        options: { quest: TQuest; account: TAccount; data: Partial<TQuestEntry & { recaptcha: string }> },
     ) {
         // Skip recaptcha check in test environment
         if (NODE_ENV === 'test') return { result: true, reasons: '' };
 
         // Define the recaptcha action for this quest variant
-        const recaptchaAction = recaptchaActionMap[variant];
+        const recaptchaAction = `QUEST_${QuestVariant[variant].toUpperCase()}_ENTRY_CREATE`;
 
         // Update the participant's risk score
         const { riskAnalysis } = await ParticipantService.updateRiskScore(options.account, options.quest.poolId, {
@@ -159,7 +157,7 @@ export default class QuestService {
         options: {
             quest: TQuest;
             account: TAccount;
-            data: Partial<TQuestEntry & { rpc: string; callResult: BigNumber; recaptcha: string }>;
+            data: Partial<TQuestEntry>;
         },
     ) {
         const isAvailable = await this.isAvailable(variant, options);
@@ -171,7 +169,6 @@ export default class QuestService {
     static async createEntryJob(job: Job) {
         try {
             const { variant, questId, sub, data } = job.attrs.data as any;
-            console.log(data);
             const Entry = serviceMap[Number(variant)].models.entry;
             const account = await AccountProxy.findById(sub);
             const quest = await this.findById(variant, questId);

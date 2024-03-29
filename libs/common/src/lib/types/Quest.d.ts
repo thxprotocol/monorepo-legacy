@@ -1,6 +1,6 @@
-type TQuest = TDailyReward | TQuestInvite | TQuestSocial | TQuestCustom | TQuestWeb3 | TGitcoinQuest;
+type TQuest = TQuestDaily | TQuestInvite | TQuestSocial | TQuestCustom | TQuestWeb3 | TGitcoinQuest;
 type TQuestEntry =
-    | TDailyRewardClaim
+    | TQuestDailyClaim
     | TQuestInviteEntry
     | TQuestSocialEntry
     | TQuestCustomEntry

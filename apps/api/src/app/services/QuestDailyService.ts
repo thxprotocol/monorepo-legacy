@@ -9,7 +9,7 @@ export default class QuestDailyService implements IQuestService {
         entry: QuestDailyEntry,
     };
 
-    async findEntryMetadata({ quest }: { quest: TDailyReward }) {
+    async findEntryMetadata({ quest }: { quest: TQuestDaily }) {
         const uniqueParticipantIds = await this.models.entry
             .countDocuments({
                 questId: String(quest._id),
@@ -24,14 +24,14 @@ export default class QuestDailyService implements IQuestService {
         account,
         data,
     }: {
-        quest: TDailyReward;
-        data: Partial<TDailyRewardClaim>;
+        quest: TQuestDaily;
+        data: Partial<TQuestDailyEntry>;
         account?: TAccount;
     }): Promise<
-        TDailyReward & {
+        TQuestDaily & {
             isAvailable: boolean;
             amount: number;
-            entries: TDailyRewardClaim[];
+            entries: TQuestDailyEntry[];
             claimAgainDuration: number;
         }
     > {
@@ -56,9 +56,9 @@ export default class QuestDailyService implements IQuestService {
         account,
         data,
     }: {
-        quest: TDailyReward;
+        quest: TQuestDaily;
         account: TAccount;
-        data: Partial<TDailyRewardClaim>;
+        data: Partial<TQuestDailyEntry>;
     }): Promise<TValidationResult> {
         if (!account) return { result: true, reason: '' };
 
@@ -67,11 +67,11 @@ export default class QuestDailyService implements IQuestService {
             end = now;
 
         // Check for IP as we limit to 1 per IP per day (if an ip is passed)
-        if (data.ip) {
+        if (data.metadata && data.metadata.ip) {
             const isCompletedForIP = !!(await QuestDailyEntry.exists({
-                questId: quest._id,
-                createdAt: { $gt: new Date(start), $lt: new Date(end) },
-                ip: data.ip,
+                'questId': quest._id,
+                'createdAt': { $gt: new Date(start), $lt: new Date(end) },
+                'metadata.ip': data.metadata.ip,
             }));
             if (isCompletedForIP) {
                 return {
@@ -91,7 +91,7 @@ export default class QuestDailyService implements IQuestService {
         return { result: false, reason: 'You have completed this quest within the last 24 hours.' };
     }
 
-    async getAmount({ quest, account }: { quest: TDailyReward; account: TAccount }): Promise<number> {
+    async getAmount({ quest, account }: { quest: TQuestDaily; account: TAccount }): Promise<number> {
         if (!account) return quest.amounts[0];
 
         const claims = await this.findEntries({ quest, account });
@@ -104,9 +104,9 @@ export default class QuestDailyService implements IQuestService {
         quest,
         account,
     }: {
-        quest: TDailyReward;
+        quest: TQuestDaily;
         account: TAccount;
-        data: Partial<TDailyRewardClaim>;
+        data: Partial<TQuestDailyEntry>;
     }): Promise<TValidationResult> {
         const now = Date.now(),
             start = now - ONE_DAY_MS,
@@ -156,11 +156,11 @@ export default class QuestDailyService implements IQuestService {
         }
     }
 
-    private async findIdentities({ quest, account }: { quest: TDailyReward; account: TAccount }) {
+    private async findIdentities({ quest, account }: { quest: TQuestDaily; account: TAccount }) {
         return await Identity.find({ sub: account.sub, poolId: quest.poolId });
     }
 
-    private async findEntries({ account, quest }: { account: TAccount; quest: TDailyReward }) {
+    private async findEntries({ account, quest }: { account: TAccount; quest: TQuestDaily }) {
         const claims = [];
         const now = Date.now(),
             start = now - ONE_DAY_MS,
@@ -187,7 +187,7 @@ export default class QuestDailyService implements IQuestService {
         return claims;
     }
 
-    private async getLastEntry(account: TAccount, quest: TDailyReward, start: number, end: number) {
+    private async getLastEntry(account: TAccount, quest: TQuestDaily, start: number, end: number) {
         let lastEntry = await QuestDailyEntry.findOne({
             questId: quest._id,
             sub: account.sub,

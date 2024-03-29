@@ -167,9 +167,9 @@ export default class QuestDiscordService implements IQuestService {
         const { start, end } = this.getRestartDates(quest);
         const platformUserId = QuestService.findUserIdForInteraction(account, quest.interaction);
         const claims = await QuestSocialEntry.find({
-            questId: String(quest._id),
-            platformUserId,
-            createdAt: {
+            'questId': String(quest._id),
+            'metadata.platformUserId': platformUserId,
+            'createdAt': {
                 $gte: start,
                 $lt: end,
             },

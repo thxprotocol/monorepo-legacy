@@ -29,8 +29,8 @@ const controller = async ({ account, body, params }: Request, res: Response) => 
     const data = { recaptcha: body.recaptcha, metadata: { address, rpc, chainId: body.chainId, callResult: '' } };
 
     // Running separately to avoid issues when getting validation results from Discord interactions
-    const isBotUser = await QuestService.isBotUser(quest.variant, { quest, account, data });
-    if (!isBotUser) return res.json({ error: isBotUser.reason });
+    const isRealUser = await QuestService.isRealUser(quest.variant, { quest, account, data });
+    if (!isRealUser) return res.json({ error: isRealUser.reason });
 
     // Fetch the call result so we can store it in the entry
     const callResult = await QuestWeb3Service.getCallResult({ quest, account, data });

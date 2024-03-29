@@ -1,4 +1,4 @@
-type TDailyReward = TBaseQuest & {
+type TQuestDaily = TBaseQuest & {
     amounts: number[];
     progress?: number;
     claims?: any[];

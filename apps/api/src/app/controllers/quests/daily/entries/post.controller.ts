@@ -15,15 +15,14 @@ const controller = async (req: Request, res: Response) => {
     if (!quest) throw new NotFoundError('Could not find the Daily Reward');
 
     // Only do this is no event requirement is set
-    const data = { recaptcha: req.body.recaptcha };
-    const ip = getIP(req);
-    if (!quest.eventName && ip) {
-        data['ip'] = ip;
+    const data = { recaptcha: req.body.recaptcha, metadata: {} };
+    if (!quest.eventName) {
+        data.metadata['ip'] = getIP(req);
     }
 
     // Running separately to avoid issues when getting validation results from Discord interactions
-    const isBotUser = await QuestService.isBotUser(quest.variant, { quest, account, data });
-    if (!isBotUser) return res.json({ error: isBotUser.reason });
+    const isRealUser = await QuestService.isRealUser(quest.variant, { quest, account, data });
+    if (!isRealUser) return res.json({ error: isRealUser.reason });
 
     const { result, reason } = await QuestService.getValidationResult(quest.variant, { quest, account, data });
     if (!result) return res.json({ error: reason });
