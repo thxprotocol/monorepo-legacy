@@ -161,9 +161,6 @@ export default class QuestService {
             data: Partial<TQuestEntry & { rpc: string; recaptcha: string }>;
         },
     ) {
-        const isBotUser = await this.isBotUser(variant, options);
-        if (!isBotUser.result) return isBotUser;
-
         const isAvailable = await this.isAvailable(variant, options);
         if (!isAvailable.result) return isAvailable;
 

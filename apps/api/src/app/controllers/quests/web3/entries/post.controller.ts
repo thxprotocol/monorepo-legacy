@@ -26,6 +26,11 @@ const controller = async ({ account, body, params }: Request, res: Response) => 
     if (!rpc) throw new NotFoundError(`Could not find RPC for ${name}`);
 
     const data = { address, rpc, chainId: body.chainId, recaptcha: body.recaptcha };
+
+    // Running separately to avoid issues when getting validation results from Discord interactions
+    const isBotUser = await QuestService.isBotUser(quest.variant, { quest, account, data });
+    if (!isBotUser) return res.json({ error: isBotUser.reason });
+
     const { result, reason } = await QuestService.getValidationResult(quest.variant, {
         quest,
         account,

@@ -23,8 +23,13 @@ const controller = async ({ params, body, account }: Request, res: Response) => 
     const platformUserId = QuestService.findUserIdForInteraction(account, quest.interaction);
     if (!platformUserId) return res.json({ error: 'Could not find platform user id.' });
 
-    // Get validation result for this quest entry
     const data = { platformUserId, recaptcha: body.recaptcha };
+
+    // Running separately to avoid issues when getting validation results from Discord interactions
+    const isBotUser = await QuestService.isBotUser(quest.variant, { quest, account, data });
+    if (!isBotUser) return res.json({ error: isBotUser.reason });
+
+    // Get validation result for this quest entry
     const { result, reason } = await QuestService.getValidationResult(variant, { quest, account, data });
     if (!result) {
         // Reason includes part of the rate limit error so we log

@@ -21,6 +21,10 @@ const controller = async (req: Request, res: Response) => {
         data['ip'] = ip;
     }
 
+    // Running separately to avoid issues when getting validation results from Discord interactions
+    const isBotUser = await QuestService.isBotUser(quest.variant, { quest, account, data });
+    if (!isBotUser) return res.json({ error: isBotUser.reason });
+
     const { result, reason } = await QuestService.getValidationResult(quest.variant, { quest, account, data });
     if (!result) return res.json({ error: reason });
 

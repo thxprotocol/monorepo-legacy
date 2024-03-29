@@ -20,6 +20,11 @@ const controller = async ({ account, body, params }: Request, res: Response) => 
 
     const address = recoverSigner(body.message, body.signature);
     const data = { address, recaptcha: body.recaptcha };
+
+    // Running separately to avoid issues when getting validation results from Discord interactions
+    const isBotUser = await QuestService.isBotUser(quest.variant, { quest, account, data });
+    if (!isBotUser) return res.json({ error: isBotUser.reason });
+
     const { result, reason } = await QuestService.getValidationResult(quest.variant, { quest, account, data });
     if (!result) return res.json({ error: reason });
 
