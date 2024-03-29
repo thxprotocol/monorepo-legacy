@@ -1,6 +1,9 @@
 import { Document } from 'mongoose';
-import { Participant, TwitterUser } from '../models';
+import { DiscordReaction, Participant, TwitterUser } from '../models';
 import ReCaptchaService from '@thxnetwork/api/services/ReCaptchaService';
+import { AccessTokenKind } from '@thxnetwork/common/enums';
+import DiscordService from './DiscordService';
+import { DiscordUser } from '../models/DiscordUser';
 
 export default class ParticipantService {
     static async decorate(
@@ -37,5 +40,21 @@ export default class ParticipantService {
 
         // Update the participant's risk score
         return await Participant.findOneAndUpdate({ sub: account.sub, poolId }, { riskAnalysis }, { new: true });
+    }
+
+    static async findUser(token: TToken, { userId, guildId }: { userId: string; guildId?: string }) {
+        const userModelMap = {
+            [AccessTokenKind.Twitter]: () => TwitterUser.findOne({ userId }),
+            [AccessTokenKind.Discord]: () => DiscordUser.findOne({ userId, guildId }),
+        };
+
+        const user = userModelMap[token.kind] && (await userModelMap[token.kind]());
+
+        return {
+            kind: token.kind,
+            userId: token.userId,
+            metadata: token.metadata,
+            user,
+        } as unknown as TToken;
     }
 }

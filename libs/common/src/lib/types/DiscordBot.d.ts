@@ -51,6 +51,18 @@ type TDiscordButton = {
     disabled?: boolean;
 };
 
+type TDiscordUser = {
+    userId: string;
+    guildId: string;
+    profileImgUrl: string;
+    username: string;
+    publicMetrics: {
+        joinedAt: Date;
+        reactionCount: number;
+        messageCount: number;
+    };
+};
+
 type TDiscordEmbed = {
     title: string;
     description: string;
