@@ -12,6 +12,7 @@ export const QuestGitcoinEntry = mongoose.model<QuestGitcoinEntryDocument>(
             amount: Number,
             metadata: {
                 address: String,
+                score: Number,
             },
         },
         { timestamps: true },
