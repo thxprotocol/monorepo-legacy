@@ -12,12 +12,19 @@ export const QuestSocialEntry = mongoose.model<QuestSocialEntryDocument>(
             poolId: String,
             metadata: {
                 platformUserId: String,
-                publicMetrics: {
+                twitter: {
                     followersCount: Number,
                     followingCount: Number,
                     tweetCount: Number,
                     listedCount: Number,
                     likeCount: Number,
+                },
+                discord: {
+                    guildId: String,
+                    username: String,
+                    joinedAt: Date,
+                    messageCount: Number,
+                    reactionCount: Number,
                 },
             },
         },

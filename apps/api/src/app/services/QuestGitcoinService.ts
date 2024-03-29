@@ -62,19 +62,15 @@ export default class QuestGitcoinService implements IQuestService {
     }): Promise<TValidationResult> {
         if (!data.metadata.address) return { result: false, reason: 'Could not find an address during validation.' };
         if (data.metadata.score < quest.score) {
-            const reason = `Your score ${data.metadata.score.toString() || 0}/100 does not meet the minimum of ${
-                quest.score
-            }/100.`;
-
-            return {
-                result: false,
-                reason,
-            };
+            const score = data.metadata.score.toString() || 0;
+            const reason = `Your score ${score}/100 does not meet the minimum of ${quest.score}/100.`;
+            return { result: false, reason };
         }
         if (data.metadata.score >= quest.score) return { result: true, reason: '' };
     }
 
-    getScore(scorerId: number, address: string) {
-        return GitcoinService.getScoreUniqueHumanity(scorerId, address);
+    async getScore(scorerId: number, address: string) {
+        await GitcoinService.submitPassport(scorerId, address);
+        return await GitcoinService.getScoreUniqueHumanity(scorerId, address);
     }
 }

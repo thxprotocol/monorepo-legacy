@@ -13,7 +13,7 @@ module.exports = {
             {
                 $rename: {
                     platformUserId: 'metadata.platformUserId',
-                    publicMetrics: 'metadata.metrics.twitter',
+                    publicMetrics: 'metadata.twitter',
                 },
             },
         );

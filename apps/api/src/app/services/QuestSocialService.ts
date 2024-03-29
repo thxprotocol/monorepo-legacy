@@ -43,7 +43,8 @@ export default class QuestSocialService implements IQuestService {
         // We validate for both here since there are entries that only contain a sub
         // and should not be claimed again.
         const ids: any[] = [{ sub: account.sub }];
-        if (data.metadata && data.metadata.platformUserId) ids.push({ platformUserId: data.metadata.platformUserId });
+        if (data && data.metadata && data.metadata.platformUserId)
+            ids.push({ platformUserId: data.metadata.platformUserId });
 
         // If no entry exist the quest is available
         const isCompleted = await QuestSocialEntry.exists({

@@ -12,5 +12,6 @@ type TQuestSocialEntry = {
 
 type TQuestSocialEntryMetadata = {
     platformUserId: string;
-    publicMetrics: TTwitterUserPublicMetrics;
+    twitter: TTwitterUserPublicMetrics;
+    discord: { guildId: string; reactionCount: number; messageCount: number };
 };

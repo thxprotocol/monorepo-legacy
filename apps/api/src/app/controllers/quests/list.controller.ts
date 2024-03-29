@@ -15,6 +15,7 @@ const controller = async (req: Request, res: Response) => {
     const account = sub && (await AccountProxy.findById(sub));
 
     const ip = getIP(req);
+    // Results are returned in order of the QuestVariant enum keys
     const [daily, invite, twitter, discord, youtube, custom, web3, gitcoin] = await QuestService.list({
         pool,
         account,
