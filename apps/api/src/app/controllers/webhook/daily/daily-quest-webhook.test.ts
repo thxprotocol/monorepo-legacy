@@ -88,7 +88,7 @@ describe('Daily Rewards WebHooks', () => {
             .set({ 'X-PoolId': poolId, 'Authorization': widgetAccessToken4 })
             .send({ recaptcha: 'test' })
             .expect(({ body }: request.Response) => {
-                expect(body.error).toBe('Already completed within the last 24 hours.');
+                expect(body.error).toBe('You have completed this quest within the last 24 hours.');
             })
             .expect(200, done);
     });
