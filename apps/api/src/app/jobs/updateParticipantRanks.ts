@@ -8,10 +8,10 @@ export async function updateParticipantRanks(job: Job) {
 
     try {
         const { poolId } = job.attrs.data as { poolId: string };
-        const campaign = await Pool.findById(poolId);
-        if (!campaign) throw new Error('Could not find campaign');
+        const pool = await Pool.findById(poolId);
+        if (!pool) throw new Error('Could not find campaign');
 
-        await AnalyticsService.createLeaderboard(campaign);
+        await AnalyticsService.createLeaderboard(pool);
 
         logger.info('Updated participant ranks.');
     } catch (error) {

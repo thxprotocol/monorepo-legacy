@@ -77,7 +77,7 @@ export default class QuestDiscordService implements IQuestService {
         if (!account) return { result: true, reason: '' };
 
         // We use the default more generic QuestSocialService here since we want to
-        // validate for provider userIds as well
+        // validate for platformUserIds as well
         return await new QuestSocialService().isAvailable({ quest, account, data });
     }
 
@@ -167,9 +167,9 @@ export default class QuestDiscordService implements IQuestService {
         const { start, end } = this.getRestartDates(quest);
         const platformUserId = QuestService.findUserIdForInteraction(account, quest.interaction);
         const claims = await QuestSocialEntry.find({
-            questId: String(quest._id),
-            platformUserId,
-            createdAt: {
+            'questId': String(quest._id),
+            'metadata.platformUserId': platformUserId,
+            'createdAt': {
                 $gte: start,
                 $lt: end,
             },

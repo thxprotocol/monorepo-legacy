@@ -8,9 +8,12 @@ export const QuestGitcoinEntry = mongoose.model<QuestGitcoinEntryDocument>(
         {
             poolId: String,
             questId: String,
-            sub: { type: String, index: 'hashed' },
-            address: String,
+            sub: String,
             amount: Number,
+            metadata: {
+                address: String,
+                score: Number,
+            },
         },
         { timestamps: true },
     ),

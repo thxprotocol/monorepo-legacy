@@ -8,10 +8,13 @@ export const QuestWeb3Entry = mongoose.model<QuestWeb3EntryDocument>(
         {
             poolId: String,
             questId: String,
-            sub: { type: String, index: 'hashed' },
+            sub: String,
             amount: Number,
-            chainId: Number,
-            address: String,
+            metadata: {
+                chainId: Number,
+                callResult: String,
+                address: String,
+            },
         },
         { timestamps: true },
     ),

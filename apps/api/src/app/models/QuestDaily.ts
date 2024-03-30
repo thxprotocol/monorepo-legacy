@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { questSchema } from './Quest';
 
-export type QuestDailyDocument = mongoose.Document & TDailyReward;
+export type QuestDailyDocument = mongoose.Document & TQuestDaily;
 
 export const QuestDaily = mongoose.model<QuestDailyDocument>(
     'QuestDaily',

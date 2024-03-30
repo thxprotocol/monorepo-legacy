@@ -4,9 +4,14 @@ type TQuestSocialEntry = {
     sub: string;
     amount: string;
     poolId: string;
-    platformUserId: string;
-    publicMetrics: TTwitterUserPublicMetrics;
+    metadata: TQuestSocialEntryMetadata;
     createdAt: Date;
     account?: TAccount;
     wallet?: TWallet;
+};
+
+type TQuestSocialEntryMetadata = {
+    platformUserId: string;
+    twitter: TTwitterUserPublicMetrics;
+    discord: { guildId: string; reactionCount: number; messageCount: number };
 };

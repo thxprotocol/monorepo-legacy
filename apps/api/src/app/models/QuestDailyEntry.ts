@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export type QuestDailyEntryDocument = mongoose.Document & TDailyRewardClaim;
+export type QuestDailyEntryDocument = mongoose.Document & TQuestDailyEntry;
 
 export const QuestDailyEntry = mongoose.model<QuestDailyEntryDocument>(
     'QuestDailyEntry',
@@ -11,8 +11,10 @@ export const QuestDailyEntry = mongoose.model<QuestDailyEntryDocument>(
             uuid: String,
             amount: Number,
             poolId: String,
-            state: Number,
-            ip: String,
+            metadata: {
+                state: Number,
+                ip: String,
+            },
         },
         { timestamps: true },
     ),

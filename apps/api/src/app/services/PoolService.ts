@@ -33,6 +33,8 @@ import DiscordDataProxy from '../proxies/DiscordDataProxy';
 import MailService from './MailService';
 import SafeService from './SafeService';
 import { getChainId } from './ContractService';
+import ParticipantService from './ParticipantService';
+import DiscordService from './DiscordService';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -245,6 +247,8 @@ async function findParticipants(pool: PoolDocument, page: number, limit: number,
         results,
     };
 
+    const guild = await DiscordService.getGuild(poolId);
+
     participants.results = await Promise.all(
         participants.results.map(async (participant) => {
             let account: TAccount;
@@ -252,15 +256,9 @@ async function findParticipants(pool: PoolDocument, page: number, limit: number,
             try {
                 account = accounts.find((a) => a.sub === participant.sub);
                 account.tokens = await Promise.all(
-                    account.tokens.map(async (token: TToken) => {
-                        const user = await TwitterUser.findOne({ userId: token.userId });
-                        return {
-                            kind: token.kind,
-                            userId: token.userId,
-                            metadata: token.metadata,
-                            user,
-                        } as unknown as TToken;
-                    }),
+                    account.tokens.map(async (token: TToken) =>
+                        ParticipantService.findUser(token, { userId: token.userId, guildId: guild && guild.id }),
+                    ),
                 );
             } catch (error) {
                 logger.error(error);

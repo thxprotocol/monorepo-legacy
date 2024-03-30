@@ -46,7 +46,7 @@ export default class QuestWeb3Service implements IQuestService {
         if (!account) return { result: true, reason: '' };
 
         const ids: any[] = [{ sub: account.sub }];
-        if (data && data.address) ids.push({ address: data.address });
+        if (data.metadata && data.metadata.address) ids.push({ address: data.metadata.address });
 
         const isCompleted = await QuestWeb3Entry.exists({
             questId: quest._id,
@@ -68,38 +68,48 @@ export default class QuestWeb3Service implements IQuestService {
     }: {
         quest: TQuestWeb3;
         account: TAccount;
-        data: Partial<TQuestWeb3Entry & { rpc: string }>;
+        data: Partial<TQuestWeb3Entry>;
     }): Promise<TValidationResult> {
-        const { rpc, chainId, address } = data;
-        const provider = new ethers.providers.JsonRpcProvider(rpc);
-        const isClaimed = await QuestWeb3Entry.exists({
+        const isCompleted = await QuestWeb3Entry.exists({
             questId: quest._id,
-            $or: [{ sub: account.sub }, { address }],
+            $or: [{ sub: account.sub }, { address: data.metadata.address }],
         });
-        if (isClaimed) return { result: false, reason: 'You have claimed this quest already' };
+        if (isCompleted) return { result: false, reason: 'You have claimed this quest already' };
 
+        const threshold = BigNumber.from(quest.threshold);
+        const result = BigNumber.from(data.metadata.callResult);
+        if (result.lt(threshold)) {
+            return { result: false, reason: 'Result does not meet the threshold' };
+        }
+
+        return { result: true, reason: '' };
+    }
+
+    static async getCallResult({
+        quest,
+        data,
+    }: {
+        quest: TQuestWeb3;
+        account: TAccount;
+        data: Partial<TQuestWeb3Entry>;
+    }) {
+        const { rpc, chainId, address } = data.metadata;
         const contract = quest.contracts.find((c) => c.chainId === chainId);
         if (!contract) return { result: false, reason: 'Smart contract not found.' };
 
         const contractInstance = new ethers.Contract(
             contract.address,
             ['function ' + quest.methodName + '(address) view returns (uint256)'],
-            provider,
+            new ethers.providers.JsonRpcProvider(rpc),
         );
 
-        let result: BigNumber;
         try {
-            result = await contractInstance[quest.methodName](address);
+            const value = await contractInstance[quest.methodName](address);
+
+            return { result: true, reason: '', value };
         } catch (error) {
             logger.error(error);
             return { result: false, reason: `Smart contract call on ${quest.methodName} failed` };
         }
-
-        const threshold = BigNumber.from(quest.threshold);
-        if (result.lt(threshold)) {
-            return { result: false, reason: 'Result does not meet the threshold' };
-        }
-
-        return { result: true, reason: '' };
     }
 }

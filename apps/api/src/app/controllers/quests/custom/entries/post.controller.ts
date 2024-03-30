@@ -13,8 +13,8 @@ const controller = async ({ params, body, account }: Request, res: Response) => 
     if (!quest) throw new NotFoundError('Quest not found.');
 
     // Running separately to avoid issues when getting validation results from Discord interactions
-    const isBotUser = await QuestService.isBotUser(quest.variant, { quest, account, data: body.recaptcha });
-    if (!isBotUser) return res.json({ error: isBotUser.reason });
+    const isRealUser = await QuestService.isRealUser(quest.variant, { quest, account, data: body.recaptcha });
+    if (!isRealUser) return res.json({ error: isRealUser.reason });
 
     const { result, reason } = await QuestService.getValidationResult(quest.variant, {
         quest,

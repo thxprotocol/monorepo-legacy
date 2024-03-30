@@ -104,7 +104,7 @@ export default class ModalRewardDailyCreate extends Vue {
     @Prop() id!: string;
     @Prop() total!: number;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TDailyReward;
+    @Prop({ required: false }) reward!: TQuestDaily;
 
     get code() {
         return `curl "${API_URL}/v1/webhook/daily/${this.reward ? this.reward.uuid : '<TOKEN>'}" \\

@@ -1,11 +1,13 @@
-type TQuest = TDailyReward | TQuestInvite | TQuestSocial | TQuestCustom | TQuestWeb3 | TGitcoinQuest;
+type TQuest = TQuestDaily | TQuestInvite | TQuestSocial | TQuestCustom | TQuestWeb3 | TGitcoinQuest;
 type TQuestEntry =
-    | TDailyRewardClaim
+    | TQuestDailyClaim
     | TQuestInviteEntry
     | TQuestSocialEntry
     | TQuestCustomEntry
     | TQuestWeb3Entry
     | TGitcoinQuestEntry;
+
+type TQuestEntryMetadata = TQuestSocialEntryMetadata | TQuestWeb3EntryMetadata;
 
 type TValidationResult = {
     reason: string;
