@@ -30,7 +30,7 @@ const controller = async ({ account, body, params }: Request, res: Response) => 
 
     // Running separately to avoid issues when getting validation results from Discord interactions
     const isRealUser = await QuestService.isRealUser(quest.variant, { quest, account, data });
-    if (!isRealUser) return res.json({ error: isRealUser.reason });
+    if (!isRealUser.result) return res.json({ error: isRealUser.reason });
 
     // Fetch the call result so we can store it in the entry
     const callResult = await QuestWeb3Service.getCallResult({ quest, account, data });

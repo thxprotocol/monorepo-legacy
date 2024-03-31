@@ -23,7 +23,7 @@ const controller = async ({ params, body, account }: Request, res: Response) => 
 
     // Running separately to avoid issues when getting validation results from Discord interactions
     const isRealUser = await QuestService.isRealUser(quest.variant, { quest, account, data });
-    if (!isRealUser) return res.json({ error: isRealUser.reason });
+    if (!isRealUser.result) return res.json({ error: isRealUser.reason });
 
     // Get validation result for this quest entry
     const { result, reason } = await QuestService.getValidationResult(quest.variant, { quest, account, data });

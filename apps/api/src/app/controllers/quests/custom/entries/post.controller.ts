@@ -12,14 +12,16 @@ const controller = async ({ params, body, account }: Request, res: Response) => 
     const quest = await QuestCustom.findById(params.id);
     if (!quest) throw new NotFoundError('Quest not found.');
 
+    const data = { recaptcha: body.recaptcha };
+
     // Running separately to avoid issues when getting validation results from Discord interactions
-    const isRealUser = await QuestService.isRealUser(quest.variant, { quest, account, data: body.recaptcha });
-    if (!isRealUser) return res.json({ error: isRealUser.reason });
+    const isRealUser = await QuestService.isRealUser(quest.variant, { quest, account, data });
+    if (!isRealUser.result) return res.json({ error: isRealUser.reason });
 
     const { result, reason } = await QuestService.getValidationResult(quest.variant, {
         quest,
         account,
-        data: {},
+        data,
     });
     if (!result) return res.json({ error: reason });
 
@@ -27,9 +29,7 @@ const controller = async ({ params, body, account }: Request, res: Response) => 
         variant: QuestVariant.Custom,
         questId: String(quest._id),
         sub: account.sub,
-        data: {
-            isClaimed: true,
-        },
+        data: { ...data, isClaimed: true },
     });
 
     res.json({ jobId: job.attrs._id });
