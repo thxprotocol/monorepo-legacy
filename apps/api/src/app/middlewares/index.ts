@@ -9,3 +9,4 @@ export * from './checkJwt';
 export * from './assertPlan';
 export * from './assertQuestAccess';
 export * from './assertAccount';
+export * from './assertWallet';

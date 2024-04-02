@@ -37,7 +37,7 @@ export default class QuestGitcoinService implements IQuestService {
         if (!account) return { result: true, reason: '' };
 
         const ids: { [key: string]: string }[] = [{ sub: account.sub }];
-        if (data.metadata && data.metadata.address) ids.push({ address: data.metadata.address });
+        if (data.metadata && data.metadata.address) ids.push({ 'metadata.address': data.metadata.address });
 
         const isCompleted = await QuestGitcoinEntry.exists({
             questId: quest._id,

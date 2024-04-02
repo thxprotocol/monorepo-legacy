@@ -6,9 +6,11 @@ import CreateVEDeposit from './deposit/post.controller';
 import CreateVEIncrease from './increase/post.controller';
 import CreateVEClaim from './claim/post.controller';
 import CreateVEWithdraw from './withdraw/post.controller';
+import { assertWallet } from '@thxnetwork/api/middlewares/assertWallet';
 
 const router = express.Router();
 
+router.use('/', assertWallet);
 router.get('/', assertRequestInput(ListController.validation), ListController.controller);
 router.post('/deposit', assertRequestInput(CreateVEDeposit.validation), CreateVEDeposit.controller);
 router.post('/increase', assertRequestInput(CreateVEIncrease.validation), CreateVEIncrease.controller);

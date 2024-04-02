@@ -9,7 +9,6 @@ export const QuestWeb3 = mongoose.model<QuestWeb3Document>(
         {
             ...(questSchema as any),
             amount: Number,
-            chainId: Number,
             contracts: Array({
                 chainId: Number,
                 address: String,

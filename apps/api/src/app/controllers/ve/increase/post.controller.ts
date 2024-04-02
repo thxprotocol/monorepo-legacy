@@ -1,11 +1,10 @@
 import { Request, Response } from 'express';
 import { body, query } from 'express-validator';
-import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import { BigNumber } from 'ethers';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
 import VoteEscrowService from '@thxnetwork/api/services/VoteEscrowService';
-import WalletService from '@thxnetwork/api/services/WalletService';
 
 export const validation = [
     query('walletId').isMongoId(),
@@ -13,47 +12,42 @@ export const validation = [
     body('lockEndTimestamp').optional().isInt(),
 ];
 
-export const controller = async (req: Request, res: Response) => {
-    const walletId = req.query.walletId as string;
-    const wallet = await WalletService.findById(walletId);
-    if (!wallet) throw new NotFoundError('Wallet not found');
-    if (wallet.sub !== req.auth.sub) throw new ForbiddenError('Wallet not owned by sub.');
-
+export const controller = async ({ wallet, body }: Request, res: Response) => {
     // Check SmartWalletWhitelist
     const isApproved = await VoteEscrowService.isApprovedAddress(wallet.address, wallet.chainId);
     if (!isApproved) throw new ForbiddenError('Wallet address is not on whitelist.');
 
     const txList = [];
-    if (req.body.amountInWei) {
+    if (body.amountInWei) {
         // Check sufficient BPTGauge approval
         const amount = await VoteEscrowService.getAllowance(
             wallet,
             contractNetworks[wallet.chainId].BPTGauge,
             contractNetworks[wallet.chainId].VotingEscrow,
         );
-        if (BigNumber.from(amount).lt(req.body.amountInWei)) throw new ForbiddenError('Insufficient allowance');
+        if (BigNumber.from(amount).lt(body.amountInWei)) throw new ForbiddenError('Insufficient allowance');
 
         // TODO Check sufficient balance
-        const txs = await VoteEscrowService.increaseAmount(wallet, req.body.amountInWei);
+        const txs = await VoteEscrowService.increaseAmount(wallet, body.amountInWei);
         txList.push(txs);
     }
 
-    if (req.body.lockEndTimestamp) {
+    if (body.lockEndTimestamp) {
         // Check lockEndTimestamp to be more than today + 90 days
         const { web3 } = getProvider();
         const latest = await web3.eth.getBlockNumber();
         const now = (await web3.eth.getBlock(latest)).timestamp;
-        if (req.body.lockEndTimestamp < now) {
+        if (body.lockEndTimestamp < now) {
             throw new ForbiddenError('lockEndTimestamp needs be larger than today');
         }
 
         // Check if lockEndTimestamp is more than current lock end
         const lock = await VoteEscrowService.list(wallet);
-        if (req.body.lockEndTimestamp < Number(lock.end)) {
+        if (body.lockEndTimestamp < Number(lock.end)) {
             throw new ForbiddenError('lockEndTimestamp needs be larger than current lock end');
         }
 
-        const txs = await VoteEscrowService.increaseUnlockTime(wallet, req.body.lockEndTimestamp);
+        const txs = await VoteEscrowService.increaseUnlockTime(wallet, body.lockEndTimestamp);
         txList.push(txs);
     }
 

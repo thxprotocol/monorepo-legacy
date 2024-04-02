@@ -46,7 +46,7 @@ export default class QuestWeb3Service implements IQuestService {
         if (!account) return { result: true, reason: '' };
 
         const ids: any[] = [{ sub: account.sub }];
-        if (data.metadata && data.metadata.address) ids.push({ address: data.metadata.address });
+        if (data.metadata && data.metadata.address) ids.push({ 'metadata.address': data.metadata.address });
 
         const isCompleted = await QuestWeb3Entry.exists({
             questId: quest._id,
@@ -72,7 +72,7 @@ export default class QuestWeb3Service implements IQuestService {
     }): Promise<TValidationResult> {
         const isCompleted = await QuestWeb3Entry.exists({
             questId: quest._id,
-            $or: [{ sub: account.sub }, { address: data.metadata.address }],
+            $or: [{ sub: account.sub }, { 'metadata.address': data.metadata.address }],
         });
         if (isCompleted) return { result: false, reason: 'You have claimed this quest already' };
 

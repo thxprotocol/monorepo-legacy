@@ -17,8 +17,8 @@ module.exports = {
                 },
             },
         );
-        await db.collection('questweb3entry').updateMany({}, { $set: { address: 'metadata.address' } });
-        await db.collection('questgitcoinentry').updateMany({}, { $set: { address: 'metadata.address' } });
+        await db.collection('questweb3entry').updateMany({}, { $rename: { address: 'metadata.address' } });
+        await db.collection('questgitcoinentry').updateMany({}, { $rename: { address: 'metadata.address' } });
     },
 
     async down(db, client) {
