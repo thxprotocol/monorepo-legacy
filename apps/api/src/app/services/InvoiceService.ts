@@ -12,6 +12,7 @@ import {
 import AccountProxy from '../proxies/AccountProxy';
 import { logger } from '../util/logger';
 import { AccountPlanType } from '@thxnetwork/common/enums';
+import { startOfMonth, endOfMonth } from 'date-fns';
 
 export default class InvoiceService {
     /**
@@ -20,8 +21,8 @@ export default class InvoiceService {
     static async upsertJob() {
         const currentDate = new Date();
         // Define the start and end dates for the month range
-        const invoicePeriodstartDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-        const invoicePeriodEndDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+        const invoicePeriodstartDate = startOfMonth(currentDate);
+        const invoicePeriodEndDate = endOfMonth(currentDate);
 
         await this.upsertInvoices(invoicePeriodstartDate, invoicePeriodEndDate);
     }
