@@ -59,14 +59,6 @@ export default class InvoiceService {
                     id: { $toString: '$_id' },
                 },
             },
-            ...questEntryLookupStages,
-            {
-                $addFields: {
-                    allQuestEntries: {
-                        $concatArrays: questEntryModels.map((model) => `$${model.collection.name}`),
-                    },
-                },
-            },
             {
                 $match: {
                     $or: questEntryModels.map((model) => ({
@@ -75,6 +67,14 @@ export default class InvoiceService {
                             $lte: invoicePeriodEndDate,
                         },
                     })),
+                },
+            },
+            ...questEntryLookupStages,
+            {
+                $addFields: {
+                    allQuestEntries: {
+                        $concatArrays: questEntryModels.map((model) => `$${model.collection.name}`),
+                    },
                 },
             },
             {
