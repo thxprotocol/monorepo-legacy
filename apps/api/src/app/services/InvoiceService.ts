@@ -34,77 +34,33 @@ export default class InvoiceService {
     static async upsertInvoices(invoicePeriodstartDate: Date, invoicePeriodEndDate: Date) {
         // Determine the lookup stages for the quest entries in the pools pipeline
         const questEntryModels = [
-            // QuestDailyEntry, // Temporary disabled due to botting issues
+            QuestDailyEntry,
             QuestInviteEntry,
             QuestSocialEntry,
             QuestCustomEntry,
             QuestWeb3Entry,
             QuestGitcoinEntry,
         ];
-        const questEntryLookupStages = questEntryModels.map((model) => {
-            return {
-                $lookup: {
-                    from: model.collection.name,
-                    localField: 'id',
-                    foreignField: 'poolId',
-                    as: model.collection.name,
-                },
-            };
-        });
 
-        // Aggregate the pipeline for the given month
-        const questEntriesByCampaign = await Pool.aggregate([
-            {
-                $addFields: {
-                    id: { $toString: '$_id' },
-                },
-            },
-            {
-                $match: {
-                    $or: questEntryModels.map((model) => ({
-                        [`${model.collection.name}.createdAt`]: {
-                            $gte: invoicePeriodstartDate,
-                            $lte: invoicePeriodEndDate,
-                        },
-                    })),
-                },
-            },
-            ...questEntryLookupStages,
-            {
-                $addFields: {
-                    allQuestEntries: {
-                        $concatArrays: questEntryModels.map((model) => `$${model.collection.name}`),
-                    },
-                },
-            },
-            {
-                $unwind: '$allQuestEntries', // Deconstruct the allQuestEntries array
-            },
-            {
-                $group: {
-                    _id: {
-                        poolId: '$_id', // Group by pool._id
-                        sub: '$allQuestEntries.sub', // Group by the "sub" field
-                        poolSub: '$sub', // Include pool.sub value
-                    },
-                },
-            },
-            {
-                $group: {
-                    _id: '$_id.poolId', // Group by pool._id
-                    poolSub: { $first: '$_id.poolSub' }, // Store the pool.sub value
-                    mapCount: { $sum: 1 }, // Count the distinct values
-                },
-            },
-            {
-                $project: {
-                    _id: 0, // Exclude the _id field from the result
-                    poolId: { $toString: '$_id' }, // Include pool._id as string
-                    poolSub: 1, // Include the pool.sub value
-                    mapCount: 1, // Include the count field
-                },
-            },
-        ]).exec();
+        // Get all relevant pools
+        const pools = await Pool.find({ 'settings.isPublished': true });
+        const questEntriesByCampaign = await Promise.all(
+            pools.map(async (pool) => {
+                const uniqueEntriesByVariant = await Promise.all(
+                    questEntryModels.map(async (model) => {
+                        return await model
+                            .countDocuments({
+                                poolId: pool.id,
+                                createdAt: { $gte: invoicePeriodstartDate, $lte: invoicePeriodEndDate },
+                            })
+                            .distinct('sub');
+                    }),
+                );
+                const flattenedArray = uniqueEntriesByVariant.flat();
+
+                return { poolId: pool.id, poolSub: pool.sub, mapCount: new Set(flattenedArray).size };
+            }),
+        );
 
         // Get the pool owner accounts to send the invoices
         const subs = questEntriesByCampaign.map(({ poolSub }) => poolSub);
