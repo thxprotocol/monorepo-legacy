@@ -1,8 +1,8 @@
-import PriceService from '@thxnetwork/api/services/PriceService';
+import BalancerService from '@thxnetwork/api/services/BalancerService';
 import { Request, Response } from 'express';
 
 const controller = async (req: Request, res: Response) => {
-    const pricing = PriceService.getPricing();
+    const pricing = BalancerService.getPricing();
     res.json(pricing);
 };
 

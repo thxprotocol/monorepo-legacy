@@ -12,6 +12,7 @@ import BPTGauge from './abis/BPTGauge.json';
 import BAL from './abis/BAL.json';
 import THX from './abis/THX.json';
 import USDC from './abis/USDC.json';
+import BalancerVault from './abis/BalancerVault.json';
 import { ContractNetworksConfig } from '@safe-global/protocol-kit';
 
 export const contractNetworks = {
@@ -26,22 +27,25 @@ export const contractNetworks = {
         createCallAddress: '0x40Efd8a16485213445E6d8b9a4266Fd2dFf7C69a',
         simulateTxAccessorAddress: '0xFF1eE64b8806C0891e8F73b37f8403F441b552E1',
         // Tokens
-        BPT: '0xc368fA6A4057BcFD9E49221d8354d5fA6B88945a',
-        BPTGauge: '0x439F0128d07f005e0703602f366599ACaaBfEA18',
+        THX: '0xc368fA6A4057BcFD9E49221d8354d5fA6B88945a',
+        USDC: '0x439F0128d07f005e0703602f366599ACaaBfEA18',
         BAL: '0x24E91C3a2822bDc4bc73512872ab07fD93c8101b',
-        USDC: '0x7Cb8d1EAd6303C079c501e93F3ba28C227cd7000',
-        THX: '0x76aBe9ec9b15947ba1Ca910695B8b6CffeD8E6CA',
+        BPT: '0x76aBe9ec9b15947ba1Ca910695B8b6CffeD8E6CA',
+        BPTGauge: '0x7Cb8d1EAd6303C079c501e93F3ba28C227cd7000',
+        BalancerVault: '0xb3B2b0fc5ce12aE58EEb13E19547Eb2Dd61A79D5',
+
         // veTHX
-        VotingEscrow: '0xde46F6e0F666A42536e1AeD3d5Efa081089d4491',
-        RewardDistributor: '0x09884893517b396DA808E5165b33091bAe866401',
-        RewardFaucet: '0x7d19C8cd97AAD3d97688eB60C54785c99997a1Bf',
-        SmartWalletWhitelist: '0x5E0A87862f9175493Cc1d02199ad18Eff87Eb400',
-        LensReward: '0xe2092A19f37D2DBBfa9c41C9b83CBAAA1294548f',
+        VotingEscrow: '0xe3C1Fda814032919F7CE63D9c3cd5C0F9a579d1A',
+        RewardDistributor: '0xf0Ac139fD5362E2823667c7F9dD7238b020D44EC',
+        RewardFaucet: '0x879E73B20973d78c55b5B07566A3355327Db47bd',
+        SmartWalletWhitelist: '0xD4702511e43E2b778b34185A59728B57bE61aEd1',
+        LensReward: '0x36260689483bc55753E3258725f31E8aee31A7B0',
     },
     '137': {
         // Tokens
         BPT: '0xb204BF10bc3a5435017D3db247f56dA601dFe08A',
         BPTGauge: '0xf16BECC1Bcaf0fF0b865024a644a4da1A2f8585c',
+        BalancerVault: '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
         BAL: '0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3',
         USDC: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
         THX: '0x2934b36ca9A4B31E633C5BE670C8C8b28b6aA015',
@@ -62,6 +66,7 @@ export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: 
     LensReward,
     BalMinter,
     VotingEscrow,
+    BalancerVault,
     BPT,
     BPTGauge,
     USDC,

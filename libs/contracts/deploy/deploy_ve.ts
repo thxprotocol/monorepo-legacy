@@ -23,14 +23,16 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const rewardDistributorImpl = await deploy('RewardDistributor', [], signer);
     const rewardFaucetImpl = await deploy('RewardFaucet', [], signer);
 
-    // Deploy VE tokens
+    // Deploy tokens
+    const thx = await deploy('THX', [signer.address, parseUnits('1000000', 'ether').toString()], signer);
+    const usdc = await deploy('USDC', [signer.address, parseUnits('1000000', 'ether').toString()], signer);
+    const balToken = await deploy('BAL', [signer.address, parseUnits('1000000', 'ether').toString()], signer);
     const bptToken = await deploy('BPT', [signer.address, parseUnits('1000000', 'ether').toString()], signer);
     const bptGaugeToken = await deploy('BPTGauge', [bptToken.address], signer);
-    const balToken = await deploy('BAL', [signer.address, parseUnits('1000000', 'ether').toString()], signer);
+    const balancerVault = await deploy('BalancerVault', [bptToken.address, usdc.address, thx.address], signer);
 
-    // Deploy Liquidity tokens
-    await deploy('THX', [signer.address, parseUnits('1000000', 'ether').toString()], signer);
-    await deploy('USDC', [signer.address, parseUnits('1000000', 'ether').toString()], signer);
+    // Transfer 50% of the BPT to BalancerVault for testing create liquidity flows
+    bptToken.transfer(balancerVault.address, parseUnits('500000', 'ether').toString());
 
     const balMinter = await deploy('BalMinter', [balToken.address], signer);
     const launchpad = await deploy(

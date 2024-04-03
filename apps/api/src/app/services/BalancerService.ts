@@ -2,6 +2,7 @@ import axios from 'axios';
 import { BalancerSDK, Network } from '@balancer-labs/sdk';
 import { BALANCER_POOL_ID, POLYGON_RPC } from '../config/secrets';
 import { logger } from '../util/logger';
+import { WalletDocument } from '../models';
 
 class BalancerService {
     pricing = {};
@@ -12,6 +13,16 @@ class BalancerService {
 
     constructor() {
         this.updatePricesJob();
+    }
+
+    async buildJoin(wallet: WalletDocument, usdcAmountInWei: string, thxAmountInWei: string, slippage: string) {
+        const pool = await this.balancer.pools.find(BALANCER_POOL_ID);
+        const [usdc, thx] = pool.tokens as unknown as {
+            address: string;
+        }[];
+
+        // Call joinPool on the vault contract 0xBA12222222228d8Ba445958a75a0704d566BF2C8 and have a mock for local testing
+        // https://polygonscan.com/address/0xBA12222222228d8Ba445958a75a0704d566BF2C8#writeContract#F5
     }
 
     getPricing() {

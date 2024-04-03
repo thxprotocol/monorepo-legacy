@@ -15,12 +15,12 @@ contract BPTGauge is ERC20 {
     }
 
     /*
-    *  @dev Deposit LP tokens in the gauge and mint BPTGauge for msg.sender
-    *  @param _value Amount of LP tokens to deposit
-    */
+     *  @dev Deposit LP tokens in the gauge and mint BPTGauge for msg.sender
+     *  @param _value Amount of LP tokens to deposit
+     */
     function deposit(uint256 _value) public {
         // Transfer BPT from the user to the gauge
-        ERC20(lp_token).transferFrom(msg.sender, address(this), _value);
+        IERC20(lp_token).transferFrom(msg.sender, address(this), _value);
 
         // Mint BPTGauge tokens to the user
         _mint(msg.sender, _value);
@@ -29,16 +29,16 @@ contract BPTGauge is ERC20 {
     }
 
     /*
-    *  @dev Withdraw LP tokens from the gauge
-    *  @param _value Amount of LP tokens to withdraw
-    *  @notice This mock function will not decrease the totalSupply
-    */
+     *  @dev Withdraw LP tokens from the gauge
+     *  @param _value Amount of LP tokens to withdraw
+     *  @notice This mock function will not decrease the totalSupply
+     */
     function withdraw(uint256 _value) public {
         // Transfer staked BPT from the gauge to the user
-        ERC20(lp_token).transfer(msg.sender, _value);
+        IERC20(lp_token).transfer(msg.sender, _value);
 
         // Burn BPTGauge for the user
-        ERC20(address(this)).transferFrom(msg.sender, address(0), _value);
+        IERC20(address(this)).transferFrom(msg.sender, address(0), _value);
 
         emit Withdraw(msg.sender, _value);
     }

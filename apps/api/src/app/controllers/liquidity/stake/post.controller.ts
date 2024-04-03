@@ -5,7 +5,7 @@ import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { BigNumber } from 'ethers';
 import { Request, Response } from 'express';
 import { body, query } from 'express-validator';
-import TransactionService from '@thxnetwork/api/services/TransactionService';
+import LiquidityService from '@thxnetwork/api/services/LiquidityService';
 
 export const validation = [body('amountInWei').isString(), query('walletId').isMongoId()];
 
@@ -19,15 +19,7 @@ export const controller = async ({ wallet, body }: Request, res: Response) => {
         throw new BadRequestError('Insufficient balance');
     }
 
-    // Deposit the BPT into the gauge
-    const bptGauge = new web3.eth.Contract(
-        contractArtifacts['BPTGauge'].abi,
-        contractNetworks[wallet.chainId].BPTGauge,
-    );
-    const fn = bptGauge.methods.deposit(String(body.amountInWei));
-
-    // Propose tx data to relayer and return safeTxHash to client to sign
-    const tx = await TransactionService.sendSafeAsync(wallet, bptGauge.options.address, fn);
+    const tx = await LiquidityService.stake(wallet, body.amountInWei);
 
     res.status(201).json([tx]);
 };
