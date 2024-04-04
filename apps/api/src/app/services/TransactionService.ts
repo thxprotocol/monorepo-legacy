@@ -166,9 +166,13 @@ async function execSafeAsync(wallet: WalletDocument, tx: TransactionDocument) {
     });
 }
 
-async function sendSafeAsync(wallet: WalletDocument, to: string | null, fn: any, callback?: TTransactionCallback) {
+async function proposeSafeAsync(
+    wallet: WalletDocument,
+    to: string | null,
+    data: string,
+    callback?: TTransactionCallback,
+) {
     const { relayer, defaultAccount } = getProvider(wallet.chainId);
-    const data = fn.encodeABI();
     const safeTxHash = await SafeService.proposeTransaction(wallet, {
         to,
         data,
@@ -187,6 +191,11 @@ async function sendSafeAsync(wallet: WalletDocument, to: string | null, fn: any,
         to,
         callback,
     });
+}
+
+async function sendSafeAsync(wallet: WalletDocument, to: string | null, fn: any, callback?: TTransactionCallback) {
+    const data = fn.encodeABI();
+    return proposeSafeAsync(wallet, to, data, callback);
 }
 
 async function deploy(abi: any, bytecode: any, arg: any[], chainId: ChainId) {
@@ -352,4 +361,5 @@ export default {
     queryTransactionStatusDefender,
     queryTransactionStatusReceipt,
     executeCallback,
+    proposeSafeAsync,
 };
