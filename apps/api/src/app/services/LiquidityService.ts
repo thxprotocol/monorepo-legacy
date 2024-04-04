@@ -7,9 +7,8 @@ import BalancerService from './BalancerService';
 
 export default class LiquidityService {
     static async create(wallet: WalletDocument, usdcAmountInWei: string, thxAmountInWei: string, slippage: string) {
-        const data = await BalancerService.buildJoin(wallet, usdcAmountInWei, thxAmountInWei, slippage);
-
-        return await TransactionService.proposeSafeAsync(wallet, data.to, data);
+        const { to, data } = await BalancerService.buildJoin(wallet, usdcAmountInWei, thxAmountInWei, slippage);
+        return await TransactionService.proposeSafeAsync(wallet, to, data);
     }
 
     static async stake(wallet: WalletDocument, amountInWei: string) {
