@@ -60,7 +60,6 @@ const openai = new OpenAI({
 });
 
 async function getSuggestion(content: string, length: number) {
-    console.log('START SUGGESTION');
     if (!content) return;
 
     const prompt = `You are a content writer for games. Please rephrase this text in a short, engaging and active form. Apply a maximum character length of ${length} characters:`;
@@ -68,7 +67,6 @@ async function getSuggestion(content: string, length: number) {
         model: 'gpt-3.5-turbo',
         messages: [{ role: 'user', content: prompt + content }],
     });
-    console.log(data);
 
     return {
         content: data.choices[0].message.content,
