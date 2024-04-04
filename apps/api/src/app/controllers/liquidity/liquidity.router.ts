@@ -1,13 +1,11 @@
 import express from 'express';
 import { assertWallet, assertRequestInput } from '@thxnetwork/api/middlewares';
 
-import ListPriceController from './price/list.controller';
 import CreateLiquidityController from './post.controller';
 import CreateLiquidityStakedController from './stake/post.controller';
 
 const router = express.Router();
 
-router.get('/price', ListPriceController.controller);
 router.use('/', assertWallet);
 router.post('/', assertRequestInput(CreateLiquidityController.validation), CreateLiquidityController.controller);
 router.post(
