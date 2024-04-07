@@ -36,7 +36,7 @@ type TPool = {
     collaborators: TCollaborator[];
     identities: TIdentity[];
     owner: TAccount;
-    safe: TWallet;
+    safe: WalletDocument;
     campaignURL: string;
     createdAt?: Date;
 };

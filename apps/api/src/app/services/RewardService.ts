@@ -1,8 +1,9 @@
 import { Document } from 'mongoose';
 import { RewardVariant } from '@thxnetwork/common/enums';
-import { PoolDocument, Participant, WalletDocument } from '@thxnetwork/api/models';
+import { Participant, WalletDocument } from '@thxnetwork/api/models';
 import { v4 } from 'uuid';
 import { logger } from '../util/logger';
+import { Job } from '@hokify/agenda';
 import RewardCoinService from './RewardCoinService';
 import LockService from './LockService';
 import AccountProxy from '../proxies/AccountProxy';
@@ -15,6 +16,8 @@ import MailService from './MailService';
 import RewardDiscordRoleService from './RewardDiscordRoleService';
 import RewardCustomService from './RewardCustomService';
 import RewardGalachainService from './RewardGalachainService';
+import PoolService from './PoolService';
+import WalletService from './WalletService';
 
 const serviceMap = {
     [RewardVariant.Coin]: new RewardCoinService(),
@@ -108,37 +111,35 @@ export default class RewardService {
             .flat();
     }
 
-    static async createPayment(
-        variant: RewardVariant,
-        {
-            pool,
-            reward,
-            account,
-            safe,
-            wallet,
-        }: {
-            pool: PoolDocument;
-            reward: TReward;
-            account: TAccount;
-            safe?: WalletDocument;
-            wallet?: WalletDocument;
-        },
-    ) {
-        // Validate supply, expiry, locked and reward specific validation
-        const validationResult = await this.getValidationResult({ reward, account, safe });
-        if (!validationResult.result) return validationResult.reason;
+    static async createPaymentJob(job: Job) {
+        try {
+            const { variant, sub, rewardId, walletId } = job.attrs.data as any;
+            const account = await AccountProxy.findById(sub);
+            const reward = await this.findById(variant, rewardId);
+            const pool = await PoolService.getById(reward.poolId);
+            const wallet = walletId && (await WalletService.findById(walletId));
 
-        // Subtract points for account
-        await PointBalanceService.subtract(pool, account, reward.pointPrice);
+            // Validate supply, expiry, locked and reward specific validation
+            const validationResult = await this.getValidationResult({ reward, account, safe: pool.safe });
+            if (!validationResult.result) return validationResult.reason;
 
-        // Send email notification
-        let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
-        html += `<p>Your payment has been received! <strong>${reward.title}</strong> is available in your account.</p>`;
-        html += `<p class="btn"><a href="${pool.campaignURL}">View Wallet</a></p>`;
-        await MailService.send(account.email, `🎁 Reward Received!`, html);
+            // Subtract points for account
+            await PointBalanceService.subtract(pool, account, reward.pointPrice);
 
-        // Register the payment for the account
-        return await serviceMap[variant].createPayment({ reward, account, safe, wallet });
+            // Send email notification
+            let html = `<p style="font-size: 18px">Congratulations!🚀</p>`;
+            html += `<p>Your payment has been received! <strong>${reward.title}</strong> is available in your account.</p>`;
+            html += `<p class="btn"><a href="${pool.campaignURL}">View Wallet</a></p>`;
+            await MailService.send(account.email, `🎁 Reward Received!`, html);
+
+            // Register the payment for the account
+            console.log(reward, account, pool.safe, wallet);
+
+            return await serviceMap[variant].createPayment({ reward, account, safe: pool.safe, wallet });
+        } catch (error) {
+            console.log(error);
+            logger.error(error);
+        }
     }
 
     static async create(variant: RewardVariant, poolId: string, data: Partial<TReward>, file?: Express.Multer.File) {

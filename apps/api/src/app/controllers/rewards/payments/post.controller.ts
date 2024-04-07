@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
-import { RewardVariant } from '@thxnetwork/common/enums';
+import { JobType, RewardVariant } from '@thxnetwork/common/enums';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import RewardService from '@thxnetwork/api/services/RewardService';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import { agenda } from '@thxnetwork/api/util/agenda';
 
 const validation = [param('variant').isInt(), param('rewardId').isMongoId(), body('walletId').optional().isMongoId()];
 
@@ -31,12 +32,15 @@ const controller = async (req: Request, res: Response) => {
         throw new ForbiddenError(validationResult.reason);
     }
 
-    // If walletId is in the body we fetch the wallet for the user as it will
-    // be used when processing the payment.
-    const wallet = req.body.walletId ? await SafeService.findById(req.body.walletId) : null;
-    const payment = await RewardService.createPayment(reward.variant, { pool, account, reward, wallet, safe });
+    // Serialize payment processing with job queue
+    const job = await agenda.now(JobType.CreateRewardPayment, {
+        variant,
+        rewardId,
+        sub: account.sub,
+        walletId: req.body.walletId,
+    });
 
-    res.status(201).json(payment);
+    res.json({ jobId: job.attrs._id });
 };
 
 export default { controller, validation };

@@ -7,6 +7,7 @@ export enum JobType {
     MigrateWallets = 'migrateWallets',
     DeploySafe = 'deploySafe',
     CreateQuestEntry = 'createQuestEntry',
+    CreateRewardPayment = 'createRewardPayment',
     RequestAttemp = 'requestAttempt',
     UpdateTwitterLikeCache = 'updateTwitterLikeCache',
     UpdateTwitterRepostCache = 'updateTwitterRepostCache',

@@ -14,6 +14,7 @@ import QuestService from '../services/QuestService';
 import TwitterCacheService from '../services/TwitterCacheService';
 import InvoiceService from '../services/InvoiceService';
 import BalancerService from '../services/BalancerService';
+import RewardService from '../services/RewardService';
 
 const agenda = new Agenda({
     db: {
@@ -30,6 +31,7 @@ agenda.define(JobType.UpdateParticipantRanks, (job: Job) => updateParticipantRan
 agenda.define(JobType.UpdatePendingTransactions, updatePendingTransactions);
 agenda.define(JobType.CreateTwitterQuests, createTwitterQuests);
 agenda.define(JobType.CreateQuestEntry, (job: Job) => QuestService.createEntryJob(job));
+agenda.define(JobType.CreateRewardPayment, (job: Job) => RewardService.createPaymentJob(job));
 agenda.define(JobType.DeploySafe, (job: Job) => SafeService.createJob(job));
 agenda.define(JobType.SendCampaignReport, sendPoolAnalyticsReport);
 agenda.define(JobType.RequestAttemp, (job: Job) => WebhookService.requestAttemptJob(job));
