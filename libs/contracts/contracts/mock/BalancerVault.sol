@@ -5,9 +5,9 @@ pragma solidity ^0.7.6;
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 
 contract BalancerVault {
-    address public bpt;
-    address public usdc;
-    address public thx;
+    ERC20 public bpt;
+    ERC20 public usdc;
+    ERC20 public thx;
 
     struct JoinPoolRequest {
         address[] assets;
@@ -17,18 +17,19 @@ contract BalancerVault {
     }
 
     constructor(address _bpt, address _usdc, address _thx) {
-        bpt = _bpt;
-        usdc = _usdc;
-        thx = _thx;
+        bpt = ERC20(_bpt);
+        usdc = ERC20(_usdc);
+        thx = ERC20(_thx);
     }
 
     function joinPool(bytes32 poolId, address sender, address recipient, JoinPoolRequest memory request) external {
         // transfer USDC and THX from sender to this contract to simulate proper balance update
-        IERC20(usdc).transferFrom(sender, address(this), request.maxAmountsIn[0]);
-        IERC20(thx).transferFrom(sender, address(this), request.maxAmountsIn[1]);
+        usdc.transferFrom(sender, address(this), request.maxAmountsIn[0]);
+        thx.transferFrom(sender, address(this), request.maxAmountsIn[1]);
 
         // Assumes BalancerVault has a BPT balance and transfers BPT to recipient
-        uint256 amount = request.maxAmountsIn[0] + request.maxAmountsIn[1];
-        IERC20(bpt).transfer(recipient, amount);
+        uint256 amount = request.maxAmountsIn[0] + request.maxAmountsIn[1];     
+
+        require(bpt.transfer(recipient, amount), 'BalancerVault: BPT transfer failed');
     }
 }

@@ -2,7 +2,7 @@ import { Wallet, WalletDocument, Pool, PoolDocument, Transaction } from '@thxnet
 import { ChainId, WalletVariant } from '@thxnetwork/common/enums';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
-import { safeVersion } from '@thxnetwork/api/services/ContractService';
+import { getChainId, safeVersion } from '@thxnetwork/api/services/ContractService';
 import { toChecksumAddress } from 'web3-utils';
 import Safe, { SafeAccountConfig, SafeFactory } from '@safe-global/protocol-kit';
 import SafeApiKit from '@safe-global/api-kit';
@@ -128,9 +128,9 @@ function findOneByAddress(address: string) {
     return Wallet.findOne({ address: toChecksumAddress(address) });
 }
 
-async function findOneByPool(pool: PoolDocument, chainId: ChainId) {
+async function findOneByPool(pool: PoolDocument, chainId?: ChainId) {
     return await Wallet.findOne({
-        chainId,
+        chainId: chainId || getChainId(),
         sub: pool.sub,
         poolId: String(pool._id),
         safeVersion,

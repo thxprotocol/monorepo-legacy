@@ -96,7 +96,7 @@ describe('ERC721 Transfer', () => {
     it('Add ERC721 minter', async () => {
         pool = await Pool.findById(pool._id);
 
-        const safe = await SafeService.findOneByPool(pool, pool.chainId);
+        const safe = await SafeService.findOneByPool(pool);
         erc721 = await ERC721.findById(erc721._id);
 
         await ERC721Service.addMinter(erc721, safe.address);
@@ -122,7 +122,7 @@ describe('ERC721 Transfer', () => {
             description: metadataDescription,
             externalUrl: metadataExternalUrl,
         });
-        const safe = await SafeService.findOneByPool(pool, pool.chainId);
+        const safe = await SafeService.findOneByPool(pool);
 
         // Wait for safe address to return code
         const { web3 } = getProvider(chainId);

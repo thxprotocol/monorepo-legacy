@@ -32,7 +32,6 @@ import AccountProxy from '../proxies/AccountProxy';
 import DiscordDataProxy from '../proxies/DiscordDataProxy';
 import MailService from './MailService';
 import SafeService from './SafeService';
-import { getChainId } from './ContractService';
 import ParticipantService from './ParticipantService';
 import DiscordService from './DiscordService';
 
@@ -63,10 +62,8 @@ function getByAddress(address: string) {
 }
 
 async function deploy(sub: string, title: string): Promise<PoolDocument> {
-    const chainId = getChainId();
     const pool = await Pool.create({
         sub,
-        chainId,
         version: currentVersion,
         token: v4(),
         signingSecret: getsigningSecret(64),

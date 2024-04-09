@@ -9,8 +9,8 @@ import db from '@thxnetwork/api/util/database';
 // import main from './src/safe';
 // import main from './src/ipfs';
 // import main from './src/invoices';
-import main from './src/demo';
-// import main from './src/preview';
+// import main from './src/demo';
+import main from './src/preview';
 // import main from './src/metamask';
 
 db.connect(process.env.MONGODB_URI_PROD);

@@ -31,9 +31,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const bptGaugeToken = await deploy('BPTGauge', [bptToken.address], signer);
     const balancerVault = await deploy('BalancerVault', [bptToken.address, usdc.address, thx.address], signer);
 
+    await bptToken.setVault(balancerVault.address);
     // Transfer 50% of the BPT to BalancerVault for testing create liquidity flows
-    bptToken.transfer(balancerVault.address, parseUnits('500000', 'ether').toString());
+    await bptToken.transfer(balancerVault.address, parseUnits('500000', 'ether').toString());
 
+    // Deploy VE launhpad
     const balMinter = await deploy('BalMinter', [balToken.address], signer);
     const launchpad = await deploy(
         'Launchpad',
@@ -73,7 +75,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     tx = await tx.wait();
 
     const event = tx.events.find((event: any) => event.event == 'VESystemCreated');
-    const { votingEscrow, rewardDistributor, rewardFaucet, admin } = event.args;
+    const { votingEscrow, rewardDistributor, rewardFaucet } = event.args;
     console.log(`deploying "VotingEscrow" (tx: ${tx.transactionHash})...: deployed at ${votingEscrow}`);
     console.log(`deploying "RewardDistributor" (tx: ${tx.transactionHash})...: deployed at ${rewardDistributor}`);
     console.log(`deploying "RewardFaucet" (tx: ${tx.transactionHash})...: deployed at ${rewardFaucet}`);
@@ -105,8 +107,13 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     // Allow all contract wallets
     await smartCheckerList.setAllowAll(true);
 
+    // Deploy THXRegistry
+    const registry = await deploy('THXRegistry', [usdc.address, owner, rdthx.address, bptGaugeToken.address], signer);
+    // Deploy PaymentSplitter
+    await deploy('THXPaymentSplitter', [owner, registry.address], signer);
+
     return network.live; // Makes sure we don't redeploy on live networks
 };
 export default func;
 func.id = 've';
-func.tags = ['VotingEscrow', 'RewardDistributor', 'RewardFaucet'];
+func.tags = ['VotingEscrow', 'RewardDistributor', 'RewardFaucet', 'Registry', 'PaymentSplitter'];

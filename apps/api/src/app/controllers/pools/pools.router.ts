@@ -1,5 +1,5 @@
 import express from 'express';
-import { assertRequestInput, assertPoolAccess, guard } from '@thxnetwork/api/middlewares';
+import { assertRequestInput, assertPoolAccess, assertPayment, guard } from '@thxnetwork/api/middlewares';
 
 import ListController from './list.controller';
 import ReadController from './get.controller';
@@ -35,6 +35,7 @@ router.use('/:id', assertPoolAccess);
 router.get(
     '/:id',
     guard.check(['pools:read']),
+    assertPayment,
     assertRequestInput(ReadController.validation),
     ReadController.controller,
 );

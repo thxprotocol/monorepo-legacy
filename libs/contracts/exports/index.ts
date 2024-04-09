@@ -13,6 +13,8 @@ import BAL from './abis/BAL.json';
 import THX from './abis/THX.json';
 import USDC from './abis/USDC.json';
 import BalancerVault from './abis/BalancerVault.json';
+import THXRegistry from './abis/THXRegistry.json';
+import THXPaymentSplitter from './abis/THXPaymentSplitter.json';
 import { ContractNetworksConfig } from '@safe-global/protocol-kit';
 
 export const contractNetworks = {
@@ -26,6 +28,7 @@ export const contractNetworks = {
         signMessageLibAddress: '0x658FAD2acB6d1E615f295E566ee9a6d32Cc97b10',
         createCallAddress: '0x40Efd8a16485213445E6d8b9a4266Fd2dFf7C69a',
         simulateTxAccessorAddress: '0xFF1eE64b8806C0891e8F73b37f8403F441b552E1',
+
         // Tokens
         THX: '0xc368fA6A4057BcFD9E49221d8354d5fA6B88945a',
         USDC: '0x439F0128d07f005e0703602f366599ACaaBfEA18',
@@ -35,11 +38,16 @@ export const contractNetworks = {
         BalancerVault: '0xb3B2b0fc5ce12aE58EEb13E19547Eb2Dd61A79D5',
 
         // veTHX
-        VotingEscrow: '0xe3C1Fda814032919F7CE63D9c3cd5C0F9a579d1A',
-        RewardDistributor: '0xf0Ac139fD5362E2823667c7F9dD7238b020D44EC',
-        RewardFaucet: '0x879E73B20973d78c55b5B07566A3355327Db47bd',
-        SmartWalletWhitelist: '0xD4702511e43E2b778b34185A59728B57bE61aEd1',
-        LensReward: '0x36260689483bc55753E3258725f31E8aee31A7B0',
+        VotingEscrow: '0xFB1aEd47351005cE1BF85a339C019bea96BC9a21',
+        RewardDistributor: '0x1BBfB8A870823D52Ed42F4Ad0706f37F32C229a7',
+        RewardFaucet: '0xF880B1920Eb6c1A45162900059150D22faFc2070',
+        SmartWalletWhitelist: '0x36260689483bc55753E3258725f31E8aee31A7B0',
+        LensReward: '0x8c4Ca9343734227366653495cC068aB03B4f5bee',
+
+        // Company
+        THXRegistry: '0x726C9c8278eC209CfBE6BBb1d02e65dF6FcB7cdA',
+        THXPaymentSplitter: '0x55D16f716fbF51413bA4f492777022009802D4b7',
+        CompanyMultiSig: '0xaf9d56684466fcFcEA0a2B7fC137AB864d642946',
     },
     '137': {
         // Tokens
@@ -49,12 +57,18 @@ export const contractNetworks = {
         BAL: '0x9a71012B13CA4d3D0Cdc72A177DF3ef03b0E76A3',
         USDC: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
         THX: '0x2934b36ca9A4B31E633C5BE670C8C8b28b6aA015',
+
         // veTHX
         VotingEscrow: '0xE3B8E734e7BCcB64B63e032795896CC57012A51D',
         RewardDistributor: '0xCc62c812EfF9cA4c35623103B2Bb63E22f465E09',
         RewardFaucet: '0xA1D7671f73FbcB5e079d4dC4Cffb7dDD0967EA7E',
         SmartWalletWhitelist: '0x876625a92cEAa7f1Bddd40908B8eb5C6080cB83C',
         LensReward: '0xE8D9624E0B7f839540E7c13577550E3Eff3FC8aA',
+
+        // Company
+        THXRegistry: '',
+        THXPaymentSplitter: '',
+        CompanyMultiSig: '0xaf9d56684466fcFcEA0a2B7fC137AB864d642946',
     },
 } as ContractNetworksConfig & any;
 
@@ -72,6 +86,8 @@ export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: 
     USDC,
     THX,
     BAL,
+    THXRegistry,
+    THXPaymentSplitter,
 };
 export const networkNames = ['matic', 'maticdev', 'hardhat'] as const;
 export type TNetworkName = typeof networkNames[number];
@@ -89,6 +105,7 @@ export const tokenContractNames = [
     'USDC',
     'THX',
     'BAL',
+    'THXPaymentSplitter',
 ] as const;
 export type TokenContractName = typeof tokenContractNames[number];
 
