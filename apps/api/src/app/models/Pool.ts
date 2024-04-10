@@ -13,6 +13,7 @@ const schema = new mongoose.Schema(
         signingSecret: String,
         rank: Number,
         safeAddress: String,
+        trialEndsAt: Date,
         settings: {
             title: String,
             slug: String,

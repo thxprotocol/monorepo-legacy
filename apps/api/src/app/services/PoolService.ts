@@ -19,13 +19,13 @@ import {
     Participant,
     QuestInvite,
     QuestWeb3,
-    TwitterUser,
     QuestCustom,
     RewardCustom,
     Widget,
     QuestSocial,
     QuestDaily,
     CouponCode,
+    WalletDocument,
 } from '@thxnetwork/api/models';
 
 import AccountProxy from '../proxies/AccountProxy';
@@ -34,6 +34,7 @@ import MailService from './MailService';
 import SafeService from './SafeService';
 import ParticipantService from './ParticipantService';
 import DiscordService from './DiscordService';
+import { getContract } from './ContractService';
 
 export const ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
 
@@ -113,6 +114,11 @@ async function getAllBySub(sub: string) {
 
 function getAll() {
     return Pool.find({});
+}
+
+async function balanceOf(safe: WalletDocument) {
+    const contract = getContract('USDC', safe.chainId, safe.address);
+    return await contract.balanceOf(safe.address);
 }
 
 async function countByNetwork(chainId: ChainId) {
@@ -360,6 +366,7 @@ export default {
     getById,
     getByAddress,
     deploy,
+    balanceOf,
     getAllBySub,
     getAll,
     countByNetwork,

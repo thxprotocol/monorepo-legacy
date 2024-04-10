@@ -20,7 +20,7 @@ import BaseModalParticipants from '@thxnetwork/dashboard/components/modals/BaseM
         BaseModalParticipants,
     },
     computed: mapGetters({
-        paymentsList: 'pools/payments',
+        paymentsList: 'pools/rewardPayments',
     }),
 })
 export default class BaseButtonRewardPayments extends Vue {
@@ -40,7 +40,7 @@ export default class BaseButtonRewardPayments extends Vue {
 
     async getPayments(reward: TReward) {
         this.isLoading = true;
-        await this.$store.dispatch('pools/listPayments', { reward, page: 1, limit: 25 });
+        await this.$store.dispatch('pools/listRewardPayments', { reward, page: 1, limit: 25 });
         this.isLoading = false;
     }
 

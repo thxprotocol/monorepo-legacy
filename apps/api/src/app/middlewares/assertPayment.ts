@@ -1,11 +1,10 @@
-import { ForbiddenError } from '@thxnetwork/api/util/errors';
 import { Response, Request, NextFunction } from 'express';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { BigNumber } from 'ethers';
 import { getContract } from '../services/ContractService';
-import { addWeeks } from 'date-fns';
-import PoolService from '../services/PoolService';
+import { logger } from '../util/logger';
 import SafeService from '../services/SafeService';
+import PoolService from '../services/PoolService';
 
 /*
  * This middleware function is used to assert payments of the pool owner.
@@ -18,11 +17,11 @@ export async function assertPayment(req: Request, res: Response, next: NextFunct
     const balanceInWei = await contract.balanceOf(safe.address);
 
     // If pool.createdAt + 2 weeks is larger than now there should be a payment
-    const isPostTrial = addWeeks(pool.createdAt, 2).getTime() > Date.now();
+    const isPostTrial = Date.now() > new Date(pool.trialEndsAt).getTime();
     if (isPostTrial && BigNumber.from(balanceInWei).eq(0)) {
-        // Notify pool owner that payment is required
         // @dev Disable until we agree on a better notification flow
-        throw new ForbiddenError('Payment is required.');
+        // throw new ForbiddenError('Payment is required.');
+        logger.info(JSON.stringify({ poolId: pool._id, safeAddress: safe.address, isPostTrial, balanceInWei }));
     }
 
     next();

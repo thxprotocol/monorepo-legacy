@@ -1,13 +1,14 @@
 <template>
-    <base-modal :loading="loading" :error="error" title="Create Campaign" :id="id">
-        <template #modal-body v-if="!loading">
+    <base-modal :error="error" title="Create Campaign" :id="id">
+        <template #modal-body>
             <b-form-group label="Title">
                 <b-form-input v-model="title" placeholder="My Quest Campaign" class="mr-3" />
             </b-form-group>
         </template>
         <template #btn-primary>
-            <b-button :disabled="loading" class="rounded-pill" @click="submit()" variant="primary" block>
-                Create Campaign
+            <b-button :disabled="isLoading" class="rounded-pill" @click="submit()" variant="primary" block>
+                <b-spinner v-if="isLoading" small />
+                <span v-else> Create Campaign </span>
             </b-button>
         </template>
     </base-modal>
@@ -35,7 +36,7 @@ import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
     }),
 })
 export default class ModalAssetPoolCreate extends Vue {
-    loading = false;
+    isLoading = false;
     error = '';
     poolVariant = 'defaultPool';
     profile!: TAccount;
@@ -47,14 +48,14 @@ export default class ModalAssetPoolCreate extends Vue {
     @Prop() id!: string;
 
     async submit() {
-        this.loading = true;
+        this.isLoading = true;
 
         await this.$store.dispatch('pools/create', {
             title: this.title,
         });
 
         this.$bvModal.hide(this.id);
-        this.loading = false;
+        this.isLoading = false;
         this.$emit('created');
     }
 }

@@ -63,9 +63,6 @@ class ERC20Module extends VuexModule {
         const { data } = await axios({
             method: 'GET',
             url: `/pools/${pool._id}/erc20/balance`,
-            headers: {
-                'X-PoolId': pool._id,
-            },
             params: {
                 tokenAddress,
             },
