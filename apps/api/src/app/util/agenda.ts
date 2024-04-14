@@ -15,6 +15,7 @@ import TwitterCacheService from '../services/TwitterCacheService';
 import InvoiceService from '../services/InvoiceService';
 import BalancerService from '../services/BalancerService';
 import RewardService from '../services/RewardService';
+import PaymentService from '../services/PaymentService';
 
 const agenda = new Agenda({
     db: {
@@ -39,6 +40,7 @@ agenda.define(JobType.UpdateTwitterLikeCache, (job: Job) => TwitterCacheService.
 agenda.define(JobType.UpdateTwitterRepostCache, (job: Job) => TwitterCacheService.updateRepostCacheJob(job));
 agenda.define(JobType.UpsertInvoices, () => InvoiceService.upsertJob());
 agenda.define(JobType.UpdatePrices, () => BalancerService.updatePricesJob());
+agenda.define(JobType.AssertPayments, () => PaymentService.assertPaymentsJob());
 
 db.connection.once('open', async () => {
     await agenda.start();
@@ -48,6 +50,7 @@ db.connection.once('open', async () => {
     await agenda.every('10 seconds', JobType.UpdatePendingTransactions);
     await agenda.every('15 minutes', JobType.UpsertInvoices);
     await agenda.every('15 minutes', JobType.CreateTwitterQuests);
+    await agenda.every('1 day', JobType.AssertPayments);
     await agenda.every('0 9 * * MON', JobType.SendCampaignReport);
 
     logger.info('AgendaJS started job processor');

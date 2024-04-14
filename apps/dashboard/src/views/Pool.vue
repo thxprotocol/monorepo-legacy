@@ -15,12 +15,13 @@
 
 <script lang="ts">
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
 import { fromWei } from 'web3-utils';
 import { formatDistanceToNow, isFuture } from 'date-fns';
 import BaseModalPaymentCreate from '../components/modals/BaseModalPaymentCreate.vue';
+import { BigNumber } from 'ethers';
 
 @Component({
     components: {
@@ -47,13 +48,16 @@ export default class PoolView extends Vue {
         return this.pool.trialEndsAt && !isFuture(new Date(this.pool.trialEndsAt));
     }
 
+    @Watch('pool.balance')
+    assertPayment() {
+        if (this.isTrialEnd && BigNumber.from(this.pool.balance).eq(0)) {
+            this.$bvModal.show('modalCreatePayment');
+        }
+    }
+
     async mounted() {
         this.$store.dispatch('account/getProfile');
         await this.$store.dispatch('pools/read', this.$route.params.id);
-
-        if (this.isTrialEnd) {
-            this.$bvModal.show('modalCreatePayment');
-        }
     }
 }
 </script>

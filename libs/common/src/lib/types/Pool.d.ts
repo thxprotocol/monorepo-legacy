@@ -40,6 +40,7 @@ type TPool = {
     campaignURL: string;
     createdAt: Date;
     trialEndsAt: Date;
+    balance: string;
 };
 
 type TPoolSettings = {

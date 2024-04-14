@@ -1,10 +1,9 @@
 import { Response, Request, NextFunction } from 'express';
-import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { BigNumber } from 'ethers';
-import { getContract } from '../services/ContractService';
 import { logger } from '../util/logger';
 import SafeService from '../services/SafeService';
 import PoolService from '../services/PoolService';
+import PaymentService from '../services/PaymentService';
 
 /*
  * This middleware function is used to assert payments of the pool owner.
@@ -13,8 +12,7 @@ import PoolService from '../services/PoolService';
 export async function assertPayment(req: Request, res: Response, next: NextFunction) {
     const pool = await PoolService.getById(req.params.id);
     const safe = await SafeService.findOneByPool(pool);
-    const contract = getContract('THXPaymentSplitter', safe.chainId, contractNetworks[safe.chainId].THXPaymentSplitter);
-    const balanceInWei = await contract.balanceOf(safe.address);
+    const balanceInWei = await PaymentService.balanceOf(safe);
 
     // If pool.createdAt + 2 weeks is larger than now there should be a payment
     const isPostTrial = Date.now() > new Date(pool.trialEndsAt).getTime();

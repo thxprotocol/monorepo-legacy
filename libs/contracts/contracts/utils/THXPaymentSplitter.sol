@@ -4,12 +4,17 @@ pragma solidity ^0.7.6;
 
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 import '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
+import '@openzeppelin/contracts/utils/Context.sol';
+import '@openzeppelin/contracts/math/SafeMath.sol';
 import '../mock/BalancerVault.sol';
 import '../mock/BPTGauge.sol';
 import '../mock/BPT.sol';
 import './THXRegistry.sol';
+import 'hardhat/console.sol';
 
-contract THXPaymentSplitter is ReentrancyGuard {
+contract THXPaymentSplitter is ReentrancyGuard, Context {
+    using SafeMath for uint256;
+
     address admin;
     ITHXRegistry public registry;
     BPTGauge public gauge;
@@ -32,13 +37,13 @@ contract THXPaymentSplitter is ReentrancyGuard {
 
     // @dev Only admin can change this
     function setRegistry(address _registry) external {
-        require(msg.sender == admin, 'PaymentSplitter: !admin');
+        require(_msgSender() == admin, 'PaymentSplitter: !admin');
         registry = ITHXRegistry(_registry);
     }
 
     // Set the USDC rate in wei per second for the sender
     function setRate(address _owner, uint256 _rate) external {
-        require(msg.sender == admin, 'PaymentSplitter: !admin');
+        require(_msgSender() == admin, 'PaymentSplitter: !admin');
         rates[_owner] = _rate;
     }
 
@@ -58,12 +63,14 @@ contract THXPaymentSplitter is ReentrancyGuard {
         // Transfer deposit amount to self for further splitting. 
         // @notice Avoids having the caller approve for multiple transfers
         require(
-            paymentToken.transferFrom(msg.sender, address(this), _amount),
+            paymentToken.transferFrom(_owner, address(this), _amount),
             'PaymentSplitter: transfer failed'
         );
 
         // Transfer payout to payee in paymentToken as per payout rate determined by registry
-        uint256 payout = (_amount * registry.getPayoutRate()) / 10000;
+        uint256 payoutRate = registry.getPayoutRate();
+        uint256 payout = _amount.mul(payoutRate).div(10000); // 100% * 100 to allow for 2 decimals without devisisons
+        
         require(
             paymentToken.transfer(registry.getPayee(), payout),
             'PaymentSplitter: transfer failed'
@@ -74,7 +81,7 @@ contract THXPaymentSplitter is ReentrancyGuard {
         _assets[0] = address(paymentToken);
         _assets[1] = address(0);
         uint256[] memory _maxAmountsIn = new uint256[](2);
-        _maxAmountsIn[0] = _amount - payout;
+        _maxAmountsIn[0] = _amount.sub(payout);
         _maxAmountsIn[1] = 0;
 
         // Approve transfers required for joinPool
@@ -100,7 +107,7 @@ contract THXPaymentSplitter is ReentrancyGuard {
         require(gauge.transfer(registry.getRewardDistributor(), bptGaugeAmount), 'PaymentSplitter: transfer failed');
 
         // Increase total balance for _owner
-        _balances[_owner] += _amount;
+        _balances[_owner] = _balances[_owner].add(_amount);
 
         // Store lastPaymentAt timestamp for _owner
         _lastPaymentAt[_owner] = block.timestamp;
@@ -116,14 +123,19 @@ contract THXPaymentSplitter is ReentrancyGuard {
         if (lastPaymentAt == 0)  {
             return 0;
         }
+
         // Required balances equals seconds since last payment * rate per second
-        uint256 balanceRequired = block.timestamp - lastPaymentAt * rate;
+        uint256 currentBlock = block.timestamp;
+        
+        // Will always be positive since lastPaymentAt is always a historic timestamp
+        uint256 balanceRequired = currentBlock.sub(lastPaymentAt).mul(rate);
 
-        // If non negative return the current balance
-        if (_balances[_owner] - balanceRequired > 0) {
-            return _balances[_owner] - balanceRequired;
+        // If balance is insufficient return 0
+        if (_balances[_owner] < balanceRequired) {
+            return 0;
         }
-
-        return 0;
+        
+        // Safe to subtract as we have checked for balance to be greater than balanceRequired
+        return _balances[_owner].sub(balanceRequired);
     }
 }

@@ -13,4 +13,5 @@ export enum JobType {
     UpdateTwitterRepostCache = 'updateTwitterRepostCache',
     UpsertInvoices = 'upsertInvoices',
     UpdatePrices = 'updatePrices',
+    AssertPayments = 'assertPayments',
 }

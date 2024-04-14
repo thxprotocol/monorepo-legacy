@@ -3,11 +3,15 @@ import { ethers } from 'hardhat';
 import { BigNumber, Contract } from 'ethers';
 import { expect } from 'chai';
 import { parseUnits } from 'ethers/lib/utils';
+import { time } from '@nomicfoundation/hardhat-network-helpers';
 
 const deploy = async (contractName: string, args: any[]) => {
     const factory = await ethers.getContractFactory(contractName);
     return await factory.deploy(...args);
 };
+
+const DEPOSIT_WITH_PRECISION_LOSS = BigNumber.from('497664000');
+const THIRTY_DAYS_IN_S = 30 * 24 * 60 * 60;
 
 describe('PaymentSplitter', function () {
     const costsPerMonth = '500'; // Premium tier is 500 USDC per month
@@ -54,20 +58,19 @@ describe('PaymentSplitter', function () {
 
     it('should return rate per second if set', async function () {
         // @notice Real USDC.e contract has 6 decimals instead of 18
-        const usdcPerMonthInWei = ethers.utils.parseUnits(costsPerMonth, 18);
+        const usdcPerMonthInWei = ethers.utils.parseUnits(costsPerMonth, 6);
         // Calculate the number of seconds in a month (we use 30 days for the sake of simplicity)
-        const secondsPerMonth = 30 * 24 * 60 * 60;
 
         // Calculate the amount of USDC paid in wei per second.
         // @notice We loose a bit of precision here but this is acceptable
-        const usdcPerSecond = usdcPerMonthInWei.div(secondsPerMonth);
+        const rate = usdcPerMonthInWei.div(THIRTY_DAYS_IN_S);
+        await splitter.setRate(owner, rate);
 
-        await splitter.setRate(owner, usdcPerSecond);
+        console.log(rate.mul(THIRTY_DAYS_IN_S).toString());
 
         // Assert for rate with precision loss due to devision
-        expect(usdcPerSecond.mul(secondsPerMonth)).to.eq('499999999999999392000');
-
-        expect(await splitter.rates(owner)).to.eq(usdcPerSecond);
+        expect(rate.mul(THIRTY_DAYS_IN_S)).to.eq(DEPOSIT_WITH_PRECISION_LOSS);
+        expect(await splitter.rates(owner)).to.eq(rate);
     });
 
     it('should set payoutRate in registry', async function () {
@@ -92,7 +95,7 @@ describe('PaymentSplitter', function () {
         let payout: BigNumber;
 
         before(async function () {
-            const amountDeposit = parseUnits(costsPerMonth, 18);
+            const amountDeposit = parseUnits(costsPerMonth, 6);
             const payoutRate = await registry.getPayoutRate();
 
             // Allow splitter contract to spend the amount
@@ -100,6 +103,7 @@ describe('PaymentSplitter', function () {
 
             // Create a deposit for the amount
             await splitter.deposit(owner, amountDeposit);
+
             // Assert owner USDC balance (amount * payoutRate / 10000)
             payout = amountDeposit.mul(payoutRate).div(10000);
         });
@@ -119,6 +123,26 @@ describe('PaymentSplitter', function () {
             expect(await usdc.balanceOf(splitter.address)).to.be.eq(0);
             expect(await bpt.balanceOf(splitter.address)).to.be.eq(0);
             expect(await gauge.balanceOf(splitter.address)).to.be.eq(0);
+        });
+    });
+
+    describe('should balanceOf', async function () {
+        it('should return deposit amount as balance', async function () {
+            expect(await splitter.balanceOf(owner)).to.be.eq(parseUnits('500', 6));
+        });
+        it('should return deposit - t * rate after 5 days', async function () {
+            await time.increase((THIRTY_DAYS_IN_S / 30) * 5);
+
+            const currentBalance = await splitter.balanceOf(owner);
+            const used = (await splitter.rates(owner)).mul((THIRTY_DAYS_IN_S / 30) * 5);
+
+            // current + used = deposit amount
+            expect(parseUnits('500', 6)).to.be.eq(currentBalance.add(used));
+        });
+        it('should return 0 after 30 days (including precision loss)', async function () {
+            await time.increase((THIRTY_DAYS_IN_S / 30) * 25);
+            const currentBalance = await splitter.balanceOf(owner);
+            expect(BigNumber.from(DEPOSIT_WITH_PRECISION_LOSS).add(currentBalance)).to.be.eq(parseUnits('500', 6));
         });
     });
 });

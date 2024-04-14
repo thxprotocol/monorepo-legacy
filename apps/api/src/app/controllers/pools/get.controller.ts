@@ -8,6 +8,7 @@ import { ethers } from 'ethers';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import BrandService from '@thxnetwork/api/services/BrandService';
 import SafeService from '@thxnetwork/api/services/SafeService';
+import PaymentService from '@thxnetwork/api/services/PaymentService';
 
 export const validation = [param('id').isMongoId()];
 
@@ -33,19 +34,22 @@ export const controller = async (req: Request, res: Response) => {
     }
 
     // Fetch all other campaign entities
-    const [widget, brand, wallets, collaborators, owner, events, identities, subscriberCount] = await Promise.all([
-        Widget.findOne({ poolId: req.params.id }),
-        BrandService.get(req.params.id),
-        Wallet.find({ poolId: req.params.id }),
-        PoolService.findCollaborators(pool),
-        PoolService.findOwner(pool),
-        Event.find({ poolId: pool._id }).distinct('name'), // Seperate list (many)
-        Identity.find({ poolId: pool._id }), // Seperate list (many)
-        Participant.countDocuments({ poolId: req.params.id, isSubscribed: true }),
-    ]);
+    const [widget, brand, wallets, collaborators, owner, events, identities, subscriberCount, balance] =
+        await Promise.all([
+            Widget.findOne({ poolId: req.params.id }),
+            BrandService.get(req.params.id),
+            Wallet.find({ poolId: req.params.id }),
+            PoolService.findCollaborators(pool),
+            PoolService.findOwner(pool),
+            Event.find({ poolId: pool._id }).distinct('name'), // Seperate list (many)
+            Identity.find({ poolId: pool._id }), // Seperate list (many)
+            Participant.countDocuments({ poolId: req.params.id, isSubscribed: true }),
+            PaymentService.balanceOf(safe),
+        ]);
 
     res.json({
         ...pool.toJSON(),
+        balance,
         address: pool.safeAddress,
         safe,
         identities,

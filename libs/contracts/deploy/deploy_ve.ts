@@ -109,8 +109,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     // Deploy THXRegistry
     const registry = await deploy('THXRegistry', [usdc.address, owner, rdthx.address, bptGaugeToken.address], signer);
+    await registry.setPayoutRate('3000'); // 30%
+
     // Deploy PaymentSplitter
-    await deploy('THXPaymentSplitter', [owner, registry.address], signer);
+    const splitter = await deploy('THXPaymentSplitter', [owner, registry.address], signer);
+    await splitter.setRegistry(registry.address);
 
     return network.live; // Makes sure we don't redeploy on live networks
 };

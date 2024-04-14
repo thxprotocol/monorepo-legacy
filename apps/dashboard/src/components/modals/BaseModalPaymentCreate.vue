@@ -40,17 +40,36 @@
                             {{ toFiatPrice(paymentAmount) }}
                         </strong>
                         in
-                        <b-link :href="`${chain.blockExplorer}/token/${addresses.USDC}`" class="text-white">
-                            USDC on {{ chain.name }}
+                        <b-link :href="`${chain.blockExplorer}/token/${addresses.USDC}`">
+                            USDC
                             <i class="fas fa-external-link-alt" />
                         </b-link>
-                        to your campaign address:
+                        on {{ chain.name }} to your campaign address:
                     </template>
                     <b-form-input v-model="pool.safeAddress" readonly />
                 </b-form-group>
-                <b-alert show variant="primary" v-if="isBalanceChecked">
-                    Your multisigs USDC balance is <strong>{{ balanceInUSD }}</strong>
-                </b-alert>
+                <template v-if="isChecked">
+                    <b-alert show variant="primary">
+                        <i
+                            class="fas mr-2"
+                            :class="
+                                isInsufficientAllowance
+                                    ? 'text-danger fa-times-circle'
+                                    : ' fa-check-circle text-success'
+                            "
+                        />
+                        PaymentSplitter allowance
+                    </b-alert>
+                    <b-alert show variant="primary">
+                        <i
+                            class="fas mr-2"
+                            :class="
+                                isInsufficientBalance ? 'text-danger fa-times-circle' : 'fa-check-circle text-success'
+                            "
+                        />
+                        Campaign Multisig balance <strong>{{ balanceInUSD }}</strong> USDC
+                    </b-alert>
+                </template>
             </form>
         </template>
         <template #btn-primary>
@@ -61,10 +80,11 @@
                 variant="primary"
                 block
                 class="rounded-pill"
-                :disabled="isLoading"
+                :disabled="isLoading || isPolling"
             >
-                <b-spinner v-if="isLoading" small />
-                <span v-else>Check Balance</span>
+                <b-spinner v-if="isLoading || isPolling" small class="mr-2" />
+                <template v-if="isPolling">Waiting for allowance</template>
+                <span v-if="!isLoading && !isPolling">Check Balance</span>
             </b-button>
             <b-button
                 v-else
@@ -89,9 +109,9 @@ import { toFiatPrice } from '@thxnetwork/dashboard/utils/price';
 import { plans } from '@thxnetwork/dashboard/utils/plans';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { mapGetters } from 'vuex';
-import { TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
-import { BigNumber } from 'ethers';
-import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { TERC20AllowanceState, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
+import { BigNumber, ethers } from 'ethers';
+import { formatUnits, parseUnits, poll } from 'ethers/lib/utils';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import BaseModal from './BaseModal.vue';
 
@@ -101,6 +121,7 @@ import BaseModal from './BaseModal.vue';
     },
     computed: mapGetters({
         erc20BalanceList: 'erc20/balances',
+        erc20AllowanceList: 'erc20/allowances',
     }),
 })
 export default class BaseModalPaymentCreate extends Vue {
@@ -112,9 +133,11 @@ export default class BaseModalPaymentCreate extends Vue {
     toFiatPrice = toFiatPrice;
     plans = plans;
     erc20BalanceList!: TERC20BalanceState;
+    erc20AllowanceList!: TERC20AllowanceState;
     parseUnits = parseUnits;
     isLoading = false;
-    isBalanceChecked = false;
+    isChecked = false;
+    isPolling = false;
     chainInfo = chainInfo;
 
     @Prop() id!: string;
@@ -130,6 +153,12 @@ export default class BaseModalPaymentCreate extends Vue {
         return this.duration * (planPricingMap[this.plan].costSubscription / 4 / 100);
     }
 
+    get isInsufficientAllowance() {
+        if (!this.allowanceInWei) return true;
+        const amount = parseUnits(this.paymentAmount.toString(), 'ether');
+        return BigNumber.from(this.allowanceInWei).lt(amount);
+    }
+
     get isInsufficientBalance() {
         if (!this.balanceInWei) return true;
         const amount = parseUnits(this.paymentAmount.toString(), 'ether');
@@ -139,6 +168,12 @@ export default class BaseModalPaymentCreate extends Vue {
     get balanceInWei() {
         if (!this.erc20BalanceList[this.addresses.USDC]) return '';
         return this.erc20BalanceList[this.addresses.USDC][this.pool.safeAddress as string];
+    }
+
+    get allowanceInWei() {
+        if (!this.erc20AllowanceList[this.addresses.USDC]) return '';
+        if (!this.erc20AllowanceList[this.addresses.USDC][this.pool.safeAddress]) return '';
+        return this.erc20AllowanceList[this.addresses.USDC][this.pool.safeAddress][this.addresses.THXPaymentSplitter];
     }
 
     get balanceInUSD() {
@@ -159,6 +194,43 @@ export default class BaseModalPaymentCreate extends Vue {
         });
     }
 
+    async getAllowance() {
+        await this.$store.dispatch('erc20/allowance', {
+            pool: this.pool,
+            tokenAddress: this.addresses.USDC,
+            spender: this.addresses.THXPaymentSplitter,
+        });
+
+        try {
+            // Assert if allowance is less then payment amount
+            if (BigNumber.from(this.allowanceInWei).lt(this.paymentAmount)) {
+                this.isPolling = true;
+                await this.$store.dispatch('erc20/approve', {
+                    pool: this.pool,
+                    tokenAddress: this.addresses.USDC,
+                    spender: this.addresses.THXPaymentSplitter,
+                    amountInWei: ethers.constants.MaxUint256.toString(),
+                });
+                // Start polling for allowance
+                await poll(
+                    async () => {
+                        await this.getAllowance();
+                        if (!this.isInsufficientAllowance) {
+                            return true;
+                        }
+                    },
+                    { interval: 1000, timeout: 60000 },
+                );
+
+                this.isPolling = false;
+            }
+        } catch (error) {
+            this.error = (error as any).toString();
+        } finally {
+            this.isPolling = false;
+        }
+    }
+
     onShow() {
         // this.getBalance();
     }
@@ -166,16 +238,18 @@ export default class BaseModalPaymentCreate extends Vue {
     async onClickVerify() {
         this.isLoading = true;
         await this.getBalance();
+        await this.getAllowance();
         this.isLoading = false;
-        this.isBalanceChecked = true;
+        this.isChecked = true;
     }
 
     async onClickComplete() {
-        const amountInWei = parseUnits(this.paymentAmount.toString(), 6);
+        const amountInWei = parseUnits(this.paymentAmount.toString(), 6).toString();
 
         await this.$store.dispatch('pools/createPayment', {
             pool: this.pool,
             amountInWei,
+            planType: this.plan,
         });
     }
 }

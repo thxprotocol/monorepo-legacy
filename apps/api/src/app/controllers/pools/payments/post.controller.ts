@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
-import { InsufficientBalanceError, NotFoundError } from '@thxnetwork/api/util/errors';
+import { InsufficientAllowanceError, InsufficientBalanceError, NotFoundError } from '@thxnetwork/api/util/errors';
 import { body, param } from 'express-validator';
 import { BigNumber } from 'ethers';
-import { getContract } from '@thxnetwork/api/services/ContractService';
-import { contractNetworks } from '@thxnetwork/contracts/exports';
+import { contractArtifacts, contractNetworks } from '@thxnetwork/contracts/exports';
+import { getProvider } from '@thxnetwork/api/util/network';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import PaymentService from '@thxnetwork/api/services/PaymentService';
 
-export const validation = [param('id').isMongoId(), body('amountInWei').exists()];
+export const validation = [param('id').isMongoId(), body('amountInWei').exists(), body('planType').isInt()];
 
 // TODO
 // 1. Customer approves USDC for Campaign Safe for x allowance
@@ -26,25 +26,25 @@ const controller = async (req: Request, res: Response) => {
     const safe = await SafeService.findOneByPool(pool, pool.chainId);
     if (!safe) throw new NotFoundError('Could not find campaign Safe');
 
-    // Assert USDC balance for Safe to ensure throughput
     const amountInWei = BigNumber.from(req.body.amountInWei);
     const addresses = contractNetworks[safe.chainId];
-    const usdc = getContract('USDC', safe.chainId, addresses.USDC);
-    const balance = await usdc.balanceOf(safe.address);
-    if (balance.lt(amountInWei)) {
-        throw new InsufficientBalanceError('Insufficient balance');
+
+    // Assert USDC balance for Safe to ensure throughput
+    const { web3 } = getProvider(safe.chainId);
+    const usdc = new web3.eth.Contract(contractArtifacts['USDC'].abi, addresses.USDC);
+    const balance = await usdc.methods.balanceOf(safe.address).call();
+    if (BigNumber.from(balance).lt(amountInWei)) {
+        throw new InsufficientBalanceError();
     }
 
     // Assert allowance for Safe to PaymentSplitter
-    const allowance = await usdc.allowance(safe.address, addresses.THXPaymentSplitter);
-    if (allowance.lt(amountInWei)) {
-        throw new InsufficientBalanceError('Insufficient allowance');
+    const allowance = await usdc.methods.allowance(safe.address, addresses.THXPaymentSplitter).call();
+    if (BigNumber.from(allowance).lt(amountInWei)) {
+        throw new InsufficientAllowanceError();
     }
 
-    console.log(balance, allowance);
-
     // Execute approve from Safe to PaymentSplitter
-    await PaymentService.deposit(safe, amountInWei);
+    await PaymentService.deposit(safe, req.auth.sub, amountInWei);
 
     res.status(201).end();
 };

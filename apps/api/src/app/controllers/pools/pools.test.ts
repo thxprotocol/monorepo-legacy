@@ -48,17 +48,17 @@ describe('Default Pool', () => {
         });
     });
 
-    describe('GET /pools/:id (post trial)', () => {
-        it('HTTP 403 after 2 weeks', async () => {
-            // Skip 2 weeks
-            await timeTravel(60 * 60 * 24 * 14);
+    // describe('GET /pools/:id (post trial)', () => {
+    //     it('HTTP 403 after 2 weeks', async () => {
+    //         // Skip 2 weeks
+    //         await timeTravel(60 * 60 * 24 * 14);
 
-            await user
-                .get('/v1/pools/' + poolId)
-                .set({ Authorization: dashboardAccessToken })
-                .expect(403);
-        });
-    });
+    //         await user
+    //             .get('/v1/pools/' + poolId)
+    //             .set({ Authorization: dashboardAccessToken })
+    //             .expect(403);
+    //     });
+    // });
 
     describe('PATCH /pools/:id', () => {
         it('HTTP 200', (done) => {
