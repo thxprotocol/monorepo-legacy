@@ -3,6 +3,7 @@ pragma abicoder v2;
 pragma solidity ^0.7.6;
 
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+import 'hardhat/console.sol';
 
 contract BalancerVault {
     ERC20 public bpt;
@@ -23,7 +24,6 @@ contract BalancerVault {
     }
 
     function joinPool(bytes32 poolId, address sender, address recipient, JoinPoolRequest memory request) external {
-        // transfer USDC and THX from sender to this contract to simulate proper balance update
         usdc.transferFrom(sender, address(this), request.maxAmountsIn[0]);
         thx.transferFrom(sender, address(this), request.maxAmountsIn[1]);
 

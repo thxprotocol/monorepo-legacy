@@ -161,7 +161,7 @@ export default class BaseModalPaymentCreate extends Vue {
 
     get isInsufficientBalance() {
         if (!this.balanceInWei) return true;
-        const amount = parseUnits(this.paymentAmount.toString(), 'ether');
+        const amount = parseUnits(this.paymentAmount.toString(), 6);
         return BigNumber.from(this.balanceInWei).lt(amount);
     }
 
@@ -178,8 +178,8 @@ export default class BaseModalPaymentCreate extends Vue {
 
     get balanceInUSD() {
         if (!this.balanceInWei) return toFiatPrice(0);
-        const costs = formatUnits(this.balanceInWei, 'ether');
-        return toFiatPrice(Number(costs));
+        const balance = formatUnits(this.balanceInWei, 6);
+        return toFiatPrice(Number(balance));
     }
 
     get addresses() {
@@ -200,35 +200,27 @@ export default class BaseModalPaymentCreate extends Vue {
             tokenAddress: this.addresses.USDC,
             spender: this.addresses.THXPaymentSplitter,
         });
+    }
 
-        try {
-            // Assert if allowance is less then payment amount
-            if (BigNumber.from(this.allowanceInWei).lt(this.paymentAmount)) {
-                this.isPolling = true;
-                await this.$store.dispatch('erc20/approve', {
-                    pool: this.pool,
-                    tokenAddress: this.addresses.USDC,
-                    spender: this.addresses.THXPaymentSplitter,
-                    amountInWei: ethers.constants.MaxUint256.toString(),
-                });
-                // Start polling for allowance
-                await poll(
-                    async () => {
-                        await this.getAllowance();
-                        if (!this.isInsufficientAllowance) {
-                            return true;
-                        }
-                    },
-                    { interval: 1000, timeout: 60000 },
-                );
+    async approve() {
+        await this.$store.dispatch('erc20/approve', {
+            pool: this.pool,
+            tokenAddress: this.addresses.USDC,
+            spender: this.addresses.THXPaymentSplitter,
+            amountInWei: ethers.constants.MaxUint256.toString(),
+        });
+    }
 
-                this.isPolling = false;
-            }
-        } catch (error) {
-            this.error = (error as any).toString();
-        } finally {
-            this.isPolling = false;
-        }
+    async waitForAllowance() {
+        await poll(
+            async () => {
+                await this.getAllowance();
+                if (!this.isInsufficientAllowance) {
+                    return true;
+                }
+            },
+            { interval: 1000, timeout: 60000 },
+        );
     }
 
     onShow() {
@@ -239,6 +231,23 @@ export default class BaseModalPaymentCreate extends Vue {
         this.isLoading = true;
         await this.getBalance();
         await this.getAllowance();
+
+        // Assert if allowance is less then payment amount
+        if (BigNumber.from(this.allowanceInWei).lt(this.paymentAmount)) {
+            try {
+                this.isPolling = true;
+
+                await this.approve();
+                await this.waitForAllowance();
+
+                this.isPolling = false;
+            } catch (error) {
+                this.error = (error as any).toString();
+            } finally {
+                this.isPolling = false;
+            }
+        }
+
         this.isLoading = false;
         this.isChecked = true;
     }

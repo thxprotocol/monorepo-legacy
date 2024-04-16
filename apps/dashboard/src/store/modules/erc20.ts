@@ -19,6 +19,7 @@ class ERC20Module extends VuexModule {
     get balances() {
         return this._balances;
     }
+
     get allowances() {
         return this._allowances;
     }

@@ -28,7 +28,7 @@ export default async function main() {
     await thx.transfer(TO, AMOUNT_THX);
 
     // Increase time till past veTHX reward distribution start time
-    await increaseBlockTime(hardhatProvider, 60 * 60 * 24 * 5);
+    // await increaseBlockTime(hardhatProvider, 60 * 60 * 24 * 5);
 
     // const usdcPerMonthInWei = ethers.utils.parseUnits('146700', 6);
     // const secondsPerMonth = 30 * 24 * 60 * 60;

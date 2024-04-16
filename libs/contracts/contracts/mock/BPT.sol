@@ -11,7 +11,6 @@ interface IWeightedPool is IERC20 {
 }
 
 contract BPT is ERC20, IWeightedPool {
-    bytes32 public poolId = 0xb204bf10bc3a5435017d3db247f56da601dfe08a0002000000000000000000fe;
     address public vault;
 
     constructor(address _to, uint256 _amount) ERC20('20USDC-80THX', '20USDC-80THX') {
@@ -26,7 +25,7 @@ contract BPT is ERC20, IWeightedPool {
         return vault;
     }
     
-    function getPoolId() external override view returns (bytes32) {
-        return poolId;
+    function getPoolId() external override pure returns (bytes32) {
+        return 0xb204bf10bc3a5435017d3db247f56da601dfe08a0002000000000000000000fe;
     }
 }

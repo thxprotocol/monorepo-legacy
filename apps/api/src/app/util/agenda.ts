@@ -40,6 +40,7 @@ agenda.define(JobType.UpdateTwitterLikeCache, (job: Job) => TwitterCacheService.
 agenda.define(JobType.UpdateTwitterRepostCache, (job: Job) => TwitterCacheService.updateRepostCacheJob(job));
 agenda.define(JobType.UpsertInvoices, () => InvoiceService.upsertJob());
 agenda.define(JobType.UpdatePrices, () => BalancerService.updatePricesJob());
+agenda.define(JobType.UpdateAPR, () => BalancerService.updateAPRJob());
 agenda.define(JobType.AssertPayments, () => PaymentService.assertPaymentsJob());
 
 db.connection.once('open', async () => {
@@ -50,6 +51,7 @@ db.connection.once('open', async () => {
     await agenda.every('10 seconds', JobType.UpdatePendingTransactions);
     await agenda.every('15 minutes', JobType.UpsertInvoices);
     await agenda.every('15 minutes', JobType.CreateTwitterQuests);
+    await agenda.every('15 minutes', JobType.UpdateAPR);
     await agenda.every('1 day', JobType.AssertPayments);
     await agenda.every('0 9 * * MON', JobType.SendCampaignReport);
 
