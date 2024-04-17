@@ -3,9 +3,12 @@ pragma abicoder v2;
 pragma solidity ^0.7.6;
 
 import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
+import "@openzeppelin/contracts/math/SafeMath.sol";
 import 'hardhat/console.sol';
 
 contract BalancerVault {
+    using SafeMath for uint256;
+
     ERC20 public bpt;
     ERC20 public usdc;
     ERC20 public thx;
@@ -28,7 +31,10 @@ contract BalancerVault {
         thx.transferFrom(sender, address(this), request.maxAmountsIn[1]);
 
         // Assumes BalancerVault has a BPT balance and transfers BPT to recipient
-        uint256 amount = request.maxAmountsIn[0] + request.maxAmountsIn[1];     
+        // Aligns decimals in order to get to a workable BPT amount
+        uint256 usdcAmount = request.maxAmountsIn[0].div(10**usdc.decimals());
+        uint256 thxAmount = request.maxAmountsIn[1].div(10**thx.decimals());
+        uint256 amount = usdcAmount.add(thxAmount).mul(10**bpt.decimals());
 
         require(bpt.transfer(recipient, amount), 'BalancerVault: BPT transfer failed');
     }

@@ -57,6 +57,7 @@ async function getNetworkDetails(chainId: ChainId) {
             bal: bal.address,
             thx: contractNetworks[chainId].THX,
             usdc: contractNetworks[chainId].USDC,
+            vault: contractNetworks[chainId].BalancerVault,
         };
 
         const relayer = await Promise.all([
