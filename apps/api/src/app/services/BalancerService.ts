@@ -20,6 +20,7 @@ class BalancerService {
             max: 0,
         },
     };
+    tvl = 0;
     balancer = new BalancerSDK({
         network: Network.POLYGON,
         rpcUrl: POLYGON_RPC,
@@ -54,7 +55,7 @@ class BalancerService {
     }
 
     getAPR() {
-        return this.apr;
+        return { apr: this.apr, tvl: this.tvl };
     }
 
     async fetchPrice(symbolIn: string, symbolOut: string) {
@@ -140,6 +141,10 @@ class BalancerService {
                 max: 0,
             },
         };
+
+        // bpt gauge locked in veTHX in wei
+        const bptGauge = getContract('BPTGauge', ChainId.Polygon, contractNetworks[ChainId.Polygon].BPTGauge);
+        this.tvl = (await bptGauge.balanceOf(contractNetworks[ChainId.Polygon].VotingEscrow)).toString();
     }
 }
 

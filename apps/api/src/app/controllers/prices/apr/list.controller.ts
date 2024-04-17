@@ -5,8 +5,8 @@ import { query } from 'express-validator';
 const validation = [query('page').isInt(), query('limit').isInt(), query('search').optional().isString()];
 
 const controller = async (req: Request, res: Response) => {
-    const apr = await BalancerService.getAPR();
-    res.json(apr);
+    const result = BalancerService.getAPR();
+    res.json(result);
 };
 
 export default { validation, controller };
