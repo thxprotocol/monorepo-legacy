@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { BalancerSDK, Network } from '@balancer-labs/sdk';
-import { BALANCER_POOL_ID, POLYGON_RPC } from '../config/secrets';
+import { BALANCER_POOL_ID, ETHEREUM_RPC, POLYGON_RPC } from '../config/secrets';
 import { logger } from '../util/logger';
 import { WalletDocument } from '../models';
 import { ChainId } from '@thxnetwork/common/enums';
 import { getContract } from './ContractService';
-import { contractNetworks } from '@thxnetwork/contracts/exports';
+import { contractArtifacts, contractNetworks } from '@thxnetwork/contracts/exports';
 import { ethers } from 'ethers';
 
 class BalancerService {
@@ -27,8 +27,9 @@ class BalancerService {
     });
 
     constructor() {
-        this.updatePricesJob();
-        this.updateAPRJob();
+        this.updatePricesJob().then(() => {
+            this.updateAPRJob();
+        });
     }
 
     async buildJoin(
@@ -94,57 +95,54 @@ class BalancerService {
     }
 
     async updateAPRJob() {
-        const abi = [
-            {
-                constant: true,
-                inputs: [
-                    {
-                        internalType: 'address',
-                        name: 'addr',
-                        type: 'address',
-                    },
-                ],
-                name: 'gauge_relative_weight',
-                outputs: [
-                    {
-                        internalType: 'uint256',
-                        name: '',
-                        type: 'uint256',
-                    },
-                ],
-                payable: false,
-                stateMutability: 'view',
-                type: 'function',
-            },
-        ];
-        const provider = new ethers.providers.JsonRpcProvider('https://rpc.ankr.com/eth');
-        const contract = new ethers.Contract('0xC128468b7Ce63eA702C1f104D55A2566b13D3ABD', abi, provider);
-        const gaugeRelWeight = Number(
-            (await contract.gauge_relative_weight('0x9902913ce5439d667774c8f9526064b2bc103b4a')).toString(),
+        // Balancer Gauge contracts on Ethereum
+        const ethereumProvider = new ethers.providers.JsonRpcProvider(ETHEREUM_RPC);
+        const gaugeControllerAddress = contractNetworks[ChainId.Ethereum].BalancerGaugeController;
+        const gaugeController = new ethers.Contract(
+            gaugeControllerAddress,
+            contractArtifacts.BalancerGaugeController.abi,
+            ethereumProvider,
         );
-        const gauge = getContract('BPTGauge', ChainId.Polygon, contractNetworks[ChainId.Polygon].BPTGauge);
+        const rootGaugeAddress = contractNetworks[ChainId.Ethereum].BalancerRootGauge;
+        // Balancer Gauge on Polygon
+        const polygonProvider = new ethers.providers.JsonRpcProvider(POLYGON_RPC);
+        const gaugeAddress = contractNetworks[ChainId.Polygon].BPTGauge;
+        const gauge = new ethers.Contract(gaugeAddress, contractArtifacts.BPTGauge.abi, polygonProvider);
+        // veTHX contract on Polygon
+        const veTHXAddress = contractNetworks[ChainId.Polygon].VotingEscrow;
+
+        // APR formula inputs
+        const gaugeRelWeight = Number((await gaugeController.gauge_relative_weight(rootGaugeAddress)).toString());
         const workingSupply = Number((await gauge.working_supply()).toString());
         const weeklyBALemissions = 102530.48;
         const priceOfBAL = this.pricing['BAL'];
         const pricePerBPT = this.pricing['20USDC-80THX'];
-        const apr =
+
+        // Calculate balancer APR
+        const apr = this.calculateAPR(workingSupply, gaugeRelWeight, weeklyBALemissions, priceOfBAL, pricePerBPT);
+        const balancer = { min: apr, max: apr * 2.5 };
+        // TODO Calculate THX APR
+        const thx = { min: 0, max: 0 };
+        this.apr = { balancer, thx };
+
+        // Amount of bpt-gauge locked in veTHX in wei
+        const tvl = (await gauge.balanceOf(veTHXAddress)).toString();
+        this.tvl = tvl;
+    }
+
+    calculateAPR(
+        workingSupply: number,
+        gaugeRelWeight: number,
+        weeklyBALemissions: number,
+        priceOfBAL: number,
+        pricePerBPT: number,
+    ) {
+        // APR formula as per
+        // https://docs.balancer.fi/reference/vebal-and-gauges/apr-calculation.html
+        return (
             (((0.4 / (workingSupply + 0.4)) * gaugeRelWeight * weeklyBALemissions * 52 * priceOfBAL) / pricePerBPT) *
-            100;
-
-        this.apr = {
-            balancer: {
-                min: apr,
-                max: apr * 2.5,
-            },
-            thx: {
-                min: 0,
-                max: 0,
-            },
-        };
-
-        // bpt gauge locked in veTHX in wei
-        const bptGauge = getContract('BPTGauge', ChainId.Polygon, contractNetworks[ChainId.Polygon].BPTGauge);
-        this.tvl = (await bptGauge.balanceOf(contractNetworks[ChainId.Polygon].VotingEscrow)).toString();
+            100
+        );
     }
 }
 

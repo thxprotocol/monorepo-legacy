@@ -15,6 +15,7 @@ import USDC from './abis/USDC.json';
 import BalancerVault from './abis/BalancerVault.json';
 import THXRegistry from './abis/THXRegistry.json';
 import THXPaymentSplitter from './abis/THXPaymentSplitter.json';
+import BalancerGaugeController from './abis/BalancerGaugeController.json';
 import { ContractNetworksConfig } from '@safe-global/protocol-kit';
 
 export const contractNetworks = {
@@ -70,6 +71,10 @@ export const contractNetworks = {
         THXPaymentSplitter: '',
         CompanyMultiSig: '0x0b8e0aAF940cc99EDA5DA5Ab0a8d6Ed798eDc08A',
     },
+    '1': {
+        BalancerGaugeController: '0xC128468b7Ce63eA702C1f104D55A2566b13D3ABD',
+        BalancerRootGauge: '0x9902913ce5439d667774c8f9526064b2bc103b4a',
+    },
 } as ContractNetworksConfig & any;
 
 export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: string } } = {
@@ -81,6 +86,7 @@ export const contractArtifacts: { [contractName: string]: { abi: any; bytecode: 
     BalMinter,
     VotingEscrow,
     BalancerVault,
+    BalancerGaugeController,
     BPT,
     BPTGauge,
     USDC,
