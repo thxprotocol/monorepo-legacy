@@ -38,7 +38,9 @@ type TPool = {
     owner: TAccount;
     safe: WalletDocument;
     campaignURL: string;
-    createdAt?: Date;
+    createdAt: Date;
+    trialEndsAt: Date;
+    balance: string;
 };
 
 type TPoolSettings = {

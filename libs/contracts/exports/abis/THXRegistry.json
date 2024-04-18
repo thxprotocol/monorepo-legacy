@@ -1,0 +1,180 @@
+{
+    "_format": "hh-sol-artifact-1",
+    "contractName": "THXRegistry",
+    "sourceName": "contracts/utils/THXRegistry.sol",
+    "abi": [
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "_paymentToken",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_payee",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_rewardDistributor",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_gauge",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        },
+        {
+            "inputs": [],
+            "name": "gauge",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getGauge",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getPayee",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getPaymentToken",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getPayoutRate",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getRewardDistributor",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "payee",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "paymentToken",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "payoutRate",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "rewardDistributor",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_rate",
+                    "type": "uint256"
+                }
+            ],
+            "name": "setPayoutRate",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        }
+    ],
+    "bytecode": "0x608060405234801561001057600080fd5b506040516103683803806103688339818101604052608081101561003357600080fd5b50805160208201516040830151606090930151600080546001600160a01b039485166001600160a01b03199182161790915560018054938516938216939093179092556003805494841694831694909417909355600480549290931691161790556102c5806100a36000396000f3fe608060405234801561001057600080fd5b50600436106100a95760003560e01c8063ae90b21311610071578063ae90b2131461011b578063cd44673514610123578063cf20d8721461012b578063d41c3a6514610133578063f2803f031461013b578063f47a455a14610143576100a9565b80632b4353f2146100ae5780633013ce29146100c857806348eaee66146100ec578063a6f19c841461010b578063acc2166a14610113575b600080fd5b6100b661014b565b60408051918252519081900360200190f35b6100d0610151565b604080516001600160a01b039092168252519081900360200190f35b6101096004803603602081101561010257600080fd5b5035610160565b005b6100d06101fb565b6100d061020a565b6100d0610219565b6100d0610228565b6100d0610237565b6100d0610246565b6100d0610255565b6100b6610264565b60025481565b6000546001600160a01b031681565b6001546001600160a01b031633146101b5576040805162461bcd60e51b815260206004820152601360248201527254485852656769737472793a2021706179656560681b604482015290519081900360640190fd5b6127108111156101f65760405162461bcd60e51b815260040180806020018281038252602581526020018061026b6025913960400191505060405180910390fd5b600255565b6004546001600160a01b031681565b6003546001600160a01b031681565b6001546001600160a01b031681565b6001546001600160a01b031690565b6003546001600160a01b031690565b6000546001600160a01b031690565b6004546001600160a01b031690565b6002549056fe54485852656769737472793a207061796f757452617465206f7574206f6620626f756e6473a26469706673582212209766fd3b31b5070d7ebcdb80534a3fdd12da7399c3e94c56888c415f0e1ef47064736f6c63430007060033",
+    "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100a95760003560e01c8063ae90b21311610071578063ae90b2131461011b578063cd44673514610123578063cf20d8721461012b578063d41c3a6514610133578063f2803f031461013b578063f47a455a14610143576100a9565b80632b4353f2146100ae5780633013ce29146100c857806348eaee66146100ec578063a6f19c841461010b578063acc2166a14610113575b600080fd5b6100b661014b565b60408051918252519081900360200190f35b6100d0610151565b604080516001600160a01b039092168252519081900360200190f35b6101096004803603602081101561010257600080fd5b5035610160565b005b6100d06101fb565b6100d061020a565b6100d0610219565b6100d0610228565b6100d0610237565b6100d0610246565b6100d0610255565b6100b6610264565b60025481565b6000546001600160a01b031681565b6001546001600160a01b031633146101b5576040805162461bcd60e51b815260206004820152601360248201527254485852656769737472793a2021706179656560681b604482015290519081900360640190fd5b6127108111156101f65760405162461bcd60e51b815260040180806020018281038252602581526020018061026b6025913960400191505060405180910390fd5b600255565b6004546001600160a01b031681565b6003546001600160a01b031681565b6001546001600160a01b031681565b6001546001600160a01b031690565b6003546001600160a01b031690565b6000546001600160a01b031690565b6004546001600160a01b031690565b6002549056fe54485852656769737472793a207061796f757452617465206f7574206f6620626f756e6473a26469706673582212209766fd3b31b5070d7ebcdb80534a3fdd12da7399c3e94c56888c415f0e1ef47064736f6c63430007060033",
+    "linkReferences": {},
+    "deployedLinkReferences": {}
+}

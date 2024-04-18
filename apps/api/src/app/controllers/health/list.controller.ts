@@ -24,6 +24,11 @@ async function getNetworkDetails(chainId: ChainId) {
             contractArtifacts['RewardFaucet'].abi,
             signer,
         );
+        const registry = new ethers.Contract(
+            contractNetworks[chainId].THXRegistry,
+            contractArtifacts['THXRegistry'].abi,
+            signer,
+        );
         const rdthx = new ethers.Contract(
             contractNetworks[chainId].RewardDistributor,
             contractArtifacts['RewardDistributor'].abi,
@@ -45,12 +50,14 @@ async function getNetworkDetails(chainId: ChainId) {
         // const usdc = new ethers.Contract(contractNetworks[chainId].USDC, contractArtifacts['USDC'].abi, signer);
 
         const address = {
+            registry: registry.address,
             relayer: defaultAccount,
             bptGauge: bptGauge.address,
             bpt: bpt.address,
             bal: bal.address,
             thx: contractNetworks[chainId].THX,
             usdc: contractNetworks[chainId].USDC,
+            vault: contractNetworks[chainId].BalancerVault,
         };
 
         const relayer = await Promise.all([
@@ -95,9 +102,24 @@ async function getNetworkDetails(chainId: ChainId) {
                 bal: await getRewards(bal.address, String(currentBlock.timestamp)),
             },
         };
+        const splitter = new ethers.Contract(
+            contractNetworks[chainId].THXPaymentSplitter,
+            contractArtifacts['THXPaymentSplitter'].abi,
+            signer,
+        );
 
         return {
             blockTime: new Date(Number(currentBlock.timestamp) * 1000),
+            registry: {
+                payoutRate: BigNumber.from(await registry.getPayoutRate())
+                    .div(100)
+                    .toString(),
+                payee: await registry.getPayee(),
+            },
+            test: {
+                rate: (await splitter.rates('0x029E2d4D2b6938c92c48dbf422a4e500425a08D8')).toString(),
+                balance: (await splitter.balanceOf('0x029E2d4D2b6938c92c48dbf422a4e500425a08D8')).toString(),
+            },
             address,
             relayer,
             metrics,

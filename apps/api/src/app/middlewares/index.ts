@@ -6,7 +6,7 @@ export * from './errorNormalizer';
 export * from './notFoundHandler';
 export * from './corsHandler';
 export * from './checkJwt';
-export * from './assertPlan';
+export * from './assertPayment';
 export * from './assertQuestAccess';
 export * from './assertAccount';
 export * from './assertWallet';

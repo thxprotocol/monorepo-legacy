@@ -1,7 +1,7 @@
 import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
-import type { IERC20s, TERC20, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
+import type { IERC20s, TERC20, TERC20AllowanceState, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
 import { ChainId } from '../enums/chainId';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { track } from '@thxnetwork/common/mixpanel';
@@ -10,6 +10,7 @@ import { track } from '@thxnetwork/common/mixpanel';
 class ERC20Module extends VuexModule {
     _all: IERC20s = {};
     _balances: TERC20BalanceState = {};
+    _allowances: TERC20AllowanceState = {};
 
     get all() {
         return this._all;
@@ -17,6 +18,10 @@ class ERC20Module extends VuexModule {
 
     get balances() {
         return this._balances;
+    }
+
+    get allowances() {
+        return this._allowances;
     }
 
     @Mutation
@@ -36,6 +41,15 @@ class ERC20Module extends VuexModule {
     setBalance(data: { tokenAddress: string; address: string; balance: string }) {
         if (!this._balances[data.tokenAddress]) Vue.set(this._balances, data.tokenAddress, {});
         Vue.set(this._balances[data.tokenAddress], data.address, data.balance);
+    }
+
+    @Mutation
+    setAllowance(data: { tokenAddress: string; poolAddress: string; spender: string; allowance: string }) {
+        if (!this._allowances[data.tokenAddress]) Vue.set(this._allowances, data.tokenAddress, {});
+        if (!this._allowances[data.tokenAddress][data.poolAddress]) {
+            Vue.set(this._allowances[data.tokenAddress], data.poolAddress, {});
+        }
+        Vue.set(this._allowances[data.tokenAddress][data.poolAddress], data.spender, data.allowance);
     }
 
     @Mutation
@@ -59,13 +73,57 @@ class ERC20Module extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async allowance({ pool, tokenAddress, spender }: { pool: TPool; tokenAddress: string; spender: string }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/erc20/allowance`,
+            params: {
+                tokenAddress,
+                spender,
+            },
+        });
+        this.context.commit('setAllowance', {
+            tokenAddress,
+            poolAddress: pool.safeAddress,
+            spender,
+            allowance: data.allowanceInWei,
+        });
+    }
+
+    @Action({ rawError: true })
+    async approve({
+        pool,
+        tokenAddress,
+        spender,
+        amountInWei,
+    }: {
+        pool: TPool;
+        tokenAddress: string;
+        spender: string;
+        amountInWei: string;
+    }) {
+        const { data } = await axios({
+            method: 'POST',
+            url: `/pools/${pool._id}/erc20/allowance`,
+            data: {
+                tokenAddress,
+                spender,
+                amountInWei,
+            },
+        });
+        this.context.commit('setAllowance', {
+            tokenAddress,
+            poolAddress: pool.safeAddress,
+            spender,
+            allowance: data.allowanceInWei,
+        });
+    }
+
+    @Action({ rawError: true })
     async balanceOf({ pool, tokenAddress }: { pool: TPool; tokenAddress: string }) {
         const { data } = await axios({
             method: 'GET',
             url: `/pools/${pool._id}/erc20/balance`,
-            headers: {
-                'X-PoolId': pool._id,
-            },
             params: {
                 tokenAddress,
             },

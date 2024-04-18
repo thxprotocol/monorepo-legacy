@@ -1,6 +1,5 @@
 import express from 'express';
 import { assertWallet, assertRequestInput } from '@thxnetwork/api/middlewares';
-
 import CreateLiquidityController from './post.controller';
 import CreateLiquidityStakedController from './stake/post.controller';
 

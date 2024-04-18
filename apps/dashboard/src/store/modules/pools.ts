@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { track } from '@thxnetwork/common/mixpanel';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
+import { AccountPlanType } from '@thxnetwork/common/enums';
 
 export interface IPoolAnalytic {
     _id: string;
@@ -175,13 +176,17 @@ export type TInvoiceState = {
     [poolId: string]: TInvoice[];
 };
 
+export type TPaymentState = {
+    [poolId: string]: TPayment[];
+};
+
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
     _all: IPools = {};
     _quests: TQuestState = {};
     _entries: TQuestEntryState = {};
     _rewards: TQuestState = {};
-    _payments: TQuestState = {};
+    _rewardPayments: TQuestState = {};
     _guilds: TGuildState = {};
     _events: TEventState = {};
     _identities: TIdentityState = {};
@@ -191,6 +196,7 @@ class PoolModule extends VuexModule {
     _analyticsLeaderBoard: IPoolAnalyticsLeaderBoard = {};
     _analyticsMetrics: IPoolAnalyticsLeaderBoard = {};
     _invoices: TInvoiceState = {};
+    _payments: TPaymentState = {};
 
     get all() {
         return this._all;
@@ -214,6 +220,10 @@ class PoolModule extends VuexModule {
 
     get payments() {
         return this._payments;
+    }
+
+    get rewardPayments() {
+        return this._rewardPayments;
     }
 
     get quests() {
@@ -299,6 +309,11 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
+    setPayments({ poolId, result }: { poolId: string; result: { results: TPayment[] } & TPaginationResult }) {
+        Vue.set(this._payments, poolId, result);
+    }
+
+    @Mutation
     setQuestEntries({
         poolId,
         questId,
@@ -322,8 +337,8 @@ class PoolModule extends VuexModule {
         rewardId: string;
         result: { results: TQuestEntry[] } & TPaginationResult;
     }) {
-        if (!this._payments[poolId]) Vue.set(this._payments, poolId, {});
-        Vue.set(this._payments[poolId], rewardId, result);
+        if (!this._rewardPayments[poolId]) Vue.set(this._rewardPayments, poolId, {});
+        Vue.set(this._rewardPayments[poolId], rewardId, result);
     }
 
     @Mutation
@@ -421,7 +436,7 @@ class PoolModule extends VuexModule {
         this.context.commit('setEvents', { poolId: pool._id, result: data });
     }
 
-    @Action
+    @Action({ rawError: true })
     async listGuilds(pool: TPool) {
         const { data } = await axios({
             method: 'GET',
@@ -433,7 +448,7 @@ class PoolModule extends VuexModule {
         }
     }
 
-    @Action
+    @Action({ rawError: true })
     async removeGuild(payload: TDiscordGuild) {
         this.context.commit('setGuild', { ...payload, isConnected: false });
         await axios({
@@ -444,7 +459,7 @@ class PoolModule extends VuexModule {
         });
     }
 
-    @Action
+    @Action({ rawError: true })
     async updateGuild(payload: TDiscordGuild) {
         await axios({
             method: 'PATCH',
@@ -455,7 +470,7 @@ class PoolModule extends VuexModule {
         this.context.commit('setGuild', payload);
     }
 
-    @Action
+    @Action({ rawError: true })
     async createGuild(payload: TDiscordGuild) {
         const { data } = await axios({
             method: 'POST',
@@ -466,7 +481,7 @@ class PoolModule extends VuexModule {
         this.context.commit('setGuild', { ...payload, ...data, isConnected: true });
     }
 
-    @Action
+    @Action({ rawError: true })
     async listIdentities(payload: { pool: TPool; limit: number; page: number }) {
         const { data } = await axios({
             method: 'GET',
@@ -481,7 +496,24 @@ class PoolModule extends VuexModule {
         this.context.commit('setIdentities', { poolId: payload.pool._id, result: data });
     }
 
-    @Action
+    @Action({ rawError: true })
+    async createPayment({
+        pool,
+        amountInWei,
+        planType,
+    }: {
+        pool: TPool;
+        amountInWei: string;
+        planType: AccountPlanType;
+    }) {
+        await axios({
+            method: 'POST',
+            url: `/pools/${pool._id}/payments`,
+            data: { amountInWei, planType },
+        });
+    }
+
+    @Action({ rawError: true })
     async createIdentity(pool: TPool) {
         await axios({
             method: 'POST',
@@ -490,7 +522,7 @@ class PoolModule extends VuexModule {
         });
     }
 
-    @Action
+    @Action({ rawError: true })
     async removeIdentity(identity: TIdentity) {
         await axios({
             method: 'DELETE',
@@ -500,7 +532,7 @@ class PoolModule extends VuexModule {
         this.context.commit('unsetIdentity', identity);
     }
 
-    @Action
+    @Action({ rawError: true })
     async createQuest(payload: TQuest) {
         await axios({
             method: 'POST',
@@ -509,7 +541,7 @@ class PoolModule extends VuexModule {
         });
     }
 
-    @Action
+    @Action({ rawError: true })
     async createReward(payload: TReward) {
         await axios({
             method: 'POST',
@@ -552,7 +584,7 @@ class PoolModule extends VuexModule {
         this.context.commit('setQuests', { poolId: pool._id, result: data });
     }
 
-    @Action
+    @Action({ rawError: true })
     async updateQuest(payload: TQuest) {
         await axios({
             method: 'PATCH',
@@ -561,7 +593,7 @@ class PoolModule extends VuexModule {
         });
     }
 
-    @Action
+    @Action({ rawError: true })
     async updateReward(payload: TReward) {
         await axios({
             method: 'PATCH',
@@ -571,7 +603,7 @@ class PoolModule extends VuexModule {
         this.context.commit('setReward', payload);
     }
 
-    @Action
+    @Action({ rawError: true })
     async removeQuest(payload: TQuest) {
         await axios({
             method: 'DELETE',
@@ -581,7 +613,7 @@ class PoolModule extends VuexModule {
         this.context.commit('unsetQuest', payload);
     }
 
-    @Action
+    @Action({ rawError: true })
     async removeReward(payload: TReward) {
         await axios({
             method: 'DELETE',
@@ -610,6 +642,22 @@ class PoolModule extends VuexModule {
 
     @Action({ rawError: true })
     async listPayments(payload: { reward: TReward; limit: number; page: number }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${payload.reward.poolId}/payments`,
+            params: {
+                page: payload.page,
+                limit: payload.limit,
+            },
+        });
+        this.context.commit('setPayments', {
+            poolId: payload.reward.poolId,
+            result: data,
+        });
+    }
+
+    @Action({ rawError: true })
+    async listRewardPayments(payload: { reward: TReward; limit: number; page: number }) {
         const { data } = await axios({
             method: 'GET',
             url: `/pools/${payload.reward.poolId}/rewards/${payload.reward.variant}/${payload.reward._id}/payments`,

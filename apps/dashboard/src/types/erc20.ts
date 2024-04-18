@@ -32,3 +32,11 @@ export type TERC20BalanceState = {
         [address: string]: string;
     };
 };
+
+export type TERC20AllowanceState = {
+    [tokenAddress: string]: {
+        [poolAddress: string]: {
+            [spender: string]: string;
+        };
+    };
+};

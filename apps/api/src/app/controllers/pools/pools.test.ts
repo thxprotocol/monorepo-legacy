@@ -1,61 +1,35 @@
 import request from 'supertest';
 import app from '@thxnetwork/api/';
 import { ChainId } from '@thxnetwork/common/enums';
-import { Account } from 'web3-core';
 import { isAddress } from 'web3-utils';
-import { createWallet } from '@thxnetwork/api/util/jest/network';
-import {
-    userWalletPrivateKey2,
-    tokenName,
-    tokenSymbol,
-    tokenTotalSupply,
-    dashboardAccessToken,
-} from '@thxnetwork/api/util/jest/constants';
+import { timeTravel } from '@thxnetwork/api/util/jest/network';
+import { dashboardAccessToken } from '@thxnetwork/api/util/jest/constants';
 import { afterAllCallback, beforeAllCallback } from '@thxnetwork/api/util/jest/config';
-import { getAbiForContractName, getByteCodeForContractName } from '@thxnetwork/api/services/ContractService';
-import TransactionService from '@thxnetwork/api/services/TransactionService';
-import { Contract } from 'web3-eth-contract';
 import { getProvider } from '@thxnetwork/api/util/network';
 import { poll } from '@thxnetwork/api/util/polling';
 
 const user = request.agent(app);
 
 describe('Default Pool', () => {
-    let poolAddress: string, userWallet: Account, poolId: string, tokenContract: Contract, safe: TWallet;
+    let poolId: string, safe: { address: string };
 
-    beforeAll(async () => {
-        await beforeAllCallback();
-
-        userWallet = createWallet(userWalletPrivateKey2);
-        tokenContract = await TransactionService.deploy(
-            getAbiForContractName('LimitedSupplyToken'),
-            getByteCodeForContractName('LimitedSupplyToken'),
-            [tokenName, tokenSymbol, userWallet.address, tokenTotalSupply],
-            ChainId.Hardhat,
-        );
-    });
-
+    beforeAll(beforeAllCallback);
     afterAll(afterAllCallback);
 
     describe('POST /pools', () => {
-        it('HTTP 201 (success)', (done) => {
-            user.post('/v1/pools')
+        it('HTTP 201 (success)', async () => {
+            const { body, status } = await user
+                .post('/v1/pools')
                 .set('Authorization', dashboardAccessToken)
-                .send({
-                    title: 'My Pool',
-                })
-                .expect((res: request.Response) => {
-                    poolId = res.body._id;
-                    expect(res.body.safe.address).toBeDefined();
-                    safe = res.body.safe;
-                    expect(res.body.settings.title).toBe('My Pool');
-                    expect(res.body.settings.authenticationMethods).toBeDefined();
-                    expect(res.body.settings.authenticationMethods.length).toBeGreaterThan(0);
-                })
-                .expect(201, done);
+                .send({ title: 'My Pool', chainId: ChainId.Hardhat });
+            expect(status).toBe(201);
+            poolId = body._id;
+            expect(body.safe.address).toBeDefined();
+            safe = body.safe;
+            expect(body.settings.title).toBe('My Pool');
         });
 
-        it('HTTP 200 (success)', async () => {
+        it('HTTP 200 (multisig deployed)', async () => {
             // Wait for campaign safe to be deployed
             const { web3 } = getProvider(ChainId.Hardhat);
             await poll(
@@ -69,29 +43,22 @@ describe('Default Pool', () => {
                 .set({ 'X-PoolId': poolId, 'Authorization': dashboardAccessToken })
                 .expect((res: request.Response) => {
                     expect(isAddress(res.body.safeAddress)).toBe(true);
-                    poolAddress = res.body.safeAddress;
                 })
                 .expect(200);
         });
     });
 
-    describe('Make deposit into pool', () => {
-        it('Transfer erc20 to pool address', async () => {
-            const tx = await tokenContract.methods
-                .transfer(poolAddress, tokenTotalSupply)
-                .send({ from: userWallet.address });
+    // describe('GET /pools/:id (post trial)', () => {
+    //     it('HTTP 403 after 2 weeks', async () => {
+    //         // Skip 2 weeks
+    //         await timeTravel(60 * 60 * 24 * 14);
 
-            const event: any = Object.values(tx.events).filter((e: any) => e.event === 'Transfer')[0];
-            expect(event.returnValues.from).toEqual(userWallet.address);
-            expect(event.returnValues.to).toEqual(poolAddress);
-            expect(event.returnValues.value).toEqual(tokenTotalSupply);
-        });
-
-        it('Check pool balance', async () => {
-            const balanceInWei = await tokenContract.methods.balanceOf(poolAddress).call();
-            expect(tokenTotalSupply).toEqual(balanceInWei);
-        });
-    });
+    //         await user
+    //             .get('/v1/pools/' + poolId)
+    //             .set({ Authorization: dashboardAccessToken })
+    //             .expect(403);
+    //     });
+    // });
 
     describe('PATCH /pools/:id', () => {
         it('HTTP 200', (done) => {

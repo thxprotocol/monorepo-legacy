@@ -81,7 +81,7 @@ import { TRewardPaymentState } from '@thxnetwork/dashboard/store/modules/pools';
         BaseParticipantConnectedAccount,
     },
     computed: mapGetters({
-        paymentsList: 'pools/payments',
+        paymentsList: 'pools/rewardPayments',
     }),
 })
 export default class BaseModalParticipants extends Vue {
@@ -126,7 +126,11 @@ export default class BaseModalParticipants extends Vue {
 
     async getPayments() {
         this.isLoading = true;
-        await this.$store.dispatch('pools/listPayments', { reward: this.reward, page: this.page, limit: this.limit });
+        await this.$store.dispatch('pools/listRewardPayments', {
+            reward: this.reward,
+            page: this.page,
+            limit: this.limit,
+        });
         this.isLoading = false;
     }
 

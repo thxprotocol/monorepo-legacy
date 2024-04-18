@@ -19,7 +19,7 @@ export const controller = async (req: Request, res: Response) => {
         ContractService.getAbiForContractName('LimitedSupplyToken'),
         req.query.tokenAddress as string,
     );
-    const balanceInWei = await contract.methods.balanceOf(req.query.tokenAddress).call();
+    const balanceInWei = await contract.methods.balanceOf(safe.address).call();
 
     res.json({ balanceInWei: String(balanceInWei) });
 };

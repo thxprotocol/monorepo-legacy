@@ -34,9 +34,8 @@
 </template>
 
 <script lang="ts">
-import type { TClient, TPool } from '@thxnetwork/types/interfaces';
-import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModal from './BaseModal.vue';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { GrantVariant } from '@thxnetwork/common/enums';
 
 @Component({

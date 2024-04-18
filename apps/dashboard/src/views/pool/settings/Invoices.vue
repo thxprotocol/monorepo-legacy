@@ -27,8 +27,8 @@
                         <b-badge variant="primary" class="p-2">{{ AccountPlanType[item.plan] }}</b-badge>
                     </template>
                     <template #cell(period)="{ item }">
-                        <span class="text-muted">{{ item.period.start }} - {{ item.period.end }} </span></template
-                    >
+                        <span class="text-muted">{{ item.period.start }} - {{ item.period.end }} </span>
+                    </template>
                     <template #cell(map)="{ item }"> {{ item.map.count }}/{{ item.map.limit }} </template>
                     <template #cell(costPlan)="{ item }"> {{ toFiatPrice(item.costPlan) }} </template>
                     <template #cell(costAdditional)="{ item }"> {{ toFiatPrice(item.costAdditional) }} </template>
@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts">
-import { TInvoiceState } from '@thxnetwork/dashboard/store/modules/pools';
+import { IPools, TInvoiceState } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { AccountPlanType } from '@thxnetwork/common/enums';
@@ -58,6 +58,7 @@ import { toFiatPrice } from '@thxnetwork/dashboard/utils/price';
 export default class WidgetsView extends Vue {
     AccountPlanType = AccountPlanType;
     toFiatPrice = toFiatPrice;
+    isLoading = false;
 
     poolList!: IPools;
     invoiceList!: TInvoiceState;
