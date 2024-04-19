@@ -1,12 +1,11 @@
 import axios from 'axios';
 import { BalancerSDK, Network } from '@balancer-labs/sdk';
-import { BALANCER_POOL_ID, ETHEREUM_RPC, POLYGON_RPC } from '../config/secrets';
+import { BALANCER_POOL_ID, ETHEREUM_RPC, HARDHAT_RPC, NODE_ENV, POLYGON_RPC } from '../config/secrets';
 import { logger } from '../util/logger';
 import { WalletDocument } from '../models';
 import { ChainId } from '@thxnetwork/common/enums';
-import { getContract } from './ContractService';
 import { contractArtifacts, contractNetworks } from '@thxnetwork/contracts/exports';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 
 class BalancerService {
     pricing = {};
@@ -21,6 +20,14 @@ class BalancerService {
         },
     };
     tvl = 0;
+    rewards = {
+        [ChainId.Hardhat]: { bal: '0', bpt: '0' },
+        [ChainId.Polygon]: { bal: '0', bpt: '0' },
+    };
+    schedule = {
+        [ChainId.Hardhat]: { bal: [], bpt: [] },
+        [ChainId.Polygon]: { bal: [], bpt: [] },
+    };
     balancer = new BalancerSDK({
         network: Network.POLYGON,
         rpcUrl: POLYGON_RPC,
@@ -28,7 +35,7 @@ class BalancerService {
 
     constructor() {
         this.updatePricesJob().then(() => {
-            this.updateAPRJob();
+            this.updateMetricsJob();
         });
     }
 
@@ -55,8 +62,13 @@ class BalancerService {
         return this.pricing;
     }
 
-    getAPR() {
-        return { apr: this.apr, tvl: this.tvl };
+    getMetrics(wallet: WalletDocument) {
+        return {
+            apr: this.apr,
+            tvl: this.tvl,
+            rewards: this.rewards[wallet.chainId],
+            schedule: this.schedule[wallet.chainId],
+        };
     }
 
     async fetchPrice(symbolIn: string, symbolOut: string) {
@@ -94,7 +106,7 @@ class BalancerService {
         };
     }
 
-    async updateAPRJob() {
+    async updateMetricsJob() {
         // Balancer Gauge contracts on Ethereum
         const ethereumProvider = new ethers.providers.JsonRpcProvider(ETHEREUM_RPC);
         const gaugeControllerAddress = contractNetworks[ChainId.Ethereum].BalancerGaugeController;
@@ -128,6 +140,13 @@ class BalancerService {
         // Amount of bpt-gauge locked in veTHX in wei
         const tvl = (await gauge.balanceOf(veTHXAddress)).toString();
         this.tvl = tvl;
+
+        for (const chainId of [ChainId.Hardhat, ChainId.Polygon]) {
+            if (NODE_ENV === 'production' && chainId === ChainId.Hardhat) continue;
+            const { rewards, schedule } = await this.getRewards(chainId);
+            this.rewards[chainId] = rewards;
+            this.schedule[chainId] = schedule;
+        }
     }
 
     calculateAPR(
@@ -143,6 +162,28 @@ class BalancerService {
             (((0.4 / (workingSupply + 0.4)) * gaugeRelWeight * weeklyBALemissions * 52 * priceOfBAL) / pricePerBPT) *
             100
         );
+    }
+
+    async getRewards(chainId: ChainId) {
+        const rpcMap = {
+            [ChainId.Hardhat]: HARDHAT_RPC,
+            [ChainId.Polygon]: POLYGON_RPC,
+        };
+        const { BAL, BPT, RewardFaucet } = contractNetworks[chainId];
+        const provider = new ethers.providers.JsonRpcProvider(rpcMap[chainId]);
+        const rewardFaucet = new ethers.Contract(RewardFaucet, contractArtifacts['RewardFaucet'].abi, provider);
+        const amountOfWeeks = '4';
+        const [balSchedule, bptSchedule] = await Promise.all(
+            [BAL, BPT].map(async (tokenAddress: string) => {
+                const upcoming = await rewardFaucet.getUpcomingRewardsForNWeeks(tokenAddress, amountOfWeeks);
+                return upcoming.map((amount: BigNumber) => amount.toString());
+            }),
+        );
+        const [balTotal, bptTotal] = await Promise.all(
+            [BAL, BPT].map(async (tokenAddress) => (await rewardFaucet.totalTokenRewards(tokenAddress)).toString()),
+        );
+
+        return { schedule: { bal: balSchedule, bpt: bptSchedule }, rewards: { bal: balTotal, bpt: bptTotal } };
     }
 }
 

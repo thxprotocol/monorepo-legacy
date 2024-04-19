@@ -7,6 +7,7 @@ import { TwitterUser } from '@thxnetwork/api/models/TwitterUser';
 import { DiscordMessage, DiscordReaction, QuestSocial } from '@thxnetwork/api/models';
 import QuestService from '@thxnetwork/api/services/QuestService';
 import DiscordService from '@thxnetwork/api/services/DiscordService';
+import { QuestSocialRequirement } from '@thxnetwork/common/enums';
 
 const validation = [param('id').isMongoId(), body('recaptcha').isString()];
 
@@ -29,8 +30,8 @@ const controller = async ({ params, body, account }: Request, res: Response) => 
     const { result, reason } = await QuestService.getValidationResult(quest.variant, { quest, account, data });
     if (!result) return res.json({ error: reason });
 
-    // For Discord quests we store server user name in metadata
-    if (quest.variant === QuestVariant.Discord) {
+    // For Discord Bot quests we store server user name in metadata
+    if (quest.variant === QuestVariant.Discord && quest.interaction !== QuestSocialRequirement.DiscordGuildJoined) {
         const guild = await DiscordService.getGuild(quest.poolId);
         const member = guild && (await DiscordService.getMember(guild.id, platformUserId));
 

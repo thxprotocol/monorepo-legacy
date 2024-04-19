@@ -5,9 +5,7 @@ import VoteEscrowService from '@thxnetwork/api/services/VoteEscrowService';
 export const validation = [query('walletId').isMongoId()];
 
 export const controller = async ({ wallet }: Request, res: Response) => {
-    // Check if wallet has tokens to claim
-    // TODO
-
+    // TODO Check if wallet has tokens to claim
     // Propose the claimTokens transaction
     const txs = await VoteEscrowService.claimTokens(wallet);
 

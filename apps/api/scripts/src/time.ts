@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 
-async function increaseBlockTime(provider, seconds) {
+export async function increaseBlockTime(provider, seconds) {
     await provider.send('evm_increaseTime', [seconds]);
     await provider.send('evm_mine', []);
 }

@@ -1,20 +1,35 @@
 import { client } from '../../discord';
 import { DiscordGuild, DiscordMessage, DiscordReaction } from '../models';
 import { DiscordUser } from '../models/DiscordUser';
+import { logger } from '../util/logger';
 
 export default class DiscordService {
     static async getGuild(poolId: string) {
         const discordGuild = await DiscordGuild.findOne({ poolId });
         if (!discordGuild) return;
-        return await client.guilds.fetch(discordGuild.guildId);
+        try {
+            // Might fail if bot is removed from the guild
+            return await client.guilds.fetch(discordGuild.guildId);
+        } catch (error) {
+            logger.error(error);
+        }
     }
 
     static async getMember(guildId: string, userId: string) {
-        return await client.guilds.fetch(guildId).then((guild) => guild.members.fetch(userId));
+        try {
+            // Might fail if bot is removed from the guild
+            return await client.guilds.fetch(guildId).then((guild) => guild.members.fetch(userId));
+        } catch (error) {
+            logger.error(error);
+        }
     }
 
     static async getRole(guildId: string, roleId: string) {
-        return await client.guilds.fetch(guildId).then((guild) => guild.roles.fetch(roleId));
+        try {
+            return await client.guilds.fetch(guildId).then((guild) => guild.roles.fetch(roleId));
+        } catch (error) {
+            logger.error(error);
+        }
     }
 
     static async getUserMetrics(poolId: string, userId: string) {

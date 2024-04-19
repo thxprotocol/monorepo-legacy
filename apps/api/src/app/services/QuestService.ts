@@ -137,12 +137,15 @@ export default class QuestService {
             recaptchaAction,
         });
 
-        logger.info('ReCaptcha result', {
-            sub: options.account.sub,
-            poolId: options.quest.poolId,
-            riskAnalysis,
-            recaptchaAction,
-        });
+        logger.info(
+            'ReCaptcha result' +
+                JSON.stringify({
+                    sub: options.account.sub,
+                    poolId: options.quest.poolId,
+                    riskAnalysis,
+                    recaptchaAction,
+                }),
+        );
 
         // Defaults: 0.1, 0.3, 0.7 and 0.9. Ranges from 0 (Bot) to 1 (User)
         if (riskAnalysis.score >= 0.9) {

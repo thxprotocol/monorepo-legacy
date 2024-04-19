@@ -40,7 +40,7 @@ agenda.define(JobType.UpdateTwitterLikeCache, (job: Job) => TwitterCacheService.
 agenda.define(JobType.UpdateTwitterRepostCache, (job: Job) => TwitterCacheService.updateRepostCacheJob(job));
 agenda.define(JobType.UpsertInvoices, () => InvoiceService.upsertJob());
 agenda.define(JobType.UpdatePrices, () => BalancerService.updatePricesJob());
-agenda.define(JobType.UpdateAPR, () => BalancerService.updateAPRJob());
+agenda.define(JobType.UpdateAPR, () => BalancerService.updateMetricsJob());
 agenda.define(JobType.AssertPayments, () => PaymentService.assertPaymentsJob());
 
 db.connection.once('open', async () => {
