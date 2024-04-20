@@ -31,7 +31,7 @@ router.post(
     CreateController.controller,
 );
 
-// This route is also asserted for payment
+// This route is also asserted for payment but not for access
 router.use('/:id/collaborators', assertPayment, RouterCollaborators);
 
 // Everything below is asserted for campaign/pool access

@@ -4,7 +4,7 @@ import { getProvider } from '../util/network';
 import { BigNumber } from 'ethers';
 import { differenceInSeconds, isBefore, subWeeks } from 'date-fns';
 import { getContract } from './ContractService';
-import { AccountPlanType } from '@thxnetwork/common/enums';
+import { AccountPlanType, ChainId } from '@thxnetwork/common/enums';
 import { Payment } from '../models/Payment';
 import { planPricingMap } from '@thxnetwork/common/constants';
 import { parseUnits } from 'ethers/lib/utils';
@@ -33,11 +33,13 @@ export default class PaymentService {
     }
 
     static async balanceOf(wallet: WalletDocument) {
-        const splitter = getContract(
-            'THXPaymentSplitter',
-            wallet.chainId,
-            contractNetworks[wallet.chainId].THXPaymentSplitter,
-        );
+        // TODO Deploy Polygon PaymentSplitter before using this middleware
+        const { THXPaymentSplitter } = contractNetworks[wallet.chainId];
+        if (wallet.chainId === ChainId.Polygon && THXPaymentSplitter) {
+            return '0';
+        }
+
+        const splitter = getContract('THXPaymentSplitter', wallet.chainId, THXPaymentSplitter);
         const balance = await splitter.balanceOf(wallet.address);
         return balance.toString();
     }
