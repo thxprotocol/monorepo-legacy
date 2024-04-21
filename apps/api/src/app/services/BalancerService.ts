@@ -6,20 +6,32 @@ import { WalletDocument } from '../models';
 import { ChainId } from '@thxnetwork/common/enums';
 import { contractArtifacts, contractNetworks } from '@thxnetwork/contracts/exports';
 import { BigNumber, ethers } from 'ethers';
+import { formatUnits } from 'ethers/lib/utils';
 
 class BalancerService {
     pricing = {};
     apr = {
-        balancer: {
-            min: 0,
-            max: 0,
+        [ChainId.Hardhat]: {
+            balancer: {
+                min: 0,
+                max: 0,
+                swapFees: 0,
+            },
+            thx: 0,
         },
-        thx: {
-            min: 0,
-            max: 0,
+        [ChainId.Polygon]: {
+            balancer: {
+                min: 0,
+                max: 0,
+                swapFees: 0,
+            },
+            thx: 0,
         },
     };
-    tvl = 0;
+    tvl = {
+        [ChainId.Hardhat]: { liquidity: '0', staked: '0', tvl: '0' },
+        [ChainId.Polygon]: { liquidity: '0', staked: '0', tvl: '0' },
+    };
     rewards = {
         [ChainId.Hardhat]: { bal: '0', bpt: '0' },
         [ChainId.Polygon]: { bal: '0', bpt: '0' },
@@ -62,12 +74,12 @@ class BalancerService {
         return this.pricing;
     }
 
-    getMetrics(wallet: WalletDocument) {
+    getMetrics(chainId: ChainId) {
         return {
-            apr: this.apr,
-            tvl: this.tvl,
-            rewards: this.rewards[wallet.chainId],
-            schedule: this.schedule[wallet.chainId],
+            apr: this.apr[chainId],
+            tvl: this.tvl[chainId],
+            rewards: this.rewards[chainId],
+            schedule: this.schedule[chainId],
         };
     }
 
@@ -107,6 +119,50 @@ class BalancerService {
     }
 
     async updateMetricsJob() {
+        const rpcMap = { [ChainId.Hardhat]: HARDHAT_RPC, [ChainId.Polygon]: POLYGON_RPC };
+        const priceOfBAL = this.pricing['BAL'];
+        const pricePerBPT = this.pricing['20USDC-80THX'];
+
+        // Amount of bpt-gauge locked in veTHX in wei
+        for (const chainId of [ChainId.Hardhat, ChainId.Polygon]) {
+            if (NODE_ENV === 'production' && chainId === ChainId.Hardhat) continue;
+            const provider = new ethers.providers.JsonRpcProvider(rpcMap[chainId]);
+            const gaugeAddress = contractNetworks[chainId].BPTGauge;
+            const bptAddress = contractNetworks[chainId].BPT;
+            const gauge = new ethers.Contract(gaugeAddress, contractArtifacts.BPTGauge.abi, provider);
+            const bpt = new ethers.Contract(bptAddress, contractArtifacts.BPT.abi, provider);
+
+            // veTHX contract on Polygon
+            const veTHXAddress = contractNetworks[chainId].VotingEscrow;
+            const veTHX = new ethers.Contract(veTHXAddress, contractArtifacts.VotingEscrow.abi, provider);
+
+            const { rewards, schedule } = await this.getRewards(chainId);
+            this.rewards[chainId] = rewards;
+            this.schedule[chainId] = schedule;
+
+            // TVL is measured as the total amount of BPT-gauge locked in veTHX
+            const liquidity = (await bpt.totalSupply()).toString();
+            const staked = (await bpt.balanceOf(gauge.address)).toString();
+            const tvl = (await gauge.balanceOf(veTHXAddress)).toString();
+            this.tvl[chainId] = { liquidity, staked, tvl };
+
+            // Calc APR
+            const apr = await this.calculateBalancerAPR(gauge, priceOfBAL, pricePerBPT);
+            const balancer = { min: apr, max: apr * 2.5, swapFees: 0.3 }; // TODO Fetch swapFees from SDK or contract
+            const rewardsInBPT = this.rewards[chainId].bpt;
+            const thx = await this.calculateTHXAPR(gauge, veTHX, rewardsInBPT, pricePerBPT);
+            this.apr[chainId] = { balancer, thx };
+        }
+    }
+
+    async calculateTHXAPR(gauge: ethers.Contract, veTHX: ethers.Contract, rewardsInBPT: string, pricePerBPT: number) {
+        const monthlyEmissions = Number(formatUnits(rewardsInBPT, 18));
+        const totalShares = Number(formatUnits(await gauge.balanceOf(veTHX.address), 18));
+        const pricePerShare = pricePerBPT;
+        return ((monthlyEmissions * 12) / totalShares / pricePerShare) * 100;
+    }
+
+    async calculateBalancerAPR(gauge: ethers.Contract, priceOfBAL: number, pricePerBPT: number) {
         // Balancer Gauge contracts on Ethereum
         const ethereumProvider = new ethers.providers.JsonRpcProvider(ETHEREUM_RPC);
         const gaugeControllerAddress = contractNetworks[ChainId.Ethereum].BalancerGaugeController;
@@ -116,46 +172,15 @@ class BalancerService {
             ethereumProvider,
         );
         const rootGaugeAddress = contractNetworks[ChainId.Ethereum].BalancerRootGauge;
-        // Balancer Gauge on Polygon
-        const polygonProvider = new ethers.providers.JsonRpcProvider(POLYGON_RPC);
-        const gaugeAddress = contractNetworks[ChainId.Polygon].BPTGauge;
-        const gauge = new ethers.Contract(gaugeAddress, contractArtifacts.BPTGauge.abi, polygonProvider);
-        // veTHX contract on Polygon
-        const veTHXAddress = contractNetworks[ChainId.Polygon].VotingEscrow;
 
         // APR formula inputs
         const gaugeRelWeight = Number((await gaugeController.gauge_relative_weight(rootGaugeAddress)).toString());
         const workingSupply = Number((await gauge.working_supply()).toString());
-        const weeklyBALemissions = 102530.48;
-        const priceOfBAL = this.pricing['BAL'];
-        const pricePerBPT = this.pricing['20USDC-80THX'];
 
-        // Calculate balancer APR
-        const apr = this.calculateAPR(workingSupply, gaugeRelWeight, weeklyBALemissions, priceOfBAL, pricePerBPT);
-        const balancer = { min: apr, max: apr * 2.5 };
-        // TODO Calculate THX APR
-        const thx = { min: 0, max: 0 };
-        this.apr = { balancer, thx };
+        // Take Balancer inflation schedule into account. Started at 140000 BAL per week
+        // https://docs.balancer.fi/concepts/governance/bal-token.html#supply-inflation-schedule
+        const weeklyBALemissions = 102530.48; // TODO
 
-        // Amount of bpt-gauge locked in veTHX in wei
-        const tvl = (await gauge.balanceOf(veTHXAddress)).toString();
-        this.tvl = tvl;
-
-        for (const chainId of [ChainId.Hardhat, ChainId.Polygon]) {
-            if (NODE_ENV === 'production' && chainId === ChainId.Hardhat) continue;
-            const { rewards, schedule } = await this.getRewards(chainId);
-            this.rewards[chainId] = rewards;
-            this.schedule[chainId] = schedule;
-        }
-    }
-
-    calculateAPR(
-        workingSupply: number,
-        gaugeRelWeight: number,
-        weeklyBALemissions: number,
-        priceOfBAL: number,
-        pricePerBPT: number,
-    ) {
         // APR formula as per
         // https://docs.balancer.fi/reference/vebal-and-gauges/apr-calculation.html
         return (
