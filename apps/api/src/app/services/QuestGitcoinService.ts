@@ -70,7 +70,6 @@ export default class QuestGitcoinService implements IQuestService {
     }
 
     async getScore(scorerId: number, address: string) {
-        await GitcoinService.submitPassport(scorerId, address);
         return await GitcoinService.getScoreUniqueHumanity(scorerId, address);
     }
 }
