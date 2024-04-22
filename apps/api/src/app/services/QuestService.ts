@@ -16,6 +16,17 @@ import AccountProxy from '../proxies/AccountProxy';
 import ParticipantService from './ParticipantService';
 
 export default class QuestService {
+    static async count({ poolId }) {
+        const variants = Object.keys(QuestVariant).filter((v) => !isNaN(Number(v)));
+        const counts = await Promise.all(
+            variants.map(async (variant: string) => {
+                const Quest = serviceMap[variant].models.quest;
+                return await Quest.countDocuments({ poolId, isPublished: true });
+            }),
+        );
+        return counts.reduce((acc, count) => acc + count, 0);
+    }
+
     static async list({ pool, data, account }: { pool: PoolDocument; data: Partial<TQuestEntry>; account?: TAccount }) {
         const questVariants = Object.keys(QuestVariant).filter((v) => !isNaN(Number(v)));
         const callback: any = async (variant: QuestVariant) => {

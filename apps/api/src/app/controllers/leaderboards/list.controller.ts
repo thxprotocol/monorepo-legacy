@@ -3,6 +3,8 @@ import { Pool, PoolDocument, Brand } from '@thxnetwork/api/models';
 import { Widget } from '@thxnetwork/api/models/Widget';
 import { query } from 'express-validator';
 import { Participant } from '@thxnetwork/api/models/Participant';
+import RewardService from '@thxnetwork/api/services/RewardService';
+import QuestService from '@thxnetwork/api/services/QuestService';
 
 const matchTitle = (search) => {
     if (!search || !search.length) return;
@@ -41,19 +43,20 @@ const controller = async (req: Request, res: Response) => {
             const widget = widgets.find((w) => w.poolId === String(pool._id));
             const brand = brands.find((b) => b.poolId === String(pool._id));
             const participantCount = await Participant.countDocuments({ poolId: pool._id });
+            const questCount = await QuestService.count({ poolId: pool._id });
+            const rewardCount = await RewardService.count({ poolId: pool._id });
             return {
                 _id: pool._id,
                 rank: pool.rank,
                 slug: pool.settings.slug || pool._id,
                 title: pool.settings.title,
-                expiryDate: pool.settings.endDate,
-                address: pool.safeAddress,
-                chainId: pool.chainId,
-                domain: widget ? widget.domain : 'https://www.thx.network',
+                domain: widget ? widget.domain : 'https://app.thx.network',
                 logoImgUrl: brand && brand.logoImgUrl,
                 backgroundImgUrl: brand && brand.backgroundImgUrl,
-                participants: participantCount,
-                active: widget && widget.active,
+                participantCount,
+                questCount,
+                rewardCount,
+                createdAt: pool.createdAt,
             };
         }),
     )) as any;

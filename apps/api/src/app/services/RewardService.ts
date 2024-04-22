@@ -29,6 +29,17 @@ const serviceMap = {
 };
 
 export default class RewardService {
+    static async count({ poolId }) {
+        const variants = Object.keys(RewardVariant).filter((v) => !isNaN(Number(v)));
+        const counts = await Promise.all(
+            variants.map(async (variant: string) => {
+                const Reward = serviceMap[variant].models.reward;
+                return await Reward.countDocuments({ poolId, isPublished: true });
+            }),
+        );
+        return counts.reduce((acc, count) => acc + count, 0);
+    }
+
     static async list({ pool, account }) {
         const rewardVariants = Object.keys(RewardVariant).filter((v) => !isNaN(Number(v)));
         const callback: any = async (variant: RewardVariant) => {
