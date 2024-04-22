@@ -35,7 +35,7 @@ export default class PaymentService {
     static async balanceOf(wallet: WalletDocument) {
         // TODO Deploy Polygon PaymentSplitter before using this middleware
         const { THXPaymentSplitter } = contractNetworks[wallet.chainId];
-        if (wallet.chainId === ChainId.Polygon && THXPaymentSplitter) {
+        if (!THXPaymentSplitter && wallet.chainId === ChainId.Polygon) {
             return '0';
         }
 
