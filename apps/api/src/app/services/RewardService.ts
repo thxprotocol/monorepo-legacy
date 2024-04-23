@@ -83,17 +83,53 @@ export default class RewardService {
         return await Promise.all(rewardVariants.map(callback));
     }
 
-    static async findPayments(reward: TReward, { page, limit }: { page: number; limit: number }) {
+    static async findPaymentsBySub(
+        reward: TReward,
+        { skip, limit, query }: { skip: number; limit: number; query: string },
+    ) {
+        const Payment = serviceMap[reward.variant].models.payment;
+        // Get all matching accounts by email and username first
+        const accounts = await AccountProxy.find({ query });
+        // We then fetch the payments for the list of subs
+        const subs = accounts.map(({ sub }) => sub);
+        // Then we fetch the participants for the poolId and the list of subs
+        const participants = await Participant.find({ poolId: reward.poolId, sub: { $in: subs } });
+        const payments = await Payment.find({ rewardId: reward._id, sub: { $in: subs } })
+            .limit(limit)
+            .skip(skip);
+
+        return { payments, accounts, participants };
+    }
+
+    static async findPaymentsByReward(
+        reward: TReward,
+        { skip, limit }: { skip: number; limit: number; query: string },
+    ) {
+        const Payment = serviceMap[reward.variant].models.payment;
+        // If there is no query we fetch the payments for the reward
+        const payments = await Payment.find({ rewardId: reward._id }).limit(limit).skip(skip);
+        const subs = payments.map(({ sub }) => sub);
+        const accounts = await AccountProxy.find({ subs });
+        const participants = await Participant.find({ poolId: reward.poolId, sub: { $in: subs } });
+
+        return { payments, accounts, participants };
+    }
+
+    static async findPayments(reward: TReward, { page, limit, query }: { page: number; limit: number; query: string }) {
         const skip = (page - 1) * limit;
         const Payment = serviceMap[reward.variant].models.payment;
         const total = await Payment.countDocuments({ rewardId: reward._id });
-        const payments = await Payment.find({ rewardId: reward._id }).limit(limit).skip(skip);
-        const accounts = await AccountProxy.find({ subs: payments.map(({ sub }) => sub) });
-        const participants = await Participant.find({ poolId: reward.poolId });
+
+        // If there is a query we fetch accounts by username first
+        const { payments, accounts, participants } =
+            query.length > 3
+                ? await this.findPaymentsBySub(reward, { skip, limit, query })
+                : await this.findPaymentsByReward(reward, { skip, limit, query });
         const promises = payments.map(async (payment: Document & TRewardPayment) =>
             ParticipantService.decorate(payment, { accounts, participants }),
         );
         const results = await Promise.allSettled(promises);
+
         return {
             total,
             limit,

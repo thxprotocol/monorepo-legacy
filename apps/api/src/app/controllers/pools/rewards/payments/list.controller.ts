@@ -10,6 +10,7 @@ const validation = [
     param('rewardId').isMongoId(),
     query('page').isInt(),
     query('limit').isInt(),
+    query('query').isString(),
 ];
 
 const controller = async (req: Request, res: Response) => {
@@ -20,6 +21,7 @@ const controller = async (req: Request, res: Response) => {
     const payments = await RewardService.findPayments(reward, {
         page: Number(req.query.page),
         limit: Number(req.query.limit),
+        query: req.query.query as string,
     });
 
     res.json(payments);

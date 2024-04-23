@@ -130,7 +130,6 @@ export default class BaseModalParticipants extends Vue {
     }
 
     onChangeQuery() {
-        if (this.query && this.query.length < 3) return;
         this.page = 1;
         this.getPayments();
     }
