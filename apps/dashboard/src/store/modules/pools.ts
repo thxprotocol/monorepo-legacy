@@ -657,7 +657,7 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async listRewardPayments(payload: { reward: TReward; limit: number; page: number }) {
+    async listRewardPayments(payload: { reward: TReward; limit: number; page: number; query: string }) {
         const { data } = await axios({
             method: 'GET',
             url: `/pools/${payload.reward.poolId}/rewards/${payload.reward.variant}/${payload.reward._id}/payments`,
@@ -665,6 +665,7 @@ class PoolModule extends VuexModule {
             params: {
                 page: payload.page,
                 limit: payload.limit,
+                query: payload.query,
             },
         });
         this.context.commit('setRewardPayments', {

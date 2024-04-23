@@ -7,6 +7,7 @@
                 :total-rows="rewardPayments.total"
                 :selectedItems="selectedItems"
                 :actions="[]"
+                :hide-query="false"
                 :query="query"
                 @query="onInputQuery"
                 @query-submit="onChangeQuery"
@@ -95,6 +96,7 @@ export default class BaseModalParticipants extends Vue {
     paymentsList!: TRewardPaymentState;
     limit = 25;
     page = 1;
+    query = '';
 
     @Prop() id!: string;
     @Prop() reward!: TReward;

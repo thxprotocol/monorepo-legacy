@@ -65,13 +65,8 @@ export default class ModalRewardCustomCreate extends Vue {
         this.webshopURL = this.reward ? this.reward.webshopURL : this.webshopURL;
     }
 
-    onError(error) {
-        console.log(error);
-        debugger;
-    }
-
     onChangeFileCoupons(file: File) {
-        CSVParser.parse(file, { complete: this.onComplete, error: this.onError });
+        CSVParser.parse(file, { complete: this.onComplete, error: console.error });
     }
 
     onComplete({ data, errors }: { data: string[]; errors: any[] }) {
