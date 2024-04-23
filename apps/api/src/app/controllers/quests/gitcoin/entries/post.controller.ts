@@ -26,7 +26,7 @@ const controller = async ({ account, body, params }: Request, res: Response) => 
     const isRealUser = await QuestService.isRealUser(quest.variant, { quest, account, data });
     if (!isRealUser.result) return res.json({ error: isRealUser.reason });
 
-    // Get score for address
+    // Add wallet and add score for address
     const { score, error } = await GitcoinService.getScoreUniqueHumanity(
         quest.scorerId,
         data.metadata.address.toLowerCase(),

@@ -16,8 +16,8 @@ export default async function main() {
     // const TO = '0x029E2d4D2b6938c92c48dbf422a4e500425a08D8';
     const TO = '0xaf9d56684466fcFcEA0a2B7fC137AB864d642946';
     // const TO = '0x7b8fc09eb5D80eadA6AE74b112463eA006DC25B5';
-    const AMOUNT_USDC = parseUnits('10000', 6).toString();
-    const AMOUNT_THX = parseUnits('10000', 18).toString();
+    const AMOUNT_USDC = parseUnits('12300', 6).toString();
+    const AMOUNT_THX = parseUnits('45600', 18).toString();
     const chainId = ChainId.Hardhat;
     const signer = new ethers.Wallet(PRIVATE_KEY, hardhatProvider) as unknown as ethers.Signer;
 
@@ -28,7 +28,7 @@ export default async function main() {
     await thx.transfer(TO, AMOUNT_THX);
 
     // Increase time till past veTHX reward distribution start time
-    // await increaseBlockTime(hardhatProvider, 60 * 60 * 24 * 7);
+    await increaseBlockTime(hardhatProvider, 60 * 60 * 24 * 7);
 
     // const usdcPerMonthInWei = ethers.utils.parseUnits('146700', 6);
     // const secondsPerMonth = 30 * 24 * 60 * 60;
