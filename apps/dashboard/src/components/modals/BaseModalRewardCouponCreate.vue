@@ -27,7 +27,7 @@
                     </small>
                 </b-form-group>
             </b-tab>
-            <b-tab title="Coupon Codes" style="max-height: 300px; overflow-y: auto">
+            <b-tab title="Coupon Codes">
                 <BaseTableCouponCodes :reward="reward" :pool="pool" />
             </b-tab>
         </b-tabs>

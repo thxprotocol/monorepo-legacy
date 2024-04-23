@@ -741,11 +741,13 @@ class PoolModule extends VuexModule {
         reward,
         page,
         limit,
+        query,
     }: {
         pool: TPool;
         reward: TRewardCoupon;
         page: string;
         limit: string;
+        query: string;
     }) {
         const { data } = await axios({
             method: 'GET',
@@ -756,6 +758,7 @@ class PoolModule extends VuexModule {
                 couponRewardId: reward._id,
                 page,
                 limit,
+                query,
             },
         });
         this.context.commit('setCouponCodes', { poolId: pool._id, couponRewardId: reward._id, result: data });

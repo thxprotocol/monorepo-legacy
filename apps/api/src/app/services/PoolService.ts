@@ -181,10 +181,25 @@ async function findIdentities(pool: PoolDocument, page: number, limit: number) {
     return identities;
 }
 
-async function findCouponCodes(query: { couponRewardId: string }, page: number, limit: number) {
+async function findCouponCodes(
+    { couponRewardId, query }: { couponRewardId: string; query: string },
+    page: number,
+    limit: number,
+) {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const total = await CouponCode.find(query).countDocuments();
+    const $match = { couponRewardId };
+    if (query && query.length > 1) {
+        $match['code'] = { $regex: query, $options: 'i' };
+    }
+
+    const total = await CouponCode.find($match).countDocuments();
+    const results = await CouponCode.aggregate([{ $match }, { $skip: startIndex }, { $limit: limit }]).exec();
+    // Get subs for results
+    const subs = results.map(({ sub }) => sub);
+    // Get accounts for subs
+    const accounts = await AccountProxy.find({ subs });
+
     return {
         previous: startIndex > 0 && {
             page: page - 1,
@@ -193,7 +208,11 @@ async function findCouponCodes(query: { couponRewardId: string }, page: number, 
             page: page + 1,
         },
         total,
-        results: await CouponCode.aggregate([{ $match: query }, { $skip: startIndex }, { $limit: limit }]).exec(),
+        results: results.map((result) => {
+            const account = accounts.find(({ sub }) => sub === result.sub);
+            result.account = account;
+            return result;
+        }),
     };
 }
 
