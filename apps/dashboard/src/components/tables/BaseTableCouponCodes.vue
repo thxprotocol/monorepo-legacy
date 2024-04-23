@@ -13,18 +13,14 @@
             />
         </template>
         <div style="max-height: 300px; overflow-y: auto">
-            <b-table striped hover :items="couponCodes" :loading="isLoading">
+            <b-table class="table-coupons" striped hover :items="couponCodes" :loading="isLoading">
                 <template #head(code)> Code </template>
-                <template #head(created)>Created</template>
                 <template #head(id)> &nbsp; </template>
-                <template #cell(code)="{ item }">
-                    <code>{{ item.code }}</code>
-                </template>
                 <template #cell(account)="{ item }">
                     <BaseParticipantAccount :account="item.account" v-if="item.account" />
                 </template>
-                <template #cell(createdAt)="{ item }">
-                    <small>{{ item.createdAt }}</small>
+                <template #cell(code)="{ item }">
+                    <code>{{ item.code }}</code>
                 </template>
                 <template #cell(id)="{ item }">
                     <b-dropdown variant="link" size="sm" no-caret right>
@@ -42,7 +38,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { format } from 'date-fns';
 import { TCouponCodeState } from '@thxnetwork/dashboard/store/modules/pools';
 import BaseParticipantAccount from '../BaseParticipantAccount.vue';
 
@@ -77,7 +72,6 @@ export default class ModalRewardCustomCreate extends Vue {
         if (!this.couponCodeList[this.pool._id] || !this.couponCodeList[this.pool._id][this.reward._id]) return [];
         return this.couponCodeList[this.pool._id][this.reward._id].results.map((c) => ({
             code: c.code,
-            created: format(new Date(c.createdAt), 'd-M yyyy (HH:mm)'),
             account: c.account,
             id: c._id,
         }));
@@ -117,3 +111,14 @@ export default class ModalRewardCustomCreate extends Vue {
     }
 }
 </script>
+<style lang="scss">
+.table-coupons {
+    td:nth-child(2) {
+        width: 200px;
+        overlfow: scroll;
+    }
+    td:nth-child(2) {
+        width: 100px;
+    }
+}
+</style>

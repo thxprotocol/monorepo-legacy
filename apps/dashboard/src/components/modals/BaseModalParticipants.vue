@@ -7,6 +7,9 @@
                 :total-rows="rewardPayments.total"
                 :selectedItems="selectedItems"
                 :actions="[]"
+                :query="query"
+                @query="onInputQuery"
+                @query-submit="onChangeQuery"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
@@ -124,12 +127,23 @@ export default class BaseModalParticipants extends Vue {
         //
     }
 
+    onChangeQuery() {
+        if (this.query && this.query.length < 3) return;
+        this.page = 1;
+        this.getPayments();
+    }
+
+    onInputQuery(query: string) {
+        this.query = query;
+    }
+
     async getPayments() {
         this.isLoading = true;
         await this.$store.dispatch('pools/listRewardPayments', {
             reward: this.reward,
             page: this.page,
             limit: this.limit,
+            query: this.query,
         });
         this.isLoading = false;
     }
