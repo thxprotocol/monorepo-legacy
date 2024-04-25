@@ -180,6 +180,10 @@ export type TPaymentState = {
     [poolId: string]: TPayment[];
 };
 
+export type TTwitterQueryState = {
+    [poolId: string]: TTwitterQuery[];
+};
+
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
     _all: IPools = {};
@@ -197,6 +201,11 @@ class PoolModule extends VuexModule {
     _analyticsMetrics: IPoolAnalyticsLeaderBoard = {};
     _invoices: TInvoiceState = {};
     _payments: TPaymentState = {};
+    _twitterQueries: TTwitterQueryState = {};
+
+    get twitterQueries() {
+        return this._twitterQueries;
+    }
 
     get all() {
         return this._all;
@@ -348,6 +357,12 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
+    setQuestTwitterQuery(query: TTwitterQuery) {
+        if (!this._twitterQueries[query.poolId]) Vue.set(this._twitterQueries, query.poolId, {});
+        Vue.set(this._twitterQueries[query.poolId], query._id, query);
+    }
+
+    @Mutation
     setReward(reward: TReward) {
         if (!this._rewards[reward.poolId]) return;
 
@@ -494,6 +509,27 @@ class PoolModule extends VuexModule {
         });
 
         this.context.commit('setIdentities', { poolId: payload.pool._id, result: data });
+    }
+
+    @Action({ rawError: true })
+    async createTwitterQuery({ pool, data }: { pool: TPool; data: { operators: { [operatorKey: string]: string } } }) {
+        await axios({
+            method: 'POST',
+            url: `/pools/${pool._id}/integrations/twitter`,
+            data,
+        });
+    }
+
+    @Action({ rawError: true })
+    async listTwitterQueries({ pool }: { pool: TPool }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/integrations/twitter`,
+        });
+
+        for (const query of data) {
+            this.context.commit('setQuestTwitterQuery', query);
+        }
     }
 
     @Action({ rawError: true })

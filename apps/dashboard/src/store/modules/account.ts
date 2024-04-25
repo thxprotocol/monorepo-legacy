@@ -100,6 +100,17 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async searchTweets(payload: { data: { operators: { [queryKey: string]: string } } }) {
+        const { data } = await axios({
+            method: 'POST',
+            url: `/account/twitter/search`,
+            data: payload.data,
+        });
+
+        return data;
+    }
+
+    @Action({ rawError: true })
     async signinRedirect(payload: {
         signupToken: string;
         signupEmail: string;

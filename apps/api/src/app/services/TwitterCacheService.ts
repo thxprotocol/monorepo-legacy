@@ -1,16 +1,58 @@
 import { AccessTokenKind, JobType, OAuthRequiredScopes, OAuthTwitterScope } from '@thxnetwork/common/enums';
 import { agenda } from '../util/agenda';
-import { Job, QuestSocial, TwitterLike, TwitterRepost } from '../models';
+import { Job, QuestSocial, TwitterLike, TwitterRepost, TwitterUser } from '../models';
 import { AxiosResponse } from 'axios';
 import { logger } from '../util/logger';
 import AccountProxy from '../proxies/AccountProxy';
 import TwitterDataProxy from '../proxies/TwitterDataProxy';
+import { TwitterPost } from '../models/TwitterPost';
 
 function findUserById(users: { id: string }[], userId: string) {
     return users.find((user: { id: string }) => user.id === userId);
 }
 
 export default class TwitterCacheService {
+    static savePost(post: TTwitterPostResponse, media: TTwitterMediaResponse[]) {
+        return TwitterPost.findOneAndUpdate(
+            {
+                postId: post.id,
+            },
+            {
+                postId: post.id,
+                userId: post.author_id,
+                text: post.text,
+                media: media.map((m: TTwitterMediaResponse) => ({
+                    url: m.url,
+                    type: m.type,
+                    previewImageUrl: m.preview_image_url,
+                    width: m.width,
+                    height: m.height,
+                })),
+            },
+            { upsert: true, new: true },
+        );
+    }
+
+    static saveUser(user: TTwitterUserResponse) {
+        return TwitterUser.findOneAndUpdate(
+            { userId: user.id },
+            {
+                userId: user.id,
+                profileImgUrl: user.profile_image_url,
+                name: user.name,
+                username: user.username,
+                publicMetrics: {
+                    followersCount: user.public_metrics.followers_count,
+                    followingCount: user.public_metrics.following_count,
+                    tweetCount: user.public_metrics.tweet_count,
+                    listedCount: user.public_metrics.listed_count,
+                    likeCount: user.public_metrics.like_count,
+                },
+            },
+            { upsert: true, new: true },
+        );
+    }
+
     static async updateRepostCache(
         account: TAccount,
         quest: TQuestSocial,
