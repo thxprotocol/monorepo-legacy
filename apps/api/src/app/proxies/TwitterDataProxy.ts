@@ -132,6 +132,7 @@ export default class TwitterDataProxy {
                 method: 'GET',
                 params: { query, ...options },
             });
+            logger.info(`Twitter Query Results: ${data.meta.result_count}`);
             if (!data.meta.result_count) return [];
 
             return data.data.map((post) => {

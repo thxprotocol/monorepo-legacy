@@ -13,6 +13,7 @@ type TTwitterQuery = {
     createdAt: Date;
     poolId: string;
     query: string;
+    matchCount: number;
     operators: {
         from: string[];
         to: string[];

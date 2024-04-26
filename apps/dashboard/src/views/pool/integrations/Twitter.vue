@@ -45,9 +45,9 @@
                                 <template #button-content>
                                     <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                                 </template>
-                                <b-dropdown-item v-b-modal="`modalTwitterQueryCreate-${item.query._id}`">
+                                <!-- <b-dropdown-item v-b-modal="`modalTwitterQueryCreate-${item.query._id}`">
                                     Edit
-                                </b-dropdown-item>
+                                </b-dropdown-item> -->
                                 <b-dropdown-item @click="onClickDelete(item.query)"> Delete </b-dropdown-item>
                             </b-dropdown>
                             <BaseModalTwitterQueryCreate
@@ -143,7 +143,7 @@ export default class IntegrationTwitterView extends Vue {
     }
 
     onClickDelete(query: TTwitterQuery) {
-        this.$store.dispatch('pools/deleteQuery', { query });
+        this.$store.dispatch('pools/removeTwitterQuery', { query });
     }
 
     onClickConnect() {

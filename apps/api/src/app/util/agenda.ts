@@ -16,6 +16,7 @@ import InvoiceService from '../services/InvoiceService';
 import BalancerService from '../services/BalancerService';
 import RewardService from '../services/RewardService';
 import PaymentService from '../services/PaymentService';
+import TwitterQueryService from '../services/TwitterQueryService';
 
 const agenda = new Agenda({
     db: {
@@ -30,7 +31,7 @@ const agenda = new Agenda({
 agenda.define(JobType.UpdateCampaignRanks, updateCampaignRanks);
 agenda.define(JobType.UpdateParticipantRanks, (job: Job) => updateParticipantRanks(job));
 agenda.define(JobType.UpdatePendingTransactions, updatePendingTransactions);
-agenda.define(JobType.CreateTwitterQuests, createTwitterQuests);
+agenda.define(JobType.CreateTwitterQuests, () => TwitterQueryService.searchJob());
 agenda.define(JobType.CreateQuestEntry, (job: Job) => QuestService.createEntryJob(job));
 agenda.define(JobType.CreateRewardPayment, (job: Job) => RewardService.createPaymentJob(job));
 agenda.define(JobType.DeploySafe, (job: Job) => SafeService.createJob(job));
@@ -50,8 +51,8 @@ db.connection.once('open', async () => {
     await agenda.every('10 seconds', JobType.UpdatePrices);
     await agenda.every('10 seconds', JobType.UpdatePendingTransactions);
     await agenda.every('15 minutes', JobType.UpsertInvoices);
-    await agenda.every('15 minutes', JobType.CreateTwitterQuests);
     await agenda.every('15 minutes', JobType.UpdateAPR);
+    await agenda.every('1 day', JobType.CreateTwitterQuests);
     await agenda.every('1 day', JobType.AssertPayments);
     await agenda.every('0 9 * * MON', JobType.SendCampaignReport);
 

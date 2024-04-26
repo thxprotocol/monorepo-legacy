@@ -357,6 +357,11 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
+    unsetQuestTwitterQuery(query: TTwitterQuery) {
+        Vue.delete(this._twitterQueries[query.poolId], query._id);
+    }
+
+    @Mutation
     setQuestTwitterQuery(query: TTwitterQuery) {
         if (!this._twitterQueries[query.poolId]) Vue.set(this._twitterQueries, query.poolId, {});
         Vue.set(this._twitterQueries[query.poolId], query._id, query);
@@ -512,10 +517,19 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async removeTwitterQuery({ query }: { query: TTwitterQuery }) {
+        await axios({
+            method: 'DELETE',
+            url: `/pools/${query.poolId}/integrations/twitter/queries/${query._id}`,
+        });
+        this.context.commit('unsetQuestTwitterQuery', query);
+    }
+
+    @Action({ rawError: true })
     async createTwitterQuery({ pool, data }: { pool: TPool; data: { operators: { [operatorKey: string]: string } } }) {
         await axios({
             method: 'POST',
-            url: `/pools/${pool._id}/integrations/twitter`,
+            url: `/pools/${pool._id}/integrations/twitter/queries`,
             data,
         });
     }
@@ -524,7 +538,7 @@ class PoolModule extends VuexModule {
     async listTwitterQueries({ pool }: { pool: TPool }) {
         const { data } = await axios({
             method: 'GET',
-            url: `/pools/${pool._id}/integrations/twitter`,
+            url: `/pools/${pool._id}/integrations/twitter/queries`,
         });
 
         for (const query of data) {
