@@ -95,6 +95,7 @@ export class TwitterQuery {
                     //     return (items.length > 1 ? `(${cashtags})` : cashtags) + media;
                     // }
                 }
+                return;
             })
             .filter((query) => !!query)
             .join(' ');
