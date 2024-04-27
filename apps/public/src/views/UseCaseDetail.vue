@@ -252,7 +252,7 @@ export const content = {
         lead: 'The Royal Dutch Mint provides a digital twin NFT using QR codes on their coincard packaging.',
         description: 'Claim your $RDM NFT collectible when you purchase your coincard.',
         features: [features['qr-codes'], features['nft-reward']],
-        video: 'https://www.youtube.com/watch?v=VC3cGMdTF5k?rel=0',
+        video: 'https://www.youtube.com/embed/VC3cGMdTF5k?rel=0',
         to: '/use-cases/royal-dutch-mint',
     },
     'forest-knight': {

@@ -11,6 +11,32 @@ type TTwitterLike = {
     postId: string;
 };
 
+type TTwitterPostPublicMetrics = {
+    retweetCount: number;
+    replyCount: number;
+    likeCount: number;
+    quoteCount: number;
+    bookmarkCount: number;
+    impressionCount: number;
+};
+
+type TTwitterPostPublicMetricsResponse = {
+    retweet_count: number;
+    reply_count: number;
+    like_count: number;
+    quote_count: number;
+    bookmark_count: number;
+    impression_count: number;
+};
+
+type TTwitterPost = {
+    _id: string;
+    userId: string;
+    postId: string;
+    text: string;
+    publicMetrics: TTwitterPostPublicMetrics;
+};
+
 type TTwitterRepost = {
     _id: string;
     userId: string;
@@ -38,4 +64,53 @@ type TTwitterUser = {
     name: string;
     username: string;
     publicMetrics: TTwitterUserPublicMetrics;
+};
+
+type TTwitterUserResponse = {
+    id: string;
+    profile_image_url: string;
+    name: string;
+    username: string;
+    public_metrics: {
+        followers_count: number;
+        following_count: number;
+        tweet_count: number;
+        listed_count: number;
+        like_count: number;
+    };
+};
+
+type TTwitterOperators = {
+    from: string[];
+    to: string[];
+    text: string[];
+    url: string[];
+    hashtags: string[];
+    cashtags: string[];
+    mentions: string[];
+    media: string | null;
+};
+
+type TTwitterMediaResponse = {
+    preview_image_url: string;
+    width: number;
+    height: number;
+    type: 'video' | 'photo' | 'animated_gif';
+    url: string;
+};
+
+type TTwitterPostResponse = {
+    id: string;
+    author_id: string;
+    text: string;
+    created_at: number;
+    attachments: {
+        media_keys: string[];
+    };
+    public_metrics: TTwitterPostPublicMetricsResponse;
+};
+
+type TTwitterPostWithUserAndMedia = TTwitterPostResponse & {
+    user: TTwitterUserResponse;
+    media: TTwitterMediaResponse[];
 };

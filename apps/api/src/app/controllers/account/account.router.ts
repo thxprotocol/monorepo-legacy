@@ -15,6 +15,7 @@ import ReadAccountDiscord from './discord/get.controller';
 import GetAccountByDiscordId from './discord/get.by-discord-id.controller';
 import CreateTwitterTweet from './twitter/tweet/post.controller';
 import CreateTwitterUser from './twitter/user/post.controller';
+import CreateTwitterSearch from './twitter/search/post.controller';
 import CreateTwitterUserByUsername from './twitter/user/by/username/post.controller';
 
 const router = express.Router();
@@ -50,6 +51,12 @@ router.post(
     assertRequestInput(CreateTwitterUser.validation),
     guard.check(['account:read']),
     CreateTwitterUser.controller,
+);
+router.post(
+    '/twitter/search/',
+    assertRequestInput(CreateTwitterSearch.validation),
+    guard.check(['account:read']),
+    CreateTwitterSearch.controller,
 );
 router.post(
     '/twitter/user/by/username',

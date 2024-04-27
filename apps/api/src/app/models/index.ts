@@ -52,6 +52,7 @@ export { TwitterFollower, TwitterFollowerDocument } from './TwitterFollower';
 export { TwitterLike, TwitterLikeDocument } from './TwitterLike';
 export { TwitterRepost, TwitterRepostDocument } from './TwitterRepost';
 export { TwitterUser, TwitterUserDocument } from './TwitterUser';
+export { TwitterQuery, TwitterQueryDocument } from './TwitterQuery';
 export { Wallet, WalletDocument } from './Wallet';
 export { Webhook, WebhookDocument } from './Webhook';
 export { WebhookRequest, WebhookRequestDocument } from './WebhookRequest';

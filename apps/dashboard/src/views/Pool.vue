@@ -45,7 +45,7 @@ export default class PoolView extends Vue {
     }
 
     get isTrialEnd() {
-        return this.pool.trialEndsAt && !isFuture(new Date(this.pool.trialEndsAt));
+        return this.pool && this.pool.trialEndsAt && !isFuture(new Date(this.pool.trialEndsAt));
     }
 
     @Watch('pool.balance')

@@ -94,6 +94,65 @@ export default class TwitterDataProxy {
         return { tweet: data.data[0], user: data.includes.users[0] };
     }
 
+    /**
+     * '/tweets/search/recent'
+     *
+     * Rate Limits:
+     * Application-only: 450 requests per 15-minute window shared among all users of your app
+     * User context: 180 requests per 15-minute window per each authenticated user
+     */
+    static async search(
+        account: TAccount,
+        query: string,
+        options: {
+            'max_results': number;
+            'media.fields': string;
+            'tweet.fields': string;
+            'user.fields': string;
+            'expansions': string;
+            'sort_order': string;
+        } = {
+            'max_results': 10,
+            'sort_order': 'recency', // relevancy / recency
+            'expansions': 'author_id,attachments.media_keys',
+            'tweet.fields': 'public_metrics,possibly_sensitive,created_at,attachments',
+            'user.fields': 'public_metrics,username,profile_image_url,verified,verified_type',
+            'media.fields': 'public_metrics,url,preview_image_url,width,height,alt_text',
+        },
+    ) {
+        const token = await AccountProxy.getToken(account, AccessTokenKind.Twitter, [
+            OAuthTwitterScope.UsersRead,
+            OAuthTwitterScope.TweetRead,
+        ]);
+        try {
+            logger.info(`Twitter Query: "${query}"`);
+
+            const data = await this.request(token, {
+                url: '/tweets/search/recent',
+                method: 'GET',
+                params: { query, ...options },
+            });
+            logger.info(`Twitter Query Results: ${data.meta.result_count}`);
+            if (!data.meta.result_count) return [];
+
+            return data.data.map((post) => {
+                const user = data.includes.users.find((user) => user.id === post.author_id);
+                const media =
+                    post.attachments &&
+                    post.attachments.media_keys &&
+                    post.attachments.media_keys.map((key) => data.includes.media.find((m) => m.media_key === key));
+                return {
+                    user,
+                    media,
+                    ...post,
+                };
+            });
+        } catch (error) {
+            logger.error(error);
+            return [];
+        }
+    }
+
     static async searchTweets(account: TAccount, query: string) {
         const token = await AccountProxy.getToken(account, AccessTokenKind.Twitter, [
             OAuthTwitterScope.UsersRead,
