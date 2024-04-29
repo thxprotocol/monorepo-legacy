@@ -3,6 +3,10 @@ import { Wallet, Identity, PoolDocument } from '@thxnetwork/api/models';
 import { uuidV1 } from '../util/uuid';
 
 export default class IdentityService {
+    static findIdentity(uuid: string) {
+        return Identity.findOne({ uuid });
+    }
+
     static getUUID(pool: PoolDocument, salt: string) {
         const poolId = String(pool._id);
         return uuidV1(`${poolId}${salt}`);

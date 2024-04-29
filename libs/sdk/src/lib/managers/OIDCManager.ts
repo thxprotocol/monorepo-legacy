@@ -6,6 +6,7 @@ import BaseManager from './BaseManager';
 export enum THXOIDCGrant {
     AuthorizationCode = 'authorization_code',
     ClientCredentials = 'client_credentials',
+    IdentityCode = 'identity_code',
 }
 
 class OIDCManager extends BaseManager {

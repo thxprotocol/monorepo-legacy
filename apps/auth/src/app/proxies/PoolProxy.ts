@@ -18,4 +18,16 @@ export default {
         });
         return data;
     },
+
+    findIdentity: async ({ code, clientId }) => {
+        const { data } = await apiClient({
+            method: 'GET',
+            url: `/v1/identities`,
+            params: {
+                code,
+                clientId,
+            },
+        });
+        return data;
+    },
 };
