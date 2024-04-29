@@ -333,16 +333,21 @@ export default class TwitterDataProxy {
             };
         }
         try {
-            const results = await this.search(account, quest.content);
-            if (!results.length) {
+            // Not checking the cache here on purpose as we would need to
+            // reverse engineer the query logic in order to match as X would
+            const posts = await this.search(account, quest.content);
+            if (!posts.length) {
                 return {
                     result: false,
                     reason: `X: Could not find a post matching the requirements in the last 7 days.`,
                 };
             }
 
+            // Cache the posts for future reference and display in UI
+            await TwitterCacheService.savePosts(posts);
+
             // Check if account username is among the results
-            const authorUsernames = results.map((result) => result.user.username);
+            const authorUsernames = posts.map((result) => result.user.username);
             if (!authorUsernames.includes(token.metadata.username.toLowerCase())) {
                 return {
                     result: false,

@@ -16,7 +16,10 @@ export default class TwitterQueryService {
 
         for (const query of queries) {
             const pool = pools.find((pool) => pool._id === query.poolId);
+            if (!pool) continue;
+
             const account = accounts.find((account) => account.sub === pool.sub);
+            if (!account) continue;
 
             await this.search(account, query);
         }

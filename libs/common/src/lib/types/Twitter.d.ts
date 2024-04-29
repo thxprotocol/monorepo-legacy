@@ -3,6 +3,7 @@ type TTwitterRequestParams = {
     pagination_token?: string;
     since_id?: string;
     max_id?: string;
+    query?: string;
 };
 
 type TTwitterLike = {

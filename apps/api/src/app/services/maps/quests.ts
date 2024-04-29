@@ -51,7 +51,7 @@ export const requirementMap: {
         logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} Message verification started`);
         const resultUser = await TwitterDataProxy.validateUser(account, quest);
         if (!resultUser.result) return resultUser;
-        const validationResultMessage = await TwitterDataProxy.validateQuery(account, quest.content);
+        const validationResultMessage = await TwitterDataProxy.validateQuery(account, quest);
         if (!validationResultMessage.result) return validationResultMessage;
     },
     [QuestSocialRequirement.DiscordGuildJoined]: async (account, quest) => {

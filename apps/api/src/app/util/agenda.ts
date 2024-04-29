@@ -1,7 +1,6 @@
 import db from './database';
 import { Agenda, Job } from '@hokify/agenda';
 import { updatePendingTransactions } from '@thxnetwork/api/jobs/updatePendingTransactions';
-import { createTwitterQuests } from '@thxnetwork/api/jobs/createTwitterQuests';
 import { sendPoolAnalyticsReport } from '@thxnetwork/api/jobs/sendPoolAnalyticsReport';
 import { updateCampaignRanks } from '@thxnetwork/api/jobs/updateCampaignRanks';
 import { updateParticipantRanks } from '@thxnetwork/api/jobs/updateParticipantRanks';
@@ -47,12 +46,12 @@ agenda.define(JobType.AssertPayments, () => PaymentService.assertPaymentsJob());
 db.connection.once('open', async () => {
     await agenda.start();
 
+    await agenda.every('1 minute', JobType.CreateTwitterQuests);
     await agenda.every('5 minutes', JobType.UpdateCampaignRanks);
     await agenda.every('10 seconds', JobType.UpdatePrices);
     await agenda.every('10 seconds', JobType.UpdatePendingTransactions);
     await agenda.every('15 minutes', JobType.UpsertInvoices);
     await agenda.every('15 minutes', JobType.UpdateAPR);
-    await agenda.every('1 day', JobType.CreateTwitterQuests);
     await agenda.every('1 day', JobType.AssertPayments);
     await agenda.every('0 9 * * MON', JobType.SendCampaignReport);
 

@@ -12,6 +12,15 @@ function findUserById(users: { id: string }[], userId: string) {
 }
 
 export default class TwitterCacheService {
+    static savePosts(posts: TTwitterPostWithUserAndMedia[]) {
+        return Promise.all(
+            posts.map(async (post) => {
+                await this.savePost(post, post.media);
+                await this.saveUser(post.user);
+            }),
+        );
+    }
+
     static savePost(post: TTwitterPostResponse, media: TTwitterMediaResponse[]) {
         return TwitterPost.findOneAndUpdate(
             {
@@ -51,6 +60,28 @@ export default class TwitterCacheService {
             },
             { upsert: true, new: true },
         );
+    }
+
+    static async updatePostCache(
+        account: TAccount,
+        quest: TQuestSocial,
+        token: TToken,
+        params: TTwitterRequestParams = { max_results: 100 },
+    ) {
+        try {
+            logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} Post verification calls X API.`);
+            const data = await TwitterDataProxy.request(token, {
+                url: `/tweets/search/recent`,
+                method: 'GET',
+                params,
+            });
+            logger.info(`Fetched ${data.meta.result_count} reposts from X.`);
+
+            // If no results return early
+            if (!data.meta.result_count) return;
+        } catch (res) {
+            await this.handleRateLimitError(res, account, quest, params, JobType.UpdateTwitterRepostCache);
+        }
     }
 
     static async updateRepostCache(
