@@ -86,7 +86,6 @@ type TTwitterOperators = {
     text: string[];
     url: string[];
     hashtags: string[];
-    cashtags: string[];
     mentions: string[];
     media: string | null;
 };

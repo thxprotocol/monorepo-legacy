@@ -37,7 +37,6 @@ export class TwitterQuery {
             text: this.stringifyField(operators['text']),
             url: this.stringifyFieldURL(operators['url']),
             hashtags: this.stringifyField(operators['hashtags']),
-            cashtags: this.stringifyField(operators['cashtags']),
             mentions: this.stringifyField(operators['mentions']),
             media: operators['media'],
         } as { [key: string]: string };
@@ -87,13 +86,6 @@ export class TwitterQuery {
                         const mentions = items.map((tag: string) => `@${tag}`).join(' OR ');
                         return (items.length > 1 ? `(${mentions})` : mentions) + media;
                     }
-                    // Only for Twitter API Pro users (starting at 5k per month)
-                    // case 'cashtags': {
-                    //     const items = operators[key] as string[];
-                    //     if (!items) return;
-                    //     const cashtags = items.map((tag: string) => `$${tag}`).join(' OR ');
-                    //     return (items.length > 1 ? `(${cashtags})` : cashtags) + media;
-                    // }
                 }
                 return;
             })

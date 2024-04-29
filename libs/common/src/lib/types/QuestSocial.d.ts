@@ -20,7 +20,6 @@ type TTwitterQuery = {
         text: string[];
         url: string[];
         hashtags: string[];
-        cashtags: string[];
         mentions: string[];
         media: string | null;
         maxAgeInSeconds: number;

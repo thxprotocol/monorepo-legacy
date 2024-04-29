@@ -15,7 +15,6 @@ export const TwitterQuery = mongoose.model<TwitterQueryDocument>(
                 text: [String],
                 url: [String],
                 hashtags: [String],
-                cashtags: [String],
                 mentions: [String],
                 media: String,
                 maxAgeInSeconds: Number,

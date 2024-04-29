@@ -50,15 +50,6 @@
                     </b-card>
                     <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
                         <BaseFormGroupInputMultiple
-                            label="Cashtags"
-                            tooltip="Match posts containing any of these cashtags."
-                            prepend="$"
-                            :fields="cashtags"
-                            @input="cashtags = $event"
-                        />
-                    </b-card>
-                    <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
-                        <BaseFormGroupInputMultiple
                             label="Mentions"
                             tooltip="Match posts containing any of these mentions."
                             prepend="@"
@@ -130,7 +121,6 @@ export default class BaseModalTwitterQueryCreate extends Vue {
     text = [''];
     url = [''];
     hashtags = [''];
-    cashtags = [''];
     mentions = [''];
     media: string | null = null;
 
@@ -146,7 +136,6 @@ export default class BaseModalTwitterQueryCreate extends Vue {
         this.text = this.query.operators.text ? this.query.operators.text : this.text;
         this.url = this.query.operators.url ? this.query.operators.url : this.url;
         this.hashtags = this.query.operators.hashtags ? this.query.operators.hashtags : this.hashtags;
-        this.cashtags = this.query.operators.cashtags ? this.query.operators.cashtags : this.cashtags;
         this.mentions = this.query.operators.mentions ? this.query.operators.mentions : this.mentions;
         this.media = this.query.operators.media ? this.query.operators.media : this.media;
     }
@@ -158,7 +147,6 @@ export default class BaseModalTwitterQueryCreate extends Vue {
             text: this.text,
             url: this.url,
             hashtags: this.hashtags,
-            cashtags: this.cashtags,
             mentions: this.mentions,
             media: this.media,
         };
@@ -173,6 +161,7 @@ export default class BaseModalTwitterQueryCreate extends Vue {
                 data: { operators },
             });
             this.$store.dispatch('pools/listTwitterQueries', { pool: this.pool });
+            this.$bvModal.hide(this.id);
         } catch (error) {
             throw error;
         } finally {
@@ -181,4 +170,3 @@ export default class BaseModalTwitterQueryCreate extends Vue {
     }
 }
 </script>
-@thxnetwork/common/twitterQuery
