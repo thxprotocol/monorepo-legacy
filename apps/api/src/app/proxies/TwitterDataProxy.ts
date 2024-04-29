@@ -6,9 +6,9 @@ import { logger } from '../util/logger';
 import { TwitterLike } from '../models/TwitterLike';
 import { TwitterRepost } from '../models/TwitterRepost';
 import { TwitterUser } from '../models/TwitterUser';
+import { TwitterFollower } from '../models/TwitterFollower';
 import TwitterCacheService from '../services/TwitterCacheService';
 import AccountProxy from './AccountProxy';
-import { TwitterFollower } from '../models/TwitterFollower';
 
 async function twitterClient(config: AxiosRequestConfig) {
     const client = axios.create({ ...config, baseURL: TWITTER_API_ENDPOINT });
@@ -309,22 +309,48 @@ export default class TwitterDataProxy {
         }
     }
 
-    static async validateMessage(account: TAccount, message: string) {
+    static async validateQuery(account: TAccount, quest: TQuestSocial) {
         const token = await AccountProxy.getToken(
             account,
             AccessTokenKind.Twitter,
             OAuthRequiredScopes.TwitterValidateMessage,
         );
         if (!token) return { result: false, reason: 'X: Could not find a connection for this account.' };
-        try {
-            const query = this.parseSearchQuery(message);
-            const results = await this.searchTweets(account, query);
-            if (results.length) return { result: true, reason: '' };
-
+        if (!token.metadata || !token.metadata.username) {
+            return { result: false, reason: 'X: Could not find your username. Please reconnect your X account.' };
+        }
+        // Check connected X account username is known
+        const { operators } = JSON.parse(quest.contentMetadata);
+        if (!token.metadata || !token.metadata.username) {
+            return { result: false, reason: 'X: Could not find your username. Please reconnect your X account.' };
+        }
+        // Check if account username is among the results
+        const authorWhitelist = operators.from.map((author) => author);
+        if (!authorWhitelist.includes(token.metadata.username.toLowerCase())) {
             return {
                 result: false,
-                reason: `X: Could not find a post matching the requirements for your account in the last 7 days.`,
+                reason: `X: Your X account @${token.metadata.username} is not whitelisted for this quest.`,
             };
+        }
+        try {
+            const results = await this.search(account, quest.content);
+            if (!results.length) {
+                return {
+                    result: false,
+                    reason: `X: Could not find a post matching the requirements in the last 7 days.`,
+                };
+            }
+
+            // Check if account username is among the results
+            const authorUsernames = results.map((result) => result.user.username);
+            if (!authorUsernames.includes(token.metadata.username.toLowerCase())) {
+                return {
+                    result: false,
+                    reason: `X: Your X account @${token.metadata.username} is not found among the matched posts.`,
+                };
+            }
+
+            return { result: true, reason: '' };
         } catch (res) {
             return this.handleError(account, token, res);
         }

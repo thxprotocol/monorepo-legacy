@@ -5,7 +5,7 @@ export enum QuestSocialRequirement {
     TwitterRetweet = 3,
     TwitterFollow = 4,
     DiscordGuildJoined = 5,
-    TwitterMessage = 6,
+    TwitterQuery = 6,
     TwitterLikeRetweet = 7,
     DiscordMessage = 8,
     DiscordMessageReaction = 9,

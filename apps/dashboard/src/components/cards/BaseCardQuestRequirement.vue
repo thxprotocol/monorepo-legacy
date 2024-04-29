@@ -69,7 +69,7 @@ import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue'
 import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vue';
 import BaseDropdownDiscordMessage from '../dropdowns/BaseDropdownDiscordMessage.vue';
 import BaseDropdownDiscordMessageReaction from '../dropdowns/BaseDropdownDiscordMessageReaction.vue';
-import BaseDropdownTwitterMessage from '../dropdowns/BaseDropdownTwitterMessage.vue';
+import BaseDropdownTwitterQuery from '../dropdowns/BaseDropdownTwitterQuery.vue';
 import { interactionComponentMap } from '@thxnetwork/common/maps';
 
 @Component({
@@ -83,7 +83,7 @@ import { interactionComponentMap } from '@thxnetwork/common/maps';
         BaseDropdownYoutubeVideo,
         BaseDropdownTwitterTweets,
         BaseDropdownTwitterUsers,
-        BaseDropdownTwitterMessage,
+        BaseDropdownTwitterQuery,
     },
     computed: mapGetters({
         profile: 'account/profile',

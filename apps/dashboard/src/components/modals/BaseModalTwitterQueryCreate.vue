@@ -3,82 +3,22 @@
         <template #modal-body>
             <b-row>
                 <b-col>
-                    <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
-                        <BaseFormGroupInputMultiple
-                            label="From"
-                            tooltip="Match posts from any of these authors."
-                            prepend="@"
-                            :fields="from"
-                            @input="from = $event"
-                        />
-                    </b-card>
-                    <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
-                        <BaseFormGroupInputMultiple
-                            label="To"
-                            tooltip="Match posts in reply to any of these authors."
-                            prepend="@"
-                            :fields="to"
-                            @input="to = $event"
-                        />
-                    </b-card>
-                    <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
-                        <BaseFormGroupInputMultiple
-                            label="Text"
-                            tooltip="Match posts containing any of these specific texts."
-                            prepend=""
-                            :fields="text"
-                            @input="text = $event"
-                        />
-                    </b-card>
-                    <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
-                        <BaseFormGroupInputMultiple
-                            label="URL's"
-                            tooltip="Match posts containing these URL's. Will match shortened URL's as well."
-                            prepend="https://"
-                            :fields="url"
-                            @input="url = $event"
-                        />
-                    </b-card>
-                    <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
-                        <BaseFormGroupInputMultiple
-                            label="Hashtags"
-                            tooltip="Match posts containing any of these hashtags."
-                            prepend="#"
-                            :fields="hashtags"
-                            @input="hashtags = $event"
-                        />
-                    </b-card>
-                    <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
-                        <BaseFormGroupInputMultiple
-                            label="Mentions"
-                            tooltip="Match posts containing any of these mentions."
-                            prepend="@"
-                            :fields="mentions"
-                            @input="mentions = $event"
-                        />
-                    </b-card>
-                    <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
-                        <div class="d-flex align-items-start">
-                            <div class="d-flex align-items-start mr-2 flex-grow-0" style="min-width: 90px">
-                                Media
-                                <b-link
-                                    class="text-muted"
-                                    v-b-tooltip
-                                    title="Match posts containing specific media types. Set to Ignore to match no or any type of media."
-                                >
-                                    <sup>
-                                        <i class="fas fa-info-circle" />
-                                    </sup>
-                                </b-link>
-                            </div>
-                            <b-form-select v-model="media" size="sm">
-                                <b-form-select-option value="ignore">Ignore</b-form-select-option>
-                                <b-form-select-option value="has:media">Any Media</b-form-select-option>
-                                <b-form-select-option value="has:images">Images</b-form-select-option>
-                                <b-form-select-option value="has:video_link">Video</b-form-select-option>
-                            </b-form-select>
-                        </div>
-                    </b-card>
+                    <BaseCardTwitterQueryOperators
+                        :from="from"
+                        @from="from = $event"
+                        :to="to"
+                        @to="to = $event"
+                        :text="text"
+                        @text="text = $event"
+                        :url="url"
+                        @url="url = $event"
+                        :hashtags="hashtags"
+                        @hashtags="hashtags = $event"
+                        :mentions="mentions"
+                        @mentions="mentions = $event"
+                        :media="media"
+                        @media="media = $event"
+                    />
                 </b-col>
                 <b-col>
                     <BaseCardTwitterPostPreviews :operators="operators" />
@@ -102,14 +42,14 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TwitterQuery } from '@thxnetwork/common/twitter';
 import BaseModal from './BaseModal.vue';
-import BaseFormGroupInputMultiple from '@thxnetwork/dashboard/components/form-group/BaseFormGroupInputMultiple.vue';
 import BaseCardTwitterPostPreviews from '@thxnetwork/dashboard/components/cards/BaseCardTwitterPostPreviews.vue';
+import BaseCardTwitterQueryOperators from '@thxnetwork/dashboard/components/cards/BaseCardTwitterQueryOperators.vue';
 
 @Component({
     components: {
         BaseModal,
-        BaseFormGroupInputMultiple,
         BaseCardTwitterPostPreviews,
+        BaseCardTwitterQueryOperators,
     },
 })
 export default class BaseModalTwitterQueryCreate extends Vue {

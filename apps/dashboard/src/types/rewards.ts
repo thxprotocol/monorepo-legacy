@@ -45,7 +45,7 @@ export const providerList: TQuestSocialProvider[] = [
             QuestSocialRequirement.TwitterLikeRetweet,
             QuestSocialRequirement.TwitterLike,
             QuestSocialRequirement.TwitterRetweet,
-            QuestSocialRequirement.TwitterMessage,
+            QuestSocialRequirement.TwitterQuery,
         ],
     },
     {
@@ -87,8 +87,8 @@ export const providerInteractionList: TQuestSocialInteraction[] = [
         items: [],
     },
     {
-        type: QuestSocialRequirement.TwitterMessage,
-        name: 'Message',
+        type: QuestSocialRequirement.TwitterQuery,
+        name: 'Query',
         items: [],
     },
     {

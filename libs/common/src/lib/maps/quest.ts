@@ -3,7 +3,7 @@ import { QuestVariant, QuestSocialRequirement } from '../enums';
 export const questInteractionVariantMap = {
     [QuestSocialRequirement.TwitterFollow]: QuestVariant.Twitter,
     [QuestSocialRequirement.TwitterLike]: QuestVariant.Twitter,
-    [QuestSocialRequirement.TwitterMessage]: QuestVariant.Twitter,
+    [QuestSocialRequirement.TwitterQuery]: QuestVariant.Twitter,
     [QuestSocialRequirement.TwitterRetweet]: QuestVariant.Twitter,
     [QuestSocialRequirement.TwitterLikeRetweet]: QuestVariant.Twitter,
     [QuestSocialRequirement.YouTubeLike]: QuestVariant.YouTube,
