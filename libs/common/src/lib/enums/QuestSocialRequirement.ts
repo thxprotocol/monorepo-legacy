@@ -10,15 +10,3 @@ export enum QuestSocialRequirement {
     DiscordMessage = 8,
     DiscordMessageReaction = 9,
 }
-
-export enum QuestRuleVariant {
-    Contains = 'contains',
-    Sentiment = 'sentiment',
-    MaxAge = 'maxage',
-    Author = 'author',
-}
-
-export enum QuestRuleSetVariant {
-    All = 'all',
-    Any = 'any',
-}

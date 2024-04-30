@@ -1,6 +1,10 @@
 <template>
     <base-modal size="xl" hide-footer title="Twitter Query" :id="id" @show="onShow" :error="error">
         <template #modal-body>
+            <p class="text-muted">
+                Use this query builder to create requirements for posts that should be amplified with Repost & Like
+                quests. <strong>Make sure to publish quests for desired matches!</strong>
+            </p>
             <b-row>
                 <b-col>
                     <BaseCardTwitterQueryOperators
@@ -56,12 +60,12 @@ export default class BaseModalTwitterQueryCreate extends Vue {
     isLoading = false;
     isCopied = false;
     error = '';
-    from = [''];
-    to = [''];
-    text = [''];
-    url = [''];
-    hashtags = [''];
-    mentions = [''];
+    from = [];
+    to = [];
+    text = [];
+    url = [];
+    hashtags = [];
+    mentions = [];
     media: string | null = null;
 
     @Prop() id!: string;

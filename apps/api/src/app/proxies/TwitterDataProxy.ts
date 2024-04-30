@@ -337,9 +337,13 @@ export default class TwitterDataProxy {
         }
 
         try {
-            // Not checking the cache here on purpose as we would need to
-            // reverse engineer the query logic in order to find matched similar to how X would
-            const posts = await this.search(account, quest.content);
+            // If there is an author requirement we do not add the from operator for the current user
+            // and search for the given list instead
+            const query = operators.from.length ? quest.content : `from:${username} ${quest.content}`;
+
+            // Not checking the cache here on purpose as we would need to reverse engineer
+            // the query logic in order to find matched similar to how X would
+            const posts = await this.search(account, query);
             if (!posts.length) {
                 return {
                     result: false,
@@ -351,7 +355,7 @@ export default class TwitterDataProxy {
             await TwitterCacheService.savePosts(posts);
 
             // Check if account username is among the results
-            const authorUsernames = posts.map((result) => result.user.username);
+            const authorUsernames = posts.map((result) => result.user.username.toLowerCase());
             if (!authorUsernames.includes(token.metadata.username.toLowerCase())) {
                 return {
                     result: false,
