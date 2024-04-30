@@ -50,7 +50,10 @@ export default class QuestService {
                         const decorated = await serviceMap[variant].decorate({ quest, account, data });
                         const isLocked = await LockService.getIsLocked(quest.locks, account);
                         const isExpired = this.isExpired(quest);
-                        return { ...decorated, isLocked, isExpired };
+                        const QuestEntry = serviceMap[variant].models.entry;
+                        const entryCount = await QuestEntry.countDocuments({ questId: q.id });
+
+                        return { ...decorated, entryCount, isLocked, isExpired };
                     } catch (error) {
                         logger.error(error);
                     }
