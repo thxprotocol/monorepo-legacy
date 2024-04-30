@@ -26,7 +26,7 @@ export default class THXBrowserClient {
 
     constructor(options: THXBrowserClientOptions) {
         this.options = options;
-        this.request = new RequestManager(this, THXOIDCGrant.AuthorizationCode);
+        this.request = new RequestManager(this, THXOIDCGrant.IdentityCode);
         this.account = new AccountManager(this);
         this.erc20 = new ERC20Manager(this);
         this.erc721 = new ERC721Manager(this);

@@ -1,12 +1,18 @@
-import { THXAPIClient } from '@thxnetwork/sdk/clients/';
+import { THXIdentityClient } from '@thxnetwork/sdk/clients/';
 import { API_URL, AUTH_URL } from '@thxnetwork/api/config/secrets';
 
 export default async function main() {
-    const thx = new THXAPIClient({
+    const thx = new THXIdentityClient({
         authUrl: AUTH_URL,
         apiUrl: API_URL,
-        clientId: 'BitG_fGJI5k70kQgEeyID',
-        clientSecret: 'pniCrGc49hb_l18_MrpahhJC8SexAV1nHE9RR9CkZA2qA_YbRmJd1hSHl5fcpJA1ngmRwuoys47JfLtYJDlSgA',
+        identityCode: '2696b790-ef39-11ee-87ea-6bb7a1e089a0',
+        clientId: 'YWkb_YikIVekMGEN8oyUS',
+        clientSecret: 'a9WisgaR9hKLN_A48tGSROkD38Za-S5BNeAmQ5MzWxbkrbK61MJ8o1YVxTddGgle4szGutqXU8A0hfo8n5O0hQ',
     });
-    await thx.events.create({ event: 'test', identity: '4de81b20-c71d-11ee-ac82-a970a9e4ebc4' });
+    try {
+        await thx.request.authenticate();
+        console.log('getuser', thx.request.getUser());
+    } catch (error) {
+        console.log(error);
+    }
 }

@@ -18,25 +18,19 @@ if (NODE_ENV !== 'production') {
 }
 
 oidc.registerGrantType('identity_code', async (ctx, next) => {
+    console.log('handling grant!');
     console.log(ctx);
 
     // X-Identity-Code header is required for this grant type
-    // if (!ctx.headers['x-identity-code']) {
-    //     ctx.throw(400, 'X-Identity-Code header is required');
-    // }
-
-    // Get client_id here as it will tell us which pool to load
-
-    const code = ctx.headers['x-identity-code'];
+    const code = ctx.request.header['x-identity-code'];
+    console.log(code);
     if (!code) throw new BadRequestError('X-Identity-Code header is required');
 
+    // Get client_id here as it will tell us which pool to load
     const clientId = ctx.oidc.client.clientId;
     if (!clientId) throw new BadRequestError('Client ID is required');
 
-    const pool = await PoolProxy.findByClientId(clientId);
-    if (!pool) throw new NotFoundError('Pool not found for this client_id');
-
-    const identity = await PoolProxy.findIdentity({ code });
+    const identity = await PoolProxy.findIdentity({ code, clientId });
     if (!identity) throw new BadRequestError('Identity not found');
     if (!identity.sub) throw new BadRequestError('Identity not connected to account');
 
@@ -48,7 +42,7 @@ oidc.registerGrantType('identity_code', async (ctx, next) => {
         gty: 'identity_code',
         accountId: account.id,
         client: ctx.oidc.client,
-        grantId: ctx.oidc.uuid,
+        grantId: 'identity_code',
         scope: ctx.oidc.params.scope as string,
     });
 

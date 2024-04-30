@@ -1,10 +1,10 @@
 import db from '@thxnetwork/api/util/database';
-import main from './src/veLiquidity';
+// import main from './src/veLiquidity';
 // import main from './src/veTransfer';
 // import main from './src/veRewards';
 // import main from './src/time';
 // import main from './src/galachain';
-// import main from './src/sdk';
+import main from './src/sdk';
 // import main from './src/vethx';
 // import main from './src/safe';
 // import main from './src/ipfs';

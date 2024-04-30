@@ -47,6 +47,11 @@ type THXAPIClientOptions = {
     campaignId?: string;
 } & THXOIDCConfig;
 
+type THXIdentityClientOptions = {
+    apiUrl?: string;
+    identityCode?: string;
+} & THXOIDCConfig;
+
 type THXBrowserClientOptions = {
     apiUrl?: string;
     poolId: string;
@@ -86,6 +91,7 @@ export {
     THXQuestSocialCreateData,
     THXWidgetOptions,
     THXAPIClientOptions,
+    THXIdentityClientOptions,
     THXBrowserClientOptions,
     THXOIDCConfig,
     THXOIDCUser,

@@ -10,13 +10,15 @@ export enum THXOIDCGrant {
 }
 
 class OIDCManager extends BaseManager {
+    identityCode: string;
     user: THXOIDCUser | null;
     expiresAt: number;
     grantType: THXOIDCGrant;
 
-    constructor(client: THXClient, grantType: THXOIDCGrant) {
+    constructor(client: THXClient, grantType: THXOIDCGrant, identityCode = '') {
         super(client);
 
+        this.identityCode = identityCode;
         this.grantType = grantType;
         this.expiresAt = Date.now();
         this.user = null;
@@ -45,6 +47,7 @@ class OIDCManager extends BaseManager {
 
     async authenticate() {
         const initMap = {
+            [String(THXOIDCGrant.IdentityCode)]: this.getIdentityCodeGrant.bind(this),
             [String(THXOIDCGrant.ClientCredentials)]: this.getClientCredentialsGrant.bind(this),
             [String(THXOIDCGrant.AuthorizationCode)]: this.getAuthorizationCodeGrant.bind(this),
         };
@@ -74,6 +77,36 @@ class OIDCManager extends BaseManager {
             this.setUser(response.data);
         } catch (error) {
             throw new Error('Request for ' + THXOIDCGrant.ClientCredentials + ' grant failed.');
+        }
+    }
+
+    private async getIdentityCodeGrant({ identityCode, clientId, clientSecret }: THXOIDCConfig) {
+        console.log({ identityCode });
+        const authHeader = 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+        const headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Identity-Code': identityCode || '',
+            'Authorization': authHeader,
+        };
+        const url = `${this.authUrl}/token`;
+        const params = new URLSearchParams({
+            code: this.identityCode || '',
+            grant_type: THXOIDCGrant.IdentityCode,
+            scope: 'openid identities:read pools:read',
+        });
+
+        try {
+            const response = await axios({
+                method: 'POST',
+                url,
+                headers,
+                data: params,
+            });
+
+            this.setUser(response.data);
+        } catch (error) {
+            console.log(error);
+            throw new Error('Request for ' + THXOIDCGrant.IdentityCode + ' grant failed.');
         }
     }
 

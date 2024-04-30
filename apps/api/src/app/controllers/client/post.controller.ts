@@ -25,6 +25,14 @@ export default {
                 response_types: [],
                 scope: 'openid events:write identities:read identities:write pools:write pools:read',
             },
+            [GrantVariant.IdentityCode]: {
+                application_type: 'web',
+                grant_types: [grantType],
+                request_uris: [],
+                redirect_uris: [],
+                response_types: [],
+                scope: 'openid identities:read pools:read',
+            },
         };
         const payload = grantMap[grantType];
         const client = await ClientProxy.create(req.auth.sub, poolId, payload, name);
