@@ -84,6 +84,7 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async signin(args: SigninRedirectArgs & { state: { [key: string]: string } }) {
+        if (!args.state) args.state = {};
         args.state['returnPath'] = window.location.pathname + window.location.search;
         return await this.userManager.signinRedirect(args);
     }
