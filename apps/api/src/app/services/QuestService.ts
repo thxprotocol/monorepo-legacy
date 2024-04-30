@@ -29,6 +29,7 @@ export default class QuestService {
 
     static async list({ pool, data, account }: { pool: PoolDocument; data: Partial<TQuestEntry>; account?: TAccount }) {
         const questVariants = Object.keys(QuestVariant).filter((v) => !isNaN(Number(v)));
+        const author = await AccountProxy.findById(pool.sub);
         const callback: any = async (variant: QuestVariant) => {
             const Quest = serviceMap[variant].models.quest;
             const quests = await Quest.find({
@@ -51,9 +52,14 @@ export default class QuestService {
                         const isLocked = await LockService.getIsLocked(quest.locks, account);
                         const isExpired = this.isExpired(quest);
                         const QuestEntry = serviceMap[variant].models.entry;
-                        const entryCount = await QuestEntry.countDocuments({ questId: q.id });
-
-                        return { ...decorated, entryCount, isLocked, isExpired };
+                        const distinctSubs = await QuestEntry.countDocuments({ questId: q.id }).distinct('sub');
+                        return {
+                            ...decorated,
+                            entryCount: distinctSubs.length,
+                            author: { username: author.username },
+                            isLocked,
+                            isExpired,
+                        };
                     } catch (error) {
                         logger.error(error);
                     }
