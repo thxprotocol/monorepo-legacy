@@ -31,9 +31,14 @@ export default class Redirect extends Vue {
 
         if (this.user && this.user.state) {
             // This handles a collaborator request while being signed in
-            const { poolId, collaboratorRequestToken } = this.user.state as any;
+            const { poolId, collaboratorRequestToken, returnPath } = this.user.state as any;
             if (poolId && collaboratorRequestToken) {
                 this.updateCollaborator(poolId, collaboratorRequestToken);
+            }
+
+            if (returnPath) {
+                this.$router.push(returnPath);
+                return;
             }
         }
 

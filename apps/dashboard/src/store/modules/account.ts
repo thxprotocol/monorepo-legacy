@@ -83,8 +83,14 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async signin(args: SigninRedirectArgs & { state: { [key: string]: string } }) {
+        args.state['returnPath'] = window.location.pathname + window.location.search;
+        return await this.userManager.signinRedirect(args);
+    }
+
+    @Action({ rawError: true })
     async connectRedirect(payload: { kind: AccessTokenKind; scopes: OAuthScope[]; returnUrl: string }) {
-        await this.userManager.signinRedirect({
+        await this.context.dispatch('signin', {
             extraQueryParams: {
                 prompt: 'connect',
                 access_token_kind: payload.kind,
@@ -92,11 +98,6 @@ class AccountModule extends VuexModule {
                 return_url: payload.returnUrl,
             },
         });
-    }
-
-    @Action({ rawError: true })
-    async signin(args: SigninRedirectArgs) {
-        return await this.userManager.signinRedirect(args);
     }
 
     @Action({ rawError: true })
@@ -158,7 +159,7 @@ class AccountModule extends VuexModule {
             extraQueryParams['verifyEmailToken'] = payload.verifyEmailToken;
         }
 
-        return await this.userManager.signinRedirect({
+        return await this.context.dispatch('signin', {
             state,
             extraQueryParams,
         });
@@ -166,7 +167,7 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async accountRedirect(returnPath: string) {
-        await this.userManager.signinRedirect({
+        await this.context.dispatch('signin', {
             extraQueryParams: {
                 prompt: 'account-settings',
                 return_url: BASE_URL + returnPath,
@@ -176,7 +177,7 @@ class AccountModule extends VuexModule {
 
     @Action({ rawError: true })
     async connect({ kind, scopes = [] }: { kind: AccessTokenKind; scopes: OAuthScope[] }) {
-        await this.userManager.signinRedirect({
+        await this.context.dispatch('signin', {
             prompt: 'connect',
             extraQueryParams: {
                 access_token_kind: kind,
