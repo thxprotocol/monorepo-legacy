@@ -60,18 +60,18 @@ const routes: Array<RouteConfig> = [
             {
                 name: 'integrations',
                 path: 'integrations',
-                redirect: 'integrations/discord',
+                redirect: 'integrations/twitter',
                 component: () => import('../views/pool/Integrations.vue'),
                 children: [
-                    {
-                        name: 'IntegrationsDiscord',
-                        path: 'discord',
-                        component: () => import('../views/pool/integrations/Discord.vue'),
-                    },
                     {
                         name: 'IntegrationsTwitter',
                         path: 'twitter',
                         component: () => import('../views/pool/integrations/Twitter.vue'),
+                    },
+                    {
+                        name: 'IntegrationsDiscord',
+                        path: 'discord',
+                        component: () => import('../views/pool/integrations/Discord.vue'),
                     },
                     {
                         name: 'IntegrationsGalachain',
