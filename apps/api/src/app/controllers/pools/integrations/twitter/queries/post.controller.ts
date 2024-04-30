@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { TwitterQuery } from '@thxnetwork/api/models';
 import { TwitterQuery as TwitterQueryParser } from '@thxnetwork/common/twitter';
 import { BadRequestError } from '@thxnetwork/api/util/errors';
+import TwitterQueryService from '@thxnetwork/api/services/TwitterQueryService';
 
 const validation = [param('id').isMongoId(), body('operators').customSanitizer((ops) => TwitterQueryParser.parse(ops))];
 
@@ -17,6 +18,9 @@ const controller = async (req: Request, res: Response) => {
         operators: req.body.operators,
         query,
     });
+
+    // Search initial posts and create quests
+    await TwitterQueryService.run([twitterQuery]);
 
     res.status(201).json(twitterQuery);
 };

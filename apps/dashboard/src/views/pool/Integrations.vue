@@ -48,7 +48,7 @@ export default class SettingsTwitterView extends Vue {
         },
         {
             name: 'Galachain',
-            class: 'fas fa-box',
+            class: 'fa-kit fa-gala',
             route: 'galachain',
         },
         {

@@ -12,7 +12,7 @@ function findUserById(users: { id: string }[], userId: string) {
 }
 
 export default class TwitterCacheService {
-    static savePosts(posts: TTwitterPostWithUserAndMedia[]) {
+    static savePosts(posts: TTwitterPostWithUserAndMedia[] = []) {
         return Promise.all(
             posts.map(async (post) => {
                 await this.savePost(post, post.media);
@@ -21,7 +21,7 @@ export default class TwitterCacheService {
         );
     }
 
-    static savePost(post: TTwitterPostResponse, media: TTwitterMediaResponse[]) {
+    static savePost(post: TTwitterPostResponse, media: TTwitterMediaResponse[] = []) {
         return TwitterPost.findOneAndUpdate(
             {
                 postId: post.id,
@@ -43,6 +43,7 @@ export default class TwitterCacheService {
     }
 
     static saveUser(user: TTwitterUserResponse) {
+        if (!user) return;
         return TwitterUser.findOneAndUpdate(
             { userId: user.id },
             {

@@ -2,10 +2,8 @@
     <div class="d-flex align-items-start">
         <div class="d-flex align-items-start mr-2 flex-grow-0" style="min-width: 90px">
             {{ label }}
-            <b-link v-if="tooltip" class="text-muted ml-1" v-b-tooltip :title="tooltip">
-                <sup>
-                    <i class="fas fa-info-circle" />
-                </sup>
+            <b-link v-if="tooltip" class="text-muted ml-auto" v-b-tooltip :title="tooltip">
+                <i class="fas fa-info-circle" />
             </b-link>
         </div>
         <div class="d-flex align-items-start jusify-content-between flex-wrap flex-grow-1">

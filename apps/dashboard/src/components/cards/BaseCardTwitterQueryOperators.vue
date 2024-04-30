@@ -59,13 +59,11 @@
                 <div class="d-flex align-items-start mr-2 flex-grow-0" style="min-width: 90px">
                     Media
                     <b-link
-                        class="text-muted"
+                        class="text-muted ml-auto"
                         v-b-tooltip
                         title="Match posts containing specific media types. Set to Ignore to match no or any type of media."
                     >
-                        <sup>
-                            <i class="fas fa-info-circle" />
-                        </sup>
+                        <i class="fas fa-info-circle" />
                     </b-link>
                 </div>
                 <b-form-select :value="media" @change="$emit('media', $event)" size="sm">

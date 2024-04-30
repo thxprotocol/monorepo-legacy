@@ -85,7 +85,7 @@ export default class ModalRewardCustomCreate extends Vue {
                 metadata: this.metadata,
             });
             this.$bvModal.hide(this.id);
-            this.$emit('submit');
+            this.$emit('submit', { isPublished: this.reward.isPublished });
         } catch (error) {
             this.error = (error as Error).toString();
         } finally {

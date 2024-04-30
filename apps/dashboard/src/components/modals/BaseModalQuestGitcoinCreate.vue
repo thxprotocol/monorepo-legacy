@@ -112,8 +112,8 @@ export default class ModalQuestWeb3Create extends Vue {
                 score: this.score,
             })
             .then(() => {
-                this.$emit('submit');
                 this.$bvModal.hide(this.id);
+                this.$emit('submit', { isPublished: this.isPublished });
                 this.isLoading = false;
             });
     }
