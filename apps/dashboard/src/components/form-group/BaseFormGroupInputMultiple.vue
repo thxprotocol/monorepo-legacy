@@ -48,6 +48,7 @@ export default class IntegrationTwitterView extends Vue {
         fields[key] = value;
         this.$emit('input', fields);
     }
+
     onClickRemove(key: number) {
         const fields = this.fields;
         fields.splice(key, 1);
