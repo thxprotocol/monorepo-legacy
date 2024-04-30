@@ -8,7 +8,6 @@ export const TwitterQuery = mongoose.model<TwitterQueryDocument>(
         {
             poolId: String,
             query: String,
-            matchCount: Number,
             operators: {
                 from: [String],
                 to: [String],
@@ -17,9 +16,9 @@ export const TwitterQuery = mongoose.model<TwitterQueryDocument>(
                 hashtags: [String],
                 mentions: [String],
                 media: String,
-                maxAgeInSeconds: Number,
-                likeCount: Number,
-                repostCount: Number,
+                // maxAgeInSeconds: Number,
+                // likeCount: Number,
+                // repostCount: Number,
             },
         },
         { timestamps: true },

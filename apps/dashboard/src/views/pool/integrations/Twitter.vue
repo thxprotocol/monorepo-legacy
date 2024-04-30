@@ -123,6 +123,7 @@ export default class IntegrationTwitterView extends Vue {
         return Object.values(this.twitterQueryList[this.$route.params.id]).map((query) => {
             return {
                 queryString: query.query,
+                posts: query.posts.length,
                 createdAt: query.createdAt,
                 query,
             };

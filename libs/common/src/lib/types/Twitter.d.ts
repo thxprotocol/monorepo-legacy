@@ -34,6 +34,7 @@ type TTwitterPost = {
     _id: string;
     userId: string;
     postId: string;
+    queryId: string;
     text: string;
     publicMetrics: TTwitterPostPublicMetrics;
 };

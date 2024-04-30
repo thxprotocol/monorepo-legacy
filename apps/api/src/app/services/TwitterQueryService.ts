@@ -7,11 +7,22 @@ import { Pool, PoolDocument, QuestSocial, TwitterQuery, TwitterQueryDocument } f
 import { DASHBOARD_URL } from '../config/secrets';
 import { QuestSocialRequirement, QuestVariant } from '@thxnetwork/common/enums';
 import { logger } from '../util/logger';
+import { TwitterPost } from '../models/TwitterPost';
 
 export default class TwitterQueryService {
     static async searchJob() {
         const queries = await TwitterQuery.find();
         await this.run(queries);
+    }
+
+    static async list(query: { poolId: string }) {
+        const queries = await TwitterQuery.find(query);
+        return await Promise.all(
+            queries.map(async (query) => {
+                const posts = await TwitterPost.find({ queryId: query.id });
+                return { ...query.toJSON(), posts };
+            }),
+        );
     }
 
     static async run(queries: TwitterQueryDocument[]) {
@@ -91,7 +102,7 @@ export default class TwitterQueryService {
 
     static async createQuest(query: TTwitterQuery, post: TTwitterPost, user: TTwitterUser) {
         const file = null; // TODO Download buffer for the media first URL and upload with quest
-        const quest = await QuestService.create(
+        await QuestService.create(
             QuestVariant.Twitter,
             query.poolId,
             {
@@ -113,6 +124,5 @@ export default class TwitterQueryService {
             },
             file,
         );
-        console.log(quest);
     }
 }

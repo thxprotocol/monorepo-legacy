@@ -8,6 +8,7 @@ export const TwitterPost = mongoose.model<TwitterPostDocument>(
         {
             userId: String,
             postId: String,
+            queryId: String,
             text: String,
             publicMetrics: {
                 retweetCount: Number,
