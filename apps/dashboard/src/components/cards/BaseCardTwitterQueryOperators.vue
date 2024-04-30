@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
+        <b-card v-if="from" bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
             <BaseFormGroupInputMultiple
                 label="From"
                 tooltip="Match posts from any of these authors."
@@ -9,7 +9,7 @@
                 @input="$emit('from', $event)"
             />
         </b-card>
-        <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
+        <b-card v-if="to" bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
             <BaseFormGroupInputMultiple
                 label="To"
                 tooltip="Match posts in reply to any of these authors."
@@ -18,7 +18,7 @@
                 @input="$emit('to', $event)"
             />
         </b-card>
-        <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
+        <b-card v-if="text" bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
             <BaseFormGroupInputMultiple
                 label="Text"
                 tooltip="Match posts containing any of these specific texts."
@@ -27,7 +27,7 @@
                 @input="$emit('text', $event)"
             />
         </b-card>
-        <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
+        <b-card v-if="url" bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
             <BaseFormGroupInputMultiple
                 label="URL's"
                 tooltip="Match posts containing these URL's. Will match shortened URL's as well."
@@ -36,7 +36,7 @@
                 @input="$emit('url', $event)"
             />
         </b-card>
-        <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
+        <b-card v-if="hashtags" bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
             <BaseFormGroupInputMultiple
                 label="Hashtags"
                 tooltip="Match posts containing any of these hashtags."
@@ -45,7 +45,7 @@
                 @input="$emit('hashtags', $event)"
             />
         </b-card>
-        <b-card bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
+        <b-card v-if="mentions" bg-variant="light" class="mb-2 w-100" body-class="pt-2 pb-1 px-3">
             <BaseFormGroupInputMultiple
                 label="Mentions"
                 tooltip="Match posts containing any of these mentions."

@@ -5,19 +5,19 @@
                 <b-col>
                     <BaseCardTwitterQueryOperators
                         :from="from"
-                        @from="from = $event"
+                        @from="set('from', $event)"
                         :to="to"
-                        @to="to = $event"
+                        @to="set('to', $event)"
                         :text="text"
-                        @text="text = $event"
+                        @text="set('text', $event)"
                         :url="url"
-                        @url="url = $event"
+                        @url="set('url', $event)"
                         :hashtags="hashtags"
-                        @hashtags="hashtags = $event"
+                        @hashtags="set('hashtags', $event)"
                         :mentions="mentions"
-                        @mentions="mentions = $event"
+                        @mentions="set('mentions', $event)"
                         :media="media"
-                        @media="media = $event"
+                        @media="set('media', $event)"
                     />
                 </b-col>
                 <b-col>
@@ -26,13 +26,13 @@
             </b-row>
             <b-button
                 :disabled="isLoading"
-                class="rounded-pill"
+                class="rounded-pill mt-3"
                 type="submit"
                 @click="onClickCreate"
                 variant="primary"
                 block
             >
-                Create Rule
+                Start Query
             </b-button>
         </template>
     </base-modal>
@@ -90,6 +90,11 @@ export default class BaseModalTwitterQueryCreate extends Vue {
             mentions: this.mentions,
             media: this.media,
         };
+    }
+
+    set(key: string, value: string[]) {
+        this[key] = [];
+        this[key] = value;
     }
 
     async onClickCreate() {

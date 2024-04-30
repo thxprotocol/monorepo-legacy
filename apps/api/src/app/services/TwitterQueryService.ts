@@ -39,7 +39,7 @@ export default class TwitterQueryService {
         }
     }
 
-    static async search(account: TAccount, query: TTwitterQuery) {
+    static async search(account: TAccount, query: TwitterQueryDocument) {
         const posts = await TwitterDataProxy.search(account, query.query);
 
         // Filter out the posts that already have a quest
@@ -53,7 +53,7 @@ export default class TwitterQueryService {
         for (const post of postsWithoutQuest) {
             await this.createQuest(
                 query,
-                await TwitterCacheService.savePost(post, post.media),
+                await TwitterCacheService.savePost(post, post.media, query),
                 await TwitterCacheService.saveUser(post.user),
             );
         }

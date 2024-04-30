@@ -27,7 +27,7 @@ export class TwitterQuery {
         const items = field.filter((value: string) => value.length && value !== 'https://');
         if (!items.length) return;
 
-        return JSON.stringify(items.map((url: string) => `https://${url}`));
+        return JSON.stringify(items.map((url: string) => `"https://${url}"`));
     }
 
     static stringify(operators: TTwitterOperators) {

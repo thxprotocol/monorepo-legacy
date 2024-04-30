@@ -1,6 +1,6 @@
 import { AccessTokenKind, JobType, OAuthRequiredScopes, OAuthTwitterScope } from '@thxnetwork/common/enums';
 import { agenda } from '../util/agenda';
-import { Job, QuestSocial, TwitterLike, TwitterRepost, TwitterUser } from '../models';
+import { Job, QuestSocial, TwitterLike, TwitterQueryDocument, TwitterRepost, TwitterUser } from '../models';
 import { AxiosResponse } from 'axios';
 import { logger } from '../util/logger';
 import AccountProxy from '../proxies/AccountProxy';
@@ -12,22 +12,24 @@ function findUserById(users: { id: string }[], userId: string) {
 }
 
 export default class TwitterCacheService {
-    static savePosts(posts: TTwitterPostWithUserAndMedia[] = []) {
+    static savePosts(posts: TTwitterPostWithUserAndMedia[] = [], query?: TwitterQueryDocument) {
         return Promise.all(
             posts.map(async (post) => {
-                await this.savePost(post, post.media);
+                await this.savePost(post, post.media, query);
                 await this.saveUser(post.user);
             }),
         );
     }
 
-    static savePost(post: TTwitterPostResponse, media: TTwitterMediaResponse[] = []) {
+    static savePost(post: TTwitterPostResponse, media: TTwitterMediaResponse[] = [], query?: TwitterQueryDocument) {
         return TwitterPost.findOneAndUpdate(
             {
                 postId: post.id,
+                queryId: query && query.id,
             },
             {
                 postId: post.id,
+                queryId: query && query.id,
                 userId: post.author_id,
                 text: post.text,
                 media: media.map((m: TTwitterMediaResponse) => ({

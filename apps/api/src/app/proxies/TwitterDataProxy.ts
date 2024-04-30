@@ -319,22 +319,26 @@ export default class TwitterDataProxy {
         if (!token.metadata || !token.metadata.username) {
             return { result: false, reason: 'X: Could not find your username. Please reconnect your X account.' };
         }
+
         // Check connected X account username is known
         const { operators } = JSON.parse(quest.contentMetadata);
         if (!token.metadata || !token.metadata.username) {
             return { result: false, reason: 'X: Could not find your username. Please reconnect your X account.' };
         }
-        // Check if account username is among the results
+
+        // Check if account username is among the required post authors if this operator is available
         const authorWhitelist = operators.from.map((author) => author);
-        if (!authorWhitelist.includes(token.metadata.username.toLowerCase())) {
+        const username = token.metadata.username.toLowerCase();
+        if (operators.from.length && !authorWhitelist.includes(username)) {
             return {
                 result: false,
                 reason: `X: Your X account @${token.metadata.username} is not whitelisted for this quest.`,
             };
         }
+
         try {
             // Not checking the cache here on purpose as we would need to
-            // reverse engineer the query logic in order to match as X would
+            // reverse engineer the query logic in order to find matched similar to how X would
             const posts = await this.search(account, quest.content);
             if (!posts.length) {
                 return {
