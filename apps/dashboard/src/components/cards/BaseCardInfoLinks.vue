@@ -3,12 +3,12 @@
         <b-button
             class="d-flex align-items-center justify-content-between w-100"
             variant="light"
-            v-b-toggle.collapse-token-gating
+            @click="isVisible = !isVisible"
         >
             <strong>Info Links</strong>
             <i :class="`fa-chevron-${isVisible ? 'up' : 'down'}`" class="fas m-0"></i>
         </b-button>
-        <b-collapse id="collapse-token-gating" v-model="isVisible">
+        <b-collapse v-model="isVisible">
             <hr class="mt-0" />
             <div class="px-3">
                 <slot></slot>
@@ -50,7 +50,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TInfoLink, TPool } from '@thxnetwork/types/interfaces';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 
 @Component({})

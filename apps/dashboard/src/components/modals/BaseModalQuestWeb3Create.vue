@@ -149,7 +149,7 @@ export default class ModalQuestWeb3Create extends Vue {
                 locks: this.locks,
             })
             .then(() => {
-                this.$emit('submit');
+                this.$emit('submit', { isPublished: this.isPublished });
                 this.$bvModal.hide(this.id);
                 this.isLoading = false;
             });

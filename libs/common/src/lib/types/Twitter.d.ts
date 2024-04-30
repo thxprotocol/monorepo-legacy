@@ -3,6 +3,7 @@ type TTwitterRequestParams = {
     pagination_token?: string;
     since_id?: string;
     max_id?: string;
+    query?: string;
 };
 
 type TTwitterLike = {
@@ -33,6 +34,7 @@ type TTwitterPost = {
     _id: string;
     userId: string;
     postId: string;
+    queryId: string;
     text: string;
     publicMetrics: TTwitterPostPublicMetrics;
 };

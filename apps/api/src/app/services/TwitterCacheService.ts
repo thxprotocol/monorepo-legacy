@@ -1,6 +1,6 @@
 import { AccessTokenKind, JobType, OAuthRequiredScopes, OAuthTwitterScope } from '@thxnetwork/common/enums';
 import { agenda } from '../util/agenda';
-import { Job, QuestSocial, TwitterLike, TwitterRepost, TwitterUser } from '../models';
+import { Job, QuestSocial, TwitterLike, TwitterQueryDocument, TwitterRepost, TwitterUser } from '../models';
 import { AxiosResponse } from 'axios';
 import { logger } from '../util/logger';
 import AccountProxy from '../proxies/AccountProxy';
@@ -12,13 +12,24 @@ function findUserById(users: { id: string }[], userId: string) {
 }
 
 export default class TwitterCacheService {
-    static savePost(post: TTwitterPostResponse, media: TTwitterMediaResponse[]) {
+    static savePosts(posts: TTwitterPostWithUserAndMedia[] = [], query?: TwitterQueryDocument) {
+        return Promise.all(
+            posts.map(async (post) => {
+                await this.savePost(post, post.media, query);
+                await this.saveUser(post.user);
+            }),
+        );
+    }
+
+    static savePost(post: TTwitterPostResponse, media: TTwitterMediaResponse[] = [], query?: TwitterQueryDocument) {
         return TwitterPost.findOneAndUpdate(
             {
                 postId: post.id,
+                queryId: query && query.id,
             },
             {
                 postId: post.id,
+                queryId: query && query.id,
                 userId: post.author_id,
                 text: post.text,
                 media: media.map((m: TTwitterMediaResponse) => ({
@@ -34,6 +45,7 @@ export default class TwitterCacheService {
     }
 
     static saveUser(user: TTwitterUserResponse) {
+        if (!user) return;
         return TwitterUser.findOneAndUpdate(
             { userId: user.id },
             {
@@ -51,6 +63,28 @@ export default class TwitterCacheService {
             },
             { upsert: true, new: true },
         );
+    }
+
+    static async updatePostCache(
+        account: TAccount,
+        quest: TQuestSocial,
+        token: TToken,
+        params: TTwitterRequestParams = { max_results: 100 },
+    ) {
+        try {
+            logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} Post verification calls X API.`);
+            const data = await TwitterDataProxy.request(token, {
+                url: `/tweets/search/recent`,
+                method: 'GET',
+                params,
+            });
+            logger.info(`Fetched ${data.meta.result_count} reposts from X.`);
+
+            // If no results return early
+            if (!data.meta.result_count) return;
+        } catch (res) {
+            await this.handleRateLimitError(res, account, quest, params, JobType.UpdateTwitterRepostCache);
+        }
     }
 
     static async updateRepostCache(

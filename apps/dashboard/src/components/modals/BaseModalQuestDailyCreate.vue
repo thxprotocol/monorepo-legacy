@@ -146,7 +146,7 @@ export default class ModalRewardDailyCreate extends Vue {
             })
             .then(() => {
                 this.$bvModal.hide(this.id);
-                this.$emit('submit');
+                this.$emit('submit', { isPublished: this.isPublished });
                 this.isLoading = false;
             });
     }

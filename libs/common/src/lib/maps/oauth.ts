@@ -31,7 +31,7 @@ export const interactionComponentMap = {
     [QuestSocialRequirement.TwitterRetweet]: 'BaseDropdownTwitterTweets',
     [QuestSocialRequirement.TwitterLikeRetweet]: 'BaseDropdownTwitterTweets',
     [QuestSocialRequirement.TwitterFollow]: 'BaseDropdownTwitterUsers',
-    [QuestSocialRequirement.TwitterMessage]: 'BaseDropdownTwitterMessage',
+    [QuestSocialRequirement.TwitterQuery]: 'BaseDropdownTwitterQuery',
     [QuestSocialRequirement.DiscordGuildJoined]: 'BaseDropdownDiscordGuilds',
     [QuestSocialRequirement.DiscordMessage]: 'BaseDropdownDiscordMessage',
     [QuestSocialRequirement.DiscordMessageReaction]: 'BaseDropdownDiscordMessageReaction',

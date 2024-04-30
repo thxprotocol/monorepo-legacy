@@ -8,11 +8,19 @@
         <b-form-row>
             <b-col md="4">
                 <div>
-                    <strong>Automation</strong>
+                    <strong>Repost &amp; Like Automation</strong>
                 </div>
                 <p class="text-muted">
-                    Automatically create Repost & Like Quests for posts on X that match your criteria.
+                    Runs a search for posts that match your requirements and create unpublished Repost & Like quests.
                 </p>
+                <ul class="text-muted">
+                    <li>Search runs daily</li>
+                    <li>Search runs when query is added</li>
+                    <li>New quests are unpublished by default</li>
+                    <li>Matched post are sorted by recency</li>
+                    <li>Max. 10 posts are matched per search</li>
+                    <li>Retweets are ignored</li>
+                </ul>
             </b-col>
             <b-col md="8">
                 <b-form-group label-class="d-flex ">
@@ -58,6 +66,10 @@
                         </template>
                     </BTable>
                 </b-form-group>
+                <b-button variant="link" :to="`/pool/${pool._id}/quests?isPublished=false`" class="rounded-pill">
+                    Unpublished Quests
+                    <i class="fas fa-chevron-right ml-2" />
+                </b-button>
             </b-col>
         </b-form-row>
     </div>
@@ -111,6 +123,7 @@ export default class IntegrationTwitterView extends Vue {
         return Object.values(this.twitterQueryList[this.$route.params.id]).map((query) => {
             return {
                 queryString: query.query,
+                posts: query.posts.length,
                 createdAt: query.createdAt,
                 query,
             };

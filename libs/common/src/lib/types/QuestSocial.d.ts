@@ -13,7 +13,7 @@ type TTwitterQuery = {
     createdAt: Date;
     poolId: string;
     query: string;
-    matchCount: number;
+    posts: TTwitterPost[];
     operators: {
         from: string[];
         to: string[];
@@ -22,8 +22,8 @@ type TTwitterQuery = {
         hashtags: string[];
         mentions: string[];
         media: string | null;
-        maxAgeInSeconds: number;
-        likeCount: number;
-        repostCount: number;
+        // maxAgeInSeconds: number;
+        // likeCount: number;
+        // repostCount: number;
     };
 };

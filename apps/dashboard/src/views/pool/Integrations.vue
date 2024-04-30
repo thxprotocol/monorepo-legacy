@@ -37,18 +37,18 @@ export default class SettingsTwitterView extends Vue {
     pools!: IPools;
     childRoutes = [
         {
-            name: 'Discord',
-            class: 'fab fa-discord',
-            route: 'discord',
-        },
-        {
             name: 'Twitter',
             class: 'fab fa-twitter',
             route: 'twitter',
         },
         {
+            name: 'Discord',
+            class: 'fab fa-discord',
+            route: 'discord',
+        },
+        {
             name: 'Galachain',
-            class: 'fas fa-box',
+            class: 'fa-kit fa-gala',
             route: 'galachain',
         },
         {

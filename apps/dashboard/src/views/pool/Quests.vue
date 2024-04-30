@@ -40,7 +40,7 @@
                                 {{ contentQuests[`${variant.toLowerCase()}-quest`].title }}
                             </p>
                             <component
-                                @submit="listQuests"
+                                @submit="onSubmit"
                                 :variant="variant"
                                 :is="questModalComponentMap[QuestVariant[variant]]"
                                 :id="`${questModalComponentMap[QuestVariant[variant]]}-${variant}`"
@@ -148,7 +148,7 @@
                         <b-dropdown-item @click="onClickDelete(item.quest)"> Delete </b-dropdown-item>
                     </b-dropdown>
                     <component
-                        @submit="listQuests"
+                        @submit="onSubmit"
                         :is="questModalComponentMap[item.quest.variant]"
                         :id="questModalComponentMap[item.quest.variant] + item.quest._id"
                         :pool="pool"
@@ -258,6 +258,8 @@ export default class QuestsView extends Vue {
     }
 
     mounted() {
+        const { isPublished } = this.$route.query;
+        this.isPublished = isPublished ? JSON.parse(isPublished) : true;
         this.listQuests();
     }
 
@@ -276,6 +278,14 @@ export default class QuestsView extends Vue {
         };
         await this.$store.dispatch('pools/listQuests', query);
         this.isLoading = false;
+    }
+
+    openPublished(isPublished: boolean) {
+        this.$router.push({ path: `/pool/${this.pool._id}/quests`, query: { isPublished } });
+    }
+
+    onSubmit(query: { isPublished: boolean }) {
+        this.openPublished(query.isPublished);
     }
 
     onClickUp(quest: TQuest, i: number) {
@@ -304,7 +314,7 @@ export default class QuestsView extends Vue {
     }
 
     onClickFilterPublished(value: boolean) {
-        this.isPublished = value;
+        this.openPublished(value);
         this.listQuests();
     }
 

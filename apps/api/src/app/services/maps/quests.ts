@@ -47,12 +47,11 @@ export const requirementMap: {
         const validationResultFollow = await TwitterDataProxy.validateFollow(account, quest.content);
         if (!validationResultFollow.result) return validationResultFollow;
     },
-    [QuestSocialRequirement.TwitterMessage]: async (account, quest) => {
+    [QuestSocialRequirement.TwitterQuery]: async (account, quest) => {
         logger.info(`[${quest.poolId}][${account.sub}] X Quest ${quest._id} Message verification started`);
-
         const resultUser = await TwitterDataProxy.validateUser(account, quest);
         if (!resultUser.result) return resultUser;
-        const validationResultMessage = await TwitterDataProxy.validateMessage(account, quest.content);
+        const validationResultMessage = await TwitterDataProxy.validateQuery(account, quest);
         if (!validationResultMessage.result) return validationResultMessage;
     },
     [QuestSocialRequirement.DiscordGuildJoined]: async (account, quest) => {
@@ -87,7 +86,7 @@ export const tokenInteractionMap: { [interaction: number]: { kind: AccessTokenKi
         kind: AccessTokenKind.Twitter,
         scopes: OAuthRequiredScopes.TwitterValidateFollow,
     },
-    [QuestSocialRequirement.TwitterMessage]: { kind: AccessTokenKind.Twitter, scopes: OAuthRequiredScopes.TwitterAuth },
+    [QuestSocialRequirement.TwitterQuery]: { kind: AccessTokenKind.Twitter, scopes: OAuthRequiredScopes.TwitterAuth },
     [QuestSocialRequirement.TwitterLikeRetweet]: {
         kind: AccessTokenKind.Twitter,
         scopes: OAuthRequiredScopes.TwitterValidateLike,

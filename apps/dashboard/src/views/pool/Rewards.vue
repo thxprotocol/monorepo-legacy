@@ -25,7 +25,7 @@
                         </div>
                         {{ variant }}
                         <component
-                            @submit="listRewards"
+                            @submit="onSubmit"
                             :is="rewardModalComponentMap[RewardVariant[variant]]"
                             :id="rewardModalComponentMap[RewardVariant[variant]]"
                             :total="allRewards.length"
@@ -118,7 +118,7 @@
                     </b-dropdown>
                     <BaseModalQRCodes :id="`modalQRCodes${item.reward._id}`" :pool="pool" :reward="item.reward" />
                     <component
-                        @submit="listRewards"
+                        @submit="onSubmit"
                         :is="rewardModalComponentMap[item.reward.variant]"
                         :id="rewardModalComponentMap[item.reward.variant] + item.reward._id"
                         :pool="pool"
@@ -192,7 +192,7 @@ export default class RewardsView extends Vue {
         [RewardVariant.Custom]: 'fas fa-gift',
         [RewardVariant.Coupon]: 'fas fa-tags',
         [RewardVariant.DiscordRole]: 'fab fa-discord',
-        [RewardVariant.Galachain]: 'fas fa-box',
+        [RewardVariant.Galachain]: 'fa-kit fa-gala',
     };
 
     pools!: IPools;
@@ -222,6 +222,8 @@ export default class RewardsView extends Vue {
     }
 
     mounted() {
+        const { isPublished } = this.$route.query;
+        this.isPublished = isPublished ? JSON.parse(isPublished) : true;
         this.listRewards();
         this.listQuests();
     }
@@ -244,6 +246,17 @@ export default class RewardsView extends Vue {
             isPublished: this.isPublished,
         });
         this.isLoading = false;
+    }
+
+    openPublished(isPublished: boolean) {
+        console.log(isPublished);
+        debugger;
+        this.$router.push({ path: `/pool/${this.pool._id}/rewards`, query: { isPublished } });
+    }
+
+    onSubmit(query: { isPublished: boolean }) {
+        debugger;
+        this.openPublished(query.isPublished);
     }
 
     onClickUp(reward: TReward, i: number) {
@@ -272,7 +285,7 @@ export default class RewardsView extends Vue {
     }
 
     onClickFilterPublished(isPublished: boolean) {
-        this.isPublished = isPublished;
+        this.openPublished(isPublished);
         this.listRewards();
     }
 

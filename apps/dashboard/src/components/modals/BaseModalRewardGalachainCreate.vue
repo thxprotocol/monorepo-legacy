@@ -86,8 +86,8 @@ export default class ModalRewardGalachainCreate extends Vue {
                 tokenAdditionalKey: this.tokenAdditionalKey,
                 tokenInstance: this.tokenInstance,
             });
+            this.$emit('submit', { isPublished: payload.isPublished });
             this.$bvModal.hide(this.id);
-            this.$emit('submit');
         } catch (error) {
             this.error = (error as Error).toString();
         } finally {

@@ -80,8 +80,8 @@ export default class ModalRewardCoinCreate extends Vue {
                 erc20Id: this.erc20Id,
                 amount: this.amount,
             });
+            this.$emit('submit', { isPublished: payload.isPublished });
             this.$bvModal.hide(this.id);
-            this.$emit('submit');
         } catch (error) {
             this.error = (error as Error).toString();
         } finally {

@@ -84,8 +84,8 @@ export default class ModalRewardCustomCreate extends Vue {
                 webhookId: this.webhook._id,
                 metadata: this.metadata,
             });
+            this.$emit('submit', { isPublished: payload.isPublished });
             this.$bvModal.hide(this.id);
-            this.$emit('submit');
         } catch (error) {
             this.error = (error as Error).toString();
         } finally {
