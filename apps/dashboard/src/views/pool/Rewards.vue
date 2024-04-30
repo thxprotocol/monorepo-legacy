@@ -249,10 +249,13 @@ export default class RewardsView extends Vue {
     }
 
     openPublished(isPublished: boolean) {
+        console.log(isPublished);
+        debugger;
         this.$router.push({ path: `/pool/${this.pool._id}/rewards`, query: { isPublished } });
     }
 
     onSubmit(query: { isPublished: boolean }) {
+        debugger;
         this.openPublished(query.isPublished);
     }
 

@@ -72,8 +72,8 @@ export default class ModalRewardCustomCreate extends Vue {
                 variant: RewardVariant.DiscordRole,
                 discordRoleId: this.discordRoleId,
             });
+            this.$emit('submit', { isPublished: payload.isPublished });
             this.$bvModal.hide(this.id);
-            this.$emit('submit', { isPublished: this.reward.isPublished });
         } catch (error) {
             this.error = (error as Error).toString();
         } finally {
