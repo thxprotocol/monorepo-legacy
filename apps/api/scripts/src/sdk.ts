@@ -10,15 +10,12 @@ export default async function main() {
     });
 
     thx.setIdentity('2696b790-ef39-11ee-87ea-6bb7a1e089a0');
-    // thx.setIdentity('33c85260-0727-11ef-a86f-09b80652466f');
 
-    try {
-        const data = await thx.request.get('/v1/participants');
-        const quests = await thx.quests.list();
-        const questDailyId = quests.daily[0]._id;
-        const entry = await thx.quests.daily.entry.create(questDailyId);
-        console.log(entry);
-    } catch (error) {
-        console.log(error);
-    }
+    const { daily } = await thx.quests.list();
+    const quest = daily[0];
+
+    await thx.quests.daily.entry.create(quest._id);
+
+    const [campaign] = await thx.request.get('/v1/participants', { params: { poolId: quest.poolId } });
+    console.log(campaign.balance);
 }
