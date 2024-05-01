@@ -1,10 +1,9 @@
 import { Provider } from 'oidc-provider';
-import { AUTH_URL, NODE_ENV } from '../config/secrets';
+import { API_URL, AUTH_URL, NODE_ENV } from '../config/secrets';
 import { AccountService } from '../services/AccountService';
 import { BadRequestError, NotFoundError } from './errors';
 import PoolProxy from '../proxies/PoolProxy';
 import configuration from '../config/oidc';
-import instance from 'oidc-provider/lib/helpers/weak_cache';
 import resolveResource from 'oidc-provider/lib/helpers/resolve_resource';
 
 const oidc = new Provider(AUTH_URL, configuration);
@@ -44,19 +43,21 @@ oidc.registerGrantType(
 
             const {
                 ttl,
-                features: { userinfo, resourceIndicators },
-            } = instance(ctx.oidc.provider).configuration();
+                features: { resourceIndicators },
+            } = configuration;
             const client = await oidc.Client.find(clientId);
-            const resource = await resolveResource(ctx, code, { userinfo, resourceIndicators });
-            const resourceServerInfo = await resourceIndicators.getResourceServerInfo(ctx, resource, ctx.oidc.client);
-            const resourceServer = new ctx.oidc.provider.ResourceServer(resource, resourceServerInfo);
+            if (!client) throw new BadRequestError('Client not found');
+
+            const resourceServerInfo = await resourceIndicators.getResourceServerInfo(ctx, API_URL, ctx.oidc.client);
+            const resourceServer = new ctx.oidc.provider.ResourceServer(API_URL, resourceServerInfo);
             const grant = new oidc.Grant({ clientId, accountId: account.id });
+            const grantId = await grant.save();
 
             const at = new oidc.AccessToken({
                 client,
                 resourceServer,
                 gty,
-                grantId: await grant.save(),
+                grantId,
                 accountId: account.id,
                 scope: client.scope,
             });
@@ -81,7 +82,7 @@ oidc.registerGrantType(
             await next();
         }
     },
-    ['identity_code', 'scope'],
+    ['identity_code'],
 );
 
 export { oidc };

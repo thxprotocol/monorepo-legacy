@@ -1,8 +1,10 @@
 import { THXClient } from '../clients';
 import { THXBrowserClientOptions, THXRequestConfig } from '../types';
 import * as jose from 'jose';
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axiosInstance, { AxiosError, AxiosResponse } from 'axios';
 import OIDCManager, { THXOIDCGrant } from './OIDCManager';
+
+const axios = axiosInstance.create();
 
 class RequestManager extends OIDCManager {
     constructor(client: THXClient, grantType: THXOIDCGrant) {

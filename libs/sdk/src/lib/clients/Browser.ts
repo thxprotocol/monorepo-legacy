@@ -10,6 +10,7 @@ import QRCodeManager from '../managers/QRCodeManager';
 import PoolManager from '../managers/PoolManager';
 import { THXOIDCGrant } from '../managers/OIDCManager';
 import { THXBrowserClientOptions } from '../types';
+import RecaptchaManager from '../managers/RecaptchaManager';
 
 export default class THXBrowserClient {
     options: THXBrowserClientOptions;
@@ -23,6 +24,7 @@ export default class THXBrowserClient {
     rewards: RewardManager;
     qrCodes: QRCodeManager;
     pools: PoolManager;
+    recaptcha: RecaptchaManager;
 
     constructor(options: THXBrowserClientOptions) {
         this.options = options;
@@ -36,6 +38,7 @@ export default class THXBrowserClient {
         this.rewards = new RewardManager(this);
         this.qrCodes = new QRCodeManager(this);
         this.pools = new PoolManager(this);
+        this.recaptcha = new RecaptchaManager(this);
     }
 
     setCampaignId(campaignId: string) {

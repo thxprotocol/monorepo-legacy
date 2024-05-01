@@ -9,15 +9,12 @@ const validation = [query('code').isUUID(), query('clientId').isString()];
 const controller = async (req: Request, res: Response) => {
     const client = await Client.findOne({ clientId: req.query.clientId });
     if (!client) throw new NotFoundError('Could not find client for token');
-    console.log(client);
 
     const pool = await Pool.findById(client.poolId);
     if (!pool) throw new NotFoundError('Could not find pool for client');
-    console.log(pool);
 
     const identity = await IdentityService.findIdentity(req.query.code as string);
     if (!identity) throw new NotFoundError('Could not find identity for code');
-    console.log(identity);
 
     res.json(identity);
 };

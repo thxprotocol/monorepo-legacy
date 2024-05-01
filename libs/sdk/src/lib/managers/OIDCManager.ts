@@ -1,7 +1,9 @@
-import axios from 'axios';
+import axiosInstance from 'axios';
 import { THXClient } from '../clients';
 import { THXOIDCConfig, THXOIDCUser } from '../types';
 import BaseManager from './BaseManager';
+
+const axios = axiosInstance.create();
 
 export enum THXOIDCGrant {
     AuthorizationCode = 'authorization_code',
@@ -91,10 +93,14 @@ class OIDCManager extends BaseManager {
             grant_type: THXOIDCGrant.IdentityCode,
             client_id: clientId,
             identity_code: identityCode || '',
-            scope: 'openid offline_access account:read identities:read pools:read',
         };
         const data = new URLSearchParams(params);
-
+        console.log({
+            method: 'POST',
+            url,
+            headers,
+            data,
+        });
         try {
             const response = await axios({
                 method: 'POST',

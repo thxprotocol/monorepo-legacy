@@ -14,11 +14,10 @@ export default async function main() {
 
     try {
         const data = await thx.request.get('/v1/participants');
-        console.log({ data });
-        const quests = await thx.request.get('/v1/quests');
-        console.log({ quests });
-        const rewards = await thx.request.get('/v1/rewards');
-        console.log({ rewards });
+        const quests = await thx.quests.list();
+        const questDailyId = quests.daily[0]._id;
+        const entry = await thx.quests.daily.entry.create(questDailyId);
+        console.log(entry);
     } catch (error) {
         console.log(error);
     }

@@ -10,4 +10,5 @@ export const DOCS_URL = process.env.VUE_APP_DOCS_URL as string;
 export const WIDGET_ID = process.env.VUE_APP_WIDGET_ID as string;
 export const PKG_ENV = process.env.VUE_APP_PKG_ENV as 'local' | 'dev' | 'prod';
 export const API_URL = process.env.VUE_APP_API_URL as string;
+export const AUTH_URL = process.env.VUE_APP_AUTH_URL as string;
 export const MIXPANEL_TOKEN = process.env.VUE_APP_MIXPANEL_TOKEN as string;
