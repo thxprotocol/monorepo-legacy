@@ -4,7 +4,8 @@ import { AccountService } from '../services/AccountService';
 import { BadRequestError, NotFoundError } from './errors';
 import PoolProxy from '../proxies/PoolProxy';
 import configuration from '../config/oidc';
-import jwt from 'jsonwebtoken';
+import instance from 'oidc-provider/lib/helpers/weak_cache';
+import resolveResource from 'oidc-provider/lib/helpers/resolve_resource';
 
 const oidc = new Provider(AUTH_URL, configuration);
 
@@ -18,66 +19,69 @@ if (NODE_ENV !== 'production') {
     };
 }
 
+const gty = 'identity_code';
+
 oidc.registerGrantType(
     'identity_code',
     async (ctx: any, next) => {
-        const clientId = ctx.oidc.params.client_id;
-        if (!clientId) throw new BadRequestError('client_id is required');
-
-        const code = ctx.oidc.params.identity_code;
-        if (!code) throw new BadRequestError('identity_code is required');
-        console.log(clientId, code);
-
-        const identity = await PoolProxy.findIdentity({ code, clientId });
-        if (!identity) throw new BadRequestError('Identity not found');
-        if (!identity.sub) {
-            // TODO Create a new account if none exists and update the identity with the account id
-            // future token requests will then use the correct account ID.
-            throw new BadRequestError('Identity not connected to account');
-        }
-
-        const account = await AccountService.get(identity.sub);
-        if (!account) throw new NotFoundError('Account not found for this identity_code');
-
-        const client = await oidc.Client.find(clientId);
-        const at = new oidc.AccessToken({
-            aud: clientId,
-            gty: 'identity_code',
-            accountId: account.id,
-            grantId: 'identity_code',
-            client,
-            scope: ctx.oidc.params.scope as string,
-        });
-
-        const ONE_DAY = 1000 * 60 * 60 * 24; // 24 hours
         try {
-            const accessToken = await jwt.sign(
-                {
-                    sub: account.id,
-                    jti: clientId,
-                    iat: Date.now(),
-                    exp: Date.now() + ONE_DAY,
-                    scope: ctx.oidc.params.scope,
-                    client_id: clientId,
-                    iss: AUTH_URL,
-                    aud: clientId,
-                },
-                configuration.jwks[0].kid,
-                { expiresIn: '24h' },
-            );
+            const clientId = ctx.oidc.params.client_id;
+            if (!clientId) throw new BadRequestError('client_id is required');
+
+            const code = ctx.oidc.params.identity_code;
+            if (!code) throw new BadRequestError('identity_code is required');
+
+            const identity = await PoolProxy.findIdentity({ code, clientId });
+            if (!identity) throw new BadRequestError('Identity not found');
+            if (!identity.sub) {
+                // TODO Create a new account if none exists and update the identity with the account id
+                // future token requests will then use the correct account ID.
+                throw new BadRequestError('Identity not connected to account');
+            }
+
+            const account = await AccountService.get(identity.sub);
+            if (!account) throw new NotFoundError('Account not found for this identity_code');
+
+            const {
+                ttl,
+                features: { userinfo, resourceIndicators },
+            } = instance(ctx.oidc.provider).configuration();
+            const client = await oidc.Client.find(clientId);
+            const resource = await resolveResource(ctx, code, { userinfo, resourceIndicators });
+            const resourceServerInfo = await resourceIndicators.getResourceServerInfo(ctx, resource, ctx.oidc.client);
+            const resourceServer = new ctx.oidc.provider.ResourceServer(resource, resourceServerInfo);
+            const grant = new oidc.Grant({ clientId, accountId: account.id });
+
+            const at = new oidc.AccessToken({
+                client,
+                resourceServer,
+                gty,
+                grantId: await grant.save(),
+                accountId: account.id,
+                scope: client.scope,
+            });
+            ctx.oidc.entity('AccessToken', at);
+
+            const accessToken = await at.save();
 
             ctx.body = {
                 access_token: accessToken,
-                expires_in: ONE_DAY,
+                expires_in: ttl.AccessToken,
                 token_type: 'Bearer',
             };
 
             await next();
         } catch (error) {
-            console.log(error);
+            console.error(error);
+            ctx.body = {
+                error: 'server_error',
+                error_description: error.message || 'An error occurred',
+            };
+            ctx.status = error.status || 500;
+            await next();
         }
     },
-    ['identity_code'],
+    ['identity_code', 'scope'],
 );
 
 export { oidc };

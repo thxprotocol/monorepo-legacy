@@ -102,7 +102,6 @@ class OIDCManager extends BaseManager {
                 headers,
                 data,
             });
-            console.log(response.data);
             this.setUser(response.data);
         } catch (error) {
             console.log(error);

@@ -31,7 +31,7 @@ export default {
                 request_uris: [],
                 redirect_uris: [],
                 response_types: [],
-                scope: 'openid identities:read pools:read',
+                scope: 'openid point_balances:read',
             },
         };
         const payload = grantMap[grantType];

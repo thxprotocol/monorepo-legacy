@@ -43,7 +43,6 @@ class RequestManager extends OIDCManager {
         const headers = this.getHeaders(config);
         const url = `${this.apiUrl}${path}`;
         try {
-            console.log(url, headers);
             const response = await axios({ ...config, url, headers });
 
             return await this.handleResponse(response);

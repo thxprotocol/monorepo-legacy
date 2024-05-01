@@ -13,4 +13,8 @@ export default class THXIdentityClient {
         this.request = new RequestManager(this, THXOIDCGrant.IdentityCode);
         this.account = new AccountManager(this);
     }
+
+    setIdentity(identityCode: string) {
+        this.options.identityCode = identityCode;
+    }
 }

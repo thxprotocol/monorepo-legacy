@@ -51,9 +51,14 @@ async function isSubjectAllowed(sub: string, poolId: string) {
     return isOwner || isCollaborator;
 }
 
+async function findByClientId(clientId: string) {
+    const client = await Client.findOne({ clientId });
+    return await Pool.findById(client.poolId);
+}
+
 async function getById(id: string) {
     const pool = await Pool.findById(id);
-    const safe = await SafeService.findOneByPool(pool, pool.chainId);
+    const safe = await SafeService.findOneByPool(pool);
     pool.safe = safe;
     return pool;
 }
@@ -399,4 +404,5 @@ export default {
     findCollaborators,
     findCouponCodes,
     inviteCollaborator,
+    findByClientId,
 };

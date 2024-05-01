@@ -8,7 +8,9 @@ const controller = async (req: Request, res: Response) => {
     const token = parseToken(req.header('authorization'));
     const sub = token && token.sub;
 
-    const pool = await PoolService.getById(req.header('X-PoolId'));
+    const pool = req.header('X-PoolId')
+        ? await PoolService.getById(req.header('X-PoolId'))
+        : await PoolService.findByClientId(token.client_id);
     const account = sub && (await AccountProxy.findById(sub));
 
     const [coin, nft, custom, coupon, discordRole, galachain] = await RewardService.list({
