@@ -47,7 +47,14 @@ router.use('/rewards', RouterRewards);
 router.use('/webhook', RouterWebhook);
 router.use('/earn', RouterPrices);
 router.use('/identities', RouterIdentities);
-router.use(checkJwt, corsHandler);
+router.use(
+    (req, res, next) => {
+        console.log(req);
+        next();
+    },
+    checkJwt,
+    corsHandler,
+);
 router.use('/jobs', RouterJobs);
 router.use('/upload', RouterUpload);
 router.use('/identity', RouterIdentity);

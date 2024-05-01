@@ -43,6 +43,7 @@ class RequestManager extends OIDCManager {
         const headers = this.getHeaders(config);
         const url = `${this.apiUrl}${path}`;
         try {
+            console.log(url, headers);
             const response = await axios({ ...config, url, headers });
 
             return await this.handleResponse(response);
@@ -89,9 +90,11 @@ class RequestManager extends OIDCManager {
         if (!accessToken) throw new Error("Please, provide an 'accessToken'.");
 
         try {
-            const { exp } = jose.decodeJwt(accessToken);
-            if (!exp || Date.now() > Number(exp) * 1000) {
-                throw new Error('The token has expired.');
+            if (!this.client.options.identityCode) {
+                const { exp } = jose.decodeJwt(accessToken);
+                if (!exp || Date.now() > Number(exp) * 1000) {
+                    throw new Error('The token has expired.');
+                }
             }
 
             return accessToken;

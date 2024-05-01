@@ -76,33 +76,33 @@ class OIDCManager extends BaseManager {
 
             this.setUser(response.data);
         } catch (error) {
-            throw new Error('Request for ' + THXOIDCGrant.ClientCredentials + ' grant failed.');
+            throw new Error('Request for ' + THXOIDCGrant.AuthorizationCode + ' grant failed.');
         }
     }
 
     private async getIdentityCodeGrant({ identityCode, clientId, clientSecret }: THXOIDCConfig) {
-        console.log({ identityCode });
         const authHeader = 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
         const headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
-            'X-Identity-Code': identityCode || '',
             'Authorization': authHeader,
         };
         const url = `${this.authUrl}/token`;
-        const params = new URLSearchParams({
-            code: this.identityCode || '',
+        const params = {
             grant_type: THXOIDCGrant.IdentityCode,
-            scope: 'openid identities:read pools:read',
-        });
+            client_id: clientId,
+            identity_code: identityCode || '',
+            scope: 'openid offline_access account:read identities:read pools:read',
+        };
+        const data = new URLSearchParams(params);
 
         try {
             const response = await axios({
                 method: 'POST',
                 url,
                 headers,
-                data: params,
+                data,
             });
-
+            console.log(response.data);
             this.setUser(response.data);
         } catch (error) {
             console.log(error);

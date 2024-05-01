@@ -10,8 +10,9 @@ export default async function main() {
         clientSecret: 'a9WisgaR9hKLN_A48tGSROkD38Za-S5BNeAmQ5MzWxbkrbK61MJ8o1YVxTddGgle4szGutqXU8A0hfo8n5O0hQ',
     });
     try {
-        await thx.request.authenticate();
-        console.log('getuser', thx.request.getUser());
+        const data = await thx.request.get('/v1/account');
+        console.log('data', data);
+        console.log('user', thx.request.getUser());
     } catch (error) {
         console.log(error);
     }

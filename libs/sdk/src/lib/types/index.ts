@@ -49,7 +49,6 @@ type THXAPIClientOptions = {
 
 type THXIdentityClientOptions = {
     apiUrl?: string;
-    identityCode?: string;
 } & THXOIDCConfig;
 
 type THXBrowserClientOptions = {
@@ -66,6 +65,7 @@ type THXOIDCConfig = {
     clientId: string;
     clientSecret: string;
     redirectUri?: string;
+    identityCode?: string;
 };
 
 type THXOIDCUser = {
