@@ -6,6 +6,7 @@ createApp({
     isMounted: false,
     alert: { variant: 'warning', message: '' },
     email: '',
+    isIframe: window.matchMedia('(pointer:coarse)').matches,
     isMobile: window.matchMedia('(pointer:coarse)').matches,
     isLoading: false,
     get isDisabled() {
@@ -27,10 +28,10 @@ createApp({
         this.isMounted = true;
     },
     onClickReturn() {
-        if (this.isMobile) {
-            window.open(this.returnUrl, '_self');
-        } else {
+        if (window.opener) {
             window.close();
+        } else {
+            window.location.href = this.returnUrl;
         }
     },
     onClickSubmit() {
