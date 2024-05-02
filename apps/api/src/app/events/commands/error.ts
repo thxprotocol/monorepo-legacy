@@ -6,10 +6,15 @@ export const handleError = async (
     interaction?: ButtonInteraction | CommandInteraction | StringSelectMenuInteraction,
 ) => {
     logger.info(error);
-    if (interaction && interaction.isRepliable() && error.message) {
-        interaction.reply({
-            content: error.message,
-            ephemeral: true,
-        });
+    try {
+        if (interaction && interaction.isRepliable() && error.message) {
+            await interaction.reply({
+                content: error.message,
+                ephemeral: true,
+            });
+        }
+    } catch (error) {
+        logger.info(error);
+        // If the error reply fails we exit silently but log the cause
     }
 };
