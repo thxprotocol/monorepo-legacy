@@ -12,6 +12,16 @@ const mixpanelProxy = function (options: AxiosRequestConfig) {
 };
 
 router.all('*', async (req: Request, res: Response) => {
+    if (req.body.data) {
+        const dataDecoded = Buffer.from(req.body.data, 'base64').toString();
+        const dataObject = JSON.parse(dataDecoded);
+        const data = dataObject.map((item) => {
+            if (!item || !item.event) return item;
+            return { properties: { ...item.properties, real_ip: req.ip } };
+        });
+        const dataString = JSON.stringify(data);
+        req.body.data = Buffer.from(dataString).toString('base64');
+    }
     await mixpanelProxy({
         method: req.method as Method,
         url: req.originalUrl.replace(req.baseUrl, ''),
