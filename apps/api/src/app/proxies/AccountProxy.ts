@@ -41,7 +41,7 @@ export default class AccountProxy {
         });
     }
 
-    static update(sub: string, updates: TAccount): Promise<TAccount> {
+    static update(sub: string, updates: Partial<TAccount>): Promise<TAccount> {
         return this.request({
             method: 'PATCH',
             url: `/accounts/${sub}`,

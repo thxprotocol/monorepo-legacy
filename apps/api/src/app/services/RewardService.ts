@@ -18,6 +18,7 @@ import RewardCustomService from './RewardCustomService';
 import RewardGalachainService from './RewardGalachainService';
 import PoolService from './PoolService';
 import WalletService from './WalletService';
+import THXService from './THXService';
 
 const serviceMap = {
     [RewardVariant.Coin]: new RewardCoinService(),
@@ -179,9 +180,10 @@ export default class RewardService {
             html += `<p class="btn"><a href="${pool.campaignURL}">View Wallet</a></p>`;
             await MailService.send(account.email, `🎁 Reward Received!`, html);
 
-            // Register the payment for the account
-            console.log(reward, account, pool.safe, wallet);
+            // Register THX onboarding campaign event
+            await THXService.createEvent(account, 'reward_payment_created');
 
+            // Register the payment for the account
             return await serviceMap[variant].createPayment({ reward, account, safe: pool.safe, wallet });
         } catch (error) {
             console.log(error);

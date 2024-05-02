@@ -22,6 +22,7 @@ const accountSchema = new mongoose.Schema(
         acceptTermsPrivacy: Boolean,
         acceptUpdates: Boolean,
         role: String,
+        identity: String,
         goal: [String],
     },
     { timestamps: true },

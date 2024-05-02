@@ -1,13 +1,20 @@
 import { Request, Response } from 'express';
 import { WalletVariant, AccountVariant } from '@thxnetwork/common/enums';
+import { getChainId } from '@thxnetwork/api/services/ContractService';
 import AccountProxy from '@thxnetwork/api/proxies/AccountProxy';
 import WalletService from '@thxnetwork/api/services/WalletService';
-import { getChainId } from '@thxnetwork/api/services/ContractService';
+import THXService from '@thxnetwork/api/services/THXService';
 
 const validation = [];
 
 const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.findById(req.auth.sub);
+
+    // Add identity if none exists
+    if (!account.identity) {
+        await THXService.createIdentity(account);
+    }
+
     // Remove actual tokens from response
     account.tokens = account.tokens.map(({ kind, userId, scopes, metadata }) => ({
         kind,

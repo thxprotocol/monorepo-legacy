@@ -14,6 +14,7 @@ import LockService from './LockService';
 import ImageService from './ImageService';
 import AccountProxy from '../proxies/AccountProxy';
 import ParticipantService from './ParticipantService';
+import THXService from './THXService';
 
 export default class QuestService {
     static async count({ poolId }) {
@@ -217,6 +218,9 @@ export default class QuestService {
             // Should make sure quest entry is properly created
             await PointBalanceService.add(pool, account, amount);
             await NotificationService.sendQuestEntryNotification(pool, quest, account, amount);
+
+            // Register THX onboarding campaign event
+            await THXService.createEvent(account, 'quest_entry_created');
 
             // Update participant ranks async
             agenda.now(JobType.UpdateParticipantRanks, { poolId: pool._id });

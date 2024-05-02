@@ -19,6 +19,7 @@ type TAccount = {
     role: Role;
     goal: Goal[];
     tokens: TToken[];
+    identity: string;
     createdAt: Date;
     updatedAt: Date;
 };
