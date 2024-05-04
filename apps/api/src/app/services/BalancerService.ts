@@ -138,20 +138,25 @@ class BalancerService {
 
             const { rewards, schedule } = await this.getRewards(chainId);
             this.rewards[chainId] = rewards;
+            logger.info(JSON.stringify(this.rewards[chainId]));
+
             this.schedule[chainId] = schedule;
+            logger.info(JSON.stringify(this.schedule[chainId]));
 
             // TVL is measured as the total amount of BPT-gauge locked in veTHX
             const liquidity = (await bpt.totalSupply()).toString();
             const staked = (await bpt.balanceOf(gauge.address)).toString();
             const tvl = (await gauge.balanceOf(veTHXAddress)).toString();
             this.tvl[chainId] = { liquidity, staked, tvl };
+            logger.info(JSON.stringify(this.tvl[chainId]));
 
             // Calc APR
             const apr = await this.calculateBalancerAPR(gauge, priceOfBAL, pricePerBPT);
-            const balancer = { min: apr, max: apr * 2.5, swapFees: 0.3 }; // TODO Fetch swapFees from SDK or contract
+            const balancer = { min: apr, max: apr * 2.5, swapFees: 0.2 }; // TODO Fetch swapFees from SDK or contract
             const rewardsInBPT = this.rewards[chainId].bpt;
             const thx = await this.calculateTHXAPR(gauge, veTHX, rewardsInBPT, pricePerBPT);
             this.apr[chainId] = { balancer, thx };
+            logger.info(JSON.stringify(this.apr[chainId]));
         }
     }
 
@@ -179,10 +184,18 @@ class BalancerService {
 
         // Take Balancer inflation schedule into account. Started at 140000 BAL per week
         // https://docs.balancer.fi/concepts/governance/bal-token.html#supply-inflation-schedule
-        const weeklyBALemissions = 102530.48; // TODO
+        const weeklyBALemissions = 102530.48; // TODO add formula to calculate weekly emissions
 
         // APR formula as per
         // https://docs.balancer.fi/reference/vebal-and-gauges/apr-calculation.html
+
+        // Example data May 4th 2024
+        // const workingSupply = 8.102148903933154e23;
+        // const gaugeRelWeight = 1518354055844830;
+        // const weeklyBALemissions = 102530.48;
+        // const priceOfBAL = 3.655;
+        // const pricePerBPT = 0.04489925552408662;
+
         return (
             (((0.4 / (workingSupply + 0.4)) * gaugeRelWeight * weeklyBALemissions * 52 * priceOfBAL) / pricePerBPT) *
             100

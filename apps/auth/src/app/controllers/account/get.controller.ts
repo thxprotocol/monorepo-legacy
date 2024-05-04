@@ -34,6 +34,7 @@ async function decorate(account: AccountDocument) {
         variant: account.variant,
         role: account.role,
         goal: account.goal,
+        identity: account.identity,
         tokens,
     };
 }
