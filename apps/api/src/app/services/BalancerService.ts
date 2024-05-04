@@ -116,6 +116,7 @@ class BalancerService {
             'USDC': Number(usdc.token.latestUSDPrice),
             'THX': Number(thx.token.latestUSDPrice),
         };
+        logger.debug(this.pricing);
     }
 
     async updateMetricsJob() {
@@ -138,17 +139,17 @@ class BalancerService {
 
             const { rewards, schedule } = await this.getRewards(chainId);
             this.rewards[chainId] = rewards;
-            logger.info(JSON.stringify(this.rewards[chainId]));
+            logger.debug(this.rewards[chainId]);
 
             this.schedule[chainId] = schedule;
-            logger.info(JSON.stringify(this.schedule[chainId]));
+            logger.debug(this.schedule[chainId]);
 
             // TVL is measured as the total amount of BPT-gauge locked in veTHX
             const liquidity = (await bpt.totalSupply()).toString();
             const staked = (await bpt.balanceOf(gauge.address)).toString();
             const tvl = (await gauge.balanceOf(veTHXAddress)).toString();
             this.tvl[chainId] = { liquidity, staked, tvl };
-            logger.info(JSON.stringify(this.tvl[chainId]));
+            logger.debug(this.tvl[chainId]);
 
             // Calc APR
             const apr = await this.calculateBalancerAPR(gauge, priceOfBAL, pricePerBPT);
@@ -156,7 +157,7 @@ class BalancerService {
             const rewardsInBPT = this.rewards[chainId].bpt;
             const thx = await this.calculateTHXAPR(gauge, veTHX, rewardsInBPT, pricePerBPT);
             this.apr[chainId] = { balancer, thx };
-            logger.info(JSON.stringify(this.apr[chainId]));
+            logger.debug(this.apr[chainId]);
         }
     }
 
