@@ -116,7 +116,6 @@ class BalancerService {
             'USDC': Number(usdc.token.latestUSDPrice),
             'THX': Number(thx.token.latestUSDPrice),
         };
-        logger.debug(this.pricing);
     }
 
     async updateMetricsJob() {
@@ -159,6 +158,9 @@ class BalancerService {
             this.apr[chainId] = { balancer, thx };
             logger.debug(this.apr[chainId]);
         }
+
+        // Log pricing here because job interval creates less logging clutter
+        logger.debug(this.pricing);
     }
 
     async calculateTHXAPR(gauge: ethers.Contract, veTHX: ethers.Contract, rewardsInBPT: string, pricePerBPT: number) {
