@@ -180,11 +180,13 @@ export default class RewardService {
             html += `<p class="btn"><a href="${pool.campaignURL}">View Wallet</a></p>`;
             await MailService.send(account.email, `🎁 Reward Received!`, html);
 
+            const payment = await serviceMap[variant].createPayment({ reward, account, safe: pool.safe, wallet });
+
             // Register THX onboarding campaign event
             await THXService.createEvent(account, 'reward_payment_created');
 
             // Register the payment for the account
-            return await serviceMap[variant].createPayment({ reward, account, safe: pool.safe, wallet });
+            return payment;
         } catch (error) {
             console.log(error);
             logger.error(error);
