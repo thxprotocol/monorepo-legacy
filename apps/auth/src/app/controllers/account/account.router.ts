@@ -1,5 +1,11 @@
 import express from 'express';
-import { getAccount, getAccountByAddress, getAccountByEmail, getAccountByDiscord } from './get.controller';
+import {
+    getAccount,
+    getAccountByAddress,
+    getAccountByEmail,
+    getAccountByDiscord,
+    getAccountByIdentity,
+} from './get.controller';
 import Patch from './patch.controller';
 import Delete from './delete.controller';
 import List from './list.controller';
@@ -14,6 +20,7 @@ router.use(validateJwt);
 router.get('/discord/:discordId', guard.check(['accounts:read']), validate([]), getAccountByDiscord);
 router.get('/address/:address', guard.check(['accounts:read']), validate([]), getAccountByAddress);
 router.get('/email/:email', guard.check(['accounts:read']), validate([]), getAccountByEmail);
+router.get('/identity/:identity', guard.check(['accounts:read']), validate([]), getAccountByIdentity);
 
 router.get('/:sub', guard.check(['accounts:read']), getAccount);
 router.patch('/:sub', guard.check(['accounts:read', 'accounts:write']), validate(Patch.validation), Patch.controller);

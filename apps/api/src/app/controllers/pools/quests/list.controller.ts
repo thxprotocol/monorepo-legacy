@@ -1,6 +1,14 @@
 import { param, query } from 'express-validator';
 import { Request, Response } from 'express';
-import { QuestInvite, QuestSocial, QuestCustom, QuestWeb3, QuestGitcoin, QuestDaily } from '@thxnetwork/api/models';
+import {
+    QuestInvite,
+    QuestSocial,
+    QuestCustom,
+    QuestWeb3,
+    QuestGitcoin,
+    QuestDaily,
+    QuestWebhook,
+} from '@thxnetwork/api/models';
 
 const validation = [
     param('id').isMongoId(),
@@ -25,10 +33,11 @@ const controller = async (req: Request, res: Response) => {
         { $unionWith: { coll: QuestCustom.collection.name } },
         { $unionWith: { coll: QuestWeb3.collection.name } },
         { $unionWith: { coll: QuestGitcoin.collection.name } },
+        { $unionWith: { coll: QuestWebhook.collection.name } },
         { $match },
     ];
     const arr = await Promise.all(
-        [QuestDaily, QuestInvite, QuestSocial, QuestCustom, QuestWeb3, QuestGitcoin].map(
+        [QuestDaily, QuestInvite, QuestSocial, QuestCustom, QuestWeb3, QuestGitcoin, QuestWebhook].map(
             async (model) => await model.countDocuments($match),
         ),
     );

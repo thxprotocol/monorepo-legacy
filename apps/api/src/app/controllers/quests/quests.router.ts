@@ -7,6 +7,7 @@ import RouterQuestWeb3 from './web3/web3.router';
 import RouterQuestGitcoin from './gitcoin/gitcoin.router';
 import RouterQuestDaily from './daily/daily.router';
 import RouterQuestCustom from './custom/custom.router';
+import RouterQuestWebhook from './webhook/webhook.router';
 
 const router = express.Router();
 
@@ -18,5 +19,6 @@ router.use('/web3', RouterQuestWeb3);
 router.use('/gitcoin', RouterQuestGitcoin);
 router.use('/daily', RouterQuestDaily);
 router.use('/custom', RouterQuestCustom);
+router.use('/webhook', RouterQuestWebhook);
 
 export default router;

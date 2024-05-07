@@ -10,10 +10,8 @@ const validation = [];
 const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.findById(req.auth.sub);
 
-    // Add identity if none exists
-    if (!account.identity) {
-        await THXService.createIdentity(account);
-    }
+    // Connect identity if none exists
+    await THXService.connect(account);
 
     // Remove actual tokens from response
     account.tokens = account.tokens.map(({ kind, userId, scopes, metadata }) => ({

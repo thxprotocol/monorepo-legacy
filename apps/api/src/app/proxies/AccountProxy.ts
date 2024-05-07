@@ -85,6 +85,13 @@ export default class AccountProxy {
         });
     }
 
+    static getByIdentity(identity: string): Promise<TAccount> {
+        return this.request({
+            method: 'GET',
+            url: `/accounts/identity/${identity}`,
+        });
+    }
+
     static async isEmailDuplicate(email: string) {
         try {
             await authClient({

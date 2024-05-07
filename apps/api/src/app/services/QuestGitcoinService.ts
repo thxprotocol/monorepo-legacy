@@ -8,7 +8,7 @@ export default class QuestGitcoinService implements IQuestService {
         entry: QuestGitcoinEntry,
     };
 
-    findEntryMetadata(options: { quest: TGitcoinQuest }) {
+    findEntryMetadata(options: { quest: TQuestGitcoin }) {
         return {};
     }
 
@@ -17,10 +17,10 @@ export default class QuestGitcoinService implements IQuestService {
         account,
         data,
     }: {
-        quest: TGitcoinQuest;
+        quest: TQuestGitcoin;
         account?: TAccount;
-        data: Partial<TGitcoinQuestEntry>;
-    }): Promise<TGitcoinQuest & { isAvailable: boolean }> {
+        data: Partial<TQuestGitcoinEntry>;
+    }): Promise<TQuestGitcoin & { isAvailable: boolean }> {
         const isAvailable = await this.isAvailable({ quest, account, data });
         return { ...quest, isAvailable: isAvailable.result };
     }
@@ -30,9 +30,9 @@ export default class QuestGitcoinService implements IQuestService {
         account,
         data,
     }: {
-        quest: TGitcoinQuest;
+        quest: TQuestGitcoin;
         account?: TAccount;
-        data: Partial<TGitcoinQuestEntry>;
+        data: Partial<TQuestGitcoinEntry>;
     }): Promise<TValidationResult> {
         if (!account) return { result: true, reason: '' };
 
@@ -48,7 +48,7 @@ export default class QuestGitcoinService implements IQuestService {
         return { result: false, reason: 'You have completed this quest with this account and/or address already.' };
     }
 
-    async getAmount({ quest }: { quest: TGitcoinQuest; account: TAccount }): Promise<number> {
+    async getAmount({ quest }: { quest: TQuestGitcoin; account: TAccount }): Promise<number> {
         return quest.amount;
     }
 
@@ -56,9 +56,9 @@ export default class QuestGitcoinService implements IQuestService {
         quest,
         data,
     }: {
-        quest: TGitcoinQuest;
+        quest: TQuestGitcoin;
         account: TAccount;
-        data: Partial<TGitcoinQuestEntry>;
+        data: Partial<TQuestGitcoinEntry>;
     }): Promise<TValidationResult> {
         if (!data.metadata.address) return { result: false, reason: 'Could not find an address during validation.' };
         if (data.metadata.score < quest.score) {

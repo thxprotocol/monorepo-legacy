@@ -238,4 +238,13 @@ export const contentQuests = {
         docsUrl: 'https://docs.thx.network/user-guides/quests',
         color: '#3498db',
     },
+    'webhook-quest': {
+        tag: 'Webhook Quest',
+        icon: 'fas fa-globe',
+        title: 'Use your own API endpoints',
+        description: 'Use your API endpoint to validate quests for account identities.',
+        list: ['Track real engagement', 'Your own validation method', 'Account identities'],
+        docsUrl: 'https://docs.thx.network/user-guides/quests',
+        color: '#3498db',
+    },
 };

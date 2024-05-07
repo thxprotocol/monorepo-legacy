@@ -27,6 +27,8 @@ export { QuestCustom, QuestCustomDocument } from './QuestCustom';
 export { QuestCustomEntry, QuestCustomEntryDocument } from './QuestCustomEntry';
 export { QuestDaily, QuestDailyDocument } from './QuestDaily';
 export { QuestDailyEntry, QuestDailyEntryDocument } from './QuestDailyEntry';
+export { QuestWebhook, QuestWebhookDocument } from './QuestWebhook';
+export { QuestWebhookEntry, QuestWebhookEntryDocument } from './QuestWebhookEntry';
 export { QuestGitcoin, QuestGitcoinDocument } from './QuestGitcoin';
 export { QuestGitcoinEntry, QuestGitcoinEntryDocument } from './QuestGitcoinEntry';
 export { QuestInvite, QuestInviteDocument } from './QuestInvite';

@@ -5,7 +5,7 @@ export enum QuestRequirement {
     TwitterRetweet = 3,
     TwitterFollow = 4,
     DiscordGuildJoined = 5,
-    TwitterMessage = 6,
+    TwitterQuery = 6,
     TwitterLikeRetweet = 7,
     DiscordMessage = 8,
     DiscordMessageReaction = 9,
@@ -20,6 +20,5 @@ export enum QuestVariant {
     Custom = 5,
     Web3 = 6,
     Gitcoin = 7,
-    // Whitelist = 8,
-    // Snapshot = 9,
+    Webhook = 8,
 }

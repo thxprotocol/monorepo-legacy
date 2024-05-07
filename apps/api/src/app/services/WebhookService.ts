@@ -9,7 +9,18 @@ import { signPayload } from '@thxnetwork/api/util/signingsecret';
 import { JobType, Event, WebhookRequestState } from '@thxnetwork/common/enums';
 
 export default class WebhookService {
-    static async request(
+    static async request(webhook: WebhookDocument, account: TAccount, metadata?: string) {
+        const identities = (await Identity.find({ poolId: webhook.poolId, sub: account.sub })).map((i) => i.uuid);
+        const webhookRequest = await WebhookRequest.create({
+            webhookId: webhook._id,
+            payload: JSON.stringify({ type: 'quest_entry.create', identities, metadata }),
+            state: WebhookRequestState.Pending,
+        });
+
+        return await this.executeRequest(webhook, webhookRequest);
+    }
+
+    static async requestAsync(
         webhook: WebhookDocument,
         sub: string,
         payload: { type: Event; data: any & { metadata: any } },
@@ -28,23 +39,26 @@ export default class WebhookService {
     }
 
     static async requestAttemptJob(job: Job) {
-        let webhookRequest: WebhookRequestDocument;
+        const { webhookRequestId } = job.attrs.data as any;
 
+        const webhookRequest = await WebhookRequest.findById(webhookRequestId);
+        if (!webhookRequest) throw new Error('No webhook request object found');
+
+        const webhook = await Webhook.findById(webhookRequest.webhookId);
+        if (!webhook) throw new Error('No webhook object found');
+
+        await this.executeRequest(webhook, webhookRequest);
+    }
+
+    static async executeRequest(webhook: WebhookDocument, webhookRequest: WebhookRequestDocument) {
         try {
-            const { webhookRequestId, poolId } = job.attrs.data as any;
-            const { signingSecret } = await Pool.findById(poolId);
-            if (!signingSecret) throw new Error('No signing secret found');
+            const pool = await Pool.findById(webhook.poolId);
+            if (!pool.signingSecret) throw new Error('No signing secret found');
 
-            const webhookRequest = await WebhookRequest.findById(webhookRequestId);
-            if (!webhookRequest) throw new Error('No webhook request object found');
-
-            const webhook = await Webhook.findById(webhookRequest.webhookId);
-            if (!webhook) throw new Error('No webhook object found');
-
-            const signature = signPayload(webhookRequest.payload, signingSecret);
+            const signature = signPayload(webhookRequest.payload, pool.signingSecret);
             webhookRequest.state = WebhookRequestState.Sent;
 
-            const res = await axios({
+            const response = await axios({
                 method: 'POST',
                 url: webhook.url,
                 data: { signature, payload: webhookRequest.payload },
@@ -54,9 +68,11 @@ export default class WebhookService {
             });
 
             webhookRequest.state = WebhookRequestState.Received;
-            webhookRequest.httpStatus = res.status;
+            webhookRequest.httpStatus = response.status;
 
-            console.debug(`[${res.status}], ${JSON.stringify(res.data)}`);
+            console.debug(`[${response.status}], ${JSON.stringify(response.data)}`);
+
+            return response && response.data;
         } catch (error) {
             console.log(error);
 

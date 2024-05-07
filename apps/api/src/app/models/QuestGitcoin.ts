@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { questSchema } from '@thxnetwork/api/models/Quest';
 
-export type QuestGitcoinDocument = mongoose.Document & TGitcoinQuest;
+export type QuestGitcoinDocument = mongoose.Document & TQuestGitcoin;
 
 export const QuestGitcoin = mongoose.model<QuestGitcoinDocument>(
     'QuestGitcoin',

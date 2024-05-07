@@ -70,6 +70,10 @@ export class AccountService {
         return Account.findOne({ email });
     }
 
+    static getByIdentity(identity: string) {
+        return Account.findOne({ identity });
+    }
+
     static getByAddress(address: string) {
         return Account.findOne({ address });
     }

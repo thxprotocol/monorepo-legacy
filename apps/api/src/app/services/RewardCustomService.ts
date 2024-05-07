@@ -52,7 +52,7 @@ export default class RewardCustomService implements IRewardService {
         if (!webhook) return { result: false, reason: 'Webhook not found.' };
 
         // Call the webhook with known account identities for this campaign and optional metadata
-        await WebhookService.request(webhook, account.sub, {
+        await WebhookService.requestAsync(webhook, account.sub, {
             type: Event.RewardCustomPayment,
             data: { customRewardId: reward._id, metadata: reward.metadata },
         });
