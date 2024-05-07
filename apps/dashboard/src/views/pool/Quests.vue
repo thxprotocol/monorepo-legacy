@@ -278,18 +278,21 @@ export default class QuestsView extends Vue {
 
     async listQuests() {
         this.isLoading = true;
-        const query = {
+        await this.$store.dispatch('pools/listQuests', {
             page: this.page,
             pool: this.pool,
             limit: this.limit,
             isPublished: this.isPublished,
-        };
-        await this.$store.dispatch('pools/listQuests', query);
+        });
         this.isLoading = false;
     }
 
-    openPublished(isPublished: boolean) {
-        this.$router.push({ path: `/pool/${this.pool._id}/quests`, query: { isPublished } });
+    async openPublished(isPublished: boolean) {
+        try {
+            await this.$router.push({ path: `/pool/${this.pool._id}/quests`, query: { isPublished } });
+        } catch (error) {
+            //
+        }
     }
 
     onSubmit(query: { isPublished: boolean }) {
@@ -321,9 +324,9 @@ export default class QuestsView extends Vue {
         this.listQuests();
     }
 
-    onClickFilterPublished(value: boolean) {
+    async onClickFilterPublished(value: boolean) {
         this.openPublished(value);
-        this.listQuests();
+        await this.listQuests();
     }
 
     onChangeLimit(limit: number) {

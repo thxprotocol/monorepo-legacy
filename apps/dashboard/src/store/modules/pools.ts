@@ -636,11 +636,14 @@ class PoolModule extends VuexModule {
 
     @Action({ rawError: true })
     async updateQuest(payload: TQuest) {
-        await axios({
+        const { data: q } = await axios({
             method: 'PATCH',
             url: `/pools/${payload.poolId}/quests/${payload.variant}/${payload._id}`,
             data: prepareFormDataForUpload(payload),
         });
+        q.delete = (quest) => this.context.dispatch('removeQuest', quest);
+        q.update = (quest) => this.context.dispatch('updateQuest', quest);
+        this.context.commit('setQuest', q);
     }
 
     @Action({ rawError: true })

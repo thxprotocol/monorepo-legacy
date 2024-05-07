@@ -1,6 +1,6 @@
 <template>
     <BaseModalQuestCreate
-        variant="Gitcoin Quest"
+        variant="Webhook Quest"
         @show="onShow"
         @submit="onSubmit"
         @change-info-links="infoLinks = Object.values($event)"
