@@ -314,7 +314,7 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async preview(payload: { chainId: ChainId; address: string }) {
+    async preview(payload: { chainId: ChainId; contractAddress: string; address: string }) {
         const { data } = await axios({
             method: 'POST',
             url: '/erc721/preview',
