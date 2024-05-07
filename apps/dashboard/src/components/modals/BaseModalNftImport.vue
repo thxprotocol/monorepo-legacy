@@ -135,6 +135,7 @@ export default class ModalNftImport extends Vue {
         }
 
         await this.$store.dispatch(`${this.variant}/import`, {
+            chainId: this.chainId,
             pool: this.pool,
             contractAddress: this.nftAddress,
         });
