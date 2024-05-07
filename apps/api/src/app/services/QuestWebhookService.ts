@@ -85,7 +85,8 @@ export default class QuestWebhookService implements IQuestService {
         const webhook = await Webhook.findById(quest.webhookId);
         if (!webhook) return { result: false, reason: 'Webhook no longer available.' };
 
-        await WebhookService.request(webhook);
+        const result = await WebhookService.request(webhook, account);
+        if (!result) return { result: false, reason: 'Webhook validation request result was negative.' };
 
         return { result: true, reason: '' };
     }
