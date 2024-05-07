@@ -67,6 +67,13 @@ export const getAccountByEmail = async (req: Request, res: Response) => {
     res.send(await decorate(account));
 };
 
+export const getAccountByIdentity = async (req: Request, res: Response) => {
+    const account = await AccountService.getByIdentity(req.params.identity);
+    if (!account) return res.end();
+
+    res.send(await decorate(account));
+};
+
 export const getAccountByDiscord = async (req: Request, res: Response) => {
     const token = await TokenService.findTokenForUserId(req.params.discordId, AccessTokenKind.Discord);
     if (!token) return res.end();

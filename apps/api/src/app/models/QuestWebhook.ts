@@ -10,6 +10,7 @@ export const QuestWebhook = mongoose.model<QuestWebhookDocument>(
             ...(questSchema as any),
             amount: Number,
             webhookId: String,
+            metadata: String,
         },
         { timestamps: true },
     ),

@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { Pool } from '@thxnetwork/api/models';
 import { Webhook, WebhookDocument } from '@thxnetwork/api/models/Webhook';
 import { Identity } from '@thxnetwork/api/models/Identity';
@@ -9,11 +9,11 @@ import { signPayload } from '@thxnetwork/api/util/signingsecret';
 import { JobType, Event, WebhookRequestState } from '@thxnetwork/common/enums';
 
 export default class WebhookService {
-    static async request(webhook: WebhookDocument, account: TAccount) {
+    static async request(webhook: WebhookDocument, account: TAccount, metadata?: string) {
         const identities = (await Identity.find({ poolId: webhook.poolId, sub: account.sub })).map((i) => i.uuid);
         const webhookRequest = await WebhookRequest.create({
             webhookId: webhook._id,
-            payload: JSON.stringify({ identities }),
+            payload: JSON.stringify({ type: 'quest_entry.create', identities, metadata }),
             state: WebhookRequestState.Pending,
         });
 
@@ -51,8 +51,6 @@ export default class WebhookService {
     }
 
     static async executeRequest(webhook: WebhookDocument, webhookRequest: WebhookRequestDocument) {
-        let response: AxiosResponse;
-
         try {
             const pool = await Pool.findById(webhook.poolId);
             if (!pool.signingSecret) throw new Error('No signing secret found');

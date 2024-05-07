@@ -72,7 +72,7 @@ export default class QuestWebhookService implements IQuestService {
         quest: QuestWebhookDocument;
         account: TAccount;
         data: Partial<TQuestWebhookEntry>;
-    }): Promise<{ reason: string; result: boolean }> {
+    }): Promise<{ reason: string; result: boolean; data?: any }> {
         // See if there are identities
         const identities = await this.findIdentities({ quest, account });
         if (!identities.length) {
@@ -85,10 +85,14 @@ export default class QuestWebhookService implements IQuestService {
         const webhook = await Webhook.findById(quest.webhookId);
         if (!webhook) return { result: false, reason: 'Webhook no longer available.' };
 
-        const result = await WebhookService.request(webhook, account);
-        if (!result) return { result: false, reason: 'Webhook validation request result was negative.' };
+        const data = await WebhookService.request(webhook, account, quest.metadata);
+        if (!data) return { result: false, reason: 'Webhook validation request result was negative.' };
 
-        return { result: true, reason: '' };
+        return {
+            result: true,
+            reason: '',
+            data,
+        };
     }
 
     private async findAllEntries({ quest, account }: { quest: QuestWebhookDocument; account: TAccount }) {
@@ -96,7 +100,6 @@ export default class QuestWebhookService implements IQuestService {
         return await this.models.entry.find({
             questId: quest._id,
             sub: account.sub,
-            isClaimed: true,
         });
     }
 

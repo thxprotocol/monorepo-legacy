@@ -38,6 +38,9 @@
                     <b-dropdown-divider />
                 </b-dropdown>
             </b-form-group>
+            <b-form-group label="Metadata" description="Provide metadata for your system to use.">
+                <b-textarea v-model="metadata" />
+            </b-form-group>
         </template>
     </BaseModalQuestCreate>
 </template>
@@ -75,6 +78,7 @@ export default class ModalQuestWebhookCreate extends Vue {
     webhooks!: TWebhookState;
     webhook: TWebhook | null = null;
     webhookId = '';
+    metadata = '';
 
     @Prop() id!: string;
     @Prop() total!: number;
@@ -95,6 +99,7 @@ export default class ModalQuestWebhookCreate extends Vue {
         this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
         this.locks = this.reward ? this.reward.locks : this.locks;
         this.webhookId = this.reward ? this.reward.webhookId : '';
+        this.metadata = this.reward ? this.reward.metadata : this.metadata;
 
         await this.$store.dispatch('webhooks/list', this.pool);
         this.webhook = this.webhooks[this.pool._id][this.webhookId];
@@ -118,6 +123,7 @@ export default class ModalQuestWebhookCreate extends Vue {
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
                 locks: JSON.stringify(this.locks),
                 webhookId: this.webhook?._id,
+                metadata: this.metadata,
             })
             .then(() => {
                 this.$bvModal.hide(this.id);

@@ -14,9 +14,6 @@ const controller = async ({ account, body, params }: Request, res: Response) => 
 
     const data = {
         recaptcha: body.recaptcha,
-        metadata: {
-            // TODO Perhaps add identities?
-        },
     };
 
     // Running separately to avoid issues when getting validation results from Discord interactions
@@ -33,10 +30,10 @@ const controller = async ({ account, body, params }: Request, res: Response) => 
 
     // Schedule the job
     const job = await agenda.now(JobType.CreateQuestEntry, {
-        variant: QuestVariant.Web3,
+        variant: QuestVariant.Webhook,
         questId: String(quest._id),
         sub: account.sub,
-        data,
+        data: { ...data, metadata: validationResult },
     });
 
     res.json({ jobId: job.attrs._id });
