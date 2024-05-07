@@ -135,8 +135,7 @@ export default class ModalNftImport extends Vue {
         }
 
         await this.$store.dispatch(`${this.variant}/import`, {
-            chainId: this.chainId,
-            address: this.pool.safe.address,
+            pool: this.pool,
             contractAddress: this.nftAddress,
         });
 
@@ -155,6 +154,7 @@ export default class ModalNftImport extends Vue {
         try {
             this.previewLoading = true;
             this.tokens = await this.$store.dispatch(`${this.variant}/preview`, {
+                chainId: this.chainId,
                 address: this.pool.safeAddress,
                 contractAddress: address,
             });
