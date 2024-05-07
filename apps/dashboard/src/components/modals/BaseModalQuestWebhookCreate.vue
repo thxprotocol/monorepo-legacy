@@ -20,6 +20,9 @@
         :pool="pool"
     >
         <template #col-left>
+            <b-form-group label="Amount">
+                <b-form-input type="number" v-model="amount" :min="0" :max="1000000" />
+            </b-form-group>
             <b-form-group label="Webhook">
                 <b-dropdown variant="link" class="dropdown-select" v-if="webhookList.length">
                     <template #button-content>

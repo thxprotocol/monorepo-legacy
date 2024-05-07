@@ -59,7 +59,7 @@ export default class QuestWebhookService implements IQuestService {
 
         return {
             ...quest,
-            eventName: '', // FK Deprecrates March 15th 2024
+            identities,
             isAvailable: isAvailable.result,
             entries,
         };

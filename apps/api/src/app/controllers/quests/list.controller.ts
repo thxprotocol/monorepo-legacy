@@ -16,7 +16,7 @@ const controller = async (req: Request, res: Response) => {
 
     const ip = getIP(req);
     // Results are returned in order of the QuestVariant enum keys
-    const [daily, invite, twitter, discord, youtube, custom, web3, gitcoin] = await QuestService.list({
+    const [daily, invite, twitter, discord, youtube, custom, web3, gitcoin, webhook] = await QuestService.list({
         pool,
         account,
         data: { ip },
@@ -31,6 +31,7 @@ const controller = async (req: Request, res: Response) => {
         youtube,
         web3,
         gitcoin,
+        webhook,
     });
 };
 

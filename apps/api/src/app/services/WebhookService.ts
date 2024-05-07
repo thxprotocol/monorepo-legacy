@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { Pool } from '@thxnetwork/api/models';
 import { Webhook, WebhookDocument } from '@thxnetwork/api/models/Webhook';
-import { Identity, IdentityDocument } from '@thxnetwork/api/models/Identity';
+import { Identity } from '@thxnetwork/api/models/Identity';
 import { WebhookRequest, WebhookRequestDocument } from '@thxnetwork/api/models/WebhookRequest';
 import { Job } from '@hokify/agenda';
 import { agenda } from '@thxnetwork/api/util/agenda';
