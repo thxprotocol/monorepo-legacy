@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export type QuestGitcoinEntryDocument = mongoose.Document & TGitcoinQuestEntry;
+export type QuestGitcoinEntryDocument = mongoose.Document & TQuestGitcoinEntry;
 
 export const QuestGitcoinEntry = mongoose.model<QuestGitcoinEntryDocument>(
     'QuestGitcoinEntry',

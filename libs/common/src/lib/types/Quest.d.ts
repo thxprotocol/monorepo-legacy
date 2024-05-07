@@ -1,11 +1,12 @@
-type TQuest = TQuestDaily | TQuestInvite | TQuestSocial | TQuestCustom | TQuestWeb3 | TGitcoinQuest;
+type TQuest = TQuestDaily | TQuestInvite | TQuestSocial | TQuestCustom | TQuestWeb3 | TQuestGitcoin | TQuestWebhook;
 type TQuestEntry =
     | TQuestDailyClaim
     | TQuestInviteEntry
     | TQuestSocialEntry
     | TQuestCustomEntry
     | TQuestWeb3Entry
-    | TGitcoinQuestEntry;
+    | TQuestGitcoinEntry
+    | TQuestWebhookEntry;
 
 type TQuestEntryMetadata = TQuestSocialEntryMetadata | TQuestWeb3EntryMetadata;
 

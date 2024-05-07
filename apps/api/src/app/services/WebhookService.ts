@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Pool } from '@thxnetwork/api/models';
 import { Webhook, WebhookDocument } from '@thxnetwork/api/models/Webhook';
-import { Identity } from '@thxnetwork/api/models/Identity';
+import { Identity, IdentityDocument } from '@thxnetwork/api/models/Identity';
 import { WebhookRequest, WebhookRequestDocument } from '@thxnetwork/api/models/WebhookRequest';
 import { Job } from '@hokify/agenda';
 import { agenda } from '@thxnetwork/api/util/agenda';
@@ -9,6 +9,21 @@ import { signPayload } from '@thxnetwork/api/util/signingsecret';
 import { JobType, Event, WebhookRequestState } from '@thxnetwork/common/enums';
 
 export default class WebhookService {
+    static async validate(webhook: WebhookDocument, identity: IdentityDocument) {
+        // POST webhook.url with signed identity payload
+        // Wait for response
+        // If response is 200, return result
+
+        const { signingSecret } = await Pool.findById(webhook.poolId);
+        if (!signingSecret) throw new Error('No signing secret found');
+
+        const webhookRequest = await WebhookRequest.create({
+            webhookId: webhook._id,
+            payload: JSON.stringify({ ...payload, identities }),
+            state: WebhookRequestState.Pending,
+        });
+    }
+
     static async request(
         webhook: WebhookDocument,
         sub: string,
@@ -27,16 +42,12 @@ export default class WebhookService {
         });
     }
 
-    static async requestAttemptJob(job: Job) {
+    static async executeRequest(webhook: TPool, webhookRequest: TWebhookRequest) {
         let webhookRequest: WebhookRequestDocument;
 
         try {
-            const { webhookRequestId, poolId } = job.attrs.data as any;
-            const { signingSecret } = await Pool.findById(poolId);
-            if (!signingSecret) throw new Error('No signing secret found');
-
-            const webhookRequest = await WebhookRequest.findById(webhookRequestId);
-            if (!webhookRequest) throw new Error('No webhook request object found');
+            const pool = await Pool.findById(webhook.poolId);
+            if (!pool.signingSecret) throw new Error('No signing secret found');
 
             const webhook = await Webhook.findById(webhookRequest.webhookId);
             if (!webhook) throw new Error('No webhook object found');
@@ -74,5 +85,13 @@ export default class WebhookService {
             webhookRequest.attempts = webhookRequest.attempts++;
             await webhookRequest.save();
         }
+    }
+
+    static async requestAttemptJob(job: Job) {
+        const { webhookRequestId, poolId } = job.attrs.data as any;
+        const webhookRequest = await WebhookRequest.findById(webhookRequest._od);
+        if (!webhookRequest) throw new Error('No webhook request object found');
+
+        return await this.executeRequest();
     }
 }

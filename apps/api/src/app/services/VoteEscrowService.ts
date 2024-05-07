@@ -4,7 +4,6 @@ import { ChainId } from '@thxnetwork/common/enums';
 import { WalletDocument } from '@thxnetwork/api/models';
 import { toChecksumAddress } from 'web3-utils';
 import TransactionService from '@thxnetwork/api/services/TransactionService';
-import Web3 from 'web3';
 
 async function isApprovedAddress(address: string, chainId: ChainId) {
     const { web3 } = getProvider(chainId);

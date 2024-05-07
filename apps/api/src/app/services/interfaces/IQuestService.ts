@@ -7,6 +7,7 @@ import QuestDailyService from '../QuestDailyService';
 import QuestCustomService from '../QuestCustomService';
 import QuestGitcoinService from '../QuestGitcoinService';
 import QuestWeb3Service from '../QuestWeb3Service';
+import QuestWebhookService from '../QuestWebhookService';
 import { QuestVariant } from '@thxnetwork/common/enums';
 
 export interface IQuestService {
@@ -33,4 +34,5 @@ export const serviceMap: {
     [QuestVariant.Custom]: new QuestCustomService(),
     [QuestVariant.Web3]: new QuestWeb3Service(),
     [QuestVariant.Gitcoin]: new QuestGitcoinService(),
+    [QuestVariant.Webhook]: new QuestWebhookService(),
 };

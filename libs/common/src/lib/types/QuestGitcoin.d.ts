@@ -1,10 +1,10 @@
-type TGitcoinQuest = TBaseQuest & {
+type TQuestGitcoin = TBaseQuest & {
     amount: number;
     scorerId: number;
     score: number;
 };
 
-type TGitcoinQuestEntry = {
+type TQuestGitcoinEntry = {
     poolId: string;
     questId: string;
     sub: string;

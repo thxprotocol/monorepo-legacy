@@ -10,45 +10,48 @@
                         <i class="fas fa-plus mr-2 ml-0"></i>
                         New Quest
                     </template>
-                    <b-dropdown-item-button
-                        v-for="(variant, key) of Object.keys(QuestVariant).filter((v) => isNaN(Number(v)))"
-                        :key="key"
-                        :disabled="QuestVariant[variant] == QuestVariant.Invite"
-                        v-b-modal="`${questModalComponentMap[QuestVariant[variant]]}-${variant}`"
-                        button-class="d-flex px-2"
-                        :class="{ 'text-opaque': QuestVariant[variant] === QuestVariant.Invite }"
-                    >
-                        <b-media>
-                            <template #aside>
-                                <div
-                                    class="p-3 rounded d-flex align-items-center justify-content-center"
-                                    style="width: 50px"
-                                    :style="{
-                                        'background-color': contentQuests[`${variant.toLowerCase()}-quest`].color,
-                                    }"
-                                    v-b-tooltip.hover.bottom
-                                    :title="contentQuests[`${variant.toLowerCase()}-quest`].description"
-                                >
-                                    <i
-                                        :class="contentQuests[`${variant.toLowerCase()}-quest`].icon"
-                                        class="text-white"
-                                    />
-                                </div>
-                            </template>
-                            {{ contentQuests[`${variant.toLowerCase()}-quest`].tag }}
-                            <p class="text-muted small mb-0">
-                                {{ contentQuests[`${variant.toLowerCase()}-quest`].title }}
-                            </p>
-                            <component
-                                @submit="onSubmit"
-                                :variant="variant"
-                                :is="questModalComponentMap[QuestVariant[variant]]"
-                                :id="`${questModalComponentMap[QuestVariant[variant]]}-${variant}`"
-                                :total="allQuests.length"
-                                :pool="pool"
-                            />
-                        </b-media>
-                    </b-dropdown-item-button>
+                    <div class="d-flex flex-wrap" style="width: 600px">
+                        <b-dropdown-item-button
+                            v-for="(variant, key) of Object.keys(QuestVariant).filter((v) => isNaN(Number(v)))"
+                            :key="key"
+                            :disabled="QuestVariant[variant] == QuestVariant.Invite"
+                            v-b-modal="`${questModalComponentMap[QuestVariant[variant]]}-${variant}`"
+                            button-class="d-flex px-2"
+                            style="flex: 1 0 50%"
+                            :class="{ 'text-opaque': QuestVariant[variant] === QuestVariant.Invite }"
+                        >
+                            <b-media>
+                                <template #aside>
+                                    <div
+                                        class="p-3 rounded d-flex align-items-center justify-content-center"
+                                        style="width: 50px"
+                                        :style="{
+                                            'background-color': contentQuests[`${variant.toLowerCase()}-quest`].color,
+                                        }"
+                                        v-b-tooltip.hover.bottom
+                                        :title="contentQuests[`${variant.toLowerCase()}-quest`].description"
+                                    >
+                                        <i
+                                            :class="contentQuests[`${variant.toLowerCase()}-quest`].icon"
+                                            class="text-white"
+                                        />
+                                    </div>
+                                </template>
+                                {{ contentQuests[`${variant.toLowerCase()}-quest`].tag }}
+                                <p class="text-muted small mb-0">
+                                    {{ contentQuests[`${variant.toLowerCase()}-quest`].title }}
+                                </p>
+                                <component
+                                    @submit="onSubmit"
+                                    :variant="variant"
+                                    :is="questModalComponentMap[QuestVariant[variant]]"
+                                    :id="`${questModalComponentMap[QuestVariant[variant]]}-${variant}`"
+                                    :total="allQuests.length"
+                                    :pool="pool"
+                                />
+                            </b-media>
+                        </b-dropdown-item-button>
+                    </div>
                 </b-dropdown>
             </b-col>
         </b-row>
@@ -125,6 +128,7 @@
                                 QuestVariant.Custom,
                                 QuestVariant.Web3,
                                 QuestVariant.Gitcoin,
+                                QuestVariant.Webhook,
                             ].includes(item.quest.variant)
                         "
                         :pool="pool"
@@ -176,6 +180,7 @@ import BaseModalQuestCustomCreate from '@thxnetwork/dashboard/components/modals/
 import BaseModalQuestWeb3Create from '@thxnetwork/dashboard/components/modals/BaseModalQuestWeb3Create.vue';
 import BaseModalQuestInviteClaims from '@thxnetwork/dashboard/components/modals/BaseModalQuestInviteClaims.vue';
 import BaseModalQuestGitcoinCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestGitcoinCreate.vue';
+import BaseModalQuestWebhookCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestWebhookCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseButtonQuestEntries from '@thxnetwork/dashboard/components/buttons/BaseButtonQuestEntries.vue';
 
@@ -189,6 +194,7 @@ import BaseButtonQuestEntries from '@thxnetwork/dashboard/components/buttons/Bas
         BaseModalQuestWeb3Create,
         BaseModalQuestGitcoinCreate,
         BaseModalQuestInviteCreate,
+        BaseModalQuestWebhookCreate,
         BaseModalQuestInviteClaims,
     },
     computed: mapGetters({
@@ -218,6 +224,7 @@ export default class QuestsView extends Vue {
         [QuestVariant.Custom]: 'BaseModalQuestCustomCreate',
         [QuestVariant.Web3]: 'BaseModalQuestWeb3Create',
         [QuestVariant.Gitcoin]: 'BaseModalQuestGitcoinCreate',
+        [QuestVariant.Webhook]: 'BaseModalQuestWebhookCreate',
     };
     questIconClassMap = {
         [QuestVariant.Daily]: 'fas fa-calendar',
@@ -228,6 +235,7 @@ export default class QuestsView extends Vue {
         [QuestVariant.Custom]: 'fas fa-flag',
         [QuestVariant.Web3]: 'fab fa-ethereum',
         [QuestVariant.Gitcoin]: 'fas fa-fingerprint',
+        [QuestVariant.Webhook]: 'fas fa-globe',
     };
     isPublished = true;
 

@@ -15,13 +15,13 @@ class THXService {
     }
 
     async createIdentity(account: TAccount) {
-        if (!this.thx) return;
+        if (!this.thx || account.identity) return;
         const identity = await this.thx.identity.create();
         await AccountProxy.update(account.sub, { identity });
     }
 
     async createEvent(account: TAccount, event: string) {
-        if (!this.thx) return;
+        if (!this.thx || !account.identity) return;
         await this.thx.events.create({ identity: account.identity, event });
     }
 }
