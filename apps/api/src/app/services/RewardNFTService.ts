@@ -27,8 +27,9 @@ export default class RewardNFTService implements IRewardService {
 
     async decorate({ reward, account }: { reward: TRewardNFT; account?: TAccount }) {
         const nft = await this.findNFT(reward);
-        const metadata = reward.metadataId && (await this.findMetadataById(nft, reward.metadataId));
-        const token = reward.tokenId && (await this.findTokenById(nft, reward));
+        const token = reward.tokenId && (await this.findTokenById(nft, reward.tokenId));
+        const metadataId = token ? token.metadataId : reward.metadataId ? reward.metadataId : null;
+        const metadata = metadataId ? await this.findMetadataById(nft, metadataId) : null;
         const expiry = reward.expiryDate && {
             date: reward.expiryDate,
             now: new Date(),
@@ -40,7 +41,43 @@ export default class RewardNFTService implements IRewardService {
         return payment;
     }
 
-    async getValidationResult(data: { reward: TReward; account?: TAccount }) {
+    async getValidationResult({
+        reward,
+        safe,
+        wallet,
+    }: {
+        reward: TRewardNFT;
+        safe?: WalletDocument;
+        wallet?: WalletDocument;
+        account?: TAccount;
+    }) {
+        const nft = await this.findNFT(reward);
+        if (!nft) return { result: false, reason: 'NFT contract is no longer available' };
+
+        // This will require a transfer
+        if (reward.tokenId) {
+            // Check if Safe is the owner
+            const { contract } = nft;
+            const token = await this.findTokenById(nft, reward.tokenId);
+            if (!token) return { result: false, reason: 'Token not found' };
+
+            const owner = await contract.methods.ownerOf(token.tokenId).call();
+            if (owner.toLowerCase() !== safe.address.toLowerCase()) {
+                return { result: false, reason: 'Token is no longer owner by campaign Safe.' };
+            }
+        }
+
+        // Will require a mint
+        if (reward.metadataId) {
+            const isMinter = await this.services[nft.variant].isMinter(nft, safe.address);
+            if (!isMinter) return { result: false, reason: 'Campaign Safe is not a minter of the NFT contract.' };
+        }
+
+        // Check receiving wallet for chain compatibility
+        if (wallet.chainId !== nft.chainId) {
+            return { result: false, reason: 'Your wallet is not on the same chain as the NFT contract.' };
+        }
+
         return { result: true, reason: '' };
     }
 
@@ -117,6 +154,7 @@ export default class RewardNFTService implements IRewardService {
     }
 
     findTokenById(nft: TERC721 | TERC1155, tokenId: string) {
+        console.log(nft.variant, tokenId);
         return this.services[nft.variant].findTokenById(tokenId);
     }
 

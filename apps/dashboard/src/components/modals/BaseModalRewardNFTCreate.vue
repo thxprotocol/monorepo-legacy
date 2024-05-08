@@ -9,18 +9,27 @@
         :is-loading="isLoading"
     >
         <b-form-group label="NFT">
-            <BaseDropdownSelectERC721 :chainId="chainId" :nft="nft" @selected="onSelectNFT" />
+            <BaseDropdownSelectERC721 :nft="nft" @selected="onSelectNFT" />
         </b-form-group>
-
-        <b-form-group label="Metadata" v-if="nft">
-            <BaseDropdownERC721Metadata
+        <b-form-group label="Metadata">
+            <BaseDropdownNFTMetadata
+                v-if="nft && !tokenId"
                 :pool="pool"
                 :nft="nft"
                 :metadataId="metadataId"
-                :tokenId="tokenId"
                 @selected="onSelectMetadata"
-                @selected-token="onSelectToken"
             />
+            <span v-else> You have selected a token. </span>
+        </b-form-group>
+        <b-form-group label="Tokens">
+            <BaseDropdownNFTBalance
+                v-if="nft && !metadataId"
+                :pool="pool"
+                :nft="nft"
+                :tokenId="tokenId"
+                @selected="onSelectToken"
+            />
+            <span v-else> You have selected metadata. </span>
         </b-form-group>
         <b-form-group
             label="Amount"
@@ -43,7 +52,8 @@ import type { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
 import { ChainId, NFTVariant, RewardVariant } from '@thxnetwork/common/enums';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
-import BaseDropdownERC721Metadata from '../dropdowns/BaseDropdownERC721Metadata.vue';
+import BaseDropdownNFTBalance from '../dropdowns/BaseDropdownNFTBalance.vue';
+import BaseDropdownNFTMetadata from '../dropdowns/BaseDropdownNFTMetadata.vue';
 import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
 import BaseDropdownERC721ImportedToken from '../dropdowns/BaseDropdownERC721ImportedToken.vue';
 
@@ -51,7 +61,8 @@ import BaseDropdownERC721ImportedToken from '../dropdowns/BaseDropdownERC721Impo
     components: {
         BaseModalRewardCreate,
         BaseDropdownSelectERC721,
-        BaseDropdownERC721Metadata,
+        BaseDropdownNFTBalance,
+        BaseDropdownNFTMetadata,
         BaseDropdownERC721ImportedToken,
     },
     computed: mapGetters({

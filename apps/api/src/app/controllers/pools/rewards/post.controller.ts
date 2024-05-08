@@ -1,4 +1,4 @@
-import { body, checkSchema, param } from 'express-validator';
+import { body, param } from 'express-validator';
 import { Request, Response } from 'express';
 import { defaults } from '@thxnetwork/api/util/validation';
 import { NotFoundError } from '@thxnetwork/api/util/errors';

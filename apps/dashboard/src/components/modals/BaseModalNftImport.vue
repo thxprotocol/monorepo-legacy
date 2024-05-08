@@ -1,6 +1,6 @@
 <template>
-    <base-modal :loading="loading" title="Import NFT Collection" id="modalNftImport">
-        <template #modal-body v-if="!loading" title="Campaign">
+    <base-modal title="Import NFT Collection" id="modalNftImport">
+        <template #modal-body title="Campaign">
             <b-card bg-variant="light" class="mb-3">
                 <p class="text-muted">Select a campaign that should distribute your NFT rewards.</p>
                 <BaseFormSelectNetwork @selected="onChangeNetwork" />
@@ -47,13 +47,18 @@
                     class="d-flex align-items-center justify-content-between"
                 >
                     <b-media>
-                        <template #aside>
-                            <b-img :src="token.image" width="45" class="rounded" :alt="`Thumbnail for ${token.name}`" />
+                        <template #aside v-if="token.media.length">
+                            <b-img
+                                :src="token.media[0].thumbnail"
+                                width="45"
+                                class="rounded"
+                                :alt="`Thumbnail for ${token.rawMetadata.name}`"
+                            />
                         </template>
-                        {{ token.balance }}x <strong>{{ token.name }}</strong>
+                        {{ token.balance }}x <strong>{{ token.rawMetadata.name }}</strong>
                         <br />
                         <b-link :href="token.tokenUri" target="_blank" class="m-0 small text-muted">
-                            {{ token.tokenUri }}
+                            {{ token.tokenUri.raw }}
                         </b-link>
                     </b-media>
                 </b-list-group-item>
@@ -68,7 +73,8 @@
                 variant="primary"
                 block
             >
-                Import NFT Collection
+                <b-spinner v-if="loading" small />
+                <template v-else> Import Tokens </template>
             </b-button>
         </template>
     </base-modal>
@@ -76,7 +82,6 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
 import BaseDropDownSelectPolygonERC20 from '../dropdowns/BaseDropDownSelectPolygonERC20.vue';
 import BaseModal from './BaseModal.vue';
 import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
@@ -85,7 +90,6 @@ import { isAddress } from 'web3-utils';
 import BaseDropdownSelectPool from '../dropdowns/BaseDropdownSelectPool.vue';
 import BaseDropdownSelectNftVariant from '../dropdowns/BaseDropdownSelectNftVariant.vue';
 import { ChainId, NFTVariant } from '@thxnetwork/common/enums';
-import { type TPool } from '@thxnetwork/types/interfaces';
 
 @Component({
     components: {
@@ -95,7 +99,6 @@ import { type TPool } from '@thxnetwork/types/interfaces';
         BaseDropdownSelectPool,
         BaseDropdownSelectNftVariant,
     },
-    computed: mapGetters({}),
 })
 export default class ModalNftImport extends Vue {
     NFTVariant = NFTVariant;
@@ -105,7 +108,13 @@ export default class ModalNftImport extends Vue {
     nftAddress = '';
     nftLogoImgUrl = '';
     showPreview = false;
-    tokens: { name: string; image: string; balance: number; tokenId: number; tokenUri: string }[] = [];
+    tokens: {
+        rawMetadata: { name: string };
+        media: { thumbnail: string }[];
+        balance: number;
+        tokenId: number;
+        tokenUri: { raw: string };
+    }[] = [];
     previewLoading = false;
     pool: TPool | null = null;
     chainId: ChainId = ChainId.Polygon;
@@ -129,20 +138,23 @@ export default class ModalNftImport extends Vue {
     }
 
     async submit() {
+        if (!this.pool) return;
         this.loading = true;
-        if (!this.pool) {
-            return;
+
+        try {
+            await this.$store.dispatch(`${this.variant}/import`, {
+                chainId: this.chainId,
+                address: this.pool.safe.address,
+                contractAddress: this.nftAddress,
+            });
+
+            this.$bvModal.hide(`modalNftImport`);
+            this.tokens = [];
+        } catch (error) {
+            throw new Error((error as any).message);
+        } finally {
+            this.loading = false;
         }
-
-        await this.$store.dispatch(`${this.variant}/import`, {
-            chainId: this.chainId,
-            pool: this.pool,
-            contractAddress: this.nftAddress,
-        });
-
-        this.$bvModal.hide(`modalNftImport`);
-        this.tokens = [];
-        this.loading = false;
     }
 
     async getPreview(address: string) {
@@ -156,7 +168,7 @@ export default class ModalNftImport extends Vue {
             this.previewLoading = true;
             this.tokens = await this.$store.dispatch(`${this.variant}/preview`, {
                 chainId: this.chainId,
-                address: this.pool.safeAddress,
+                address: this.pool.safe.address,
                 contractAddress: address,
             });
             this.previewLoading = false;

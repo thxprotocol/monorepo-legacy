@@ -120,9 +120,9 @@ function findOneByAddress(address: string) {
 
 async function findOneByPool(pool: PoolDocument, chainId?: ChainId) {
     return await Wallet.findOne({
+        poolId: pool.id,
         chainId: chainId || getChainId(),
         sub: pool.sub,
-        poolId: String(pool._id),
         safeVersion,
     });
 }

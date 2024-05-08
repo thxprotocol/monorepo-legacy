@@ -325,15 +325,11 @@ class ERC721Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async import(payload: { address: string; pool: TPool }) {
+    async import(payload: { address: string; contractAdddress: TPool; chainId: ChainId }) {
         const { data } = await axios({
             method: 'POST',
             url: `/erc721/import`,
-            headers: { 'X-PoolId': payload.pool._id },
-            data: {
-                contractAddress: payload.address,
-                chainId: payload.pool.chainId,
-            },
+            data: payload,
         });
 
         this.context.commit('set', data.erc721);

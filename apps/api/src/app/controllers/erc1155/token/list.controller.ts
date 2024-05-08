@@ -15,7 +15,7 @@ export const controller = async (req: Request, res: Response) => {
     const result = await Promise.all(
         tokens.map(async (token: ERC1155TokenDocument) => {
             const erc1155 = await ERC1155Service.findById(token.erc1155Id);
-            if (!erc1155 || erc1155.chainId !== wallet.chainId) return;
+            if (!erc1155) return;
 
             const metadata = await ERC1155Service.findMetadataById(token.metadataId);
             if (!metadata) return;
@@ -24,11 +24,7 @@ export const controller = async (req: Request, res: Response) => {
         }),
     );
 
-    res.json(
-        result.reverse().filter((token: TERC1155Token & { nft: TERC1155 }) => {
-            return token && wallet.chainId === token.nft.chainId;
-        }),
-    );
+    res.json(result.reverse().filter((token) => !!token));
 };
 
 export default { controller, validation };

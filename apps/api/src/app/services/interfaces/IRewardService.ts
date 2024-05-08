@@ -8,7 +8,12 @@ export interface IRewardService {
     };
     decorate(data: { reward: TReward; account?: TAccount }): Promise<TReward>;
     decoratePayment(payment: TRewardPayment): Promise<TRewardPayment>;
-    getValidationResult(data: { reward: TReward; account?: TAccount }): Promise<TValidationResult>;
+    getValidationResult(data: {
+        reward: TReward;
+        wallet?: WalletDocument;
+        safe?: WalletDocument;
+        account?: TAccount;
+    }): Promise<TValidationResult>;
     create(data: Partial<TReward>): Promise<TReward>;
     update(reward: TReward, updates: Partial<TReward>): Promise<TReward>;
     remove(reward: TReward): Promise<void>;

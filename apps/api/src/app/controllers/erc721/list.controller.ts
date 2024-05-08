@@ -8,5 +8,4 @@ const controller = async (req: Request, res: Response) => {
     const result = await ERC721Service.findBySub(req.auth.sub);
     res.json(result.map((erc721: ERC721Document) => erc721._id));
 };
-
 export default { controller, validation };

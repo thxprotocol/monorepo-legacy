@@ -235,10 +235,12 @@ export default class RewardService {
         reward,
         account,
         safe,
+        wallet,
     }: {
         reward: TReward;
-        account: TAccount;
-        safe: WalletDocument;
+        account?: TAccount;
+        safe?: WalletDocument;
+        wallet?: WalletDocument;
     }) {
         const participant = await Participant.findOne({ sub: account.sub, poolId: reward.poolId });
         if (Number(participant.balance) < Number(reward.pointPrice)) {
@@ -254,7 +256,7 @@ export default class RewardService {
         const isStocked = await this.isStocked(reward);
         if (!isStocked) return { result: false, reason: 'This reward is out of stock.' };
 
-        return serviceMap[reward.variant].getValidationResult({ reward, account, safe });
+        return serviceMap[reward.variant].getValidationResult({ reward, account, wallet, safe });
     }
 
     static async isLocked({ reward, account }) {

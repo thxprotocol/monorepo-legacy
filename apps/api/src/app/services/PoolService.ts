@@ -99,17 +99,23 @@ async function deploy(sub: string, title: string): Promise<PoolDocument> {
 }
 
 async function getAllBySub(sub: string) {
-    const pools = await Pool.find({ sub });
+    let pools = await Pool.find({ sub });
+
     // Only query for collabs of not already owned pools
     const collaborations = await Collaborator.find({ sub, poolId: { $nin: pools.map(({ _id }) => String(_id)) } });
     const poolIds = collaborations.map((c) => c.poolId);
-    if (!poolIds.length) return pools;
+    if (poolIds.length) {
+        const collaborationPools = await Pool.find({ _id: poolIds });
+        pools = pools.concat(collaborationPools);
+    }
 
-    const collaborationPools = await Pool.find({
-        _id: poolIds,
-    });
-
-    return pools.concat(collaborationPools);
+    // Add Safes to pools
+    return await Promise.all(
+        pools.map(async (pool) => {
+            const safe = await SafeService.findOneByPool(pool);
+            return { ...pool.toJSON(), safe };
+        }),
+    );
 }
 
 function getAll() {
