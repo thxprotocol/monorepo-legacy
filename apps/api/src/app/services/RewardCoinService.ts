@@ -1,7 +1,14 @@
-import { ERC20, ERC20Document, RewardCoin, RewardCoinDocument, WalletDocument } from '@thxnetwork/api/models';
+import {
+    ERC20,
+    ERC20Document,
+    RewardCoin,
+    RewardCoinDocument,
+    Transaction,
+    WalletDocument,
+} from '@thxnetwork/api/models';
 import { RewardCoinPayment } from '@thxnetwork/api/models';
 import { IRewardService } from './interfaces/IRewardService';
-import { ChainId, ERC20Type } from '@thxnetwork/common/enums';
+import { ChainId, ERC20Type, TransactionState } from '@thxnetwork/common/enums';
 import { BigNumber } from 'ethers';
 import AccountProxy from '../proxies/AccountProxy';
 import ERC20Service from './ERC20Service';
@@ -17,7 +24,7 @@ export default class RewardCoinService implements IRewardService {
 
     async decorate({ reward }) {
         const erc20 = await ERC20.findById(reward.erc20Id);
-        return { ...reward.toJSON(), chainId: erc20.chainId, erc20 };
+        return { ...reward.toJSON(), erc20 };
     }
 
     async decoratePayment(payment: TBaseRewardPayment) {
@@ -80,6 +87,20 @@ export default class RewardCoinService implements IRewardService {
         const erc20 = await ERC20.findById(reward.erc20Id);
         if (!erc20) throw new Error('ERC20 not found');
 
+        // Check if there are pending transactions that are not mined or failed.
+        const txs = await Transaction.find({
+            walletId: safe.id,
+            $or: [
+                { state: TransactionState.Confirmed },
+                { state: TransactionState.Sent },
+                { state: TransactionState.Queued },
+            ],
+        }).sort({ createdAt: 'asc' });
+        if (txs.length) {
+            return { result: false, reason: `Found ${txs.length} pending transactions, please try again later.` };
+        }
+
+        // Check balances
         const balanceOfPool = await erc20.contract.methods.balanceOf(safe.address).call();
         const isTransferable = [ERC20Type.Unknown, ERC20Type.Limited].includes(erc20.type);
         const isBalanceInsufficient = BigNumber.from(balanceOfPool).lt(BigNumber.from(toWei(reward.amount)));

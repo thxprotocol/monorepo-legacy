@@ -156,14 +156,17 @@ async function proposeTransaction(wallet: WalletDocument, safeTransactionData: S
         safeAddress: wallet.address,
         contractNetworks,
     });
+
+    // Get nonce for this Safes transaction
     const nonce = await safeSdk.getNonce();
-    const safeTransaction = await safeSdk.createTransaction({ safeTransactionData, options: { nonce } });
+    const safeTransaction = await safeSdk.createTransaction({ safeTransactionData, options: { nonce: nonce + 1 } });
 
-    logger.info({ safeTransactionData, nonce });
-
+    // Create hash for this transaction
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
     const senderSignature = await safeSdk.signTransactionHash(safeTxHash);
     const safeAPIKit = getSafeSDK(wallet.chainId);
+
+    logger.info({ safeTxHash, nonce });
 
     try {
         await safeAPIKit.proposeTransaction({
