@@ -118,7 +118,7 @@
                     </b-dropdown>
                     <BaseModalQRCodes :id="`modalQRCodes${item.reward._id}`" :pool="pool" :reward="item.reward" />
                     <component
-                        @submit="onSubmit"
+                        @submit="onSubmitEdit"
                         :is="rewardModalComponentMap[item.reward.variant]"
                         :id="rewardModalComponentMap[item.reward.variant] + item.reward._id"
                         :pool="pool"
@@ -248,14 +248,15 @@ export default class RewardsView extends Vue {
         this.isLoading = false;
     }
 
-    openPublished(isPublished: boolean) {
-        console.log(isPublished);
-        debugger;
-        this.$router.push({ path: `/pool/${this.pool._id}/rewards`, query: { isPublished } });
+    async openPublished(isPublished: boolean) {
+        try {
+            await this.$router.push({ path: `/pool/${this.pool._id}/rewards`, query: { isPublished } });
+        } catch (error) {
+            await this.listRewards();
+        }
     }
 
-    onSubmit(query: { isPublished: boolean }) {
-        debugger;
+    onSubmitEdit(query: { isPublished: boolean }) {
         this.openPublished(query.isPublished);
     }
 

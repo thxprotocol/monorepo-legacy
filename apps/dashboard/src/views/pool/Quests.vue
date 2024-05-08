@@ -291,7 +291,7 @@ export default class QuestsView extends Vue {
         try {
             await this.$router.push({ path: `/pool/${this.pool._id}/quests`, query: { isPublished } });
         } catch (error) {
-            //
+            await this.listQuests();
         }
     }
 
