@@ -21,6 +21,7 @@
 </template>
 
 <script lang="ts">
+// The requirement for this component has not been implemented yet and is likely to replace the discord message requirement type
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';

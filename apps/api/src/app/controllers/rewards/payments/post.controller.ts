@@ -17,7 +17,6 @@ const controller = async (req: Request, res: Response) => {
 
     const reward = await RewardService.findById(variant, rewardId);
     if (!reward) throw new NotFoundError('Reward not found');
-    if (!reward.pointPrice) throw new NotFoundError('Reward has no point price and cannot be purchased');
 
     const pool = await PoolService.getById(reward.poolId);
     if (!pool) throw new NotFoundError('Campaign not found');

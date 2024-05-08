@@ -86,14 +86,17 @@ export default class QuestWebhookService implements IQuestService {
         if (!webhook) return { result: false, reason: 'Webhook no longer available.' };
 
         const data = await WebhookService.request(webhook, account, quest.metadata);
-        if (!data) return { result: false, reason: 'Webhook validation request failed.' };
-        if (!data.result) return { result: false, reason: 'Webhook validation request result was negative.' };
+        if (!data) return { result: false, reason: 'Webhook validation returned nothing.' };
+        if (!data.result) return { result: false, reason: 'Webhook validation was negative.' };
+        if (data.result) {
+            return {
+                result: true,
+                reason: '',
+                data,
+            };
+        }
 
-        return {
-            result: data.result,
-            reason: '',
-            data,
-        };
+        return { result: false, reason: 'Webhook validation request failed.' };
     }
 
     private async findAllEntries({ quest, account }: { quest: QuestWebhookDocument; account: TAccount }) {

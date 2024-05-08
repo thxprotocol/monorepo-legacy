@@ -33,6 +33,7 @@ export const interactionComponentMap = {
     [QuestSocialRequirement.TwitterFollow]: 'BaseDropdownTwitterUsers',
     [QuestSocialRequirement.TwitterQuery]: 'BaseDropdownTwitterQuery',
     [QuestSocialRequirement.DiscordGuildJoined]: 'BaseDropdownDiscordGuilds',
+    [QuestSocialRequirement.DiscordGuildRole]: 'BaseDropdownDiscordRoles',
     [QuestSocialRequirement.DiscordMessage]: 'BaseDropdownDiscordMessage',
     [QuestSocialRequirement.DiscordMessageReaction]: 'BaseDropdownDiscordMessageReaction',
 };

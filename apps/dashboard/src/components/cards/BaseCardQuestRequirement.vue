@@ -29,7 +29,7 @@
                         Connect
                     </b-button>
                 </b-alert>
-                <b-form-group label="Interaction">
+                <b-form-group label="Requirement">
                     <BaseDropdownQuestProviderInteractions
                         @change="onSelectProviderInteraction"
                         :interactions="interactions"
@@ -67,6 +67,7 @@ import BaseDropdownYoutubeVideo from '../dropdowns/BaseDropdownYoutubeVideo.vue'
 import BaseDropdownTwitterTweets from '../dropdowns/BaseDropdownTwitterTweets.vue';
 import BaseDropdownTwitterUsers from '../dropdowns/BaseDropdownTwitterUsers.vue';
 import BaseDropdownDiscordGuilds from '../dropdowns/BaseDropdownDiscordGuilds.vue';
+import BaseDropdownDiscordRoles from '../dropdowns/BaseDropdownDiscordRoles.vue';
 import BaseDropdownDiscordMessage from '../dropdowns/BaseDropdownDiscordMessage.vue';
 import BaseDropdownDiscordMessageReaction from '../dropdowns/BaseDropdownDiscordMessageReaction.vue';
 import BaseDropdownTwitterQuery from '../dropdowns/BaseDropdownTwitterQuery.vue';
@@ -84,6 +85,7 @@ import { interactionComponentMap } from '@thxnetwork/common/maps';
         BaseDropdownTwitterTweets,
         BaseDropdownTwitterUsers,
         BaseDropdownTwitterQuery,
+        BaseDropdownDiscordRoles,
     },
     computed: mapGetters({
         profile: 'account/profile',

@@ -9,6 +9,7 @@ export const questInteractionVariantMap = {
     [QuestSocialRequirement.YouTubeLike]: QuestVariant.YouTube,
     [QuestSocialRequirement.YouTubeSubscribe]: QuestVariant.YouTube,
     [QuestSocialRequirement.DiscordGuildJoined]: QuestVariant.Discord,
+    [QuestSocialRequirement.DiscordGuildRole]: QuestVariant.Discord,
     [QuestSocialRequirement.DiscordMessage]: QuestVariant.Discord,
     [QuestSocialRequirement.DiscordMessageReaction]: QuestVariant.Discord,
 };

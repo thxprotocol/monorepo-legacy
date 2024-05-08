@@ -57,6 +57,10 @@ export const requirementMap: {
     [QuestSocialRequirement.DiscordGuildJoined]: async (account, quest) => {
         return await DiscordDataProxy.validateGuildJoined(account, quest.content);
     },
+    [QuestSocialRequirement.DiscordGuildRole]: async (account, quest) => {
+        const { roleId } = JSON.parse(quest.contentMetadata);
+        return await DiscordDataProxy.validateGuildRole(account, quest.content, roleId);
+    },
     [QuestSocialRequirement.DiscordMessage]: async (account, quest) => {
         return { result: true, reason: '' };
     },
@@ -94,6 +98,10 @@ export const tokenInteractionMap: { [interaction: number]: { kind: AccessTokenKi
     [QuestSocialRequirement.DiscordGuildJoined]: {
         kind: AccessTokenKind.Discord,
         scopes: OAuthRequiredScopes.DiscordValidateGuild,
+    },
+    [QuestSocialRequirement.DiscordGuildRole]: {
+        kind: AccessTokenKind.Discord,
+        scopes: OAuthRequiredScopes.DiscordAuth,
     },
     [QuestSocialRequirement.DiscordMessage]: {
         kind: AccessTokenKind.Discord,

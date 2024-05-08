@@ -38,6 +38,7 @@ export default class QuestDiscordService implements IQuestService {
         const interactionMap = {
             [QuestSocialRequirement.DiscordMessage]: this.getDiscordMessageParams.bind(this),
             [QuestSocialRequirement.DiscordGuildJoined]: this.getDiscordParams.bind(this),
+            [QuestSocialRequirement.DiscordGuildRole]: this.getDiscordParams.bind(this),
         };
         const extraParams = await interactionMap[quest.interaction]({ quest, account });
 
@@ -61,6 +62,7 @@ export default class QuestDiscordService implements IQuestService {
         const map = {
             [QuestSocialRequirement.DiscordMessage]: this.isAvailableMessage.bind(this),
             [QuestSocialRequirement.DiscordGuildJoined]: this.isAvailableDefault.bind(this),
+            [QuestSocialRequirement.DiscordGuildRole]: this.isAvailableDefault.bind(this),
         };
         return await map[quest.interaction]({ quest, account });
     }
@@ -93,6 +95,7 @@ export default class QuestDiscordService implements IQuestService {
         const interactionMap = {
             [QuestSocialRequirement.DiscordMessage]: this.getMessagePoints.bind(this),
             [QuestSocialRequirement.DiscordGuildJoined]: this.getPoints.bind(this),
+            [QuestSocialRequirement.DiscordGuildRole]: this.getPoints.bind(this),
         };
         const { pointsAvailable } = await interactionMap[quest.interaction]({ quest, account });
         return pointsAvailable;

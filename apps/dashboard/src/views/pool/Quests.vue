@@ -10,7 +10,7 @@
                         <i class="fas fa-plus mr-2 ml-0"></i>
                         New Quest
                     </template>
-                    <div class="d-flex flex-wrap" style="width: 600px">
+                    <div class="d-flex flex-wrap" style="width: 650px">
                         <b-dropdown-item-button
                             v-for="(variant, key) of Object.keys(QuestVariant).filter((v) => isNaN(Number(v)))"
                             :key="key"

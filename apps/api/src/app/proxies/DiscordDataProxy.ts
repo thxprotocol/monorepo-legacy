@@ -100,6 +100,26 @@ export default class DiscordDataProxy {
         return { result: false, reason: 'Discord: Your Discord account is not a member of this server.' };
     }
 
+    static async validateGuildRole(account: TAccount, guildId: string, roleId: string) {
+        const token = await AccountProxy.getToken(
+            account,
+            AccessTokenKind.Discord,
+            OAuthRequiredScopes.DiscordValidateGuild,
+        );
+        if (!token) return { result: false, reason: 'Could not find a Discord access_token for this account.' };
+
+        // Fetch guild from bot
+        const guild = await this.fetchGuild(guildId);
+        if (!guild) return { result: false, reason: 'THX Bot is not in the server.' };
+
+        // Check role for guild member
+        const member = await guild.members.fetch(token.userId);
+        console.log(member.roles.cache.has(roleId), roleId);
+        if (member.roles.cache.has(roleId)) return { result: true, reason: '' };
+
+        return { result: false, reason: 'You do not have the required role.' };
+    }
+
     static async getGuildRoles(guild: Guild) {
         return guild.roles.cache.map((role) => ({
             id: role.id,

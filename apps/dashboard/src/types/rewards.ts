@@ -55,6 +55,7 @@ export const providerList: TQuestSocialProvider[] = [
         logoURI: require('@thxnetwork/dashboard/../public/assets/logo-discord.png'),
         actions: [
             QuestSocialRequirement.DiscordGuildJoined,
+            QuestSocialRequirement.DiscordGuildRole,
             QuestSocialRequirement.DiscordMessage,
             QuestSocialRequirement.DiscordMessageReaction,
         ],
@@ -104,6 +105,11 @@ export const providerInteractionList: TQuestSocialInteraction[] = [
     {
         type: QuestSocialRequirement.DiscordMessage,
         name: 'Message',
+        items: [],
+    },
+    {
+        type: QuestSocialRequirement.DiscordGuildRole,
+        name: 'Role',
         items: [],
     },
     // {
