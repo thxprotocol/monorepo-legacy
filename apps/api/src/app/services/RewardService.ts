@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 import { RewardVariant } from '@thxnetwork/common/enums';
-import { Participant, WalletDocument } from '@thxnetwork/api/models';
+import { Participant, QRCodeEntry, WalletDocument } from '@thxnetwork/api/models';
 import { v4 } from 'uuid';
 import { logger } from '../util/logger';
 import { Job } from '@hokify/agenda';
@@ -45,11 +45,13 @@ export default class RewardService {
         const rewardVariants = Object.keys(RewardVariant).filter((v) => !isNaN(Number(v)));
         const callback: any = async (variant: RewardVariant) => {
             const Reward = serviceMap[variant].models.reward;
+            // Filter out rewards that have QR codes (RDM)
+            const qrCodeRewardIds = await QRCodeEntry.find().distinct('rewardId');
             const rewards = await Reward.find({
+                _id: { $nin: qrCodeRewardIds },
                 poolId: pool._id,
                 variant,
                 isPublished: true,
-                pointPrice: { $exists: true, $gt: 0 },
                 $or: [
                     // Include quests with expiryDate less than or equal to now
                     { expiryDate: { $exists: true, $gte: new Date() } },
