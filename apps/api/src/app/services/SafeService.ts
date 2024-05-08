@@ -106,16 +106,6 @@ async function createJob(job: Job) {
     }
 }
 
-async function getWalletMigration(sub: string, chainId: ChainId) {
-    return await Wallet.findOne({
-        sub,
-        chainId,
-        version: '4.0.12',
-        address: { $exists: true, $ne: '' },
-        safeVersion: { $exists: false },
-    });
-}
-
 function findById(id: string) {
     return Wallet.findById(id);
 }
@@ -166,7 +156,11 @@ async function proposeTransaction(wallet: WalletDocument, safeTransactionData: S
         safeAddress: wallet.address,
         contractNetworks,
     });
-    const safeTransaction = await safeSdk.createTransaction({ safeTransactionData });
+    const nonce = await safeSdk.getNonce();
+    const safeTransaction = await safeSdk.createTransaction({ safeTransactionData, options: { nonce } });
+
+    logger.info({ safeTransactionData, nonce });
+
     const safeTxHash = await safeSdk.getTransactionHash(safeTransaction);
     const senderSignature = await safeSdk.signTransactionHash(safeTxHash);
     const safeAPIKit = getSafeSDK(wallet.chainId);
@@ -234,7 +228,6 @@ async function getTransaction(wallet: WalletDocument, safeTxHash: string): Promi
 }
 
 export default {
-    getWalletMigration,
     reset,
     findById,
     createSwapOwnerTransaction,
