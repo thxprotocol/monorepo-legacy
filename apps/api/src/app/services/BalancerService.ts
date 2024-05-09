@@ -152,7 +152,7 @@ class BalancerService {
 
             // Calc APR
             const apr = await this.calculateBalancerAPR(gauge, priceOfBAL, pricePerBPT);
-            const balancer = { min: apr, max: apr * 2.5, swapFees: 0.2 }; // TODO Fetch swapFees from SDK or contract
+            const balancer = { apr, swapFees: 0.2 }; // TODO Fetch swapFees from SDK or contract
             const rewardsInBPT = this.rewards[chainId].bpt;
             const thx = await this.calculateTHXAPR(gauge, veTHX, rewardsInBPT, pricePerBPT);
             this.apr[chainId] = { balancer, thx };
@@ -210,7 +210,7 @@ class BalancerService {
             [ChainId.Hardhat]: HARDHAT_RPC,
             [ChainId.Polygon]: POLYGON_RPC,
         };
-        const { BAL, BPT, RewardFaucet } = contractNetworks[chainId];
+        const { BAL, BPT, RewardFaucet, RewardDistributor } = contractNetworks[chainId];
         const provider = new ethers.providers.JsonRpcProvider(rpcMap[chainId]);
         const rewardFaucet = new ethers.Contract(RewardFaucet, contractArtifacts['RewardFaucet'].abi, provider);
         const amountOfWeeks = '4';
@@ -221,10 +221,18 @@ class BalancerService {
             }),
         );
         const [balTotal, bptTotal] = await Promise.all(
-            [BAL, BPT].map(async (tokenAddress) => (await rewardFaucet.totalTokenRewards(tokenAddress)).toString()),
+            [BAL, BPT].map(async (tokenAddress) => await rewardFaucet.totalTokenRewards(tokenAddress)),
         );
 
-        return { schedule: { bal: balSchedule, bpt: bptSchedule }, rewards: { bal: balTotal, bpt: bptTotal } };
+        // Add reward distributor BAL balance to the current week
+        const balContract = new ethers.Contract(BAL, contractArtifacts['BAL'].abi, provider);
+        const balBalance = await balContract.balanceOf(RewardDistributor);
+        balSchedule[0] = BigNumber.from(balSchedule[0]).add(balBalance).toString();
+
+        return {
+            schedule: { bal: balSchedule, bpt: bptSchedule },
+            rewards: { bal: balTotal.add(balBalance).toString(), bpt: bptTotal.toString() },
+        };
     }
 }
 

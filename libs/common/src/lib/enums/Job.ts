@@ -15,4 +15,5 @@ export enum JobType {
     UpdatePrices = 'updatePrices',
     UpdateAPR = 'updateAPR',
     AssertPayments = 'assertPayments',
+    ClaimExternalRewards = 'claimExternalRewards',
 }
