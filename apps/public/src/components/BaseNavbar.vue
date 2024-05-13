@@ -107,8 +107,7 @@
                         Dashboard
                     </b-button>
                     <b-button class="rounded-pill ml-3" variant="primary" :href="widgetUrl" target="_blank">
-                        <span>Explore Quests</span>
-                        <i class="fas fa-chevron-right"></i>
+                        <span>Launch App</span>
                     </b-button>
                 </div>
             </b-collapse>
