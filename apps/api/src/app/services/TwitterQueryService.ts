@@ -9,6 +9,8 @@ import { QuestSocialRequirement, QuestVariant } from '@thxnetwork/common/enums';
 import { logger } from '../util/logger';
 import { TwitterPost } from '../models/TwitterPost';
 
+const ONE_DAY_IN_MS = 24 * 60 * 60 * 1000;
+
 export default class TwitterQueryService {
     static async searchJob() {
         const queries = await TwitterQuery.find();
@@ -102,27 +104,28 @@ export default class TwitterQueryService {
 
     static async createQuest(query: TTwitterQuery, post: TTwitterPost, user: TTwitterUser) {
         const file = null; // TODO Download buffer for the media first URL and upload with quest
-        await QuestService.create(
-            QuestVariant.Twitter,
-            query.poolId,
-            {
-                kind: 'twitter',
-                interaction: QuestSocialRequirement.TwitterLikeRetweet,
-                title: 'Repost & Like',
-                description: query.defaults.description,
-                amount: query.defaults.amount,
-                locks: query.defaults.locks,
-                isPublished: query.defaults.isPublished,
-                content: post.postId,
-                contentMetadata: JSON.stringify({
-                    url: `https://twitter.com/${user.username.toLowerCase()}/status/${post.postId}`,
-                    username: user.username,
-                    name: user.name,
-                    text: post.text,
-                    minFollowersCount: query.defaults.minFollowersCount,
-                }),
-            },
-            file,
-        );
+        const quest = {
+            kind: 'twitter',
+            interaction: QuestSocialRequirement.TwitterLikeRetweet,
+            title: 'Repost & Like',
+            description: query.defaults.description,
+            amount: query.defaults.amount,
+            locks: query.defaults.locks,
+            isPublished: query.defaults.isPublished,
+            content: post.postId,
+            contentMetadata: JSON.stringify({
+                url: `https://twitter.com/${user.username.toLowerCase()}/status/${post.postId}`,
+                username: user.username,
+                name: user.name,
+                text: post.text,
+                minFollowersCount: query.defaults.minFollowersCount,
+            }),
+        };
+
+        if (query.defaults.expiryInDays > 0) {
+            quest['expiryDate'] = new Date(Date.now() + query.defaults.expiryInDays * ONE_DAY_IN_MS);
+        }
+
+        await QuestService.create(QuestVariant.Twitter, query.poolId, quest, file);
     }
 }

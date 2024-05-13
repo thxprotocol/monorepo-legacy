@@ -43,13 +43,16 @@
                                 <b-form-textarea v-model="description" />
                             </b-form-group>
                             <b-form-group label="Amount">
-                                <b-form-input v-model="amount" />
+                                <b-form-input v-model="amount" type="number" />
                             </b-form-group>
                         </b-col>
                         <b-col>
                             <BaseFormGroupQuestLocks @change-locks="locks = $event" :pool="pool" :locks="locks" />
                             <b-form-group label="Minimum amount of followers">
                                 <b-form-input v-model="minFollowersCount" />
+                            </b-form-group>
+                            <b-form-group label="Expiry in days">
+                                <b-form-input v-model="expiryInDays" type="number" />
                             </b-form-group>
                             <b-form-group>
                                 <b-checkbox :checked="isPublished" @change="isPublished = $event">
@@ -59,7 +62,6 @@
                         </b-col>
                     </b-row>
                 </b-tab>
-                {{ defaults }}
             </b-tabs>
 
             <b-button
@@ -155,6 +157,7 @@ export default class BaseModalTwitterQueryCreate extends Vue {
         this.description = this.query.defaults.description ? this.query.defaults.description : this.description;
         this.amount = this.query.defaults.amount ? this.query.defaults.amount : this.amount;
         this.isPublished = this.query.defaults.isPublished ? this.query.defaults.isPublished : this.isPublished;
+        this.expiryInDays = this.query.defaults.expiryInDays ? this.query.defaults.expiryInDays : this.expiryInDays;
         this.minFollowersCount = this.query.defaults.minFollowersCount
             ? this.query.defaults.minFollowersCount
             : this.minFollowersCount;
@@ -180,6 +183,7 @@ export default class BaseModalTwitterQueryCreate extends Vue {
             amount: this.amount,
             isPublished: this.isPublished,
             minFollowersCount: this.minFollowersCount,
+            expiryInDays: this.expiryInDays,
             locks: this.locks,
         };
     }
