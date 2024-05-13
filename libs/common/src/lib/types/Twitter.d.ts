@@ -10,6 +10,7 @@ type TTwitterQuery = {
         description: string;
         amount: number;
         isPublished: boolean;
+        minFollowersCount: number;
         expiryInDays: number;
         locks: TQuestLock[];
     };
