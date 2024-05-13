@@ -1,3 +1,20 @@
+type TTwitterQuery = {
+    _id: string;
+    createdAt: Date;
+    poolId: string;
+    query: string;
+    posts: TTwitterPost[];
+    operators: TTwitterOperators;
+    defaults: {
+        title: string;
+        description: string;
+        amount: number;
+        isPublished: boolean;
+        expiryInDays: number;
+        locks: TQuestLock[];
+    };
+};
+
 type TTwitterRequestParams = {
     max_results: number;
     pagination_token?: string;
@@ -90,6 +107,7 @@ type TTwitterOperators = {
     hashtags: string[];
     mentions: string[];
     media: string | null;
+    excludes: string[];
 };
 
 type TTwitterMediaResponse = {

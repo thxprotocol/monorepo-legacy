@@ -9,6 +9,8 @@ const validation = [param('id').isMongoId(), body('operators').customSanitizer((
 
 const controller = async (req: Request, res: Response) => {
     const query = TwitterQueryParser.create(req.body.operators);
+
+    // 512 is the max length for X API queries within the Basic plan
     if (query.length > 512) {
         throw new BadRequestError('Your query is too long! Please remove some fields.');
     }
@@ -16,6 +18,7 @@ const controller = async (req: Request, res: Response) => {
     const twitterQuery = await TwitterQuery.create({
         poolId: req.params.id,
         operators: req.body.operators,
+        defaults: req.body.defaults,
         query,
     });
 

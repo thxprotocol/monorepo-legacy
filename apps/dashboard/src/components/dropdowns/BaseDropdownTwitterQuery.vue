@@ -19,6 +19,8 @@
             @mentions="set('mentions', $event)"
             :media="media"
             @media="set('media', $event)"
+            :excludes="excludes"
+            @excludes="set('excludes', $event)"
         />
         <BaseFormGroupTwitterFollowersMin :amount="minFollowersCount" @input="onInputFollowersMin" />
     </div>
@@ -27,7 +29,9 @@
 <script lang="ts">
 import { TwitterQuery } from '@thxnetwork/common/twitter';
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
-import BaseCardTwitterQueryOperators from '@thxnetwork/dashboard/components/cards/BaseCardTwitterQueryOperators.vue';
+import BaseCardTwitterQueryOperators, {
+    excludeOptions,
+} from '@thxnetwork/dashboard/components/cards/BaseCardTwitterQueryOperators.vue';
 import BaseFormGroupTwitterFollowersMin from '@thxnetwork/dashboard/components/form-group/BaseFormGroupTwitterFollowersMin.vue';
 
 @Component({
@@ -46,6 +50,7 @@ export default class BaseDropdownTwitterQuery extends Vue {
     hashtags = [];
     mentions = [];
     media = '';
+    excludes: string[] = [excludeOptions[0].value, excludeOptions[1].value, excludeOptions[2].value];
 
     @Prop({ required: false }) content!: string;
     @Prop({ required: false }) contentMetadata!: any;
@@ -85,6 +90,7 @@ export default class BaseDropdownTwitterQuery extends Vue {
                 hashtags: this.hashtags,
                 mentions: this.mentions,
                 media: this.media,
+                excludes: this.excludes,
             }) || ''
         );
     }
@@ -103,6 +109,7 @@ export default class BaseDropdownTwitterQuery extends Vue {
                     hashtags: this.hashtags,
                     mentions: this.mentions,
                     media: this.media,
+                    excludes: this.excludes,
                 },
                 minFollowersCount: this.minFollowersCount,
             },

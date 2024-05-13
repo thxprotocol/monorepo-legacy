@@ -8,7 +8,7 @@
         <b-form-row>
             <b-col md="4">
                 <div>
-                    <strong>Repost &amp; Like Automation</strong>
+                    <strong>Quest Automation</strong>
                 </div>
                 <p class="text-muted">
                     Runs a search for posts that match your requirements and create unpublished Repost & Like quests.
@@ -19,7 +19,6 @@
                     <li>New quests are unpublished by default</li>
                     <li>Matched post are sorted by recency</li>
                     <li>Max. 10 posts are matched per search</li>
-                    <li>Retweets are ignored</li>
                 </ul>
             </b-col>
             <b-col md="8">
@@ -53,9 +52,6 @@
                                 <template #button-content>
                                     <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                                 </template>
-                                <!-- <b-dropdown-item v-b-modal="`modalTwitterQueryCreate-${item.query._id}`">
-                                    Edit
-                                </b-dropdown-item> -->
                                 <b-dropdown-item @click="onClickDelete(item.query)"> Delete </b-dropdown-item>
                             </b-dropdown>
                             <BaseModalTwitterQueryCreate

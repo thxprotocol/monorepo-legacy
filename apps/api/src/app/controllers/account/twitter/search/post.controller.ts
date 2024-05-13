@@ -9,6 +9,7 @@ const validation = [body('operators').customSanitizer((ops) => TwitterQuery.pars
 const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.findById(req.auth.sub);
     const query = TwitterQuery.create(req.body.operators);
+    console.log({ query });
     const posts = await TwitterDataProxy.search(account, query);
 
     res.json(posts);

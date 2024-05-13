@@ -39,6 +39,7 @@ export class TwitterQuery {
             hashtags: this.stringifyField(operators['hashtags']),
             mentions: this.stringifyField(operators['mentions']),
             media: operators['media'],
+            excludes: this.stringifyField(operators['excludes']),
         } as { [key: string]: string };
     }
 
@@ -53,38 +54,64 @@ export class TwitterQuery {
                     case 'from': {
                         const items = operators[key] as string[];
                         if (!items) return;
-                        const authors = items.map((author: string) => `from:${author}`).join(' OR ');
+                        const authors = items
+                            .map((author: string) => `from:${author}`)
+                            .filter((v) => !!v)
+                            .join(' OR ');
                         return items.length > 1 ? `(${authors})` : authors;
                     }
                     case 'to': {
                         const items = operators[key] as string[];
                         if (!items) return;
-                        const authors = items.map((author: string) => `to:${author}`).join(' OR ');
+                        const authors = items
+                            .map((author: string) => `to:${author}`)
+                            .filter((v) => !!v)
+                            .join(' OR ');
                         return items.length > 1 ? `(${authors})` : authors;
                     }
                     case 'text': {
                         const items = operators[key] as string[];
                         if (!items) return;
-                        const texts = items.map((value: string) => `"${value}"`).join(' OR ');
+                        const texts = items
+                            .map((value: string) => `"${value}"`)
+                            .filter((v) => !!v)
+                            .join(' OR ');
                         return items.length > 1 ? `(${texts})` : texts;
                     }
                     case 'url': {
                         const items = operators[key] as string[];
                         if (!items) return;
-                        const urls = items.map((value: string) => `url:${value}`).join(' OR ');
+                        const urls = items
+                            .map((value: string) => `url:${value}`)
+                            .filter((v) => !!v)
+                            .join(' OR ');
                         return items.length > 1 ? `(${urls})` : urls;
                     }
                     case 'hashtags': {
                         const items = operators[key] as string[];
                         if (!items) return;
-                        const hashtags = items.map((tag: string) => `#${tag}`).join(' OR ');
+                        const hashtags = items
+                            .map((tag: string) => `#${tag}`)
+                            .filter((v) => !!v)
+                            .join(' OR ');
                         return (items.length > 1 ? `(${hashtags})` : hashtags) + media;
                     }
                     case 'mentions': {
                         const items = operators[key] as string[];
                         if (!items) return;
-                        const mentions = items.map((tag: string) => `@${tag}`).join(' OR ');
+                        const mentions = items
+                            .map((tag: string) => `@${tag}`)
+                            .filter((v) => !!v)
+                            .join(' OR ');
                         return (items.length > 1 ? `(${mentions})` : mentions) + media;
+                    }
+                    case 'excludes': {
+                        const items = operators[key] as string[];
+                        if (!items) return;
+                        return items
+                            .map((type: string) => type)
+                            .filter((v) => !!v)
+                            .join(' ');
                     }
                 }
                 return;
@@ -92,6 +119,6 @@ export class TwitterQuery {
             .filter((query) => !!query)
             .join(' ');
 
-        return `${query} -is:retweet`;
+        return `${query}`;
     }
 }

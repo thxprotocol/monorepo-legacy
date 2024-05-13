@@ -22,6 +22,8 @@
                         @mentions="set('mentions', $event)"
                         :media="media"
                         @media="set('media', $event)"
+                        :excludes="excludes"
+                        @excludes="set('excludes', $event)"
                     />
                 </b-col>
                 <b-col>
@@ -47,7 +49,9 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { TwitterQuery } from '@thxnetwork/common/twitter';
 import BaseModal from './BaseModal.vue';
 import BaseCardTwitterPostPreviews from '@thxnetwork/dashboard/components/cards/BaseCardTwitterPostPreviews.vue';
-import BaseCardTwitterQueryOperators from '@thxnetwork/dashboard/components/cards/BaseCardTwitterQueryOperators.vue';
+import BaseCardTwitterQueryOperators, {
+    excludeOptions,
+} from '@thxnetwork/dashboard/components/cards/BaseCardTwitterQueryOperators.vue';
 
 @Component({
     components: {
@@ -60,13 +64,14 @@ export default class BaseModalTwitterQueryCreate extends Vue {
     isLoading = false;
     isCopied = false;
     error = '';
-    from = [];
-    to = [];
-    text = [];
-    url = [];
-    hashtags = [];
-    mentions = [];
+    from: string[] = [];
+    to: string[] = [];
+    text: string[] = [];
+    url: string[] = [];
+    hashtags: string[] = [];
+    mentions: string[] = [];
     media: string | null = null;
+    excludes: string[] = [excludeOptions[0].value, excludeOptions[1].value, excludeOptions[2].value];
 
     @Prop() id!: string;
     @Prop() query!: TTwitterQuery;
@@ -82,6 +87,7 @@ export default class BaseModalTwitterQueryCreate extends Vue {
         this.hashtags = this.query.operators.hashtags ? this.query.operators.hashtags : this.hashtags;
         this.mentions = this.query.operators.mentions ? this.query.operators.mentions : this.mentions;
         this.media = this.query.operators.media ? this.query.operators.media : this.media;
+        this.excludes = this.query.operators.excludes ? this.query.operators.excludes : this.excludes;
     }
 
     get operators() {
@@ -93,6 +99,7 @@ export default class BaseModalTwitterQueryCreate extends Vue {
             hashtags: this.hashtags,
             mentions: this.mentions,
             media: this.media,
+            excludes: this.excludes,
         };
     }
 

@@ -74,12 +74,35 @@
                 </b-form-select>
             </div>
         </b-card>
+        <b-form-group class="mt-3">
+            <template #label>
+                Exclude content types
+                <b-link
+                    class="text-muted ml-auto"
+                    v-b-tooltip
+                    title="Filter out specific types of content in order to optimize your results."
+                >
+                    <i class="fas fa-info-circle" />
+                </b-link>
+            </template>
+            <b-form-checkbox-group
+                id="checkbox-group-accepted-content"
+                v-model="excludesModel"
+                :options="excludeOptions"
+            />
+        </b-form-group>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseFormGroupInputMultiple from '@thxnetwork/dashboard/components/form-group/BaseFormGroupInputMultiple.vue';
+
+export const excludeOptions = [
+    { value: '-is:retweet', text: 'Retweet' },
+    { value: '-is:quote', text: 'Quote' },
+    { value: '-is:reply', text: 'Reply' },
+];
 
 @Component({
     components: { BaseFormGroupInputMultiple },
@@ -92,5 +115,16 @@ export default class BaseCardTwitterQueryOperators extends Vue {
     @Prop() hashtags!: string[];
     @Prop() mentions!: string[];
     @Prop() media!: string;
+    @Prop() excludes!: string[];
+
+    excludeOptions = excludeOptions;
+
+    get excludesModel() {
+        return this.excludes;
+    }
+
+    set excludesModel(value: string[]) {
+        this.$emit('excludes', value);
+    }
 }
 </script>
