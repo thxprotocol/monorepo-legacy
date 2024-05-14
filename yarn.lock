@@ -22332,7 +22332,7 @@ oidc-client-ts@2.1.0:
     crypto-js "^4.1.1"
     jwt-decode "^3.1.2"
 
-oidc-provider@^8.x.x:
+oidc-provider@^8.4.6:
   version "8.4.6"
   resolved "https://registry.yarnpkg.com/oidc-provider/-/oidc-provider-8.4.6.tgz#071e4056236b43d9f635466f3cbe027371b462dd"
   integrity sha512-liuHBXRaIjer6nPGWagrl5UjPhIZqahqLVPoYlc2WXsRR7XddwNCBUl1ks5r3Q3uCUfMdQTv1VsjmlaObdff8w==
@@ -27674,7 +27674,12 @@ typescript@4.5.4:
   resolved "https://registry.npmjs.org/typescript/-/typescript-4.5.4.tgz"
   integrity sha512-VgYs2A2QIRuGphtzFV7aQJduJ2gyfTljngLzjpfW9FoYZF6xuw1W0vW9ghCKLfcWrCFxK81CSGRAvS1pn4fIUg==
 
-typescript@5.1.6, typescript@~5.1.3:
+typescript@^5.4:
+  version "5.4.5"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.5.tgz#42ccef2c571fdbd0f6718b1d1f5e6e5ef006f611"
+  integrity sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==
+
+typescript@~5.1.3:
   version "5.1.6"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.1.6.tgz#02f8ac202b6dad2c0dd5e0913745b47a37998274"
   integrity sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==
