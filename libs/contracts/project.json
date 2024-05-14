@@ -11,7 +11,8 @@
                 "outputPath": "dist/libs/contracts",
                 "main": "libs/contracts/src/index.ts",
                 "tsConfig": "libs/contracts/tsconfig.lib.json",
-                "assets": ["libs/contracts/*.md"]
+                "assets": ["libs/contracts/*.md"],
+                "updateBuildableProjectDepsInPackageJson": true
             }
         },
         "build-abi": {
@@ -58,7 +59,7 @@
             ]
         },
         "lint": {
-            "executor": "@nx/linter:eslint",
+            "executor": "@nx/eslint:lint",
             "outputs": ["{options.outputFile}"],
             "options": {
                 "lintFilePatterns": ["libs/contracts/**/*.ts"]

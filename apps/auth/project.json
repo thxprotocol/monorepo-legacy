@@ -41,7 +41,7 @@
             }
         },
         "serve": {
-            "executor": "@nx/node:node",
+            "executor": "@nx/js:node",
             "options": {
                 "buildTarget": "auth:build"
             },
@@ -52,7 +52,7 @@
             }
         },
         "lint": {
-            "executor": "@nx/linter:eslint",
+            "executor": "@nx/eslint:lint",
             "outputs": ["{options.outputFile}"],
             "options": {
                 "lintFilePatterns": ["apps/auth/**/*.ts"]
