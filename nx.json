@@ -16,12 +16,25 @@
         "build": {
             "dependsOn": ["^build"],
             "inputs": ["production", "^production"]
+        },
+        "test": {
+            "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]
+        },
+        "lint": {
+            "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
         }
     },
     "defaultProject": "api",
     "namedInputs": {
         "default": ["{projectRoot}/**/*", "sharedGlobals"],
-        "sharedGlobals": [],
-        "production": ["default"]
-    }
+        "sharedGlobals": ["{workspaceRoot}/babel.config.json"],
+        "production": [
+            "default",
+            "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+            "!{projectRoot}/tsconfig.spec.json",
+            "!{projectRoot}/jest.config.[jt]s",
+            "!{projectRoot}/.eslintrc.json"
+        ]
+    },
+    "nxCloudAccessToken": "MmNmMDI5YjQtYzhhMi00MDdhLWJlY2EtNTk0MGZmZDZkNjkxfHJlYWQtd3JpdGU="
 }

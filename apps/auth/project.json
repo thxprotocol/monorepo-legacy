@@ -5,7 +5,7 @@
     "projectType": "application",
     "targets": {
         "build": {
-            "executor": "@nrwl/node:webpack",
+            "executor": "@nrwl/webpack:webpack",
             "outputs": ["{options.outputPath}"],
             "options": {
                 "outputPath": "dist/apps/auth",
@@ -22,7 +22,9 @@
                         "entryName": "script"
                     }
                 ],
-                "generatePackageJson": true
+                "generatePackageJson": true,
+                "target": "node",
+                "compiler": "tsc"
             },
             "configurations": {
                 "production": {
