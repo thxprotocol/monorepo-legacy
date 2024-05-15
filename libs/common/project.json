@@ -11,16 +11,12 @@
                 "outputPath": "dist/libs/common",
                 "main": "libs/common/src/index.ts",
                 "tsConfig": "libs/common/tsconfig.lib.json",
-                "assets": ["libs/common/*.md"],
-                "updateBuildableProjectDepsInPackageJson": true
+                "assets": ["libs/common/*.md"]
             }
         },
         "lint": {
             "executor": "@nx/eslint:lint",
-            "outputs": ["{options.outputFile}"],
-            "options": {
-                "lintFilePatterns": ["libs/common/**/*.ts"]
-            }
+            "outputs": ["{options.outputFile}"]
         }
     },
     "tags": []

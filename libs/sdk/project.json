@@ -11,8 +11,7 @@
                 "outputPath": "dist/libs/sdk",
                 "main": "libs/sdk/src/index.ts",
                 "tsConfig": "libs/sdk/tsconfig.lib.json",
-                "assets": ["libs/sdk/*.md"],
-                "updateBuildableProjectDepsInPackageJson": true
+                "assets": ["libs/sdk/*.md"]
             }
         },
         "publish": {
@@ -28,17 +27,13 @@
         },
         "lint": {
             "executor": "@nx/eslint:lint",
-            "outputs": ["{options.outputFile}"],
-            "options": {
-                "lintFilePatterns": ["libs/sdk/**/*.ts"]
-            }
+            "outputs": ["{options.outputFile}"]
         },
         "test": {
             "executor": "@nx/jest:jest",
             "outputs": ["{workspaceRoot}/coverage/libs/sdk"],
             "options": {
-                "jestConfig": "libs/sdk/jest.config.ts",
-                "passWithNoTests": true
+                "jestConfig": "libs/sdk/jest.config.ts"
             }
         }
     },

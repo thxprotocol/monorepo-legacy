@@ -24,7 +24,8 @@
                 ],
                 "generatePackageJson": true,
                 "target": "node",
-                "compiler": "tsc"
+                "compiler": "tsc",
+                "webpackConfig": "apps/auth/webpack.config.js"
             },
             "configurations": {
                 "production": {
@@ -53,10 +54,7 @@
         },
         "lint": {
             "executor": "@nx/eslint:lint",
-            "outputs": ["{options.outputFile}"],
-            "options": {
-                "lintFilePatterns": ["apps/auth/**/*.ts"]
-            }
+            "outputs": ["{options.outputFile}"]
         },
         "test": {
             "executor": "@nx/jest:jest",
@@ -64,7 +62,6 @@
             "options": {
                 "jestConfig": "apps/auth/jest.config.ts",
                 "bail": true,
-                "passWithNoTests": true,
                 "runInBand": true,
                 "codeCoverage": true,
                 "cwd": "apps/auth"

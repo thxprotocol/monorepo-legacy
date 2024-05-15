@@ -44,17 +44,13 @@
         },
         "lint": {
             "executor": "@nx/eslint:lint",
-            "outputs": ["{options.outputFile}"],
-            "options": {
-                "lintFilePatterns": ["apps/public/**/*.{ts,tsx,vue}"]
-            }
+            "outputs": ["{options.outputFile}"]
         },
         "test": {
             "executor": "@nx/jest:jest",
             "outputs": ["{workspaceRoot}/coverage/apps/public"],
             "options": {
-                "jestConfig": "apps/public/jest.config.ts",
-                "passWithNoTests": true
+                "jestConfig": "apps/public/jest.config.ts"
             }
         }
     },
