@@ -6,14 +6,14 @@ import { ERC20 } from '@thxnetwork/api/models';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import ERC20Service from '@thxnetwork/api/services/ERC20Service';
 
-export const validation = [
+const validation = [
     body('walletId').isMongoId(),
     body('erc20Id').isMongoId(),
     body('to').isString(),
     body('amount').isString(),
 ];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     const erc20 = await ERC20.findById(req.body.erc20Id);
     if (!erc20) throw new NotFoundError('Could not find the ERC20');
 
@@ -29,4 +29,4 @@ export const controller = async (req: Request, res: Response) => {
 
     res.status(201).json(tx);
 };
-export default { controller, validation };
+export { controller, validation };

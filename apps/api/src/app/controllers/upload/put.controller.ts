@@ -7,4 +7,4 @@ const controller = async (req: Request, res: Response) => {
     res.send({ publicUrl });
 };
 
-export default { controller };
+export { controller };

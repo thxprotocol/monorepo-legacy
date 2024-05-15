@@ -5,9 +5,9 @@ import { CollaboratorInviteState } from '@thxnetwork/common/enums';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 
-export const validation = [param('id').isMongoId(), param('uuid').isUUID(4)];
+const validation = [param('id').isMongoId(), param('uuid').isUUID(4)];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
     const collaborator = await Collaborator.findOne({ poolId: req.params.id, uuid: req.params.uuid });
@@ -23,4 +23,4 @@ export const controller = async (req: Request, res: Response) => {
     res.end();
 };
 
-export default { controller, validation };
+export { controller, validation };

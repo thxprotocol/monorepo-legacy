@@ -1,13 +1,15 @@
 import express from 'express';
 import { assertRequestInput, assertPoolAccess, guard } from '@thxnetwork/api/middlewares';
 import { upload } from '@thxnetwork/api/util/multer';
-import ListController from './list.controller';
-import CreateController from './post.controller';
-import UpdateController from './patch.controller';
-import RemoveController from './delete.controller';
-import routerQuestEntries from './entries/entries.router';
 
-const router = express.Router({ mergeParams: true });
+import * as ListController from './list.controller';
+import * as CreateController from './post.controller';
+import * as UpdateController from './patch.controller';
+import * as RemoveController from './delete.controller';
+
+import RouterQuestEntries from './entries/entries.router';
+
+const router: express.Router = express.Router({ mergeParams: true });
 
 router.get(
     '/',
@@ -42,6 +44,6 @@ router.delete(
     RemoveController.controller,
 );
 
-router.use('/:variant/:questId/entries', routerQuestEntries);
+router.use('/:variant/:questId/entries', RouterQuestEntries);
 
 export default router;

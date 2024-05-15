@@ -1,18 +1,18 @@
 import express from 'express';
 import { assertRequestInput, assertPoolAccess, guard } from '@thxnetwork/api/middlewares';
-import ListController from './list.controller';
-import routerMetrics from './metrics/metrics.router';
+import RouterMetrics from './metrics/metrics.router';
+import * as ListAnalytics from './list.controller';
 
-const router = express.Router({ mergeParams: true });
+const router: express.Router = express.Router({ mergeParams: true });
 
 router.get(
     '/',
     guard.check(['pools:read']),
     assertPoolAccess,
-    assertRequestInput(ListController.validation),
-    ListController.controller,
+    assertRequestInput(ListAnalytics.validation),
+    ListAnalytics.controller,
 );
 
-router.use('/metrics', routerMetrics);
+router.use('/metrics', RouterMetrics);
 
 export default router;

@@ -9,4 +9,4 @@ const controller = async (req: Request, res: Response) => {
     return res.status(204).end();
 };
 
-export default { controller, validation };
+export { controller, validation };

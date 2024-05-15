@@ -44,4 +44,4 @@ const controller = async (req: Request, res: Response) => {
     res.json({ jobId: job.attrs._id });
 };
 
-export default { controller, validation };
+export { controller, validation };

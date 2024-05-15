@@ -1,10 +1,10 @@
 import express from 'express';
 import { assertRequestInput } from '@thxnetwork/api/middlewares';
-import MilestoneReward from './milestones/claim/post.controller';
-import DailyReward from './daily/post.controller';
-import CreateController from './gateway/post.controller';
+import * as MilestoneReward from './milestones/claim/post.controller';
+import * as DailyReward from './daily/post.controller';
+import * as CreateController from './gateway/post.controller';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 // Custom webhooks for Webhook Quest consumption
 router.post('/gateway', assertRequestInput(CreateController.validation), CreateController.controller);

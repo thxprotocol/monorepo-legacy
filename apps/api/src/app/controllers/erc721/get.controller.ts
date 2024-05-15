@@ -25,4 +25,4 @@ const controller = async (req: Request, res: Response) => {
     res.json({ ...erc721.toJSON(), totalSupply, owner });
 };
 
-export default { controller, validation };
+export { controller, validation };

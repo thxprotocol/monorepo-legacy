@@ -54,4 +54,4 @@ const controller = async (req: Request, res: Response) => {
     res.status(201).json(reward);
 };
 
-export default { controller, validation };
+export { controller, validation };

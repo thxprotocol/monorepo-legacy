@@ -1,9 +1,9 @@
 import express from 'express';
 import { assertRequestInput } from '@thxnetwork/api/middlewares';
-import ReadMetadata from './get.controller';
-import ReadERC1155Metadata from './erc1155/get.controller';
+import * as ReadMetadata from './get.controller';
+import * as ReadERC1155Metadata from './erc1155/get.controller';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.get(
     '/erc1155/:erc1155Id/:tokenId',

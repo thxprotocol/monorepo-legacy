@@ -34,4 +34,4 @@ const controller = async (req: Request, res: Response) => {
     res.status(201).json(erc1155);
 };
 
-export default { controller, validation };
+export { controller, validation };

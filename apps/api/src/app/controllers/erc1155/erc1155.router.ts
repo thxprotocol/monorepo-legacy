@@ -1,24 +1,25 @@
 import express from 'express';
 import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
-import ReadERC1155 from './get.controller';
-import ListERC1155 from './list.controller';
-import RemoveERC1155 from './delete.controller';
-import ListERC1155Metadata from './metadata/list.controller';
-import ListERC1155Token from './token/list.controller';
-import ReadERC1155Token from './token/get.controller';
-import CreateERC1155 from './post.controller';
-import CreateERC1155Metadata from './metadata/post.controller';
-
 import { upload } from '@thxnetwork/api/util/multer';
-import UpdateERC1155 from './patch.controller';
-import ReadERC1155Metadata from './metadata/get.controller';
-import PatchERC1155Metadata from './metadata/patch.controller';
-import DeleteERC1155Metadata from './metadata/delete.controller';
-import ImportERC1155Contract from './import/post.controller';
-import PreviewERC1155Contract from './import/preview/post.controller';
-import CreateERC1155Transfer from './transfer/post.controller';
 
-const router = express.Router();
+import * as ReadERC1155 from './get.controller';
+import * as ListERC1155 from './list.controller';
+import * as RemoveERC1155 from './delete.controller';
+import * as ListERC1155Metadata from './metadata/list.controller';
+import * as ListERC1155Token from './token/list.controller';
+import * as ReadERC1155Token from './token/get.controller';
+import * as CreateERC1155 from './post.controller';
+import * as CreateERC1155Metadata from './metadata/post.controller';
+
+import * as UpdateERC1155 from './patch.controller';
+import * as ReadERC1155Metadata from './metadata/get.controller';
+import * as PatchERC1155Metadata from './metadata/patch.controller';
+import * as DeleteERC1155Metadata from './metadata/delete.controller';
+import * as ImportERC1155Contract from './import/post.controller';
+import * as PreviewERC1155Contract from './import/preview/post.controller';
+import * as CreateERC1155Transfer from './transfer/post.controller';
+
+const router: express.Router = express.Router();
 
 router.get(
     '/token',

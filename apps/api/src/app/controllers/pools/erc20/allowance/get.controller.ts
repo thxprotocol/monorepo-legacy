@@ -5,13 +5,13 @@ import ContractService from '@thxnetwork/api/services/ContractService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
-export const validation = [
+const validation = [
     param('id').isMongoId(),
     query('tokenAddress').isEthereumAddress(),
     query('spender').isEthereumAddress(),
 ];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     const poolId = req.params.id as string;
     const pool = await PoolService.getById(poolId);
     if (!pool) throw new NotFoundError('Pool not found');
@@ -28,4 +28,4 @@ export const controller = async (req: Request, res: Response) => {
 
     res.json({ allowanceInWei: String(allowanceInWei) });
 };
-export default { controller, validation };
+export { controller, validation };

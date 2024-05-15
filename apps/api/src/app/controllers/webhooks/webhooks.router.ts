@@ -1,11 +1,11 @@
-import express from 'express';
+import express, { Router } from 'express';
 import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
-import ListWebhook from './list.controller';
-import PatchWebhook from './patch.controller';
-import CreateWebhook from './post.controller';
-import DeleteWebhook from './delete.controller';
+import * as ListWebhook from './list.controller';
+import * as PatchWebhook from './patch.controller';
+import * as CreateWebhook from './post.controller';
+import * as DeleteWebhook from './delete.controller';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.get(
     '/',

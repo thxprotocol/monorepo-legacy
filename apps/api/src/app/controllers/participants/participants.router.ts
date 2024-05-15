@@ -1,9 +1,9 @@
 import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import express from 'express';
-import ListParticipants from './get.controller';
-import UpdateParticipants from './patch.controller';
+import * as ListParticipants from './get.controller';
+import * as UpdateParticipants from './patch.controller';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.get(
     '/',

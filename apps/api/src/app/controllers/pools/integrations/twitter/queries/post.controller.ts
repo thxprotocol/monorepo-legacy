@@ -28,4 +28,4 @@ const controller = async (req: Request, res: Response) => {
     res.status(201).json(twitterQuery);
 };
 
-export default { controller, validation };
+export { controller, validation };

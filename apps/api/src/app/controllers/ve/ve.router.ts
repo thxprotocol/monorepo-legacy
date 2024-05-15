@@ -1,14 +1,14 @@
-import express from 'express';
+import express, { Router } from 'express';
 import { assertRequestInput } from '@thxnetwork/api/middlewares';
-
-import ListController from './list.controller';
-import CreateVEDeposit from './deposit/post.controller';
-import CreateVEIncrease from './increase/post.controller';
-import CreateVEClaim from './claim/post.controller';
-import CreateVEWithdraw from './withdraw/post.controller';
 import { assertWallet } from '@thxnetwork/api/middlewares/assertWallet';
 
-const router = express.Router();
+import * as ListController from './list.controller';
+import * as CreateVEDeposit from './deposit/post.controller';
+import * as CreateVEIncrease from './increase/post.controller';
+import * as CreateVEClaim from './claim/post.controller';
+import * as CreateVEWithdraw from './withdraw/post.controller';
+
+const router: express.Router = express.Router();
 
 router.use('/', assertWallet);
 router.get('/', assertRequestInput(ListController.validation), ListController.controller);

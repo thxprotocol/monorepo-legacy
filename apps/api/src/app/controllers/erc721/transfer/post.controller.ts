@@ -7,14 +7,14 @@ import { Transaction } from '@thxnetwork/api/models/Transaction';
 import ERC721Service from '@thxnetwork/api/services/ERC721Service';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
-export const validation = [
+const validation = [
     body('walletId').isMongoId(),
     body('erc721Id').isMongoId(),
     body('erc721TokenId').isMongoId(),
     body('to').isString(),
 ];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     const erc721 = await ERC721.findById(req.body.erc721Id);
     if (!erc721) throw new NotFoundError('Could not find the ERC721');
 
@@ -32,4 +32,4 @@ export const controller = async (req: Request, res: Response) => {
 
     res.status(201).json(tx);
 };
-export default { controller, validation };
+export { controller, validation };

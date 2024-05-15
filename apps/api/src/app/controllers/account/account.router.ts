@@ -4,21 +4,21 @@ import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import RouterWallet from './wallet/wallets.router';
 
 // Account
-import ReadAccount from './get.controller';
-import UpdateAccount from './patch.controller';
-import DeleteAccount from './delete.controller';
+import * as ReadAccount from './get.controller';
+import * as UpdateAccount from './patch.controller';
+import * as DeleteAccount from './delete.controller';
 
 // Social OAuth
-import CreateAccountDisconnect from './disconnect/post.controller';
+import * as CreateAccountDisconnect from './disconnect/post.controller';
 
-import ReadAccountDiscord from './discord/get.controller';
-import GetAccountByDiscordId from './discord/get.by-discord-id.controller';
-import CreateTwitterTweet from './twitter/tweet/post.controller';
-import CreateTwitterUser from './twitter/user/post.controller';
-import CreateTwitterSearch from './twitter/search/post.controller';
-import CreateTwitterUserByUsername from './twitter/user/by/username/post.controller';
+import * as ReadAccountDiscord from './discord/get.controller';
+import * as GetAccountByDiscordId from './discord/get.by-discord-id.controller';
+import * as CreateTwitterTweet from './twitter/tweet/post.controller';
+import * as CreateTwitterUser from './twitter/user/post.controller';
+import * as CreateTwitterSearch from './twitter/search/post.controller';
+import * as CreateTwitterUserByUsername from './twitter/user/by/username/post.controller';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.use('/wallets', RouterWallet);
 
@@ -37,7 +37,7 @@ router.get('/discord', guard.check(['account:read']), ReadAccountDiscord.control
 router.get(
     '/discord/:discordId',
     guard.check(['account:read']),
-    assertRequestInput(GetAccountByDiscordId.validations),
+    assertRequestInput(GetAccountByDiscordId.validation),
     GetAccountByDiscordId.controller,
 );
 router.post(

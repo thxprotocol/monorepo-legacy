@@ -26,4 +26,4 @@ const controller = async (req: Request, res: Response) => {
     res.json(result);
 };
 
-export default { validation, controller };
+export { controller, validation };

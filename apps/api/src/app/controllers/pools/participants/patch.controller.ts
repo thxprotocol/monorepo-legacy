@@ -3,13 +3,13 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { Request, Response } from 'express';
 import { body, param } from 'express-validator';
 
-export const validation = [
+const validation = [
     param('id').isMongoId(),
     param('participantId').isMongoId(),
     body('pointBalance').optional().isInt({ min: 0 }),
 ];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     const participant = await Participant.findById(req.params.participantId);
     if (!participant) throw new NotFoundError('Participant not found.');
 
@@ -26,4 +26,4 @@ export const controller = async (req: Request, res: Response) => {
     res.json({ ...participant.toJSON(), pointBalance });
 };
 
-export default { controller, validation };
+export { controller, validation };

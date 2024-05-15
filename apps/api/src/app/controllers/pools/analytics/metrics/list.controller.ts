@@ -4,9 +4,9 @@ import AnalyticsService from '@thxnetwork/api/services/AnalyticsService';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { Participant } from '@thxnetwork/api/models/Participant';
 
-export const validation = [param('id').isMongoId()];
+const validation = [param('id').isMongoId()];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
     const metrics = await AnalyticsService.getPoolMetrics(pool);
@@ -17,4 +17,4 @@ export const controller = async (req: Request, res: Response) => {
     res.json({ _id: pool._id, participantCount, participantActiveCount, subscriptionCount, ...metrics });
 };
 
-export default { controller, validation };
+export { controller, validation };

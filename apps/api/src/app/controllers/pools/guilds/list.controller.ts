@@ -10,4 +10,4 @@ const controller = async (req: Request, res: Response) => {
     res.json(guilds);
 };
 
-export default { controller, validation };
+export { controller, validation };

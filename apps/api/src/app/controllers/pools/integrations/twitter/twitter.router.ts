@@ -1,11 +1,11 @@
 import express from 'express';
-import CreateController from './queries/post.controller';
-import UpdateController from './queries/patch.controller';
-import DeleteController from './queries/delete.controller';
-import ListController from './queries/list.controller';
+import * as CreateController from './queries/post.controller';
+import * as UpdateController from './queries/patch.controller';
+import * as DeleteController from './queries/delete.controller';
+import * as ListController from './queries/list.controller';
 import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 
-const router = express.Router({ mergeParams: true });
+const router: express.Router = express.Router({ mergeParams: true });
 
 router.get(
     '/queries',

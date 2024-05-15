@@ -8,7 +8,7 @@ import PoolService from '@thxnetwork/api/services/PoolService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import PaymentService from '@thxnetwork/api/services/PaymentService';
 
-export const validation = [param('id').isMongoId(), body('amountInWei').exists(), body('planType').isInt()];
+const validation = [param('id').isMongoId(), body('amountInWei').exists(), body('planType').isInt()];
 
 // TODO
 // 1. Customer approves USDC for Campaign Safe for x allowance
@@ -49,4 +49,4 @@ const controller = async (req: Request, res: Response) => {
     res.status(201).end();
 };
 
-export default { validation, controller };
+export { controller, validation };

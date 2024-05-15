@@ -30,4 +30,4 @@ const controller = async (req: Request, res: Response) => {
     return res.json(widget);
 };
 
-export default { controller, validation };
+export { controller, validation };

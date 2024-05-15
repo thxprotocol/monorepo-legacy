@@ -6,13 +6,13 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
 import VoteEscrowService from '@thxnetwork/api/services/VoteEscrowService';
 
-export const validation = [
+const validation = [
     query('walletId').isMongoId(),
     body('amountInWei').optional().isString(),
     body('lockEndTimestamp').optional().isInt(),
 ];
 
-export const controller = async ({ wallet, body }: Request, res: Response) => {
+const controller = async ({ wallet, body }: Request, res: Response) => {
     // Check SmartWalletWhitelist
     const isApproved = await VoteEscrowService.isApprovedAddress(wallet.address, wallet.chainId);
     if (!isApproved) throw new ForbiddenError('Wallet address is not on whitelist.');
@@ -53,4 +53,4 @@ export const controller = async ({ wallet, body }: Request, res: Response) => {
 
     res.status(201).json(txList);
 };
-export default { controller, validation };
+export { controller, validation };

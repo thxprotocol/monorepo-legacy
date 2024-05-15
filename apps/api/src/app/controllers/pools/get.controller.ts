@@ -10,9 +10,9 @@ import BrandService from '@thxnetwork/api/services/BrandService';
 import SafeService from '@thxnetwork/api/services/SafeService';
 import PaymentService from '@thxnetwork/api/services/PaymentService';
 
-export const validation = [param('id').isMongoId()];
+const validation = [param('id').isMongoId()];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
     let safe = await SafeService.findOneByPool(pool, pool.chainId);
 
@@ -64,4 +64,4 @@ export const controller = async (req: Request, res: Response) => {
     });
 };
 
-export default { controller, validation };
+export { controller, validation };

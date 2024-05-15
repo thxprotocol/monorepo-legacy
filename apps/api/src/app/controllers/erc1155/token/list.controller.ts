@@ -7,7 +7,7 @@ import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 
 const validation = [query('walletId').isMongoId()];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     const wallet = await SafeService.findById(req.query.walletId as string);
     if (!wallet) throw new BadRequestError('Wallet not found');
 
@@ -27,4 +27,4 @@ export const controller = async (req: Request, res: Response) => {
     res.json(result.reverse().filter((token) => !!token));
 };
 
-export default { controller, validation };
+export { controller, validation };

@@ -29,7 +29,7 @@ import RouterJobs from './jobs/jobs.router';
 import RouterCoupons from './coupons/coupons.router';
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 
-const router = express.Router({ mergeParams: true });
+const router: express.Router = express.Router({ mergeParams: true });
 
 router.use('/ping', (_req, res) => res.send('pong'));
 router.use('/health', RouterHealth);
@@ -64,4 +64,4 @@ router.use('/erc20', RouterERC20);
 router.use('/erc721', RouterERC721);
 router.use('/erc1155', RouterERC1155);
 
-export default router;
+export { router };

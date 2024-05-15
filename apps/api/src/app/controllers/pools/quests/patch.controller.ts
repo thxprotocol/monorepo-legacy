@@ -2,7 +2,7 @@ import { param } from 'express-validator';
 import { Request, Response } from 'express';
 import { QuestVariant } from '@thxnetwork/common/enums';
 import QuestService from '@thxnetwork/api/services/QuestService';
-import CreateController from '@thxnetwork/api/controllers/pools/quests/post.controller';
+import * as CreateController from '@thxnetwork/api/controllers/pools/quests/post.controller';
 
 const validation = [param('variant').isInt(), param('questId').isMongoId(), ...CreateController.validation];
 
@@ -16,4 +16,4 @@ const controller = async (req: Request, res: Response) => {
     res.json(quest);
 };
 
-export default { controller, validation };
+export { controller, validation };

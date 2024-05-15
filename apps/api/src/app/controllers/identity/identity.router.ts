@@ -1,10 +1,10 @@
 import express from 'express';
-import CreateController from './post.controller';
-import UpdateController from './patch.controller';
-import ReadController from './get.controller';
+import * as CreateController from './post.controller';
+import * as UpdateController from './patch.controller';
+import * as ReadController from './get.controller';
 import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.patch('/:uuid', assertRequestInput(UpdateController.validation), UpdateController.controller);
 router.get(

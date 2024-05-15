@@ -1,11 +1,11 @@
 import express from 'express';
 import { assertRequestInput, assertPoolAccess, guard } from '@thxnetwork/api/middlewares';
-import CreateController from './post.controller';
-import UpdateController from './patch.controller';
-import RemoveController from './delete.controller';
-import ListController from './list.controller';
+import * as CreateController from './post.controller';
+import * as UpdateController from './patch.controller';
+import * as RemoveController from './delete.controller';
+import * as ListController from './list.controller';
 
-const router = express.Router({ mergeParams: true });
+const router: express.Router = express.Router({ mergeParams: true });
 
 router.get(
     '/',

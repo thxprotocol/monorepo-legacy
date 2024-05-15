@@ -10,4 +10,4 @@ const controller = async (req: Request, res: Response) => {
     res.json(queries);
 };
 
-export default { controller, validation };
+export { controller, validation };

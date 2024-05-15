@@ -1,16 +1,16 @@
 import express from 'express';
-import ReadController from './get.controller';
+import * as ReadJobs from './get.controller';
 import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.get(
     '/:id',
     guard.check([
         // 'jobs:read'
     ]),
-    assertRequestInput(ReadController.validation),
-    ReadController.controller,
+    assertRequestInput(ReadJobs.validation),
+    ReadJobs.controller,
 );
 
 export default router;

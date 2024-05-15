@@ -5,9 +5,9 @@ import SafeService from '@thxnetwork/api/services/SafeService';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import ContractService from '@thxnetwork/api/services/ContractService';
 
-export const validation = [param('id').isMongoId(), query('tokenAddress').isEthereumAddress()];
+const validation = [param('id').isMongoId(), query('tokenAddress').isEthereumAddress()];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Campaign not found.');
 
@@ -24,4 +24,4 @@ export const controller = async (req: Request, res: Response) => {
     res.json({ balanceInWei: String(balanceInWei) });
 };
 
-export default { controller, validation };
+export { controller, validation };

@@ -5,7 +5,7 @@ import { Pool } from '@thxnetwork/api/models';
 import { JobType, agenda } from '@thxnetwork/api/util/agenda';
 import PoolService from '@thxnetwork/api/services/PoolService';
 
-export const validation = [
+const validation = [
     param('id').exists(),
     body('settings.title').optional().isString().trim().escape().isLength({ max: 50 }),
     body('settings.slug').optional().isString().trim().escape().isLength({ min: 3, max: 25 }),
@@ -25,7 +25,7 @@ export const validation = [
     body('settings.authenticationMethods').optional().isArray(),
 ];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
     if (!pool) throw new NotFoundError('Could not find the Asset Pool for this id');
@@ -51,4 +51,4 @@ export const controller = async (req: Request, res: Response) => {
 
     return res.json(result);
 };
-export default { controller, validation };
+export { controller, validation };

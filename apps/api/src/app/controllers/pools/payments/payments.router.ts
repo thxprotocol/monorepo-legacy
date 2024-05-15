@@ -1,15 +1,15 @@
 import express from 'express';
 import { assertRequestInput, assertPoolAccess, guard } from '@thxnetwork/api/middlewares';
-import CreateController from './post.controller';
+import * as CreatePayments from './post.controller';
 
-const router = express.Router({ mergeParams: true });
+const router: express.Router = express.Router({ mergeParams: true });
 
 router.post(
     '/',
     guard.check(['pools:read', 'pools:write']),
     assertPoolAccess,
-    assertRequestInput(CreateController.validation),
-    CreateController.controller,
+    assertRequestInput(CreatePayments.validation),
+    CreatePayments.controller,
 );
 
 export default router;

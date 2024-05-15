@@ -6,4 +6,4 @@ const controller = async (req: Request, res: Response) => {
     res.json(widgets);
 };
 
-export default { controller };
+export { controller };

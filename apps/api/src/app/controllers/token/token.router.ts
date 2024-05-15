@@ -1,9 +1,9 @@
-import express from 'express';
+import express, { Router } from 'express';
 
-import ReadTokenCirculatingSupply from './cs/get.controller';
-import ReadTokenTotalSupply from './ts/get.controller';
+import * as ReadTokenCirculatingSupply from './cs/get.controller';
+import * as ReadTokenTotalSupply from './ts/get.controller';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.get('/cs', ReadTokenCirculatingSupply.controller);
 router.get('/ts', ReadTokenTotalSupply.controller);

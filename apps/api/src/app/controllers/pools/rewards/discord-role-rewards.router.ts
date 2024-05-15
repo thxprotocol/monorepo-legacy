@@ -1,13 +1,13 @@
 import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import { upload } from '@thxnetwork/api/util/multer';
 import express from 'express';
-import ListDiscordRoleReward from './list.controller';
-import ListCouponCodePayments from './payments/list.controller';
-import CreateDiscordRoleReward from './post.controller';
-import UpdateDiscordRoleReward from './patch.controller';
-import RemoveDiscordRoleReward from './delete.controller';
+import * as ListDiscordRoleReward from './list.controller';
+import * as ListCouponCodePayments from './payments/list.controller';
+import * as CreateDiscordRoleReward from './post.controller';
+import * as UpdateDiscordRoleReward from './patch.controller';
+import * as RemoveDiscordRoleReward from './delete.controller';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.get(
     '/',

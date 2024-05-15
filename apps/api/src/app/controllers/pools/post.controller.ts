@@ -21,4 +21,4 @@ const controller = async (req: Request, res: Response) => {
     res.status(201).json({ ...pool.toJSON(), safeAddress: safe.address, safe });
 };
 
-export default { controller, validation };
+export { controller, validation };

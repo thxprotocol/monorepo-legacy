@@ -99,4 +99,4 @@ async function isValidFileType(buffer: Buffer) {
     return true;
 }
 
-export default { controller, validation };
+export { controller, validation };

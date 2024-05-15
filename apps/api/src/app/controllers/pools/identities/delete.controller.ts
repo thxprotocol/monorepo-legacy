@@ -14,4 +14,4 @@ const controller = async (req: Request, res: Response) => {
     res.status(204).end();
 };
 
-export default { validation, controller };
+export { controller, validation };

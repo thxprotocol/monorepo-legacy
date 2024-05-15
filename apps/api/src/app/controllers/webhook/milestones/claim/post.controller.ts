@@ -46,4 +46,4 @@ export function getIdentityForAddress(pool: PoolDocument, address: string) {
     return IdentityService.getIdentityForSalt(pool, address);
 }
 
-export default { validation, controller };
+export { validation, controller };

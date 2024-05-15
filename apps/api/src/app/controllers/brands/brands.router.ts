@@ -1,10 +1,10 @@
 import express from 'express';
 import { assertRequestInput, checkJwt, corsHandler, guard } from '@thxnetwork/api/middlewares';
 
-import GetBrand from './get.controller';
-import PutBrand from './put.controller';
+import * as GetBrand from './get.controller';
+import * as PutBrand from './put.controller';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 router.get('/', GetBrand.controller);
 
 router

@@ -3,7 +3,8 @@
     "compilerOptions": {
         "rootDir": ".",
         "sourceMap": true,
-        "declaration": true,
+        "declaration": false,
+        "module": "es2022",
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "emitDecoratorMetadata": true,
@@ -11,7 +12,6 @@
         "esModuleInterop": true,
         "importHelpers": true,
         "target": "es2019",
-        "module": "es2020",
         "lib": ["es2019", "dom"],
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,

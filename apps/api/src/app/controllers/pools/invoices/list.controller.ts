@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { Invoice } from '@thxnetwork/api/models';
 
-export const validation = [];
+const validation = [];
 
 const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
@@ -12,4 +12,4 @@ const controller = async (req: Request, res: Response) => {
     res.json(invoices);
 };
 
-export default { controller, validation };
+export { controller, validation };

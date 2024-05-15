@@ -1,10 +1,10 @@
-import express from 'express';
+import express, { Router } from 'express';
 import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
-import ReadWidget from './get.controller';
-import UpdateWidget from './patch.controller';
-import ListWidgets from './list.controller';
+import * as ReadWidget from './get.controller';
+import * as UpdateWidget from './patch.controller';
+import * as ListWidgets from './list.controller';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.get('/', guard.check(['widgets:read']), assertPoolAccess, ListWidgets.controller);
 router.get(

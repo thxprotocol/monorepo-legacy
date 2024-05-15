@@ -14,4 +14,4 @@ const controller = async (req: Request, res: Response) => {
     res.status(201).json({ ...webhook.toJSON(), webhookRequests: [] });
 };
 
-export default { controller, validation };
+export { controller, validation };

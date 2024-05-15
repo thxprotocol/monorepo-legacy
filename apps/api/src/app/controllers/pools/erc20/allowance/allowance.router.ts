@@ -1,11 +1,11 @@
 import express from 'express';
 import { assertRequestInput } from '@thxnetwork/api/middlewares';
-import ListController from './get.controller';
-import CreateController from './post.controller';
+import * as ListAllowances from './get.controller';
+import * as CreateAllowances from './post.controller';
 
-const router = express.Router({ mergeParams: true });
+const router: express.Router = express.Router({ mergeParams: true });
 
-router.post('/', assertRequestInput(CreateController.validation), CreateController.controller);
-router.get('/', assertRequestInput(ListController.validation), ListController.controller);
+router.get('/', assertRequestInput(ListAllowances.validation), ListAllowances.controller);
+router.post('/', assertRequestInput(CreateAllowances.validation), CreateAllowances.controller);
 
 export default router;

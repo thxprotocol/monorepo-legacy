@@ -2,7 +2,7 @@ import { param } from 'express-validator';
 import { Request, Response } from 'express';
 import { RewardVariant } from '@thxnetwork/common/enums';
 import RewardService from '@thxnetwork/api/services/RewardService';
-import CreateController from '@thxnetwork/api/controllers/pools/rewards/post.controller';
+import * as CreateController from '@thxnetwork/api/controllers/pools/rewards/post.controller';
 
 const validation = [param('rewardId').isMongoId(), ...CreateController.validation];
 
@@ -16,4 +16,4 @@ const controller = async (req: Request, res: Response) => {
     res.json(reward);
 };
 
-export default { controller, validation };
+export { controller, validation };

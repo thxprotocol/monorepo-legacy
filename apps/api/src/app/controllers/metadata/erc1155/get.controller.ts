@@ -3,9 +3,9 @@ import { Request, Response } from 'express';
 import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { ERC1155Metadata } from '@thxnetwork/api/models/ERC1155Metadata';
 
-export const validation = [param('erc1155Id').isMongoId(), param('tokenId').isInt()];
+const validation = [param('erc1155Id').isMongoId(), param('tokenId').isInt()];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['ERC1155 Metadata']
     const { erc1155Id, tokenId } = req.params;
     const metadata = await ERC1155Metadata.findOne({ erc1155Id, tokenId });
@@ -21,4 +21,4 @@ export const controller = async (req: Request, res: Response) => {
     res.header('Content-Type', 'application/json').send(JSON.stringify(attributes, null, 4));
 };
 
-export default { controller, validation };
+export { controller, validation };

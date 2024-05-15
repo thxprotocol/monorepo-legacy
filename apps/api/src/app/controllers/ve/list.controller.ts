@@ -5,12 +5,10 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { query } from 'express-validator';
 import WalletService from '@thxnetwork/api/services/WalletService';
 import VoteEscrowService from '@thxnetwork/api/services/VoteEscrowService';
-
-export const validation = [query('walletId').isMongoId()];
-
 const parseMs = (s) => Number(s) * 1000;
 
-export const controller = async (req: Request, res: Response) => {
+const validation = [query('walletId').isMongoId()];
+const controller = async (req: Request, res: Response) => {
     const walletId = req.query.walletId as string;
     const wallet = await WalletService.findById(walletId);
     if (!wallet) throw new NotFoundError('Wallet not found.');
@@ -33,4 +31,4 @@ export const controller = async (req: Request, res: Response) => {
     res.json([{ balance, amount, end: parseMs(end), now: parseMs(latestBlock.timestamp), rewards }]);
 };
 
-export default { controller, validation };
+export { controller, validation };

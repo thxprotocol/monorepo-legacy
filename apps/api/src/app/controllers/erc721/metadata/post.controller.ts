@@ -36,4 +36,4 @@ const controller = async (req: Request, res: Response) => {
 
     res.status(201).json(metadata);
 };
-export default { controller, validation };
+export { controller, validation };

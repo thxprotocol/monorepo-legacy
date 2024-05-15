@@ -1,10 +1,10 @@
 import { assertRequestInput, checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
-import express from 'express';
-import ListRewards from './list.controller';
-import CreateRewardPayment from './payments/post.controller';
-import ListRewardPayment from './payments/list.controller';
+import express, { Router } from 'express';
+import * as ListRewards from './list.controller';
+import * as CreateRewardPayment from './payments/post.controller';
+import * as ListRewardPayment from './payments/list.controller';
 
-const router = express.Router({ mergeParams: true });
+const router: express.Router = express.Router({ mergeParams: true });
 
 router.get('/', ListRewards.controller);
 router.use(checkJwt, corsHandler);

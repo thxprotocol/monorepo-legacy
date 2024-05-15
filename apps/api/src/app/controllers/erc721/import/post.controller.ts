@@ -86,4 +86,4 @@ const controller = async (req: Request, res: Response) => {
     res.status(201).json({ erc721, erc721Tokens });
 };
 
-export default { controller, validation };
+export { controller, validation };

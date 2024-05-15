@@ -7,14 +7,14 @@ import { getAbiForContractName } from '@thxnetwork/api/services/ContractService'
 import TransactionService from '@thxnetwork/api/services/TransactionService';
 import WalletService from '@thxnetwork/api/services/WalletService';
 
-export const validation = [
+const validation = [
     body('tokenAddress').isEthereumAddress(),
     body('spender').isEthereumAddress(),
     body('amountInWei').isString(),
     query('walletId').isMongoId(),
 ];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     const walletId = req.query.walletId as string;
     const wallet = await WalletService.findById(walletId);
     if (!wallet) throw new NotFoundError('Wallet not found');
@@ -37,4 +37,4 @@ export const controller = async (req: Request, res: Response) => {
 
     res.status(201).json([tx]);
 };
-export default { controller, validation };
+export { controller, validation };

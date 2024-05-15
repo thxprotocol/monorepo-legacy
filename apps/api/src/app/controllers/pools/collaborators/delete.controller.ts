@@ -4,9 +4,9 @@ import { ForbiddenError, NotFoundError } from '@thxnetwork/api/util/errors';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import { Collaborator } from '@thxnetwork/api/models/Collaborator';
 
-export const validation = [param('id').isMongoId(), param('uuid').isUUID(4)];
+const validation = [param('id').isMongoId(), param('uuid').isUUID(4)];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     // #swagger.tags = ['Pools']
     const pool = await PoolService.getById(req.params.id);
     const collaborator = await Collaborator.findOne({ poolId: pool._id, uuid: req.params.uuid });
@@ -18,4 +18,4 @@ export const controller = async (req: Request, res: Response) => {
     res.status(204).end();
 };
 
-export default { controller, validation };
+export { controller, validation };

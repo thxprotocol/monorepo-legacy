@@ -7,7 +7,7 @@ import { ERC1155 } from '@thxnetwork/api/models/ERC1155';
 import ERC1155Service from '@thxnetwork/api/services/ERC1155Service';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
-export const validation = [
+const validation = [
     body('walletId').isMongoId(),
     body('erc1155Id').isMongoId(),
     body('erc1155TokenId').isMongoId(),
@@ -15,7 +15,7 @@ export const validation = [
     body('to').isString(),
 ];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     const erc1155 = await ERC1155.findById(req.body.erc1155Id);
     if (!erc1155) throw new NotFoundError('Could not find the ERC1155');
 
@@ -39,4 +39,4 @@ export const controller = async (req: Request, res: Response) => {
 
     res.status(201).json(tx);
 };
-export default { controller, validation };
+export { controller, validation };

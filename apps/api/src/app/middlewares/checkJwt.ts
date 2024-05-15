@@ -3,7 +3,7 @@ import expressJwtPermissions from 'express-jwt-permissions';
 import { expressjwt } from 'express-jwt';
 import { AUTH_URL } from '@thxnetwork/api/config/secrets';
 
-export const checkJwt = expressjwt({
+export const checkJwt: any = expressjwt({
     secret: jwksRsa.expressJwtSecret({
         cache: true,
         rateLimit: true,
@@ -14,7 +14,7 @@ export const checkJwt = expressjwt({
     algorithms: ['RS256'],
 });
 
-export const guard = expressJwtPermissions({
+export const guard: any = expressJwtPermissions({
     requestProperty: 'auth',
     permissionsProperty: 'scope',
 });

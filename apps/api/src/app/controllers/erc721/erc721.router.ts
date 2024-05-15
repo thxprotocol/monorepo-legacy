@@ -1,24 +1,25 @@
 import express from 'express';
 import { assertPoolAccess, assertRequestInput, guard } from '@thxnetwork/api/middlewares';
-import ReadERC721 from './get.controller';
-import ListERC721 from './list.controller';
-import ListERC721Metadata from './metadata/list.controller';
-import ListERC721Token from './token/list.controller';
-import ReadERC721Token from './token/get.controller';
-import RemoveERC721 from './delete.controller';
-import CreateERC721 from './post.controller';
-import CreateMultipleERC721Metadata from './metadata/images/post.controller';
 import { upload } from '@thxnetwork/api/util/multer';
-import UpdateERC721 from './patch.controller';
-import ReadERC721Metadata from './metadata/get.controller';
-import CreateERC721Metadata from './metadata/post.controller';
-import PatchERC721Metadata from './metadata/patch.controller';
-import DeleteERC721Metadata from './metadata/delete.controller';
-import ImportERC721Contract from './import/post.controller';
-import PreviewERC721Contract from './import/preview/post.controller';
-import CreateERC721Transfer from './transfer/post.controller';
 
-const router = express.Router();
+import * as ReadERC721 from './get.controller';
+import * as ListERC721 from './list.controller';
+import * as ListERC721Metadata from './metadata/list.controller';
+import * as ListERC721Token from './token/list.controller';
+import * as ReadERC721Token from './token/get.controller';
+import * as RemoveERC721 from './delete.controller';
+import * as CreateERC721 from './post.controller';
+import * as CreateMultipleERC721Metadata from './metadata/images/post.controller';
+import * as UpdateERC721 from './patch.controller';
+import * as ReadERC721Metadata from './metadata/get.controller';
+import * as CreateERC721Metadata from './metadata/post.controller';
+import * as PatchERC721Metadata from './metadata/patch.controller';
+import * as DeleteERC721Metadata from './metadata/delete.controller';
+import * as ImportERC721Contract from './import/post.controller';
+import * as PreviewERC721Contract from './import/preview/post.controller';
+import * as CreateERC721Transfer from './transfer/post.controller';
+
+const router: express.Router = express.Router();
 
 router.get(
     '/token',

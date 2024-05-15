@@ -35,4 +35,4 @@ const controller = async (req: Request, res: Response) => {
     res.json(participants);
 };
 
-export default { controller, validation };
+export { controller, validation };

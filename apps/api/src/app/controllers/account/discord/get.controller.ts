@@ -4,7 +4,7 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import { AccessTokenKind, OAuthDiscordScope } from '@thxnetwork/common/enums';
 import { Request, Response } from 'express';
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     const account = await AccountProxy.findById(req.auth.sub);
     const token = await AccountProxy.getToken(account, AccessTokenKind.Discord, [
         OAuthDiscordScope.Identify,
@@ -16,4 +16,4 @@ export const controller = async (req: Request, res: Response) => {
 
     res.json({ guilds });
 };
-export default { controller };
+export { controller };

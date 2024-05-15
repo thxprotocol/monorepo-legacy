@@ -42,4 +42,4 @@ const controller = async (req: Request, res: Response) => {
     res.json({ ...metadata.toJSON(), tokens });
 };
 
-export default { controller, validation };
+export { controller, validation };

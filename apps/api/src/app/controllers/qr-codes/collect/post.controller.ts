@@ -61,4 +61,4 @@ const controller = async (req: Request, res: Response) => {
     });
 };
 
-export default { controller, validation };
+export { controller, validation };

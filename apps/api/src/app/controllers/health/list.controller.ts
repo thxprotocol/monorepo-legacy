@@ -147,4 +147,4 @@ const controller = async (req: Request, res: Response) => {
     res.header('Content-Type', 'application/json').send(JSON.stringify(result, null, 4));
 };
 
-export default { controller };
+export { controller };

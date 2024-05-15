@@ -6,13 +6,9 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { contractNetworks } from '@thxnetwork/contracts/exports';
 import VoteEscrowService from '@thxnetwork/api/services/VoteEscrowService';
 
-export const validation = [
-    body('amountInWei').isString(),
-    body('lockEndTimestamp').isInt(),
-    query('walletId').isMongoId(),
-];
+const validation = [body('amountInWei').isString(), body('lockEndTimestamp').isInt(), query('walletId').isMongoId()];
 
-export const controller = async ({ body, wallet }: Request, res: Response) => {
+const controller = async ({ body, wallet }: Request, res: Response) => {
     // Check sufficient BPTGauge approval
     const amount = await VoteEscrowService.getAllowance(
         wallet,
@@ -36,4 +32,4 @@ export const controller = async ({ body, wallet }: Request, res: Response) => {
 
     res.status(201).json([tx]);
 };
-export default { controller, validation };
+export { controller, validation };

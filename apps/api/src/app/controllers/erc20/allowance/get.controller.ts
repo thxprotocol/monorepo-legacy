@@ -4,13 +4,13 @@ import { NotFoundError } from '@thxnetwork/api/util/errors';
 import ContractService from '@thxnetwork/api/services/ContractService';
 import WalletService from '@thxnetwork/api/services/WalletService';
 
-export const validation = [
+const validation = [
     query('tokenAddress').isEthereumAddress(),
     query('spender').isEthereumAddress(),
     query('walletId').isMongoId(),
 ];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     const walletId = req.query.walletId as string;
     const wallet = await WalletService.findById(walletId);
     if (!wallet) throw new NotFoundError('Could not find wallet for account');
@@ -24,4 +24,4 @@ export const controller = async (req: Request, res: Response) => {
 
     res.json({ allowanceInWei: String(allowanceInWei) });
 };
-export default { controller, validation };
+export { controller, validation };

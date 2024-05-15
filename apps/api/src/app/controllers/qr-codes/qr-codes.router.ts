@@ -1,13 +1,13 @@
 import express from 'express';
 import { assertRequestInput, checkJwt, corsHandler, guard } from '@thxnetwork/api/middlewares';
-import ListEntry from './list.controller';
-import CreateEntry from './post.controller';
-import ReadEntry from './get.controller';
-import DeleteEntryController from './delete.controller';
-import ReadRedirectEntry from './redirect/get.controller';
-import UpdateEntryController from './collect/post.controller';
+import * as ListEntry from './list.controller';
+import * as CreateEntry from './post.controller';
+import * as ReadEntry from './get.controller';
+import * as DeleteEntryController from './delete.controller';
+import * as ReadRedirectEntry from './redirect/get.controller';
+import * as UpdateEntryController from './collect/post.controller';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.get('/:uuid', assertRequestInput(ReadEntry.validation), ReadEntry.controller);
 router.get('/r/:uuid', assertRequestInput(ReadRedirectEntry.validation), ReadRedirectEntry.controller);

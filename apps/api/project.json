@@ -5,31 +5,28 @@
     "projectType": "application",
     "targets": {
         "build": {
-            "executor": "@nx/webpack:webpack",
+            "executor": "@nx/esbuild:esbuild",
             "outputs": ["{options.outputPath}"],
             "options": {
+                "platform": "node",
                 "outputPath": "dist/apps/api",
+                "format": ["cjs"],
+                "bundle": false,
                 "main": "apps/api/src/main.ts",
                 "tsConfig": "apps/api/tsconfig.app.json",
                 "assets": ["apps/api/src/assets", "apps/api/src/app/migrations"],
                 "additionalEntryPoints": [
-                    {
-                        "entryPath": "apps/api/scripts/upgradeContractsToLatest.ts",
-                        "entryName": "upgradeContractsToLatest"
-                    },
-                    {
-                        "entryPath": "apps/api/scripts/migrate-mongo.ts",
-                        "entryName": "migrate-mongo"
-                    },
-                    {
-                        "entryPath": "apps/api/scripts/script.ts",
-                        "entryName": "script"
-                    }
+                    "apps/api/scripts/upgradeContractsToLatest.ts",
+                    "apps/api/scripts/migrate-mongo.ts",
+                    "apps/api/scripts/script.ts"
                 ],
                 "generatePackageJson": true,
-                "target": "node",
-                "compiler": "tsc",
-                "webpackConfig": "apps/api/webpack.config.js"
+                "esbuildOptions": {
+                    "sourcemap": true,
+                    "outExtension": {
+                        ".js": ".js"
+                    }
+                }
             },
             "configurations": {
                 "production": {
@@ -41,7 +38,13 @@
                             "replace": "apps/api/src/environments/environment.ts",
                             "with": "apps/api/src/environments/environment.prod.ts"
                         }
-                    ]
+                    ],
+                    "esbuildOptions": {
+                        "sourcemap": false,
+                        "outExtension": {
+                            ".js": ".js"
+                        }
+                    }
                 }
             }
         },

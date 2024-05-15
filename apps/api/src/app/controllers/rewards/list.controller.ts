@@ -19,4 +19,4 @@ const controller = async (req: Request, res: Response) => {
     res.json({ coin, nft, custom, coupon, discordRole, galachain });
 };
 
-export default { controller };
+export { controller };

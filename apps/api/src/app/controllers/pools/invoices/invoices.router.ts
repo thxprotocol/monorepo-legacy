@@ -1,9 +1,9 @@
 import express from 'express';
-import ListController from './list.controller';
+import * as ListInvoices from './list.controller';
 import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 
-const router = express.Router({ mergeParams: true });
+const router: express.Router = express.Router({ mergeParams: true });
 
-router.get('/', guard.check(['pools:read']), assertRequestInput(ListController.validation), ListController.controller);
+router.get('/', guard.check(['pools:read']), assertRequestInput(ListInvoices.validation), ListInvoices.controller);
 
 export default router;

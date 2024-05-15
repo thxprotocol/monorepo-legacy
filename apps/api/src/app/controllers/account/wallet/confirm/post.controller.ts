@@ -4,7 +4,7 @@ import { BadRequestError, ForbiddenError } from '@thxnetwork/api/util/errors';
 import { Transaction } from '@thxnetwork/api/models';
 import SafeService from '@thxnetwork/api/services/SafeService';
 
-export const validation = [
+const validation = [
     body('chainId').isNumeric(),
     body('safeTxHash').isString(),
     body('signature').isString(),
@@ -25,4 +25,4 @@ const controller = async (req: Request, res: Response) => {
     res.json(wallet);
 };
 
-export default { controller, validation };
+export { controller, validation };

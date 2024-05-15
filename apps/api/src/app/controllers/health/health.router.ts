@@ -1,8 +1,8 @@
 import express from 'express';
-import ListController from './list.controller';
+import * as ListHealth from './list.controller';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
-router.get('/', ListController.controller);
+router.get('/', ListHealth.controller);
 
 export default router;

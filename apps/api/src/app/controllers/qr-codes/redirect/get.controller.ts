@@ -32,4 +32,4 @@ const controller = async (req: Request, res: Response) => {
     return res.redirect(302, url.toString());
 };
 
-export default { controller, validation };
+export { controller, validation };

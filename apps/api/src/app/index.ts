@@ -2,11 +2,11 @@ import 'express-async-errors';
 import axios from 'axios';
 import axiosBetterStacktrace from 'axios-better-stacktrace';
 import compression from 'compression';
-import express, { Request } from 'express';
+import express, { Express, Request } from 'express';
 import lusca from 'lusca';
-import router from '@thxnetwork/api/controllers';
 import db from '@thxnetwork/api/util/database';
 import morganBody from 'morgan-body';
+import { router } from '@thxnetwork/api/controllers';
 import { MONGODB_URI, NODE_ENV, PORT, VERSION } from '@thxnetwork/api/config/secrets';
 import { corsHandler, errorLogger, errorNormalizer, errorOutput, notFoundHandler } from '@thxnetwork/api/middlewares';
 import { assetsPath } from './util/path';
@@ -14,7 +14,7 @@ import morgan from './middlewares/morgan';
 
 axiosBetterStacktrace(axios);
 
-const app = express();
+const app: Express = express();
 
 db.connect(MONGODB_URI);
 

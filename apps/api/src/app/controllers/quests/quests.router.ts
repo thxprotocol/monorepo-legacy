@@ -1,7 +1,7 @@
 import { checkJwt, corsHandler } from '@thxnetwork/api/middlewares';
 import express from 'express';
-import ListQuests from './list.controller';
-import ListQuestsPublic from './recent/list.controller';
+import * as ListQuests from './list.controller';
+import * as ListQuestsPublic from './recent/list.controller';
 import RouterQuestSocial from './social/social.router';
 import RouterQuestWeb3 from './web3/web3.router';
 import RouterQuestGitcoin from './gitcoin/gitcoin.router';
@@ -9,7 +9,7 @@ import RouterQuestDaily from './daily/daily.router';
 import RouterQuestCustom from './custom/custom.router';
 import RouterQuestWebhook from './webhook/webhook.router';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.get('/', ListQuests.controller);
 router.get('/public', ListQuestsPublic.controller);

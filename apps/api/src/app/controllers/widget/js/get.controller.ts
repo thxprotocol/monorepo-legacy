@@ -563,4 +563,4 @@ if (typeof window.THXWidget !== 'undefined') {
     res.set({ 'Content-Type': 'application/javascript' }).send(result.code);
 };
 
-export default { controller, validation };
+export { controller, validation };

@@ -1,9 +1,9 @@
 import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 import express from 'express';
-import ListCouponCode from './list.controller';
-import RemoveCouponCode from './delete.controller';
+import * as ListCouponCode from './list.controller';
+import * as RemoveCouponCode from './delete.controller';
 
-const router = express.Router({ mergeParams: true });
+const router: express.Router = express.Router({ mergeParams: true });
 
 router.get(
     '/',

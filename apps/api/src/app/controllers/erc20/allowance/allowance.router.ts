@@ -1,9 +1,9 @@
 import express from 'express';
 import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
-import ListController from './get.controller';
-import CreateController from './post.controller';
+import * as ListController from './get.controller';
+import * as CreateController from './post.controller';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 router.post(
     '/',

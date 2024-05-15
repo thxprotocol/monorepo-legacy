@@ -1,11 +1,11 @@
 import express from 'express';
 import { assertRequestInput, assertPoolAccess, assertPayment, guard } from '@thxnetwork/api/middlewares';
 
-import ListController from './list.controller';
-import ReadController from './get.controller';
-import CreateController from './post.controller';
-import UpdateController from './patch.controller';
-import DeleteController from './delete.controller';
+import * as ListController from './list.controller';
+import * as ReadController from './get.controller';
+import * as CreateController from './post.controller';
+import * as UpdateController from './patch.controller';
+import * as DeleteController from './delete.controller';
 
 import RouterCollaborators from './collaborators/collaborators.router';
 import RouterParticipants from './participants/participants.router';
@@ -22,7 +22,7 @@ import RouterIdentities from './identities/identities.router';
 import RouterInvoices from './invoices/invoices.router';
 import RouterIntegrations from './integrations/integrations.router';
 
-const router = express.Router({ mergeParams: true });
+const router: express.Router = express.Router({ mergeParams: true });
 
 router.get('/', guard.check(['pools:read']), assertRequestInput(ListController.validation), ListController.controller);
 router.post(

@@ -5,14 +5,14 @@ import { getProvider } from '@thxnetwork/api/util/network';
 import { body, query } from 'express-validator';
 import VoteEscrowService from '@thxnetwork/api/services/VoteEscrowService';
 
-export const validation = [
+const validation = [
     query('walletId').isMongoId(),
     body('isEarlyAttempt')
         .isBoolean()
         .customSanitizer((val: string) => (val ? JSON.parse(val) : false)),
 ];
 
-export const controller = async ({ wallet, body }: Request, res: Response) => {
+const controller = async ({ wallet, body }: Request, res: Response) => {
     // Check sufficient BPT approval
     const { web3 } = getProvider();
     const ve = new web3.eth.Contract(
@@ -31,4 +31,4 @@ export const controller = async ({ wallet, body }: Request, res: Response) => {
 
     res.status(201).json(txs);
 };
-export default { controller, validation };
+export { controller, validation };

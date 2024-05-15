@@ -1,10 +1,10 @@
+import express, { Request, Response } from 'express';
 import axios, { AxiosRequestConfig, Method } from 'axios';
 import { MIXPANEL_API_URL } from '@thxnetwork/api/config/secrets';
-import { Request, Response, Router } from 'express';
 import { ForbiddenError } from '@thxnetwork/api/util/errors';
 // import { getIP } from '@thxnetwork/api/util/ip';
 
-const router = Router();
+const router: express.Router = express.Router();
 
 const mixpanelProxy = function (options: AxiosRequestConfig) {
     if (!options.url.startsWith('/')) throw new ForbiddenError();

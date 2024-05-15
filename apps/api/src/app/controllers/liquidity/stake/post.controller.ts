@@ -7,9 +7,9 @@ import { Request, Response } from 'express';
 import { body, query } from 'express-validator';
 import LiquidityService from '@thxnetwork/api/services/LiquidityService';
 
-export const validation = [body('amountInWei').isString(), query('walletId').isMongoId()];
+const validation = [body('amountInWei').isString(), query('walletId').isMongoId()];
 
-export const controller = async ({ wallet, body }: Request, res: Response) => {
+const controller = async ({ wallet, body }: Request, res: Response) => {
     const { web3 } = getProvider(wallet.chainId);
     const bpt = new web3.eth.Contract(contractArtifacts['BPT'].abi, contractNetworks[wallet.chainId].BPT);
 
@@ -23,4 +23,4 @@ export const controller = async ({ wallet, body }: Request, res: Response) => {
 
     res.status(201).json([tx]);
 };
-export default { controller, validation };
+export { controller, validation };

@@ -3,9 +3,9 @@ import { param, query } from 'express-validator';
 import PoolService from '@thxnetwork/api/services/PoolService';
 import AnalyticsService from '@thxnetwork/api/services/AnalyticsService';
 
-export const validation = [param('id').isMongoId(), query('startDate').exists(), query('endDate').exists()];
+const validation = [param('id').isMongoId(), query('startDate').exists(), query('endDate').exists()];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     const pool = await PoolService.getById(req.params.id);
     const startDate = new Date(String(req.query.startDate));
     const endDate = new Date(String(req.query.endDate));
@@ -14,4 +14,4 @@ export const controller = async (req: Request, res: Response) => {
     res.json(result);
 };
 
-export default { controller, validation };
+export { controller, validation };

@@ -18,4 +18,4 @@ const controller = async (req: Request, res: Response) => {
     res.json(identity.uuid);
 };
 
-export default { validation, controller };
+export { controller, validation };

@@ -26,4 +26,4 @@ const controller = async (req: Request, res: Response) => {
     return res.json({ pool, entry, erc721, metadata });
 };
 
-export default { controller, validation };
+export { controller, validation };

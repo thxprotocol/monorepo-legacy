@@ -7,7 +7,7 @@ import { Pool } from '@thxnetwork/api/models';
 
 const validation = [query('contractAddress').isEthereumAddress(), query('tokenId').isInt()];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     const pool = await Pool.findById(req.params.id);
     if (!pool) throw new NotFoundError('Pool not found');
 
@@ -20,4 +20,4 @@ export const controller = async (req: Request, res: Response) => {
 
     res.json({ balance });
 };
-export default { controller, validation };
+export { controller, validation };

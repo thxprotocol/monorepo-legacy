@@ -6,7 +6,7 @@ import WalletService from '@thxnetwork/api/services/WalletService';
 
 const validation = [query('walletId').isMongoId(), query('tokenAddress').isEthereumAddress()];
 
-export const controller = async (req: Request, res: Response) => {
+const controller = async (req: Request, res: Response) => {
     const walletId = req.query.walletId as string;
     const wallet = await WalletService.findById(walletId);
     if (!wallet) throw new NotFoundError('Wallet not found');
@@ -20,4 +20,4 @@ export const controller = async (req: Request, res: Response) => {
 
     res.json({ balanceInWei });
 };
-export default { controller, validation };
+export { controller, validation };

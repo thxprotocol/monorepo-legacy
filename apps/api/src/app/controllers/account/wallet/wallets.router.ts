@@ -1,10 +1,10 @@
 import express from 'express';
-import ListWallets from './list.controller';
-import CreateWallets from './post.controller';
-import CreateWalletConfirm from './confirm/post.controller';
+import * as ListWallets from './list.controller';
+import * as CreateWallets from './post.controller';
+import * as CreateWalletConfirm from './confirm/post.controller';
 import { assertRequestInput, guard } from '@thxnetwork/api/middlewares';
 
-const router = express.Router({ mergeParams: true });
+const router: express.Router = express.Router({ mergeParams: true });
 
 router.get('/', guard.check(['account:read']), assertRequestInput(ListWallets.validation), ListWallets.controller);
 router.post(
