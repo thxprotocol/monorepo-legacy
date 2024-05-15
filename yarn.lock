@@ -8119,12 +8119,13 @@
   resolved "https://registry.npmjs.org/@types/normalize-package-data/-/normalize-package-data-2.4.1.tgz"
   integrity sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==
 
-"@types/oidc-provider@^7.11.1":
-  version "7.12.0"
-  resolved "https://registry.npmjs.org/@types/oidc-provider/-/oidc-provider-7.12.0.tgz"
-  integrity sha512-PQtsWdbjzq/AARiNu2WjPnnbiCF78BCYgDOdKW0VYsjrbDa9HN8dALt7bSIJ0O67ti1l0pYDk8UCpmUu8rPAUQ==
+"@types/oidc-provider@^8.4.4":
+  version "8.4.4"
+  resolved "https://registry.yarnpkg.com/@types/oidc-provider/-/oidc-provider-8.4.4.tgz#2ec78f52a753be46f59ac13672575d14ef1cfc2c"
+  integrity sha512-+SlmKc4qlCJLjpw6Du/8cXw18JsPEYyQwoy+xheLkiuNsCz1mPEYI/lRXLQHvfJD9TH6+2/WDTLZQ2UUJ5G4bw==
   dependencies:
     "@types/koa" "*"
+    "@types/node" "*"
 
 "@types/parse-json@^4.0.0":
   version "4.0.0"

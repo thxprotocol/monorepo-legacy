@@ -205,7 +205,7 @@
         "@types/mongoose": "^5.5.18",
         "@types/newrelic": "^7.0.3",
         "@types/node": "^20.3.2",
-        "@types/oidc-provider": "^7.11.1",
+        "@types/oidc-provider": "^8.4.4",
         "@types/qrcode": "^1.5.0",
         "@types/rimraf": "^3.0.2",
         "@types/semver": "^7.3.12",

@@ -1,4 +1,4 @@
-import { Provider } from 'oidc-provider';
+import Provider from 'oidc-provider';
 import configuration from '../config/oidc';
 import { AUTH_URL, NODE_ENV } from '../config/secrets';
 
