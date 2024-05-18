@@ -219,8 +219,10 @@ export default class QuestService {
             await PointBalanceService.add(pool, account, amount);
             await NotificationService.sendQuestEntryNotification(pool, quest, account, amount);
 
-            // Register THX onboarding campaign event
-            await THXService.createEvent(account, 'quest_entry_created');
+            // Register THX onboarding campaign event only if not the onboarding quest itself
+            if (quest.id !== '66461ff2f98125d7a87cdc98') {
+                await THXService.createEvent(account, 'quest_entry_created');
+            }
 
             // Update participant ranks async
             agenda.now(JobType.UpdateParticipantRanks, { poolId: pool._id });
