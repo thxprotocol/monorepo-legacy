@@ -8,7 +8,7 @@
         "Justina Mary <justinamary27@gmail.com>"
     ],
     "license": "AGPL-3.0",
-    "version": "1.41.175",
+    "version": "1.41.176",
     "scripts": {
         "migrate": "node migrate-mongo.js up",
         "migrate:down": "node migrate-mongo.js down"
