@@ -15,7 +15,7 @@
         :id="id"
         :error="error"
         :loading="isLoading"
-        :disabled="isSubmitDisabled || !amount || !title"
+        :disabled="isSubmitDisabled || !title"
         :quest="reward"
         :pool="pool"
     >
