@@ -21,7 +21,7 @@
     >
         <template #col-left>
             <b-form-group label="Amount">
-                <b-form-input v-model="amount" />
+                <b-form-input type="number" v-model="amount" />
             </b-form-group>
         </template>
         <template #col-right>
