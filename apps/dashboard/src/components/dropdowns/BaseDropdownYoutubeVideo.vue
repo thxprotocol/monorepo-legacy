@@ -8,7 +8,11 @@
                 @input="onInput"
             />
         </b-form-group>
-        <b-alert show class="mt-2" variant="info" v-if="videoId">
+        <b-alert show class="mt-2" variant="info" v-if="url && !videoId">
+            <strong>Could not process your URL.</strong> Please use this format:
+            <em>https://www.youtube.com/watch?v=ckoegYJ1</em>
+        </b-alert>
+        <b-alert show class="mt-2" variant="info" v-if="url && videoId">
             YouTube Video ID: <strong> {{ videoId }}</strong>
         </b-alert>
     </div>
@@ -40,6 +44,10 @@ export default class BaseDropdownYoutubeVideo extends Vue {
         if (this.contentMetadata) {
             this.url = this.contentMetadata?.videoURL || '';
         }
+    }
+
+    get isValid() {
+        return false;
     }
 
     get videoId() {
