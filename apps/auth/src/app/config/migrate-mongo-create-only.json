@@ -1,4 +1,0 @@
-{
-    "migrationsDir": "src/app/migrations",
-    "moduleSystem": "commonjs"
-}

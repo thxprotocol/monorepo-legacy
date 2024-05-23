@@ -9,3 +9,4 @@ declare module 'file-saver';
 declare module 'jspdf';
 declare module 'xml2js';
 declare module 'qrcode-svg';
+declare module 'papaparse';

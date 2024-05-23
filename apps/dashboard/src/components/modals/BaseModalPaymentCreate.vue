@@ -104,10 +104,9 @@
 <script lang="ts">
 import { AccountPlanType } from '@thxnetwork/common/enums';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { planPricingMap } from '@thxnetwork/common/constants';
+import { contractNetworks, planPricingMap } from '@thxnetwork/common/constants';
 import { toFiatPrice } from '@thxnetwork/dashboard/utils/price';
 import { plans } from '@thxnetwork/dashboard/utils/plans';
-import { contractNetworks } from '@thxnetwork/contracts/exports';
 import { mapGetters } from 'vuex';
 import { TERC20AllowanceState, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
 import { BigNumber, ethers } from 'ethers';

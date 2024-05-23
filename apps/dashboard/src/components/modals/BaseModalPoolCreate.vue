@@ -56,7 +56,6 @@ export default class ModalAssetPoolCreate extends Vue {
 
         this.$bvModal.hide(this.id);
         this.isLoading = false;
-        this.$emit('created');
     }
 }
 </script>

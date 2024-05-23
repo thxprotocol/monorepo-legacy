@@ -17,12 +17,8 @@
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "paths": {
-            "@thxnetwork/api*": ["apps/api/src/app*"],
-            "@thxnetwork/auth*": ["apps/auth/src/app*"],
             "@thxnetwork/dashboard*": ["apps/dashboard/src*"],
             "@thxnetwork/public*": ["apps/public/src*"],
-            "@thxnetwork/contracts*": ["libs/contracts*"],
-            "@thxnetwork/sdk*": ["libs/sdk/src/lib*"],
             "@thxnetwork/common*": ["libs/common/src/lib*"]
         }
     },

@@ -92,32 +92,6 @@
                 </b-col>
             </b-row>
             <b-row>
-                <b-col md="6">
-                    <b-card
-                        @click="$router.push('/coins')"
-                        class="mt-3 mb-3 cursor-pointer"
-                        :img-src="require('../../public/assets/thx_tokens.webp')"
-                        img-alt="Image"
-                        img-top
-                    >
-                        <strong>Coins</strong>
-                        <p class="text-muted m-0">Users get rewards or import ERC-20 tokens as Coins.</p>
-                    </b-card>
-                </b-col>
-                <b-col md="6">
-                    <b-card
-                        @click="$router.push('/nft')"
-                        class="mt-3 mb-3 cursor-pointer"
-                        :img-src="require('../../public/assets/thx_nft.webp')"
-                        img-alt="Image"
-                        img-top
-                    >
-                        <strong>NFT</strong>
-                        <p class="text-muted m-0">Create or import ERC-721 token variations as NFT's.</p>
-                    </b-card>
-                </b-col>
-            </b-row>
-            <b-row>
                 <b-col md="4">
                     <b-card
                         @click="$router.push(`/pool/${firstPool ? firstPool._id : 'unknown'}/settings/widget`)"

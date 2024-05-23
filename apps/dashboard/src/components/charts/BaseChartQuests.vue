@@ -10,7 +10,7 @@ import { IPoolAnalytics } from '@thxnetwork/dashboard/store/modules/pools';
 import { format } from 'date-fns';
 import BarChart from '@thxnetwork/dashboard/components/charts/BarChart.vue';
 import { ChartOptions } from 'chart.js';
-import { QuestVariant } from '@thxnetwork/sdk/types/enums';
+import { QuestVariant } from '@thxnetwork/common/enums';
 
 @Component({
     components: {
