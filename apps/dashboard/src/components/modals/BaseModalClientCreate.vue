@@ -15,6 +15,7 @@
                     <b-select v-model="grantType" :disabled="!!client">
                         <b-select-option value="client_credentials">Client Credentials</b-select-option>
                         <b-select-option value="authorization_code">Authorization Code</b-select-option>
+                        <b-select-option value="identity_code">Identity Code</b-select-option>
                     </b-select>
                 </b-form-group>
                 <template v-if="grantType === 'authorization_code'">

@@ -13,7 +13,7 @@ export const corsHandler = cors(async (req: any, callback: any) => {
         'https://dev-app.thx.network',
     ];
 
-    if (!origin || allowedOrigins.indexOf(origin) > -1) {
+    if (!origin || allowedOrigins.includes(origin)) {
         callback(null, {
             credentials: true,
             origin: '*',

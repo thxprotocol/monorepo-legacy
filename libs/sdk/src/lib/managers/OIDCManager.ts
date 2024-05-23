@@ -1,21 +1,26 @@
-import axios from 'axios';
+import axiosInstance from 'axios';
 import { THXClient } from '../clients';
 import { THXOIDCConfig, THXOIDCUser } from '../types';
 import BaseManager from './BaseManager';
 
+const axios = axiosInstance.create();
+
 export enum THXOIDCGrant {
     AuthorizationCode = 'authorization_code',
     ClientCredentials = 'client_credentials',
+    IdentityCode = 'identity_code',
 }
 
 class OIDCManager extends BaseManager {
+    identityCode: string;
     user: THXOIDCUser | null;
     expiresAt: number;
     grantType: THXOIDCGrant;
 
-    constructor(client: THXClient, grantType: THXOIDCGrant) {
+    constructor(client: THXClient, grantType: THXOIDCGrant, identityCode = '') {
         super(client);
 
+        this.identityCode = identityCode;
         this.grantType = grantType;
         this.expiresAt = Date.now();
         this.user = null;
@@ -44,6 +49,7 @@ class OIDCManager extends BaseManager {
 
     async authenticate() {
         const initMap = {
+            [String(THXOIDCGrant.IdentityCode)]: this.getIdentityCodeGrant.bind(this),
             [String(THXOIDCGrant.ClientCredentials)]: this.getClientCredentialsGrant.bind(this),
             [String(THXOIDCGrant.AuthorizationCode)]: this.getAuthorizationCodeGrant.bind(this),
         };
@@ -72,7 +78,40 @@ class OIDCManager extends BaseManager {
 
             this.setUser(response.data);
         } catch (error) {
-            throw new Error('Request for ' + THXOIDCGrant.ClientCredentials + ' grant failed.');
+            throw new Error('Request for ' + THXOIDCGrant.AuthorizationCode + ' grant failed.');
+        }
+    }
+
+    private async getIdentityCodeGrant({ identityCode, clientId, clientSecret }: THXOIDCConfig) {
+        const authHeader = 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+        const headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': authHeader,
+        };
+        const url = `${this.authUrl}/token`;
+        const params = {
+            grant_type: THXOIDCGrant.IdentityCode,
+            client_id: clientId,
+            identity_code: identityCode || '',
+        };
+        const data = new URLSearchParams(params);
+        console.log({
+            method: 'POST',
+            url,
+            headers,
+            data,
+        });
+        try {
+            const response = await axios({
+                method: 'POST',
+                url,
+                headers,
+                data,
+            });
+            this.setUser(response.data);
+        } catch (error) {
+            console.log(error);
+            throw new Error('Request for ' + THXOIDCGrant.IdentityCode + ' grant failed.');
         }
     }
 

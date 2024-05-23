@@ -1,8 +1,10 @@
 import { THXClient } from '../clients';
 import { THXBrowserClientOptions, THXRequestConfig } from '../types';
 import * as jose from 'jose';
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axiosInstance, { AxiosError, AxiosResponse } from 'axios';
 import OIDCManager, { THXOIDCGrant } from './OIDCManager';
+
+const axios = axiosInstance.create();
 
 class RequestManager extends OIDCManager {
     constructor(client: THXClient, grantType: THXOIDCGrant) {
@@ -89,9 +91,11 @@ class RequestManager extends OIDCManager {
         if (!accessToken) throw new Error("Please, provide an 'accessToken'.");
 
         try {
-            const { exp } = jose.decodeJwt(accessToken);
-            if (!exp || Date.now() > Number(exp) * 1000) {
-                throw new Error('The token has expired.');
+            if (!this.client.options.identityCode) {
+                const { exp } = jose.decodeJwt(accessToken);
+                if (!exp || Date.now() > Number(exp) * 1000) {
+                    throw new Error('The token has expired.');
+                }
             }
 
             return accessToken;

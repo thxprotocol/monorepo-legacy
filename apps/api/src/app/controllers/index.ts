@@ -21,6 +21,7 @@ import RouterWebhooks from './webhooks/webhooks.router';
 import RouterPrices from './earn/earn.router';
 import RouterWidgets from './widgets/widgets.router';
 import RouterIdentity from './identity/identity.router';
+import RouterIdentities from './identities/identities.router';
 import RouterEvents from './events/events.router';
 import RouterData from './data/data.router';
 import RouterLiquidity from './liquidity/liquidity.router';
@@ -45,7 +46,15 @@ router.use('/quests', RouterQuests);
 router.use('/rewards', RouterRewards);
 router.use('/webhook', RouterWebhook);
 router.use('/earn', RouterPrices);
-router.use(checkJwt, corsHandler);
+router.use('/identities', RouterIdentities);
+router.use(
+    (req, res, next) => {
+        console.log(req);
+        next();
+    },
+    checkJwt,
+    corsHandler,
+);
 router.use('/jobs', RouterJobs);
 router.use('/upload', RouterUpload);
 router.use('/identity', RouterIdentity);
