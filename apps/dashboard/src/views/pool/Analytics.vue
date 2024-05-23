@@ -22,7 +22,7 @@
                                     :max="endDate"
                                     bg-variant="primary"
                                     v-model="startDate"
-                                    @input="onInputDate"
+                                    @input="onInputStartDate"
                                 />
                                 <b-input-group-append>
                                     <b-button @click="startDate = defaultDates.startDate" variant="dark">
@@ -46,7 +46,7 @@
                                     :min="startDate"
                                     :max="defaultDates.endDate"
                                     v-model="endDate"
-                                    @input="onInputDate"
+                                    @input="onInputEndDate"
                                 />
                                 <b-input-group-append>
                                     <b-button @click="endDate = defaultDates.endDate" variant="dark">
@@ -113,6 +113,7 @@
                                     metrics.socialQuest,
                                     metrics.customQuest,
                                     metrics.web3Quest,
+                                    metrics.gitcoinQuest,
                                 ]"
                                 :key="key"
                                 class="d-flex justify-content-between align-items-center pl-3"
@@ -186,12 +187,12 @@
                         <p><strong class="text-muted">Leaderboard</strong></p>
                         <b-list-group class="mb-3">
                             <b-list-group-item
-                                v-for="(result, key) of leaderboard.results"
+                                v-for="(result, key) of leaderboard"
                                 :key="key"
                                 class="d-flex justify-content-between align-items-center pl-3"
                             >
                                 <div class="d-flex center-center">
-                                    <div class="mr-3 text-gray">#{{ result.rank }}</div>
+                                    <div class="mr-3 text-gray">{{ result.rank }}</div>
                                     <b-avatar
                                         v-if="result.account"
                                         size="25"
@@ -200,17 +201,11 @@
                                         class="mr-3"
                                     />
                                     <div>
-                                        {{ result.account ? result.account.username : 'Unkown' }}
-                                        <sup
-                                            v-if="result.subscription"
-                                            v-b-tooltip
-                                            :title="`Subscribed since ${format(
-                                                new Date(result.subscription.createdAt),
-                                                'dd-MM-yyyy HH:mm',
-                                            )}`"
-                                        >
-                                            <i class="fa fa-star text-primary" style="font-size: 0.8rem" />
-                                        </sup>
+                                        {{
+                                            result.account && result.account.username
+                                                ? result.account.username
+                                                : 'Unkown'
+                                        }}
                                     </div>
                                 </div>
                                 <div class="ml-auto text-right">
@@ -221,7 +216,7 @@
                                     <strong class="text-primary"> {{ result.score }} </strong>
                                 </div>
                             </b-list-group-item>
-                            <b-list-group-item v-if="!leaderboard.results.length">
+                            <b-list-group-item v-if="!leaderboard.length">
                                 <p class="mb-0 text-gray">Could not find any campaign participants yet!</p>
                             </b-list-group-item>
                             <b-list-group-item>
@@ -246,11 +241,10 @@ import BaseChartQuests from '@thxnetwork/dashboard/components/charts/BaseChartQu
 import BaseChartRewards from '@thxnetwork/dashboard/components/charts/BaseChartRewards.vue';
 import BaseDateDuration from '@thxnetwork/dashboard/components/form-group/BaseDateDuration.vue';
 
-const ONE_DAY = 86400000; // one day in milliseconds
-const defaultDates = {
-    startDate: new Date(Date.now() - ONE_DAY * 7),
-    endDate: new Date(),
-};
+const ONE_DAY = 86400000; // one day in ms
+const startDate = new Date(Date.now() - ONE_DAY * 7);
+const endDate = new Date();
+endDate.setHours(23, 59, 59, 999);
 
 @Component({
     components: {
@@ -267,27 +261,29 @@ const defaultDates = {
 export default class ViewAnalyticsMetrics extends Vue {
     fromWei = fromWei;
     format = format;
-    metricQuestsLabelMap = ['Daily', 'Invite', 'Social', 'Custom', 'Web3'];
+    metricQuestsLabelMap = ['Daily', 'Invite', 'Social', 'Custom', 'Web3', 'Gitcoin'];
     metricQuestsInfoMap = [
         'Daily Quest qualifications versus completed and the total amount of points earned.',
         'Invite Quest leads qualified and the total amount of points earned.',
         'Social Quests completed and the total amount of points earned.',
         'Custom Quest qualifications versus completions and the total amount of points earned.',
         'Web3 Quests completed and the total amount of points earned.',
+        'Gitcoin Quests completed and the total amount of points earned.',
     ];
     metricRewardLabelMap = ['Coin', 'NFT', 'Custom', 'Coupon', 'Discord Role'];
     pools!: IPools;
     isLoadingLeaderboard = false;
     isLoadingCharts = false;
     isLoadingMetrics = false;
-    leaderboard: { total: number; results: any[] } = {
-        total: 0,
-        results: [],
-    };
+    leaderboard: { score: number; questEntryCount: number; rank: number; account: TAccount }[] = [];
     analyticsMetrics!: IPoolAnalyticsMetrics;
-    defaultDates = defaultDates;
-    startDate = defaultDates.startDate;
-    endDate = defaultDates.endDate;
+    defaultDates = {
+        startDate,
+        endDate,
+    };
+    startDate = startDate;
+    endDate = endDate;
+    limit = 10;
 
     get metrics() {
         if (!this.analyticsMetrics[this.$route.params.id]) return null;
@@ -329,10 +325,11 @@ export default class ViewAnalyticsMetrics extends Vue {
 
     async getLeaderboard() {
         this.isLoadingLeaderboard = true;
-        this.leaderboard = await this.$store.dispatch('pools/listParticipants', {
+        this.leaderboard = await this.$store.dispatch('pools/getLeaderboard', {
             pool: this.pool,
-            page: 1,
-            limit: 10,
+            startDate: this.startDate,
+            endDate: this.endDate,
+            limit: this.limit,
         });
         this.isLoadingLeaderboard = false;
     }
@@ -357,9 +354,22 @@ export default class ViewAnalyticsMetrics extends Vue {
         this.isLoadingCharts = false;
     }
 
-    onInputDate() {
+    onInputStartDate(startDate: Date) {
+        this.startDate = startDate;
+        this.update();
+    }
+
+    onInputEndDate(endDate: Date) {
+        console.log(endDate);
+        this.endDate = endDate;
+        this.endDate.setHours(23, 59, 59, 999);
+        this.update();
+    }
+
+    update() {
         this.getCharts();
         this.getMetrics();
+        this.getLeaderboard();
     }
 }
 </script>

@@ -93,6 +93,7 @@ export interface IPoolAnalyticMetrics {
     inviteQuest: PoolMetric;
     customQuest: PoolMetric;
     web3Quest: PoolMetric;
+    gitcoinQuest: PoolMetric;
     coinReward: PoolMetric;
     nftReward: PoolMetric;
     customReward: PoolMetric;
@@ -197,7 +198,6 @@ class PoolModule extends VuexModule {
     _participants: TParticipantState = {};
     _couponCodes: TCouponCodeState = {};
     _analytics: IPoolAnalytics = {};
-    _analyticsLeaderBoard: IPoolAnalyticsLeaderBoard = {};
     _analyticsMetrics: IPoolAnalyticsLeaderBoard = {};
     _invoices: TInvoiceState = {};
     _payments: TPaymentState = {};
@@ -259,10 +259,6 @@ class PoolModule extends VuexModule {
         return this._analytics;
     }
 
-    get analyticsLeaderBoard() {
-        return this._analyticsLeaderBoard;
-    }
-
     get analyticsMetrics() {
         return this._analyticsMetrics;
     }
@@ -275,11 +271,6 @@ class PoolModule extends VuexModule {
     @Mutation
     setAnalytics(data: IPoolAnalytic) {
         Vue.set(this._analytics, data._id, data);
-    }
-
-    @Mutation
-    setAnalyticsLeaderBoard({ poolId, data }: { poolId: string; data: IPoolAnalyticLeaderBoard }) {
-        Vue.set(this._analyticsLeaderBoard, poolId, data);
     }
 
     @Mutation
@@ -854,8 +845,31 @@ class PoolModule extends VuexModule {
             },
         });
         this.context.commit('setParticipants', { poolId: pool._id, result: data });
+    }
 
-        // Can not remove yet as it breaks leaderboards
+    @Action({ rawError: true })
+    async getLeaderboard({
+        pool,
+        limit,
+        startDate,
+        endDate,
+    }: {
+        pool: TPool;
+        limit: string;
+        startDate: Date;
+        endDate: Date;
+    }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/analytics/leaderboard`,
+            headers: { 'X-PoolId': pool._id },
+            params: {
+                limit,
+                startDate,
+                endDate,
+            },
+        });
+
         return data;
     }
 
