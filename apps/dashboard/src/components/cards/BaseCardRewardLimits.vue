@@ -11,13 +11,11 @@
         <b-collapse id="collapse-card-reward-limit" v-model="isVisible">
             <hr class="mt-0" />
             <div class="px-3">
-                <b-form-group label="Reward Limit">
-                    <p class="text-muted">Control the supply of this reward with a purchase limit.</p>
-                    <b-form-input
-                        @input="$emit('change-reward-limit', $event)"
-                        type="number"
-                        :value="selectedRewardLimit"
-                    />
+                <b-form-group label="Supply Limit" description="Control the supply of this reward with a supply limit.">
+                    <b-form-input @input="$emit('change-limit-supply', $event)" type="number" :value="limitSupply" />
+                </b-form-group>
+                <b-form-group label="Limit" description="Allow for a max amount of purchases per account.">
+                    <b-form-input @input="$emit('change-limit', $event)" type="number" :value="limit" />
                 </b-form-group>
             </div>
         </b-collapse>
@@ -30,18 +28,12 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component({})
 export default class BaseCardRewardLimits extends Vue {
     isVisible = false;
-    selectedRewardLimit = 0;
 
+    @Prop() limitSupply!: number;
     @Prop() limit!: number;
 
     mounted() {
-        this.selectedRewardLimit = this.limit ? this.limit : 0;
-        this.isVisible = this.limit > 0;
-    }
-
-    onInputRewardLimit(limit: number) {
-        this.selectedRewardLimit = limit;
-        this.$emit('change-reward-limit', limit);
+        this.isVisible = this.limit > 0 || this.limitSupply > 0;
     }
 }
 </script>

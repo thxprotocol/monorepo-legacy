@@ -39,7 +39,13 @@
                             :expiryDate="expiryDate"
                             @change-date="expiryDate = $event"
                         />
-                        <BaseCardRewardLimits class="mb-3" :limit="limit" @change-reward-limit="limit = $event" />
+                        <BaseCardRewardLimits
+                            class="mb-3"
+                            :limit="limit"
+                            :limit-supply="limitSupply"
+                            @change-limit="limit = $event"
+                            @change-limit-supply="limitSupply = $event"
+                        />
                         <b-form-group class="mb-0">
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
                         </b-form-group>
@@ -88,6 +94,7 @@ export default class ModalRewardERC20Create extends Vue {
     description = '';
     expiryDate: Date | null = null;
     limit = 0;
+    limitSupply = 0;
     pointPrice = 0;
     imageFile: File | null = null;
     image = '';
@@ -106,7 +113,8 @@ export default class ModalRewardERC20Create extends Vue {
         this.description = this.reward ? this.reward.description : this.description;
         this.pointPrice = this.reward ? this.reward.pointPrice : this.pointPrice;
         this.expiryDate = this.reward ? this.reward.expiryDate : this.expiryDate;
-        this.limit = this.reward ? this.reward.limit : 0;
+        this.limit = this.reward ? this.reward.limit : this.limit;
+        this.limitSupply = this.reward ? this.reward.limitSupply : this.limitSupply;
         this.image = this.reward && this.reward.image ? this.reward.image : '';
         this.isPromoted = this.reward ? this.reward.isPromoted : this.isPromoted;
         this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
@@ -122,6 +130,7 @@ export default class ModalRewardERC20Create extends Vue {
             pointPrice: this.pointPrice,
             expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
             limit: this.limit,
+            limitSupply: this.limitSupply,
             file: this.imageFile,
             locks: this.locks,
             isPromoted: this.isPromoted,
