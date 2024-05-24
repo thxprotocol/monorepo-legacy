@@ -65,7 +65,7 @@ export default class BaseChardQuests extends Vue {
         const getData = (key: string) =>
             this.chartDates.map((data) => {
                 if (!this.poolAnalytics[key]) return 0;
-                const dayData = this.poolAnalytics[key].find((x) => x.day == data);
+                const dayData = this.poolAnalytics[key].find((date) => date.day == data);
                 return dayData ? dayData.totalAmount : 0;
             });
 
@@ -84,7 +84,7 @@ export default class BaseChardQuests extends Vue {
             borderWidth: 2,
         };
         const result = {
-            labels: this.chartDates.map((x) => format(new Date(x), 'MM-dd')),
+            labels: this.chartDates.map((date) => format(new Date(date), 'MM-dd')),
             datasets: [
                 {
                     label: 'Coin',

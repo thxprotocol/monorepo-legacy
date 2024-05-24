@@ -312,9 +312,9 @@ export default class ViewAnalyticsMetrics extends Vue {
 
     async mounted() {
         await this.$store.dispatch('pools/read', this.$route.params.id);
+        await this.getCharts();
+        await this.getMetrics();
         this.getLeaderboard();
-        this.getMetrics();
-        this.getCharts();
     }
 
     formatDateLabel(date: Date): string {
@@ -360,7 +360,6 @@ export default class ViewAnalyticsMetrics extends Vue {
     }
 
     onInputEndDate(endDate: Date) {
-        console.log(endDate);
         this.endDate = endDate;
         this.endDate.setHours(23, 59, 59, 999);
         this.update();
