@@ -82,7 +82,7 @@ export default class ModalRewardCustomCreate extends Vue {
                 ...payload,
                 variant: RewardVariant.Coupon,
                 codes: this.codes,
-                webshopURL: this.webshopURL,
+                webshopURL: this.webshopURL && this.webshopURL,
             });
             this.isLoading = false;
             this.$emit('submit', { isPublished: payload.isPublished });

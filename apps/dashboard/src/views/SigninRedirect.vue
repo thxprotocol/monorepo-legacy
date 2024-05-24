@@ -33,7 +33,9 @@ export default class Redirect extends Vue {
             // This handles a collaborator request while being signed in
             const { poolId, collaboratorRequestToken, returnPath } = this.user.state as any;
             if (poolId && collaboratorRequestToken) {
-                this.updateCollaborator(poolId, collaboratorRequestToken);
+                await this.updateCollaborator(poolId, collaboratorRequestToken);
+                this.$router.push({ name: 'pool', params: { id: poolId } });
+                return;
             }
 
             if (returnPath) {
@@ -48,7 +50,7 @@ export default class Redirect extends Vue {
     async updateCollaborator(poolId: string, uuid: string) {
         try {
             await this.$store.dispatch('pools/updateCollaborator', { poolId, uuid });
-            this.$bvToast.toast('Accepted collaboration request!', {
+            await this.$bvToast.toast('Accepted collaboration request!', {
                 variant: 'info',
                 title: 'Info',
                 noFade: true,

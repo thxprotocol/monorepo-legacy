@@ -1,0 +1,8 @@
+.dark-mode {
+    .b-calendar .b-calendar-grid-body .col[data-date]:not(.bg-light) .btn {
+        color: $light !important
+    }
+    .b-calendar .b-calendar-grid-body .col[data-date]:not(.bg-light) .btn:hover {
+        color: $dark !important
+    }
+}
