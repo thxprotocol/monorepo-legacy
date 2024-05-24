@@ -68,6 +68,7 @@ export default class BaseChardQuests extends Vue {
 
         const getData = (key: string) =>
             this.chartDates.map((data) => {
+                if (!this.poolAnalytics[key]) return 0;
                 const dayData = this.poolAnalytics[key].find((x) => x.day == data);
                 return dayData ? dayData.totalAmount : 0;
             });
@@ -78,6 +79,7 @@ export default class BaseChardQuests extends Vue {
             [QuestVariant.Daily]: getData('dailyRewards'),
             [QuestVariant.Custom]: getData('milestoneRewards'),
             [QuestVariant.Web3]: getData('web3Quests'),
+            [QuestVariant.Gitcoin]: getData('gitcoinQuests'),
         };
 
         const style = {
@@ -112,6 +114,11 @@ export default class BaseChardQuests extends Vue {
                 {
                     label: 'Web3',
                     data: entries[QuestVariant.Web3],
+                    ...style,
+                },
+                {
+                    label: 'Gitcoin',
+                    data: entries[QuestVariant.Gitcoin],
                     ...style,
                 },
             ],
