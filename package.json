@@ -50,6 +50,7 @@
         "svg-to-pdfkit": "^0.1.8",
         "tsconfig-paths": "^4.1.0",
         "tslib": "^2.3.0",
+        "vee-validate": "3.4.14",
         "vue": "^2.6.11",
         "vue-chartjs": "^4.1.1",
         "vue-class-component": "^7.2.3",
@@ -68,7 +69,8 @@
         "web3": "^1.7.3",
         "web3-utils": "^1.8.1",
         "webpack": "^5.74.0",
-        "xml2js": "^0.4.23"
+        "xml2js": "^0.4.23",
+        "yup": "0.32.11"
     },
     "devDependencies": {
         "@babel/preset-typescript": "^7.18.6",
