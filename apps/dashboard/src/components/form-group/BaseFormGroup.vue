@@ -24,6 +24,6 @@ export default class BaseFormGroup extends Vue {
     @Prop() label!: string;
     @Prop() tooltip!: string;
     @Prop() description!: string;
-    @Prop({ type: Boolean, required: true, default: false }) required!: boolean;
+    @Prop({ type: Boolean, default: false }) required!: boolean;
 }
 </script>

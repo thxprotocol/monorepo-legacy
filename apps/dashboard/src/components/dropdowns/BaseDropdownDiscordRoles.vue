@@ -4,23 +4,37 @@
         <b-alert show variant="primary" v-else-if="!guilds.length">
             <i class="fas fa-exclamation-circle mr-1" />
             Please
-            <b-link :to="`/pool/${pool._id}/integrations`"> invite THX Bot </b-link>
+            <b-link :to="`/pool/${pool._id}/integrations/discord`"> invite THX Bot </b-link>
             to your server.
         </b-alert>
         <template v-else>
-            <BaseFormGroup label="Server">
+            <BaseFormGroup
+                required
+                label="Server"
+                :description="!guilds.length ? 'Make sure THX Bot is connected and has sufficient permissions.' : ''"
+                tooltip="Select the server the campaign participant is required to join for this quest."
+            >
                 <b-form-select v-model="guild">
                     <b-form-select-option :key="key" v-for="(g, key) of guilds" :value="guild">
                         {{ g.name }}
                     </b-form-select-option>
                 </b-form-select>
             </BaseFormGroup>
-            <b-form-group v-if="guild" label="Role" description="">
+            <BaseFormGroup
+                v-if="guild"
+                required
+                label="Role"
+                description="Make sure THX Bot is invited and has sufficient permissions."
+                tooltip="Select the server role the campaign participant is required to bear."
+            >
                 <BaseDropdownDiscordRole :role-id="roleId" :guild="guild" @click="onClickRole" />
-            </b-form-group>
-            <b-form-group label="Invite URL">
+            </BaseFormGroup>
+            <BaseFormGroup
+                label="Invite URL"
+                tooltip="This Invite URL will be shown to the campaign participant that attempts to complete the quest."
+            >
                 <b-form-input @change="onChangeInviteURL" :value="inviteURL" />
-            </b-form-group>
+            </BaseFormGroup>
         </template>
     </div>
 </template>

@@ -11,12 +11,18 @@
         <b-collapse id="collapse-card-reward-limit" v-model="isVisible">
             <hr class="mt-0" />
             <div class="px-3">
-                <b-form-group label="Supply Limit" description="Control the supply of this reward with a supply limit.">
+                <BaseFormGroup
+                    label="Supply Limit"
+                    tooltip="Set the max of rewards that can be purchased in this campaign."
+                >
                     <b-form-input @input="$emit('change-limit-supply', $event)" type="number" :value="limitSupply" />
-                </b-form-group>
-                <b-form-group label="Limit" description="Allow for a max amount of purchases per account.">
+                </BaseFormGroup>
+                <BaseFormGroup
+                    label="Limit"
+                    tooltip="Set the max of rewards that can be purchased by a single account."
+                >
                     <b-form-input @input="$emit('change-limit', $event)" type="number" :value="limit" />
-                </b-form-group>
+                </BaseFormGroup>
             </div>
         </b-collapse>
     </b-card>

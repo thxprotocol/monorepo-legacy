@@ -67,6 +67,7 @@
                                 </b-col>
                             </b-row>
                         </BaseFormGroup>
+                        <hr />
                         <slot name="col-left" />
                     </b-col>
                     <b-col md="6">
@@ -117,14 +118,12 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
-import BaseCardRewardExpiry from '@thxnetwork/dashboard/components/cards/BaseCardRewardExpiry.vue';
 import BaseCardInfoLinks from '@thxnetwork/dashboard/components/cards/BaseCardInfoLinks.vue';
 import BaseCardQuestLocks from '@thxnetwork/dashboard/components/cards/BaseCardQuestLocks.vue';
 
 @Component({
     components: {
         BaseModal,
-        BaseCardRewardExpiry,
         BaseCardInfoLinks,
         BaseCardQuestLocks,
     },

@@ -1,16 +1,21 @@
 <template>
     <div>
-        <b-form-group
+        <BaseFormGroup
+            required
             label="Server ID"
-            description="Enable 'Developer Mode' in 'App settings' > 'Advanced' and right click your server icon to Copy ID. "
+            description="In Discord enable 'Developer Mode' in 'App settings' > 'Advanced', right click your server icon and click Copy ID. "
+            tooltip="Select the server the campaign participant is required to join for this quest."
         >
             <b-input-group prepend="#">
                 <b-form-input @change="onChangeServerId" :value="serverId" />
             </b-input-group>
-        </b-form-group>
-        <b-form-group label="Invite URL">
+        </BaseFormGroup>
+        <BaseFormGroup
+            label="Invite URL"
+            tooltip="This Invite URL will be shown to the campaign participant that attempts to complete the quest."
+        >
             <b-form-input @change="onChangeInviteURL" :value="inviteURL" />
-        </b-form-group>
+        </BaseFormGroup>
     </div>
 </template>
 

@@ -3,29 +3,44 @@
         <b-alert show variant="primary" v-if="!guilds.length">
             <i class="fas fa-exclamation-circle mr-1" />
             Please
-            <b-link :to="`/pool/${pool._id}/integrations`"> invite THX Bot </b-link>
+            <b-link :to="`/pool/${pool._id}/integrations/discord`"> invite THX Bot </b-link>
             to your server.
         </b-alert>
         <template v-else>
-            <b-form-group label="Server">
+            <BaseFormGroup
+                required
+                label="Server"
+                :description="!guilds.length ? 'Make sure THX Bot is connected and has sufficient permissions.' : ''"
+                tooltip="Select the server the campaign participant is required to join for this quest."
+            >
                 <b-form-select v-model="guild">
                     <b-form-select-option :key="key" v-for="(g, key) of guilds" :value="guild">
                         {{ g.name }}
                     </b-form-select-option>
                 </b-form-select>
-            </b-form-group>
-            <b-form-group
+            </BaseFormGroup>
+            <BaseFormGroup
+                required
                 label="Channels"
                 description="Use cmd+click or ctrl+click to select more than one channel to track."
+                tooltip="Select the channels where we should track messages for your campaign participants."
             >
                 <b-form-select @change="onChangeChannels" :value="channels" :options="channelOptions" multiple />
-            </b-form-group>
-            <b-form-group label="Daily Limit" description="Maximum amount of eligible messages per day.">
+            </BaseFormGroup>
+            <BaseFormGroup
+                required
+                label="Daily Limit"
+                tooltip="Maximum amount of eligible messages per day. Will only allow points to be claimed up to a max. amount of messages."
+            >
                 <b-form-input @change="onChangeLimit" :value="limit" />
-            </b-form-group>
-            <b-form-group label="Restart" description="Amount of days before the quest restarts.">
+            </BaseFormGroup>
+            <BaseFormGroup
+                required
+                label="Restart"
+                tooltip="Amount of days before the quest restarts. Campaign participants will loose the points they did not claim so far."
+            >
                 <b-form-input @change="onChangeDays" :value="days" />
-            </b-form-group>
+            </BaseFormGroup>
         </template>
     </div>
 </template>
@@ -35,7 +50,6 @@ import { IPools, TGuildState } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { DISCORD_BOT_INVITE_URL } from '@thxnetwork/dashboard/config/constants';
-import { TDiscordGuild } from '@thxnetwork/common/lib/types';
 
 @Component({
     computed: mapGetters({

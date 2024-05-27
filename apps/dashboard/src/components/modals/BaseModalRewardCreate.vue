@@ -4,13 +4,23 @@
             <form v-on:submit.prevent="onSubmit" id="formRewardCreate">
                 <b-row>
                     <b-col md="6">
-                        <b-form-group label="Title">
+                        <BaseFormGroup
+                            required
+                            label="Title"
+                            tooltip="A short and engaging title for this reward. Shown in the reward shop of your campaign."
+                        >
                             <b-form-input v-model="title" />
-                        </b-form-group>
-                        <b-form-group label="Description">
+                        </BaseFormGroup>
+                        <BaseFormGroup
+                            label="Description"
+                            tooltip="Little bit of information about the reward shown in the reward shop of your campaign."
+                        >
                             <b-textarea v-model="description" />
-                        </b-form-group>
-                        <b-form-group label="Image">
+                        </BaseFormGroup>
+                        <BaseFormGroup
+                            label="Image"
+                            tooltip="Images make your reward more attractive and increase their value. Shown in the reward shop of the campaign."
+                        >
                             <b-input-group>
                                 <template #prepend v-if="image">
                                     <div class="mr-2 bg-light p-2 border-radius-1">
@@ -19,10 +29,13 @@
                                 </template>
                                 <b-form-file v-model="imageFile" accept="image/*" @change="image = '$event'" />
                             </b-input-group>
-                        </b-form-group>
-                        <b-form-group label="Point Price">
+                        </BaseFormGroup>
+                        <BaseFormGroup
+                            label="Point Price"
+                            tooltip="The amount of points a campaign participant needs in order to purchase this reward. Reward can have a point price of 0. They will be marked as free to purchase."
+                        >
                             <b-form-input type="number" :value="pointPrice" @input="pointPrice = $event" />
-                        </b-form-group>
+                        </BaseFormGroup>
                         <hr />
                         <slot />
                     </b-col>

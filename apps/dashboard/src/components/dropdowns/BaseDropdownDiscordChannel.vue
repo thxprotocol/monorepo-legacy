@@ -23,7 +23,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TDiscordGuild } from '@thxnetwork/types/interfaces';
 
 @Component({})
 export default class ModalRewardCustomCreate extends Vue {

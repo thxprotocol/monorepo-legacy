@@ -4,6 +4,7 @@ import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { track } from '@thxnetwork/common/mixpanel';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { AccountPlanType } from '@thxnetwork/common/enums';
+import * as html from 'html-entities';
 
 export interface IPoolAnalytic {
     _id: string;
@@ -616,7 +617,13 @@ class PoolModule extends VuexModule {
             params: { page, limit, isPublished },
         });
 
-        data.results = data.results.map((q) => {
+        data.results = data.results.map((q: TBaseQuest) => {
+            q.title = html.decode(q.title);
+            q.description = html.decode(q.description);
+            q.infoLinks = q.infoLinks.map(({ url, label }) => ({
+                label: html.decode(label),
+                url,
+            }));
             q.delete = (quest) => this.context.dispatch('removeQuest', quest);
             q.update = (quest) => this.context.dispatch('updateQuest', quest);
             return q;

@@ -20,7 +20,11 @@
         :pool="pool"
     >
         <template #col-left>
-            <b-form-group label="Amounts">
+            <BaseFormGroup
+                required
+                label="Amounts"
+                tooltip="Configure a list of amounts that campaign participants can earn when completing the quest for consecutive days."
+            >
                 <b-form-group :key="key" v-for="(amount, key) of amounts">
                     <b-input-group :prepend="`Day ${key + 1}`">
                         <b-form-input v-model="amounts[key]" type="number" />
@@ -32,7 +36,7 @@
                     </b-input-group>
                 </b-form-group>
                 <b-link @click="$set(amounts, amounts.length, 0)">Add amount</b-link>
-            </b-form-group>
+            </BaseFormGroup>
         </template>
         <template #col-right>
             <b-card class="mb-3" body-class="bg-light p-0">
@@ -47,16 +51,22 @@
                 <b-collapse id="collapse-card-events" v-model="isVisible">
                     <hr class="mt-0" />
                     <div class="px-3">
-                        <b-form-group
+                        <BaseFormGroup
                             label="Event Type"
-                            description="Requires this event for a participant to complete the quest."
+                            tooltip="Requires this event for a participant to complete the quest."
                         >
                             <BaseDropdownEventType
                                 @click="eventName = $event"
                                 :events="pool.events"
                                 :event-name="eventName"
                             />
-                        </b-form-group>
+                            <template #description>
+                                Use our
+                                <b-link href="https://docs.thx.network/developers/js-sdk">JavaScript SDK</b-link> or
+                                <b-link href="https://docs.thx.network/developers/api">REST API</b-link> to register
+                                your events for user identities.
+                            </template>
+                        </BaseFormGroup>
                     </div>
                 </b-collapse>
             </b-card>

@@ -20,15 +20,29 @@
         :pool="pool"
     >
         <template #col-left>
-            <b-form-group label="Points">
+            <BaseFormGroup
+                required
+                label="Amount"
+                tooltip="The amount of points a participant earns when completing this quest"
+            >
                 <b-form-input min="0" type="number" v-model="amount" />
-            </b-form-group>
-            <b-form-group label="Scorer" description="Choose a Gitcoin Scorer.">
+            </BaseFormGroup>
+            <BaseFormGroup
+                required
+                label="Scorer"
+                description="Choose a Gitcoin Scorer."
+                tooltip="The GitCoin strategy used to determine the humanity score of a campaign participant."
+            >
                 <b-form-select v-model="scorerId" :options="scorerOptions" />
-            </b-form-group>
-            <b-form-group label="Score" description="Determine a scoring threshold between 0 and 100.">
+            </BaseFormGroup>
+            <BaseFormGroup
+                required
+                label="Score"
+                description="Determine a scoring threshold between 0 and 100."
+                tooltip="The minimum GitCoin score required for the verified wallet of a campaign participant in order to complete the quest."
+            >
                 <b-form-input min="0" max="100" type="number" v-model="score" />
-            </b-form-group>
+            </BaseFormGroup>
         </template>
     </BaseModalQuestCreate>
 </template>
