@@ -1,8 +1,11 @@
 <template>
     <div>
-        <b-form-group label="Query">
+        <BaseFormGroup
+            label="Query"
+            tooltip="We use this API query to search for content matches. If a from operator is provided we will validate if the campaign participant is in this list. Without a from operator everybody is allowed to complete this quest."
+        >
             <code>{{ query }}</code>
-        </b-form-group>
+        </BaseFormGroup>
         <BaseCardTwitterQueryOperators
             class="mb-3"
             :from="from"

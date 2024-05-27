@@ -8,13 +8,13 @@
             to your server.
         </b-alert>
         <template v-else>
-            <b-form-group label="Server">
+            <BaseFormGroup label="Server">
                 <b-form-select v-model="guild">
                     <b-form-select-option :key="key" v-for="(g, key) of guilds" :value="guild">
                         {{ g.name }}
                     </b-form-select-option>
                 </b-form-select>
-            </b-form-group>
+            </BaseFormGroup>
             <b-form-group v-if="guild" label="Role" description="">
                 <BaseDropdownDiscordRole :role-id="roleId" :guild="guild" @click="onClickRole" />
             </b-form-group>

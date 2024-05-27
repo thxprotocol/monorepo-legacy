@@ -1,17 +1,21 @@
 <template>
-    <b-form-group
+    <BaseFormGroup
         label="Required Quest Entries"
-        description="Participants will only be able to complete this quest after completing the selected quests."
+        tooltip="Participants will only be able to complete this quest after completing the selected quests."
     >
         <b-form-select @input="onInput" v-model="selectedLocks" :options="options" multiple />
-    </b-form-group>
+    </BaseFormGroup>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
+import BaseFormGroup from './BaseFormGroup.vue';
 
 @Component({
+    components: {
+        BaseFormGroup,
+    },
     computed: mapGetters({
         questList: 'pools/quests',
     }),

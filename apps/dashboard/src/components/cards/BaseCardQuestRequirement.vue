@@ -12,9 +12,13 @@
             <hr class="mt-0" />
             <div class="px-3">
                 <p class="text-gray">Choose what social behavior is required for this quest.</p>
-                <b-form-group label="Provider">
+                <BaseFormGroup
+                    required
+                    label="Platform"
+                    tooltip="The platform when you want to validate specific behavior of your campaign participant."
+                >
                     <BaseDropdownQuestProvider @selected="onSelectProvider" :provider="provider" />
-                </b-form-group>
+                </BaseFormGroup>
                 <b-alert
                     show
                     variant="warning"
@@ -29,13 +33,17 @@
                         Connect
                     </b-button>
                 </b-alert>
-                <b-form-group label="Requirement">
+                <BaseFormGroup
+                    required
+                    label="Requirement"
+                    tooltip="The required behavior of your campaign participant for completing this quest."
+                >
                     <BaseDropdownQuestProviderInteractions
                         @change="onSelectProviderInteraction"
                         :interactions="interactions"
                         :interaction="providerInteraction"
                     />
-                </b-form-group>
+                </BaseFormGroup>
                 <component
                     v-if="providerInteraction"
                     :is="interactionComponentMap[providerInteraction.type]"

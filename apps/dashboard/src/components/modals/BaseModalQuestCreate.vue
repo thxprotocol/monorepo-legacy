@@ -10,16 +10,26 @@
             <form v-on:submit.prevent="$emit('submit')" id="formQuestCreate">
                 <b-row>
                     <b-col md="6">
-                        <b-form-group label="Title">
+                        <BaseFormGroup
+                            required
+                            label="Title"
+                            tooltip="A short and engaging title for your quest. Used when notifying subscribers and shown in the quest overview of your campaign."
+                        >
                             <b-form-input :value="quest ? quest.title : ''" @change="$emit('change-title', $event)" />
-                        </b-form-group>
-                        <b-form-group label="Description">
+                        </BaseFormGroup>
+                        <BaseFormGroup
+                            label="Description"
+                            tooltip="Little bit of information about the quest shown in the quest overview of your campaign."
+                        >
                             <b-textarea
                                 :value="quest ? quest.description : ''"
                                 @change="$emit('change-description', $event)"
                             />
-                        </b-form-group>
-                        <b-form-group label="Image">
+                        </BaseFormGroup>
+                        <BaseFormGroup
+                            label="Image"
+                            tooltip="Images make your quest more attractive and increase their click rate. Shown in the quest overview of the campaign."
+                        >
                             <b-input-group>
                                 <template #prepend v-if="quest ? quest.image : false">
                                     <div class="mr-2 bg-light p-2 border-radius-1">
@@ -28,8 +38,11 @@
                                 </template>
                                 <b-form-file v-model="imageFile" accept="image/*" @input="onInputFile" />
                             </b-input-group>
-                        </b-form-group>
-                        <b-form-group label="End Date">
+                        </BaseFormGroup>
+                        <BaseFormGroup
+                            label="Expiry"
+                            tooltip="This expiry date will be used to hide your quest automatically when the time comes. Easy way to keep your quest overview nice and clean."
+                        >
                             <b-row>
                                 <b-col md="6">
                                     <b-datepicker
@@ -53,7 +66,7 @@
                                     />
                                 </b-col>
                             </b-row>
-                        </b-form-group>
+                        </BaseFormGroup>
                         <slot name="col-left" />
                     </b-col>
                     <b-col md="6">
@@ -107,7 +120,6 @@ import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseCardRewardExpiry from '@thxnetwork/dashboard/components/cards/BaseCardRewardExpiry.vue';
 import BaseCardInfoLinks from '@thxnetwork/dashboard/components/cards/BaseCardInfoLinks.vue';
 import BaseCardQuestLocks from '@thxnetwork/dashboard/components/cards/BaseCardQuestLocks.vue';
-import BaseFormGroup from '@thxnetwork/dashboard/components/form-group/BaseFormGroup.vue';
 
 @Component({
     components: {
@@ -115,7 +127,6 @@ import BaseFormGroup from '@thxnetwork/dashboard/components/form-group/BaseFormG
         BaseCardRewardExpiry,
         BaseCardInfoLinks,
         BaseCardQuestLocks,
-        BaseFormGroup,
     },
 })
 export default class ModalQuestCreate extends Vue {

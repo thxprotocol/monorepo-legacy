@@ -1,5 +1,9 @@
 <template>
-    <b-form-group label="Channel ID" description="">
+    <BaseFormGroup
+        label="Channel ID"
+        required
+        tooltip="We validate if this channel ID is part of the campaign participants youtube subscriptions."
+    >
         <b-input-group prepend="#">
             <b-form-input @change="onChangeInput" :value="content" />
         </b-input-group>
@@ -11,7 +15,7 @@
                 Learn how to find your YouTube Channel ID.
             </b-link>
         </template>
-    </b-form-group>
+    </BaseFormGroup>
 </template>
 
 <script lang="ts">

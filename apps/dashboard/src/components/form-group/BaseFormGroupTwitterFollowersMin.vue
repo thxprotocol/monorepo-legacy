@@ -1,10 +1,10 @@
 <template>
-    <b-form-group
+    <BaseFormGroup
         label="Followers Count"
-        description="To prevent quest abuse we can check for a minimum follower count."
+        tooltip="We can check for a minimum follower count in order to mitigate against automated behavior. Note that how higher the follower base, the more reach your content gets."
     >
         <b-form-input type="number" :value="amount" @input="$emit('input', $event)" min="0" />
-    </b-form-group>
+    </BaseFormGroup>
 </template>
 
 <script lang="ts">

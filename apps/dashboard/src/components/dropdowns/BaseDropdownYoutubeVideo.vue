@@ -1,13 +1,18 @@
 <template>
     <div>
-        <b-form-group label="Video URL" description="URL's for YouTube shorts are now allowed.">
+        <BaseFormGroup
+            required
+            label="Video URL"
+            description="URL's for YouTube shorts are now allowed."
+            tooltip="We validate if this video is part of the campaign participants latest 50 liked YouTube video's."
+        >
             <b-form-input
                 v-model="url"
                 :class="{ 'is-valid': videoId }"
                 :placeholder="baseUrl + 'ckoegYJ1FR4'"
                 @input="onInput"
             />
-        </b-form-group>
+        </BaseFormGroup>
         <b-alert show class="mt-2" variant="info" v-if="url && !videoId">
             <strong>Could not process your URL.</strong> Please use this format:
             <em>https://www.youtube.com/watch?v=ckoegYJ1</em>

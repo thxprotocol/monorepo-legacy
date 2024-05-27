@@ -20,9 +20,13 @@
         :pool="pool"
     >
         <template #col-left>
-            <b-form-group label="Amount">
+            <BaseFormGroup
+                required
+                label="Amount"
+                tooltip="The amount of points the campaign participant will earn for completing this quest."
+            >
                 <b-form-input type="number" v-model="amount" />
-            </b-form-group>
+            </BaseFormGroup>
         </template>
         <template #col-right>
             <BaseCardQuestRequirement
@@ -41,11 +45,12 @@ import { AccessTokenKind, QuestVariant, QuestSocialRequirement } from '@thxnetwo
 import { providerInteractionList, providerList } from '@thxnetwork/dashboard/types/rewards';
 import { mapGetters } from 'vuex';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
+import { questInteractionVariantMap } from '@thxnetwork/common/maps';
 import BaseModal from './BaseModal.vue';
 import BaseModalQuestCreate from './BaseModalQuestCreate.vue';
 import BaseCardQuestRequirement from '../cards/BaseCardQuestRequirement.vue';
 import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
-import { questInteractionVariantMap } from '@thxnetwork/common/maps';
+import BaseFormGroup from '../form-group/BaseFormGroup.vue';
 
 const requirementDefaultsMap = {
     [QuestVariant.Twitter]: {
@@ -68,6 +73,7 @@ const requirementDefaultsMap = {
         BaseModalQuestCreate,
         BaseCardQuestRequirement,
         BaseCardInfoLinks,
+        BaseFormGroup,
     },
     computed: mapGetters({
         totals: 'pointRewards/totals',

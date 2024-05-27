@@ -11,8 +11,7 @@
                 v-if="pool.brand && pool.brand.logoImgUrl"
                 class="card-img-logo"
                 :src="pool.brand.logoImgUrl"
-                widht="auto"
-                height="100"
+                style="max-height: 170px; max-width: 100px; width: auto; height: auto"
             />
             <div v-else>
                 <i class="fas fa-image" />

@@ -1,7 +1,11 @@
 <template>
     <div>
         <BaseFormGroupTwitterFollowersMin :amount="minFollowersCount" @input="onInputFollowersMin" />
-        <b-form-group label="Username">
+        <BaseFormGroup
+            required
+            label="Username"
+            tooltip="We will validate if this username is among the campaign participants list of followed accounts."
+        >
             <b-input-group prepend="@">
                 <b-form-input :debounce="1000" @change="onInput" :state="state" v-model="username" />
             </b-input-group>
@@ -15,7 +19,7 @@
                     <b-link target="_blank">@{{ preview.username }}</b-link>
                 </div>
             </b-card>
-        </b-form-group>
+        </BaseFormGroup>
     </div>
 </template>
 

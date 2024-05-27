@@ -8,9 +8,11 @@
             </b-link>
         </template>
         <slot />
-        <slot name="description">
-            {{ description }}
-        </slot>
+        <div class="small text-muted">
+            <slot name="description">
+                {{ description }}
+            </slot>
+        </div>
     </b-form-group>
 </template>
 

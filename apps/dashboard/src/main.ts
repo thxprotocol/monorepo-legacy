@@ -8,11 +8,12 @@ import './main.scss';
 import VueClipboard from 'vue-clipboard2';
 import * as rules from 'vee-validate/dist/rules';
 import * as en from 'vee-validate/dist/locale/en.json';
+import BaseFormGroup from '@thxnetwork/dashboard/components/form-group/BaseFormGroup.vue';
 import { ValidationObserver, ValidationProvider, extend, localize } from 'vee-validate';
 import { NODE_ENV, API_URL, AUTH_URL, BASE_URL, MIXPANEL_TOKEN } from '@thxnetwork/dashboard/config/secrets';
+import { Sentry } from '@thxnetwork/common/sentry';
 import VueMeta from 'vue-meta';
 import Mixpanel from '@thxnetwork/common/mixpanel';
-import { Sentry } from '@thxnetwork/common/sentry';
 
 if (NODE_ENV === 'production') {
     Sentry.init(Vue, router, [BASE_URL, API_URL, AUTH_URL]);
@@ -30,6 +31,9 @@ localize('en', en);
 // Install VeeValidate components globally
 Vue.component('ValidationObserver', ValidationObserver);
 Vue.component('ValidationProvider', ValidationProvider);
+
+// Register custom components globally
+Vue.component('BaseFormGroup', BaseFormGroup);
 
 // Set Axios default config
 axios.defaults.withCredentials = true;
