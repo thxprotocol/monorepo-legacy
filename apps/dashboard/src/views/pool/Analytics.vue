@@ -185,44 +185,7 @@
                 <b-row>
                     <b-col>
                         <p><strong class="text-muted">Leaderboard</strong></p>
-                        <b-list-group class="mb-3">
-                            <b-list-group-item
-                                v-for="(result, key) of leaderboard"
-                                :key="key"
-                                class="d-flex justify-content-between align-items-center pl-3"
-                            >
-                                <div class="d-flex center-center">
-                                    <div class="mr-3 text-gray">{{ result.rank }}</div>
-                                    <b-avatar
-                                        v-if="result.account"
-                                        size="25"
-                                        variant="light"
-                                        :src="result.account.profileImg"
-                                        class="mr-3"
-                                    />
-                                    <div>
-                                        {{
-                                            result.account && result.account.username
-                                                ? result.account.username
-                                                : 'Unkown'
-                                        }}
-                                    </div>
-                                </div>
-                                <div class="ml-auto text-right">
-                                    <strong class="text-primary"> {{ result.questEntryCount }} </strong>
-                                    <i class="fa fa-tasks text-primary" style="font-size: 0.8rem" />
-                                </div>
-                                <div style="min-width: 75px" class="text-right">
-                                    <strong class="text-primary"> {{ result.score }} </strong>
-                                </div>
-                            </b-list-group-item>
-                            <b-list-group-item v-if="!leaderboard.length">
-                                <p class="mb-0 text-gray">Could not find any campaign participants yet!</p>
-                            </b-list-group-item>
-                            <b-list-group-item>
-                                <b-link :to="`/pool/${pool._id}/participants`">All Participants</b-link>
-                            </b-list-group-item>
-                        </b-list-group>
+                        <BaseCardLeaderboard :pool="pool" :start-date="startDate" :end-date="endDate" />
                     </b-col>
                 </b-row>
             </b-col>
@@ -240,6 +203,7 @@ import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
 import BaseChartQuests from '@thxnetwork/dashboard/components/charts/BaseChartQuests.vue';
 import BaseChartRewards from '@thxnetwork/dashboard/components/charts/BaseChartRewards.vue';
 import BaseDateDuration from '@thxnetwork/dashboard/components/form-group/BaseDateDuration.vue';
+import BaseCardLeaderboard from '@thxnetwork/dashboard/components/cards/BaseCardLeaderboard.vue';
 
 const ONE_DAY = 86400000; // one day in ms
 const startDate = new Date(Date.now() - ONE_DAY * 7);
@@ -252,6 +216,7 @@ endDate.setHours(23, 59, 59, 999);
         BaseChartQuests,
         BaseChartRewards,
         BaseDateDuration,
+        BaseCardLeaderboard,
     },
     computed: mapGetters({
         pools: 'pools/all',
@@ -272,10 +237,8 @@ export default class ViewAnalyticsMetrics extends Vue {
     ];
     metricRewardLabelMap = ['Coin', 'NFT', 'Custom', 'Coupon', 'Discord Role'];
     pools!: IPools;
-    isLoadingLeaderboard = false;
     isLoadingCharts = false;
     isLoadingMetrics = false;
-    leaderboard: { score: number; questEntryCount: number; rank: number; account: TAccount }[] = [];
     analyticsMetrics!: IPoolAnalyticsMetrics;
     defaultDates = {
         startDate,
@@ -283,7 +246,6 @@ export default class ViewAnalyticsMetrics extends Vue {
     };
     startDate = startDate;
     endDate = endDate;
-    limit = 10;
 
     get metrics() {
         if (!this.analyticsMetrics[this.$route.params.id]) return null;
@@ -314,24 +276,12 @@ export default class ViewAnalyticsMetrics extends Vue {
         await this.$store.dispatch('pools/read', this.$route.params.id);
         this.getCharts();
         this.getMetrics();
-        this.getLeaderboard();
     }
 
     formatDateLabel(date: Date): string {
         const month = date.getUTCMonth() + 1;
         const day = date.getDate();
         return `${month}/${day}`;
-    }
-
-    async getLeaderboard() {
-        this.isLoadingLeaderboard = true;
-        this.leaderboard = await this.$store.dispatch('pools/getLeaderboard', {
-            pool: this.pool,
-            startDate: this.startDate,
-            endDate: this.endDate,
-            limit: this.limit,
-        });
-        this.isLoadingLeaderboard = false;
     }
 
     async getMetrics() {
@@ -368,7 +318,6 @@ export default class ViewAnalyticsMetrics extends Vue {
     update() {
         this.getCharts();
         this.getMetrics();
-        this.getLeaderboard();
     }
 }
 </script>

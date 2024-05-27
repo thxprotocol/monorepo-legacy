@@ -4,7 +4,7 @@
             <template #aside>
                 <b-avatar
                     v-b-tooltip
-                    :title="`${account.id} (${account.variant})`"
+                    :title="account.id ? `${account.id} (${account.variant})` : ''"
                     :src="account.profileImg"
                     size="sm"
                     variant="light"
