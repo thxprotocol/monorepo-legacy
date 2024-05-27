@@ -23,7 +23,7 @@
         </b-card-body>
         <div class="d-flex align-items-center justify-content-between px-3 pb-1" style="opacity: 0.5">
             <div class="d-flex align-items-center text-opaque small">
-                <span v-if="pool.author" class="text-white mr-1"> {{ pool.author.username }} &CenterDot; </span>
+                <span v-if="pool.author" class="mr-1"> {{ pool.author.username }} &CenterDot; </span>
                 <span>{{ format(new Date(pool.createdAt), 'MMMM do') }} </span>
             </div>
             <div class="d-flex align-items-center text-opaque small">

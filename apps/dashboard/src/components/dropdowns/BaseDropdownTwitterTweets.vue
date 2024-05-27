@@ -93,7 +93,8 @@ export default class BaseDropdownTwitterTweets extends Vue {
         if (!this.isValidTweetUrl) return '';
 
         const url = new URL(this.url);
-        const urlParts = url.pathname.split('/');
+        const pathname = url.pathname.replace(/\/+$/, ''); // Remove trailing slash if there is one
+        const urlParts = pathname.split('/');
         const tweetId = urlParts[urlParts.length - 1];
         if (!tweetId) return '';
 
