@@ -910,6 +910,8 @@ class PoolModule extends VuexModule {
         track('UserCreates', [profile.sub, 'pool']);
 
         this.context.commit('set', r.data);
+
+        return r.data;
     }
 
     @Action({ rawError: true })

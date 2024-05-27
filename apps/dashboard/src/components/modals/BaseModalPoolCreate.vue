@@ -1,12 +1,16 @@
 <template>
     <base-modal :error="error" title="Create Campaign" :id="id">
         <template #modal-body>
-            <b-form-group label="Title">
+            <BaseFormGroup
+                required
+                label="Campaign Title"
+                tooltip="The name of your campaign used to identity your campaign amongst others."
+            >
                 <b-form-input v-model="title" placeholder="My Quest Campaign" class="mr-3" />
-            </b-form-group>
+            </BaseFormGroup>
         </template>
         <template #btn-primary>
-            <b-button :disabled="isLoading" class="rounded-pill" @click="submit()" variant="primary" block>
+            <b-button :disabled="isDisabled" class="rounded-pill" @click="submit()" variant="primary" block>
                 <b-spinner v-if="isLoading" small />
                 <span v-else> Create Campaign </span>
             </b-button>
@@ -21,6 +25,7 @@ import BaseFormSelectNetwork from '@thxnetwork/dashboard/components/form-select/
 import BaseModal from './BaseModal.vue';
 import BaseIdenticon from '../BaseIdenticon.vue';
 import BaseCampaignDuration from '@thxnetwork/dashboard/components/form-group/BaseDateDuration.vue';
+import BaseFormGroup from '@thxnetwork/dashboard/components/form-group/BaseFormGroup.vue';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 
 @Component({
@@ -30,6 +35,7 @@ import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
         BaseFormSelectNetwork,
         BaseIdenticon,
         BaseCampaignDuration,
+        BaseFormGroup,
     },
     computed: mapGetters({
         profile: 'account/profile',
@@ -47,14 +53,19 @@ export default class ModalAssetPoolCreate extends Vue {
 
     @Prop() id!: string;
 
+    get isDisabled() {
+        return this.isLoading || !this.title;
+    }
+
     async submit() {
         this.isLoading = true;
 
-        await this.$store.dispatch('pools/create', {
+        const data = await this.$store.dispatch('pools/create', {
             title: this.title,
         });
 
         this.$bvModal.hide(this.id);
+        this.$router.push({ name: 'pool', params: { id: data._id } });
         this.isLoading = false;
     }
 }
