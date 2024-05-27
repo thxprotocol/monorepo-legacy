@@ -312,8 +312,8 @@ export default class ViewAnalyticsMetrics extends Vue {
 
     async mounted() {
         await this.$store.dispatch('pools/read', this.$route.params.id);
-        await this.getCharts();
-        await this.getMetrics();
+        this.getCharts();
+        this.getMetrics();
         this.getLeaderboard();
     }
 

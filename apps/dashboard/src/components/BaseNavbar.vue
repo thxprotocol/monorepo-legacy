@@ -5,6 +5,7 @@
         id="sidebar-left"
         no-header
         no-header-close
+        no-close-on-esc
         no-close-on-route-change
         no-slide
         :visible="true"
@@ -14,10 +15,10 @@
                 <b-form-group class="my-3 mx-2">
                     <b-button-group class="w-100">
                         <b-button
+                            v-if="selectedPool"
                             class="d-flex p-2 text-muted"
                             variant="light"
-                            v-if="selectedPool"
-                            @click="onClickPreview"
+                            @click="onClickCampaignURL"
                         >
                             <b-img-lazy style="max-height: 20px; max-width: 20px" :src="selectedPoolLogoImg" />
                             <div class="truncate-pool-title flex-grow-1 pl-2">
@@ -65,14 +66,13 @@
                             </div>
                         </b-dropdown>
                     </b-button-group>
-                    <template #description>
-                        <b-link @click="onClickPreview" class="w-100 text-right d-block">
-                            Open Preview
-                            <i class="fas fa-external-link-alt" />
-                        </b-link>
-                    </template>
                 </b-form-group>
-
+                <b-form-group class="mb-3 mx-2">
+                    <b-button variant="primary" @click="onClickCampaignURL" class="p-2 w-100">
+                        Campaign URL
+                        <i class="fas fa-external-link-alt" />
+                    </b-button>
+                </b-form-group>
                 <template v-if="selectedPool">
                     <b-navbar-nav class="py-0">
                         <b-nav-item
@@ -181,6 +181,7 @@
                             </div>
                         </b-nav-item>
                     </b-navbar-nav>
+
                     <hr />
                 </template>
                 <hr class="m-0 mt-auto" />
@@ -212,7 +213,7 @@ import { mapGetters } from 'vuex';
 import BaseNavbarNav from './BaseNavbarNav.vue';
 import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 import { AccountPlanType } from '@thxnetwork/common/enums';
-import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
+import { BASE_URL, WIDGET_URL } from '@thxnetwork/dashboard/config/secrets';
 
 @Component({
     components: {
@@ -286,9 +287,9 @@ export default class BaseNavbar extends Vue {
         });
     }
 
-    onClickPreview() {
+    onClickCampaignURL() {
         if (!this.selectedPool) return;
-        window.open(BASE_URL + '/preview/' + this.selectedPool._id, '_blank');
+        window.open(WIDGET_URL + '/c/' + this.selectedPool.settings.slug, '_blank');
     }
 
     async onPoolSelect(pool: TPool) {

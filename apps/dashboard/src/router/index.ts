@@ -159,6 +159,12 @@ const routes: Array<RouteConfig> = [
         component: () => import('../views/Preview.vue'),
     },
     {
+        name: 'campaigns',
+        path: '/campaigns',
+        component: () => import('../views/Campaigns.vue'),
+        beforeEnter: assertAuthorization,
+    },
+    {
         name: 'coins',
         path: '/coins',
         component: () => import('../views/Coins.vue'),
@@ -168,12 +174,6 @@ const routes: Array<RouteConfig> = [
         name: 'nft',
         path: '/nft',
         component: () => import('../views/NFT.vue'),
-        beforeEnter: assertAuthorization,
-    },
-    {
-        name: 'qrcodes',
-        path: '/qrcodes',
-        component: () => import('../views/QRCodes.vue'),
         beforeEnter: assertAuthorization,
     },
     {

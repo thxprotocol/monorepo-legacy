@@ -12,6 +12,10 @@
                 <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
                 <b-collapse id="nav-collapse" is-nav>
                     <b-navbar-nav>
+                        <b-nav-item class="mx-3" to="/campaigns">
+                            <i class="fas fa-megaphone mr-2"></i>
+                            Campaigns
+                        </b-nav-item>
                         <b-nav-item class="mx-3" to="/coins">
                             <i class="fas fa-coins mr-2" />
                             Coins
@@ -19,10 +23,6 @@
                         <b-nav-item class="mx-3" to="/nft">
                             <i class="fas fa-palette mr-2" />
                             NFT
-                        </b-nav-item>
-                        <b-nav-item class="mx-3" to="/qrcodes">
-                            <i class="fas fa-qrcode mr-2" />
-                            QR Codes
                         </b-nav-item>
                     </b-navbar-nav>
                     <b-navbar-nav class="ml-auto">
@@ -60,7 +60,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { initGTM } from '@thxnetwork/dashboard/utils/ga';
 import { GTM, DOCS_URL } from '@thxnetwork/dashboard/config/secrets';
-import type { TAccount } from '@thxnetwork/types/interfaces';
 import BaseDropdownAccount from './components/dropdowns/BaseDropdownAccount.vue';
 import BaseNavbar from './components/BaseNavbar.vue';
 import BaseDropdownMenu from './components/dropdowns/BaseDropdownMenu.vue';
