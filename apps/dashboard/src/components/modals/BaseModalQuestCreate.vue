@@ -103,11 +103,11 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TInfoLink, TPool, TQuest, TQuestLock } from '@thxnetwork/types/interfaces';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseCardRewardExpiry from '@thxnetwork/dashboard/components/cards/BaseCardRewardExpiry.vue';
 import BaseCardInfoLinks from '@thxnetwork/dashboard/components/cards/BaseCardInfoLinks.vue';
 import BaseCardQuestLocks from '@thxnetwork/dashboard/components/cards/BaseCardQuestLocks.vue';
+import BaseFormGroup from '@thxnetwork/dashboard/components/form-group/BaseFormGroup.vue';
 
 @Component({
     components: {
@@ -115,6 +115,7 @@ import BaseCardQuestLocks from '@thxnetwork/dashboard/components/cards/BaseCardQ
         BaseCardRewardExpiry,
         BaseCardInfoLinks,
         BaseCardQuestLocks,
+        BaseFormGroup,
     },
 })
 export default class ModalQuestCreate extends Vue {

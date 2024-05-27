@@ -41,6 +41,10 @@ type TPool = {
     createdAt: Date;
     trialEndsAt: Date;
     balance: string;
+    author: {
+        username: string;
+    };
+    participantCount: number;
 };
 
 type TPoolSettings = {

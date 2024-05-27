@@ -20,75 +20,17 @@
                 </b-container>
             </b-jumbotron>
         </div>
-        <b-container class="container-md">
+        <b-container>
             <b-row>
-                <b-col md="8">
-                    <div class="text-muted mb-3">
-                        Quests
-                        <i
-                            class="fas fa-info-circle text-gray ml-1"
-                            v-b-tooltip
-                            title="Your users earn points with quests."
-                        />
-                    </div>
-                    <b-row>
-                        <b-col md="6" :key="key" v-for="(q, key) of contentQuests">
-                            <BaseCardHome
-                                :loading="!firstPool"
-                                :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/quests`"
-                                v-b-tooltip
-                                :title="q.description"
-                            >
-                                <b-media>
-                                    <template #aside>
-                                        <div
-                                            class="p-3 rounded d-flex align-items-center justify-content-center"
-                                            style="width: 50px"
-                                            :style="{ 'background-color': q.color }"
-                                        >
-                                            <i :class="q.icon" class="text-white" />
-                                        </div>
-                                    </template>
-                                    {{ q.tag }}
-                                    <p class="text-muted small mb-0">{{ q.title }}</p>
-                                </b-media>
-                            </BaseCardHome>
-                        </b-col>
-                    </b-row>
+                <b-col md="3" :key="key" v-for="(pool, key) of pools">
+                    <BaseCardPool :pool="pool" class="mb-3" />
                 </b-col>
-                <b-col md="4">
-                    <div class="text-muted mb-3">
-                        Rewards
-                        <i
-                            class="fas fa-info-circle text-gray ml-1"
-                            v-b-tooltip
-                            title="Your users can redeem points for rewards."
-                        />
-                    </div>
-                    <BaseCardHome
-                        :key="key"
-                        v-for="(q, key) of contentRewards"
-                        :loading="!firstPool"
-                        :url="`/pool/${firstPool ? firstPool._id : 'unknown'}/rewards`"
-                        v-b-tooltip
-                        :title="q.description"
-                    >
-                        <b-media>
-                            <template #aside>
-                                <div
-                                    class="p-3 rounded d-flex align-items-center justify-content-center"
-                                    style="width: 50px"
-                                    :style="{ 'background-color': q.color }"
-                                    v-b-tooltip.hover.bottom
-                                    :title="q.description"
-                                >
-                                    <i :class="q.icon" class="text-white" />
-                                </div>
-                            </template>
-                            {{ q.tag }}
-                            <p class="text-muted small mb-0">{{ q.title }}</p>
-                        </b-media>
-                    </BaseCardHome>
+                <b-col md="3" v-if="Object.values(pools).length < 4">
+                    <b-card class="h-100" body-class="justify-content-center align-items-center d-flex">
+                        <b-button v-b-modal="'modalCreateCampaign'" variant="primary">
+                            <i class="fas fa-plus ml-0" />
+                        </b-button>
+                    </b-card>
                 </b-col>
             </b-row>
             <b-row>
@@ -140,6 +82,7 @@ import { mapGetters } from 'vuex';
 import BaseModalRequestAccountEmailUpdate from '@thxnetwork/dashboard/components/modals/BaseModalRequestAccountEmailUpdate.vue';
 import BaseCardHome from '@thxnetwork/dashboard/components/cards/BaseCardHome.vue';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
+import BaseCardPool from '@thxnetwork/dashboard/components/cards/BaseCardPool.vue';
 import { IPools } from '../store/modules/pools';
 import { NODE_ENV } from '@thxnetwork/dashboard/config/secrets';
 import { ChainId, QuestVariant } from '@thxnetwork/common/enums';
@@ -150,6 +93,7 @@ import { contentQuests, contentRewards } from '@thxnetwork/common/constants';
         BaseModalRequestAccountEmailUpdate,
         BaseCardHome,
         BaseCodeExample,
+        BaseCardPool,
     },
     computed: mapGetters({
         account: 'account/profile',

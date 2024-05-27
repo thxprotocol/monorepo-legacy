@@ -10,12 +10,6 @@
         :visible="true"
     >
         <b-navbar toggleable="lg" class="sidebar">
-            <!-- <div class="d-flex align-items-center justify-content-between w-100 pt-3 px-3">
-                <b-link v-if="selectedPool" :to="`/pool/${selectedPool._id}/settings`">
-                    <b-img-lazy style="max-height: 40px; max-width: 120px" :src="selectedPoolLogoImg" />
-                </b-link>
-                
-            </div> -->
             <div class="flex-grow-1 w-100 h-25 overflow-auto d-flex justify-content-end flex-column">
                 <b-form-group class="my-3 mx-2">
                     <b-button-group class="w-100">
@@ -46,8 +40,8 @@
                                     v-for="(p, key) of pools"
                                     @click="onPoolSelect(p)"
                                 >
-                                    <div class="text-left d-flex align-items-center justify-content-between">
-                                        <div class="align-items-center d-flex">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
                                             <span class="truncate-pool-title">
                                                 {{ p.settings.title }}
                                             </span>
