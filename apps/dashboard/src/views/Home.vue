@@ -22,8 +22,8 @@
         </div>
         <b-container>
             <b-row>
-                <b-col md="3" :key="key" v-for="(pool, key) of pools">
-                    <BaseCardPool :pool="pool" class="mb-3" />
+                <b-col md="3" :key="key" v-for="(pool, key) of pools" class="pb-3">
+                    <BaseCardPool :pool="pool" />
                 </b-col>
                 <b-col md="3" v-if="Object.values(pools).length < 4">
                     <b-card class="h-100" body-class="justify-content-center align-items-center d-flex">
