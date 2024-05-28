@@ -15,73 +15,54 @@
                 </div>
             </b-col>
             <b-col md="8">
-                <b-form-group>
-                    <template #label>
-                        <div class="d-flex align-items-center">
-                            Connections
-                            <b-button
-                                :href="discordBotInviteUrl"
-                                target="_blank"
-                                variant="light"
-                                size="sm"
-                                class="ml-auto"
-                            >
-                                <b-img
-                                    width="20"
-                                    :src="require('../../../../public/assets/logo-discord.png')"
-                                    class="mr-1"
-                                />
-                                Invite THX Bot
-                                <i class="fas fa-external-link-alt" />
-                            </b-button>
-                        </div>
-                    </template>
+                <BaseFormGroup
+                    label="Connected"
+                    tooltip="Invite THX Bot to your server. It will only show in this list if your connected Discord account has MANAGE_SERVER permissions in that server."
+                >
                     <BaseDropdownSelectMultiple
                         :disabled="pool.owner && pool.owner.sub !== account.sub"
                         :options="options"
                         @select="onSelectGuild"
                         @remove="onRemoveGuild"
                     />
-                </b-form-group>
-                <b-form-group label="Commands" description="* Required command parameters.">
-                    <b-badge variant="light" class="p-2 mr-2 font-weight-normal">
-                        <code>/quests</code>
-                    </b-badge>
-                    <b-badge variant="light" class="p-2 mr-2 font-weight-normal">
-                        <code>/info</code> :campaign
-                    </b-badge>
-                    <b-badge variant="light" class="p-2 mr-2 font-weight-normal">
-                        <code>/give-points</code> :member* :amount* :campaign :secret
-                    </b-badge>
-                    <b-badge variant="light" class="p-2 mr-2 font-weight-normal">
-                        <code>/remove-points</code> :member* :amount* :campaign :secret
-                    </b-badge>
-                </b-form-group>
+                    <template #description>
+                        Make sure to
+                        <b-link :href="discordBotInviteUrl" target="_blank" variant="light" size="sm" class="ml-auto">
+                            invite THX Bot
+                            <i class="fas fa-external-link-alt" />
+                        </b-link>
+                        to your server.
+                    </template>
+                </BaseFormGroup>
             </b-col>
         </b-form-row>
         <hr />
         <b-form-row>
             <b-col md="4">
-                <div class="">
-                    <strong>Security</strong>
-                    <p class="text-muted">
-                        Configure role access to the <code>/give-points</code> and <code>/remove-points</code> commands
-                        and an optional secret.
-                    </p>
-                </div>
+                <strong>Security</strong>
+                <p class="text-muted">
+                    Configure role access for the point management commands and an optional secret.
+                </p>
             </b-col>
             <b-col md="8">
                 <div :key="key" v-for="(guild, key) of connectedGuilds">
-                    <b-form-group :label="guild.name">
+                    <BaseFormGroup
+                        :label="guild.name"
+                        required
+                        tooltip="Make sure THX Bot is invited to your server and has permissions to read roles."
+                    >
                         <BaseDropdownDiscordRole
                             :role-id="guild.adminRoleId"
                             :guild="guild"
                             @click="onClickDiscordRole(guild, $event)"
                         />
-                    </b-form-group>
-                    <b-form-group label="Secret">
+                    </BaseFormGroup>
+                    <BaseFormGroup
+                        label="Secret"
+                        tooltip="This secret will be required to be passed as an argument when the allowed role invokes the point management commands."
+                    >
                         <b-form-input type="text" :value="guild.secret" @change="onChangeGuildSecret(guild, $event)" />
-                    </b-form-group>
+                    </BaseFormGroup>
                 </div>
             </b-col>
         </b-form-row>
@@ -96,7 +77,12 @@
                 </div>
             </b-col>
             <b-col md="8">
-                <b-form-group :label="guild.name" :key="key" v-for="(guild, key) of connectedGuilds">
+                <BaseFormGroup
+                    :label="guild.name"
+                    :key="key"
+                    tooltip="Make sure THX Bot is invited to your server and has permissions to read channels."
+                    v-for="(guild, key) of connectedGuilds"
+                >
                     <BaseDropdownDiscordChannel
                         @click="updateDiscordGuild"
                         :channel-id="guild.channelId"
@@ -112,7 +98,7 @@
                         <b-form-checkbox class="mr-2 mb-2" :checked="false" disabled> Reward Publish </b-form-checkbox>
                         <b-form-checkbox class="mr-2 mb-2" :checked="false" disabled> Reward Payment </b-form-checkbox>
                     </div>
-                </b-form-group>
+                </BaseFormGroup>
             </b-col>
         </b-form-row>
     </div>

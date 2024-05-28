@@ -8,12 +8,18 @@
         :error="error"
         :is-loading="isLoading"
     >
-        <b-form-group label="Coin" :description="`Balance: ${balance}`">
-            <BaseDropdownSelectERC20 @update="onUpdateERC20" :chainId="pool.chainId" :erc20="erc20" />
-        </b-form-group>
-        <b-form-group label="Coin Amount">
+        <BaseFormGroup label="Coin" tooltip="An ERC20 contract on Polygon of which your campaign Safe has a balance.">
+            <BaseDropdownSelectERC20 @update="onUpdateERC20" :chainId="pool.safe.chainId" :erc20="erc20" />
+            <template #description>
+                Balance: <b-link @click="openAddressUrl" target="_blank">{{ balance }}</b-link>
+            </template>
+        </BaseFormGroup>
+        <BaseFormGroup
+            label="Coin Amount"
+            tooltip="The amount of coins that will be transferred from your campaign Safe to the campaign participant wallet."
+        >
             <b-form-input v-model="amount" />
-        </b-form-group>
+        </BaseFormGroup>
     </BaseModalRewardCreate>
 </template>
 
@@ -22,6 +28,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IERC20s, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
 import { RewardVariant } from '@thxnetwork/common/enums';
+import { parseUnits } from 'ethers/lib/utils';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import BaseDropdownSelectERC20 from '../dropdowns/BaseDropdownSelectERC20.vue';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
 
@@ -36,6 +44,7 @@ import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
     }),
 })
 export default class ModalRewardCoinCreate extends Vue {
+    parseUnits = parseUnits;
     isLoading = false;
     error = '';
     amount = '0';
@@ -52,8 +61,13 @@ export default class ModalRewardCoinCreate extends Vue {
     }
 
     get balance() {
-        if (!this.erc20 || !this.erc20BalanceList[this.erc20.address]) return '';
-        return this.erc20BalanceList[this.erc20.address][this.pool.safeAddress as string];
+        if (!this.erc20 || !this.erc20BalanceList[this.erc20.address]) return '0';
+        return parseUnits(this.erc20BalanceList[this.erc20.address][this.pool.safeAddress as string], 18);
+    }
+
+    openAddressUrl() {
+        const url = `${chainInfo[this.erc20.chainId].blockExplorer}/address/${this.pool.safe.address}`;
+        return (window as any).open(url, '_blank').focus();
     }
 
     onShow() {

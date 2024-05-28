@@ -5,7 +5,6 @@
         @hidden="$emit('hidden')"
         :title="title"
         :id="id"
-        no-close-on-backdrop
         centered
         :body-bg-variant="loading ? 'light' : 'white'"
         :hide-footer="loading || hideFooter"

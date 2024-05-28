@@ -8,12 +8,20 @@
         :error="error"
         :is-loading="isLoading"
     >
-        <b-form-group label="Webshop URL">
+        <BaseFormGroup
+            required
+            label="Redemption URL"
+            tooltip="Provide the campaign participant with information about the place to redeem their secret."
+        >
             <b-form-input v-model="webshopURL" />
-        </b-form-group>
+        </BaseFormGroup>
         <b-tabs small justified content-class="py-3">
             <b-tab title="Upload">
-                <b-form-group label="Coupon Codes">
+                <BaseFormGroup
+                    required
+                    label="Coupon Codes"
+                    tooltip="Upload your CSV file where every line contains a secret. This could be a code, but also a URL."
+                >
                     <b-form-file
                         v-model="fileCoupons"
                         @input="onChangeFileCoupons"
@@ -25,7 +33,7 @@
                         Selected file: {{ fileCoupons ? fileCoupons.name : '' }}
                         <code v-if="codes.length"> ({{ codes.length }} codes: {{ codes[0] }} and more...) </code>
                     </small>
-                </b-form-group>
+                </BaseFormGroup>
             </b-tab>
             <b-tab title="Coupon Codes">
                 <BaseTableCouponCodes :reward="reward" :pool="pool" />

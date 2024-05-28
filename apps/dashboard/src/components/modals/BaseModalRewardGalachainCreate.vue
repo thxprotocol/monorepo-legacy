@@ -8,21 +8,38 @@
         :error="error"
         :is-loading="isLoading"
     >
-        <b-form-group label="Amount">
-            <b-form-input v-model="amount" placeholder="Amount" type="number" min="0" />
-        </b-form-group>
-        <b-form-group label="Contract Details">
+        <BaseFormGroup
+            required
+            label="Token Contract"
+            tooltip="Provide network details we can use to access your channel, chaincode and token contract."
+        >
             <b-form-input v-model="contractChannelName" class="mb-2" placeholder="Channel Name" />
             <b-form-input v-model="contractChaincodeName" class="mb-2" placeholder="Chaincode Name" />
             <b-form-input v-model="contractContractName" class="mb-2" placeholder="Contract Name" />
-        </b-form-group>
-        <b-form-group label="Token">
+        </BaseFormGroup>
+        <BaseFormGroup
+            required
+            label="Contract Parameters"
+            tooltip="Provide the parameters for the token contract that you want to use for this reward."
+        >
             <b-form-input v-model="tokenCollection" class="mb-2" placeholder="Collection" />
             <b-form-input v-model="tokenCategory" class="mb-2" placeholder="Category" />
             <b-form-input v-model="tokenType" class="mb-2" placeholder="Type" />
             <b-form-input v-model="tokenAdditionalKey" class="mb-2" placeholder="AdditionalKey" />
             <b-form-input v-model="tokenInstance" class="mb-2" type="number" placeholder="Instance" />
-        </b-form-group>
+        </BaseFormGroup>
+        <BaseFormGroup
+            required
+            label="Token Amount"
+            tooltip="Provide the amount of tokens that should be transfered to the campaign participant's wallet."
+        >
+            <b-form-input v-model="amount" placeholder="Amount" type="number" min="0" />
+            <template #description>
+                Make sure to top up the balance of your campaign's
+                <b-link :to="`/pool/${pool._id}/integrations/galachain`"> Galachain account </b-link>
+                for this reward.
+            </template>
+        </BaseFormGroup>
     </BaseModalRewardCreate>
 </template>
 

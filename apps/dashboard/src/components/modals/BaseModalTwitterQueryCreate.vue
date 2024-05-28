@@ -1,12 +1,50 @@
 <template>
-    <base-modal size="xl" hide-footer title="Twitter Query" :id="id" @show="onShow" :error="error">
+    <BaseModal size="xl" hide-footer title="Twitter Query" :id="id" @show="onShow" :error="error">
         <template #modal-body>
-            <p class="text-muted">
-                Use this query builder to create requirements for posts that should be amplified with Repost & Like
-                quests.
-            </p>
-            <b-tabs content-class="mt-3" justified>
-                <b-tab title="Query Builder">
+            <b-tabs v-model="tabIndex" content-class="mt-3" justified>
+                <b-tab title="Quest Content">
+                    <b-alert v-if="!isQueryValid" variant="primary" show>
+                        <i class="fas fa-exclamation-circle mr-2" />
+                        Please use the <b-link @click="tabIndex = 1">Query Builder</b-link> to create a valid search
+                        query that we can use to find your posts.
+                    </b-alert>
+                    <p class="text-muted">
+                        Set the defaults for the Repost & Like quests that are created when matches for your query are
+                        found.
+                    </p>
+                    <b-row>
+                        <b-col>
+                            <BaseFormGroup required label="Title">
+                                <b-form-input v-model="title" />
+                            </BaseFormGroup>
+                            <BaseFormGroup label="Description">
+                                <b-form-textarea v-model="description" />
+                            </BaseFormGroup>
+                            <BaseFormGroup required label="Amount">
+                                <b-form-input v-model="amount" type="number" />
+                            </BaseFormGroup>
+                        </b-col>
+                        <b-col>
+                            <BaseFormGroupQuestLocks @change-locks="locks = $event" :pool="pool" :locks="locks" />
+                            <BaseFormGroup label="Minimum amount of followers">
+                                <b-form-input v-model="minFollowersCount" />
+                            </BaseFormGroup>
+                            <BaseFormGroup label="Expiry in days">
+                                <b-form-input v-model="expiryInDays" type="number" />
+                            </BaseFormGroup>
+                            <BaseFormGroup>
+                                <b-checkbox :checked="isPublished" @change="isPublished = $event">
+                                    Published
+                                </b-checkbox>
+                            </BaseFormGroup>
+                        </b-col>
+                    </b-row>
+                </b-tab>
+                <b-tab title="Search Posts">
+                    <p class="text-muted">
+                        Use this query builder to create requirements for posts that should be amplified with Repost &
+                        Like quests.
+                    </p>
                     <b-row>
                         <b-col>
                             <BaseCardTwitterQueryOperators
@@ -33,39 +71,9 @@
                         </b-col>
                     </b-row>
                 </b-tab>
-                <b-tab title="Quest Defaults">
-                    <b-row>
-                        <b-col>
-                            <b-form-group label="Title">
-                                <b-form-input v-model="title" />
-                            </b-form-group>
-                            <b-form-group label="Description">
-                                <b-form-textarea v-model="description" />
-                            </b-form-group>
-                            <b-form-group label="Amount">
-                                <b-form-input v-model="amount" type="number" />
-                            </b-form-group>
-                        </b-col>
-                        <b-col>
-                            <BaseFormGroupQuestLocks @change-locks="locks = $event" :pool="pool" :locks="locks" />
-                            <b-form-group label="Minimum amount of followers">
-                                <b-form-input v-model="minFollowersCount" />
-                            </b-form-group>
-                            <b-form-group label="Expiry in days">
-                                <b-form-input v-model="expiryInDays" type="number" />
-                            </b-form-group>
-                            <b-form-group>
-                                <b-checkbox :checked="isPublished" @change="isPublished = $event">
-                                    Published
-                                </b-checkbox>
-                            </b-form-group>
-                        </b-col>
-                    </b-row>
-                </b-tab>
             </b-tabs>
-
             <b-button
-                :disabled="isLoading"
+                :disabled="isDisabled"
                 class="rounded-pill mt-3"
                 type="submit"
                 @click="onClickCreate"
@@ -75,7 +83,7 @@
                 Start Query
             </b-button>
         </template>
-    </base-modal>
+    </BaseModal>
 </template>
 
 <script lang="ts">
@@ -104,6 +112,7 @@ export default class BaseModalTwitterQueryCreate extends Vue {
     isLoading = false;
     isCopied = false;
     error = '';
+    tabIndex = 0;
 
     // operators
     from: string[] = [];
@@ -139,6 +148,19 @@ export default class BaseModalTwitterQueryCreate extends Vue {
         return this.quests.map((quest: TQuest) => {
             return { text: quest.title, value: { variant: quest.variant, questId: quest._id } };
         });
+    }
+
+    get queryPreview() {
+        return TwitterQuery.create(this.operators);
+    }
+
+    get isQueryValid() {
+        return this.queryPreview !== '-is:retweet -is:quote -is:reply';
+    }
+
+    get isDisabled() {
+        const isTitleValid = this.title.length > 0;
+        return !this.isQueryValid || !isTitleValid || this.isLoading;
     }
 
     onShow() {

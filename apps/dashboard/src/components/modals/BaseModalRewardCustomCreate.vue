@@ -8,7 +8,7 @@
         :error="error"
         :is-loading="isLoading"
     >
-        <b-form-group label="Webhook">
+        <BaseFormGroup required label="Webhook" tooltip="Select a webhook to trigger when the quest is completed.">
             <b-dropdown variant="link" class="dropdown-select" v-if="webhookList.length">
                 <template #button-content>
                     <div class="d-flex align-items-center" v-if="webhook">
@@ -22,10 +22,13 @@
                 </b-dropdown-item-button>
                 <b-dropdown-divider />
             </b-dropdown>
-        </b-form-group>
-        <b-form-group label="Metadata" description="Provide metadata for your system to use.">
+            <b-button v-else variant="light" block :to="`/pool/${pool._id}/developer/webhooks`">
+                Create Webhook
+            </b-button>
+        </BaseFormGroup>
+        <BaseFormGroup label="Metadata" tooltip="Provide metadata for your system to use.">
             <b-textarea v-model="metadata" />
-        </b-form-group>
+        </BaseFormGroup>
     </BaseModalRewardCreate>
 </template>
 
@@ -67,7 +70,7 @@ export default class ModalRewardCustomCreate extends Vue {
         this.webhookId = this.reward ? this.reward.webhookId : '';
 
         await this.$store.dispatch('webhooks/list', this.pool);
-        this.webhook = this.webhooks[this.pool._id][this.webhookId];
+        this.webhook = this.webhookId ? this.webhooks[this.pool._id][this.webhookId] : this.webhook;
     }
 
     async onSubmit(payload: TReward) {

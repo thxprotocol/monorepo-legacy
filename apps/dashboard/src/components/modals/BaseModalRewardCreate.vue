@@ -31,6 +31,7 @@
                             </b-input-group>
                         </BaseFormGroup>
                         <BaseFormGroup
+                            required
                             label="Point Price"
                             tooltip="The amount of points a campaign participant needs in order to purchase this reward. Reward can have a point price of 0. They will be marked as free to purchase."
                         >

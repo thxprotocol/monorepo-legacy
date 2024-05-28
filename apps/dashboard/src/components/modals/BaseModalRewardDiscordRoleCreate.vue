@@ -8,14 +8,27 @@
         :error="error"
         :is-loading="isLoading"
     >
-        <b-form-group :label="`Discord Role (${guild.name})`" v-for="(guild, key) of guilds" :key="key">
-            <BaseDropdownDiscordRole
-                class="mb-1"
-                @click="discordRoleId = $event.id"
-                :role-id="discordRoleId"
-                :guild="guild"
-            />
-        </b-form-group>
+        <b-spinner v-if="isLoadingGuilds" variant="gray" small />
+        <b-button v-else-if="!guilds.length" variant="light" block>Connect THX Bot</b-button>
+        <template v-else>
+            <BaseFormGroup
+                required
+                label="Discord Role"
+                tooltip="Make sure THX Bot is invited to your server and has permissions to read and assign roles."
+                :key="key"
+                v-for="(guild, key) of guilds"
+            >
+                <BaseDropdownDiscordRole
+                    class="mb-1"
+                    @click="discordRoleId = $event.id"
+                    :role-id="discordRoleId"
+                    :guild="guild"
+                />
+                <template #description>
+                    Available roles in <strong>{{ guild.name }}</strong>
+                </template>
+            </BaseFormGroup>
+        </template>
     </BaseModalRewardCreate>
 </template>
 
@@ -60,7 +73,7 @@ export default class ModalRewardCustomCreate extends Vue {
     async getGuilds() {
         this.isLoadingGuilds = true;
         await this.$store.dispatch('pools/listGuilds', this.pool);
-        this.isLoadingGuilds = true;
+        this.isLoadingGuilds = false;
     }
 
     async onSubmit(payload: TReward) {

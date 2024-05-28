@@ -8,10 +8,17 @@
         :error="error"
         :is-loading="isLoading"
     >
-        <b-form-group label="NFT">
+        <BaseFormGroup required label="NFT" tooltip="Select the NFT collection that you want to use for this reward.">
             <BaseDropdownSelectERC721 :nft="nft" @selected="onSelectNFT" />
-        </b-form-group>
-        <b-form-group label="Metadata">
+            <template #description>
+                You can import your own <b-link :to="`/nft/`">NFT collections</b-link> and use them for rewards.
+            </template>
+        </BaseFormGroup>
+        <BaseFormGroup
+            required
+            label="Metadata"
+            tooltip="Select the metadata that will be used to mint a token for the campaign participant that purchases this reward."
+        >
             <BaseDropdownNFTMetadata
                 v-if="nft && !tokenId"
                 :pool="pool"
@@ -20,8 +27,12 @@
                 @selected="onSelectMetadata"
             />
             <span v-else> You have selected a token. </span>
-        </b-form-group>
-        <b-form-group label="Tokens">
+        </BaseFormGroup>
+        <BaseFormGroup
+            required
+            label="Tokens"
+            tooltip="Select the token that will be transfered to the wallet of the campaign participant that purchases this reward."
+        >
             <BaseDropdownNFTBalance
                 v-if="nft && !metadataId"
                 :pool="pool"
@@ -30,16 +41,16 @@
                 @selected="onSelectToken"
             />
             <span v-else> You have selected metadata. </span>
-        </b-form-group>
-        <b-form-group
+        </BaseFormGroup>
+        <BaseFormGroup
+            required
             label="Amount"
-            :state="isValidAmount"
+            tooltip="Select the amount of ERC1155 tokens that will be transfered or minted to the wallet of the campaign participant that purchases this reward."
             :description="erc1155Balance ? `Balance: ${erc1155Balance}` : null"
             v-if="nft && nft.variant === NFTVariant.ERC1155"
         >
-            <b-form-input :state="isValidAmount" type="number" :value="erc1155Amount" @input="onChangeERC1155Amount" />
-        </b-form-group>
-
+            <b-form-input type="number" :value="erc1155Amount" @input="onChangeERC1155Amount" />
+        </BaseFormGroup>
         <template #aside> </template>
     </BaseModalRewardCreate>
 </template>
@@ -94,13 +105,6 @@ export default class ModalRewardNFTCreate extends Vue {
 
     get chainId() {
         return (this.pool && this.pool.chainId) || (this.nft && this.nft.chainId) || ChainId.Hardhat;
-    }
-
-    get isValidAmount() {
-        if (!this.erc1155Balance) return null;
-        const amount = Number(this.erc1155Amount);
-        const balance = Number(this.erc1155Balance);
-        return amount > 0 && amount <= balance;
     }
 
     get isValidRedirectUrl() {
