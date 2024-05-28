@@ -20,9 +20,13 @@
         :quest="reward"
     >
         <template #col-left>
-            <b-form-group label="Amount">
+            <BaseFormGroup
+                required
+                label="Amount"
+                tooltip="The amount of points the campaign participant will earn for completing this quest."
+            >
                 <b-form-input type="number" v-model="amount" />
-            </b-form-group>
+            </BaseFormGroup>
         </template>
         <template #col-right>
             <b-card class="mb-3" body-class="bg-light p-0">
@@ -37,19 +41,26 @@
                 <b-collapse id="collapse-card-events" v-model="isVisible">
                     <hr class="mt-0" />
                     <div class="px-3">
-                        <b-form-group
+                        <BaseFormGroup
+                            required
                             label="Event Type"
-                            description="Requires this event for a participant to complete the quest."
+                            tooltip="Requires this event for a participant to complete the quest."
                         >
                             <BaseDropdownEventType
                                 @click="eventName = $event"
                                 :events="pool.events"
                                 :event-name="eventName"
                             />
-                        </b-form-group>
-                        <b-form-group label="Limit" description="Maximum amount of claims for this event per account.">
+                            <template #description>
+                                Use our
+                                <b-link href="https://docs.thx.network/developers/js-sdk">JavaScript SDK</b-link> or
+                                <b-link href="https://docs.thx.network/developers/api">REST API</b-link> to register
+                                your events for user identities.
+                            </template>
+                        </BaseFormGroup>
+                        <BaseFormGroup label="Limit" tooltip="Maximum amount of claims for this event per account.">
                             <b-form-input type="number" v-model="limit" min="0" />
-                        </b-form-group>
+                        </BaseFormGroup>
                     </div>
                 </b-collapse>
             </b-card>

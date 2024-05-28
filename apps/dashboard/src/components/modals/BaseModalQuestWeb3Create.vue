@@ -20,10 +20,18 @@
         :pool="pool"
     >
         <template #col-left>
-            <b-form-group label="Amount">
+            <BaseFormGroup
+                required
+                label="Amount"
+                tooltip="The amount of points the campaign participant will earn for completing this quest."
+            >
                 <b-form-input type="number" v-model="amount" />
-            </b-form-group>
-            <b-form-group label="Smart Contract">
+            </BaseFormGroup>
+            <BaseFormGroup
+                required
+                label="Smart Contract"
+                tooltip="Provide one or more addresses for smart contracts on the supported networks."
+            >
                 <b-row :key="key" v-for="(contract, key) of contracts">
                     <b-col md="3" class="mb-2">
                         <b-form-select v-model="contract.chainId">
@@ -50,20 +58,26 @@
                 <b-link @click="contracts.push({ chainId: ChainId.Polygon, address: '' })">
                     Add another contract
                 </b-link>
-            </b-form-group>
+            </BaseFormGroup>
             <b-row>
                 <b-col md="6">
-                    <b-form-group
-                        label="Method Name"
-                        description="This method will be called with an address and should return an integer."
+                    <BaseFormGroup
+                        required
+                        label="Contract Method"
+                        description="E.g. 'balanceOf' in ERC20 contracts."
+                        tooltip="This method will be called with an address and should return a number."
                     >
                         <b-form-input v-model="methodName" />
-                    </b-form-group>
+                    </BaseFormGroup>
                 </b-col>
                 <b-col md="6">
-                    <b-form-group label="Threshold">
+                    <BaseFormGroup
+                        required
+                        label="Threshold"
+                        tooltip="The number that is returned by the contract call should be equal or greater than this threshold value."
+                    >
                         <b-form-input type="number" v-model="threshold" />
-                    </b-form-group>
+                    </BaseFormGroup>
                 </b-col>
             </b-row>
         </template>
