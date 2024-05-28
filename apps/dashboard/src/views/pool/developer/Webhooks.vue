@@ -15,8 +15,8 @@
                                 variant="primary"
                                 @click="issigningSecretHidden = !issigningSecretHidden"
                             >
-                                <i v-if="issigningSecretHidden" class="fas fa-eye px-2"></i>
-                                <i v-else class="fas fa-eye-slash px-2"></i>
+                                <i v-if="issigningSecretHidden" class="fas fa-eye px-2 m-0"></i>
+                                <i v-else class="fas fa-eye-slash px-2 m-0"></i>
                             </b-button>
                             <b-button
                                 size="sm"
@@ -24,8 +24,8 @@
                                 v-clipboard:copy="pool.signingSecret"
                                 v-clipboard:success="(isCopied = true)"
                             >
-                                <i v-if="isCopied" class="fas fa-clipboard-check px-2"></i>
-                                <i v-else class="fas fa-clipboard px-2"></i>
+                                <i v-if="isCopied" class="fas fa-clipboard-check px-2 m-0"></i>
+                                <i v-else class="fas fa-clipboard px-2 m-0"></i>
                             </b-button>
                         </b-input-group-append>
                     </b-input-group>

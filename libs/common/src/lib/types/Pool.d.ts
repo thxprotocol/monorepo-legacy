@@ -53,7 +53,6 @@ type TPoolSettings = {
     description: string;
     startDate: Date;
     endDate?: Date;
-    isArchived: boolean;
     isPublished: boolean;
     isWeeklyDigestEnabled: boolean;
     isTwitterSyncEnabled: boolean;

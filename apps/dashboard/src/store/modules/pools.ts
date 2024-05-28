@@ -931,10 +931,6 @@ class PoolModule extends VuexModule {
         });
 
         this.context.commit('set', { ...pool, ...res.data });
-
-        if (res.data.settings.isArchived) {
-            this.context.commit('unset', pool);
-        }
     }
 
     @Action({ rawError: true })

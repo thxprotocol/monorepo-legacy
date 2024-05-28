@@ -10,28 +10,20 @@
         </b-form-row>
         <b-form-row>
             <b-col md="4">
-                <strong>Campaign Widget</strong>
+                <strong>HTML Widget</strong>
                 <p class="text-muted">
                     Place this script in HTML page and your campaign widget will show for your web page visitors.
                 </p>
-                <p class="text-muted">
+            </b-col>
+            <b-col md="8">
+                <BaseCodeExample :pool="pool" class="mb-1" />
+                <p class="text-muted small">
                     Alternatively you can use the
                     <b-link target="_blank" href="https://www.npmjs.com/package/@thxnetwork/sdk">
                         @thxnetwork/sdk
                     </b-link>
                     for this.
                 </p>
-            </b-col>
-            <b-col md="8">
-                <b-alert variant="danger" show v-if="widget && !widget.active">
-                    <i class="fas fa-exclamation-circle mr-2"></i> <strong>No domain activity detected.</strong> Please
-                    add the script below to your HTML page.
-                </b-alert>
-                <b-alert v-else variant="success" show>
-                    <i class="fas fa-wifi mr-2"></i> <strong>Widget is active!</strong> Make sure to update rewards
-                    frequently.
-                </b-alert>
-                <BaseCodeExample :pool="pool" />
             </b-col>
         </b-form-row>
         <hr />
@@ -41,14 +33,17 @@
                 <div class="text-muted">Configure the domain the widget will be loaded on.</div>
             </b-col>
             <b-col md="8">
-                <b-form-group :state="isValidDomain">
+                <BaseFormGroup
+                    label="Domain"
+                    tooltip="Allowed domain for integration with your campaign widget HTML script."
+                >
                     <b-form-input
                         @change="onChangeDomain"
                         v-model="domain"
                         :state="isValidDomain"
                         placeholder="https://www.example.com"
                     />
-                </b-form-group>
+                </BaseFormGroup>
             </b-col>
         </b-form-row>
     </div>

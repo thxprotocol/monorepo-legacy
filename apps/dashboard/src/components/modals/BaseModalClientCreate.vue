@@ -8,20 +8,27 @@
     >
         <template #modal-body>
             <form v-on:submit.prevent="submit" id="formClientCreate">
-                <b-form-group label="Name">
+                <BaseFormGroup required label="Name" tooltip="Use a name to identify how your client is used.">
                     <b-form-input v-model="name" />
-                </b-form-group>
-                <b-form-group label="Grant Type">
+                </BaseFormGroup>
+                <BaseFormGroup
+                    required
+                    label="Grant Type"
+                    tooltip="Choose a grant type for the client that is used by your application"
+                >
                     <b-select v-model="grantType" :disabled="!!client">
-                        <b-select-option value="client_credentials">Client Credentials</b-select-option>
-                        <b-select-option value="authorization_code">Authorization Code</b-select-option>
+                        <b-select-option value="client_credentials">Client Credentials (backend)</b-select-option>
+                        <b-select-option value="authorization_code">Authorization Code (frontend)</b-select-option>
                     </b-select>
-                </b-form-group>
+                </BaseFormGroup>
                 <template v-if="grantType === 'authorization_code'">
-                    <b-form-group>
-                        <label>Redirect URI</label>
+                    <BaseFormGroup
+                        required
+                        label="Redirect URI"
+                        tooltip="The authorization server will redirect your user to this location with the authorization code in the URL search parameters. Use it to request your access token."
+                    >
                         <b-form-input v-model="redirectUri" placeholder="https://example.com/redirect-callback" />
-                    </b-form-group>
+                    </BaseFormGroup>
                 </template>
             </form>
         </template>
@@ -44,6 +51,7 @@ import { GrantVariant } from '@thxnetwork/common/enums';
     },
 })
 export default class BaseModalClientCreate extends Vue {
+    isLoading = false;
     error = '';
     name = '';
     grantType: GrantVariant = GrantVariant.ClientCredentials;
@@ -59,6 +67,10 @@ export default class BaseModalClientCreate extends Vue {
         return !this.redirectUri.length && !this.requestUri.length;
     }
 
+    get isDisabled() {
+        return !this.isValid || this.isLoading;
+    }
+
     onShow() {
         this.name = this.client ? this.client.name : this.name;
         this.grantType = this.client ? this.client.grantType : this.grantType;
@@ -67,6 +79,7 @@ export default class BaseModalClientCreate extends Vue {
     }
 
     async submit() {
+        this.isLoading = true;
         const action = this.client ? 'update' : 'create';
         await this.$store.dispatch('clients/' + action, {
             pool: this.pool,
@@ -80,6 +93,7 @@ export default class BaseModalClientCreate extends Vue {
         });
         this.$emit('submit');
         this.$bvModal.hide(this.id);
+        this.isLoading = false;
     }
 }
 </script>

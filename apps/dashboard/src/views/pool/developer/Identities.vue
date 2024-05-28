@@ -2,7 +2,7 @@
     <b-form-row>
         <b-col md="4">
             <strong>THX ID</strong>
-            <p class="text-muted">Use THX ID to connect your users to accounts.</p>
+            <p class="text-muted">Use THX identities to connect your users to THX accounts.</p>
             <BaseCode :codes="[code]" :languages="['JavaScript']" />
         </b-col>
         <b-col md="8">

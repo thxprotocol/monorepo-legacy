@@ -11,10 +11,14 @@
         <b-form-row>
             <b-col md="4">
                 <strong>Info</strong>
-                <div class="text-muted">This summary is used to explain your campaign to users.</div>
+                <div class="text-muted">Provide information to your audience about your campaign.</div>
             </b-col>
             <b-col md="8">
-                <b-form-group description="Minimum of 3 and maximum of 50 characters.">
+                <BaseFormGroup
+                    label="Title"
+                    tooltip="This title is used to identify your campaign in the list of public campaigns and in various notifications."
+                    description="Minimum of 3 and maximum of 50 characters."
+                >
                     <b-form-input
                         @change="onChangeSettings"
                         v-model="title"
@@ -23,29 +27,25 @@
                         max="50"
                         :state="title ? (title.length < 50 ? null : false) : null"
                     />
-                </b-form-group>
-                <b-form-group description="Maximum of 255 characters." class="mb-0">
+                </BaseFormGroup>
+                <BaseFormGroup
+                    label="Description"
+                    tooltip="This description is shown on your campaign's about page and in the THX Bot"
+                    description="Maximum of 255 characters."
+                >
                     <b-textarea
                         v-model="description"
                         @change="onChangeSettings"
                         :state="description ? description.length < 255 : null"
                         placeholder="Some words about your campaign.."
-                    ></b-textarea>
-                </b-form-group>
-            </b-col>
-        </b-form-row>
-        <hr />
-        <b-form-row>
-            <b-col md="4">
-                <strong>URL</strong>
-                <div class="text-muted">For quests campaigns that do not use the campaign widget.</div>
-            </b-col>
-            <b-col md="8">
-                <b-form-group
+                    />
+                </BaseFormGroup>
+                <BaseFormGroup
+                    label="Campaign URL"
+                    tooltip="For quests campaigns that do not use the campaign widget."
                     description="Minimum of 3 and maximum of 25 characters."
-                    class="mb-0"
-                    :state="isValidSlug"
                     invalid-feedback="This slug is invalid."
+                    :state="isValidSlug"
                 >
                     <b-input-group :prepend="`${widgetUrl}/c/`">
                         <b-form-input
@@ -69,20 +69,20 @@
                             </b-button>
                         </template>
                     </b-input-group>
-                </b-form-group>
+                </BaseFormGroup>
             </b-col>
         </b-form-row>
         <hr />
 
         <b-form-row>
             <b-col md="4">
-                <strong>Campaign Wallet</strong>
-                <div class="text-muted">Your campaign wallet is used for fee payments and reward distribution.</div>
+                <strong>Wallet</strong>
+                <div class="text-muted">This wallet is used for reward distribution and fee payments.</div>
             </b-col>
             <b-col md="8">
-                <b-form-group
-                    label="Safe Multisig Address"
-                    description="Your assets are stored in Safe's battle-tested multisigs."
+                <BaseFormGroup
+                    label="Safe Wallet Address"
+                    tooltip="Your assets are stored in Safe's battle-tested multisigs."
                 >
                     <b-input-group>
                         <b-form-input disabled :value="pool.safe && pool.safeAddress" />
@@ -107,7 +107,7 @@
                             Safe's battle-tested multisigs
                         </b-link>
                     </template>
-                </b-form-group>
+                </BaseFormGroup>
             </b-col>
         </b-form-row>
         <hr />
@@ -137,12 +137,6 @@
                                 <strong v-if="pool.owner">{{ pool.owner.email }}</strong
                                 >.
                             </span>
-                        </b-form-checkbox>
-                    </b-form-group>
-                    <b-form-group>
-                        <b-form-checkbox @change="onChangeSettings" v-model="isArchived" class="mr-3">
-                            <strong>Archived</strong><br />
-                            <span class="text-muted"> Hide this pool in your overview of pools. </span>
                         </b-form-checkbox>
                     </b-form-group>
                 </b-form-group>
@@ -202,7 +196,6 @@ export default class SettingsView extends Vue {
     title = '';
     description = '';
     isWeeklyDigestEnabled = false;
-    isArchived = false;
     isPublished = false;
     startDate: Date | null = null;
     endDate: Date | null = null;
@@ -219,7 +212,6 @@ export default class SettingsView extends Vue {
         this.title = this.pool.settings.title || this.title;
         this.slug = this.pool.settings.slug || this.slug;
         this.description = this.pool.settings.description;
-        this.isArchived = this.pool.settings.isArchived;
         this.isPublished = this.pool.settings.isPublished;
         this.isWeeklyDigestEnabled = this.pool.settings.isWeeklyDigestEnabled;
     }
@@ -257,7 +249,6 @@ export default class SettingsView extends Vue {
                 startDate: this.startDate,
                 endDate: this.endDate,
                 isPublished: this.isPublished,
-                isArchived: this.isArchived,
                 isWeeklyDigestEnabled: this.isWeeklyDigestEnabled,
             },
             setting,

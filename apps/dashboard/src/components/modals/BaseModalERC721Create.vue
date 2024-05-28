@@ -1,5 +1,5 @@
 <template>
-    <base-modal :loading="loading" :error="error" title="Create NFT collection" id="modalERC721Create">
+    <base-modal :error="error" title="Create NFT collection" id="modalERC721Create">
         <template #modal-body v-if="!loading">
             <base-form-select-network @selected="chainId = $event" />
             <b-form-group label="Variant">

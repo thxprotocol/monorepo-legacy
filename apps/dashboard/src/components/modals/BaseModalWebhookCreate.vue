@@ -1,22 +1,27 @@
 <template>
-    <base-modal
-        @show="onShow"
-        size="lg"
-        :title="(webhook ? 'Update' : 'Create') + ' Webhook'"
-        :id="id"
-        :error="error"
-        :loading="isLoading"
-    >
+    <base-modal @show="onShow" size="lg" :title="(webhook ? 'Update' : 'Create') + ' Webhook'" :id="id" :error="error">
         <template #modal-body v-if="!isLoading">
             <form v-on:submit.prevent="onSubmit" id="formWebhookCreate">
-                <b-form-group label="URL" :state="isValidWebhook">
+                <BaseFormGroup
+                    required
+                    label="URL"
+                    tooltip="Provide a public endpoint of your system that is protected with your signing secret."
+                    :state="isValidWebhook"
+                >
                     <b-form-input v-model="url" :state="isValidWebhook" />
-                </b-form-group>
+                    <template #description>
+                        Learn how you can
+                        <b-link href="https://docs.thx.network/developers/webhooks" target="_blank">
+                            protect your public endpoint
+                        </b-link>
+                        using your signing secret.
+                    </template>
+                </BaseFormGroup>
             </form>
         </template>
         <template #btn-primary>
             <b-button
-                :disabled="isSubmitDisabled"
+                :disabled="isDisabled"
                 class="rounded-pill"
                 type="submit"
                 form="formWebhookCreate"
@@ -30,7 +35,6 @@
 </template>
 
 <script lang="ts">
-import type { TPool, TWebhook } from '@thxnetwork/types/interfaces';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModal from './BaseModal.vue';
@@ -47,7 +51,6 @@ import BaseCardInfoLinks from '@thxnetwork/dashboard/components/cards/BaseCardIn
     },
 })
 export default class ModalWebhookCreate extends Vue {
-    isSubmitDisabled = false;
     isLoading = false;
     isVisible = true;
     error = '';
@@ -60,6 +63,10 @@ export default class ModalWebhookCreate extends Vue {
     get isValidWebhook() {
         if (!this.url) return;
         return isValidUrl(this.url);
+    }
+
+    get isDisabled() {
+        return !this.isValidWebhook || this.isLoading;
     }
 
     onShow() {
