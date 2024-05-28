@@ -434,6 +434,7 @@ class PoolModule extends VuexModule {
 
     @Mutation
     setInvoices(data: TInvoice[]) {
+        if (!data.length) return;
         Vue.set(this._invoices, data[0].poolId, data);
     }
 
