@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts">
-import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { ChainId } from '@thxnetwork/common/enums';
 import { ERC721Variant, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Vue } from 'vue-property-decorator';
 import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';

@@ -1,4 +1,4 @@
-import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { ChainId } from '@thxnetwork/common/enums';
 
 export enum ERC20Type {
     Unknown = -1,

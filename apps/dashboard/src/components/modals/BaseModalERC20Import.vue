@@ -55,7 +55,7 @@
 </template>
 
 <script lang="ts">
-import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { ChainId } from '@thxnetwork/common/enums';
 import { TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';

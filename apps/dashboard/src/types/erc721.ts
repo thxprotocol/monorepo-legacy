@@ -1,5 +1,5 @@
 import { NFTVariant } from '@thxnetwork/common/enums';
-import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { ChainId } from '@thxnetwork/common/enums';
 import { AxiosResponse } from 'axios';
 import { TERC1155Metadata } from './erc1155';
 

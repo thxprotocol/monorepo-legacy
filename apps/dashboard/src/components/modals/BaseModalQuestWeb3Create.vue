@@ -59,27 +59,22 @@
                     Add another contract
                 </b-link>
             </BaseFormGroup>
-            <b-row>
-                <b-col md="6">
-                    <BaseFormGroup
-                        required
-                        label="Contract Method"
-                        description="E.g. 'balanceOf' in ERC20 contracts."
-                        tooltip="This method will be called with an address and should return a number."
-                    >
-                        <b-form-input v-model="methodName" />
-                    </BaseFormGroup>
-                </b-col>
-                <b-col md="6">
-                    <BaseFormGroup
-                        required
-                        label="Threshold"
-                        tooltip="The number that is returned by the contract call should be equal or greater than this threshold value."
-                    >
-                        <b-form-input type="number" v-model="threshold" />
-                    </BaseFormGroup>
-                </b-col>
-            </b-row>
+            <BaseFormGroup
+                required
+                label="Contract Method"
+                description="E.g. 'balanceOf' for ERC20 contracts."
+                tooltip="This method will be called with an address and should return a number."
+            >
+                <b-form-input v-model="methodName" />
+            </BaseFormGroup>
+            <BaseFormGroup
+                required
+                label="Threshold"
+                description="E.g. '1000000000000000000' for 1 THX since ERC20 uses 18 decimals."
+                tooltip="The number that is returned by the contract call should be equal or greater than this threshold value."
+            >
+                <b-form-input type="number" v-model="threshold" />
+            </BaseFormGroup>
         </template>
     </BaseModalQuestCreate>
 </template>

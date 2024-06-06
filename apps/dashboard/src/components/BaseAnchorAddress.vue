@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { ChainId } from '@thxnetwork/common/enums';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 

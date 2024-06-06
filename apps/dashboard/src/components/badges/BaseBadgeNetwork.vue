@@ -12,8 +12,8 @@
 </template>
 
 <script lang="ts">
+import { ChainId } from '@thxnetwork/common/enums';
 import { ChainInfo } from '@thxnetwork/dashboard/types/ChainInfo';
-import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 

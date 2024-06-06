@@ -16,7 +16,7 @@
                     <b-button-group class="w-100">
                         <b-button
                             v-if="selectedPool"
-                            class="d-flex p-2 text-muted"
+                            class="d-flex p-2 text-muted align-items-center"
                             variant="light"
                             @click="onClickCampaignURL"
                         >

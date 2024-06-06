@@ -44,6 +44,13 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_linea.svg'),
         blockExplorer: 'https://lineascan.build',
     },
+    [ChainId.Metis]: {
+        disabled: false,
+        chainId: ChainId.Metis,
+        name: 'Metis',
+        logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_metis.svg'),
+        blockExplorer: 'https://explorer.metis.io',
+    },
 };
 
 if (process.env.NODE_ENV !== 'production') {

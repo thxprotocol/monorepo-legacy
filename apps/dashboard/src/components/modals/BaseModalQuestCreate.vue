@@ -11,6 +11,15 @@
                 <b-row>
                     <b-col md="6">
                         <BaseFormGroup
+                            label="Status"
+                            description="Publishing a quest will send a notification your campaign subscribers."
+                            tooltip="Show your quest to your users."
+                        >
+                            <b-checkbox :checked="published" @change="$emit('change-published', $event)" class="mb-0">
+                                Published
+                            </b-checkbox>
+                        </BaseFormGroup>
+                        <BaseFormGroup
                             required
                             label="Title"
                             tooltip="A short and engaging title for your quest. Used when notifying subscribers and shown in the quest overview of your campaign."
@@ -88,11 +97,6 @@
                                 quest.
                             </p>
                         </BaseCardInfoLinks>
-                        <b-form-group>
-                            <b-checkbox :checked="published" @change="$emit('change-published', $event)">
-                                Published
-                            </b-checkbox>
-                        </b-form-group>
                     </b-col>
                 </b-row>
             </form>

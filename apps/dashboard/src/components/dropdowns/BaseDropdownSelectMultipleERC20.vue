@@ -61,7 +61,7 @@ import axios from 'axios';
 import { IERC20s, TERC20 } from '@thxnetwork/dashboard/types/erc20';
 import BaseIdenticon from '../BaseIdenticon.vue';
 import { IERC721s } from '@thxnetwork/dashboard/types/erc721';
-import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { ChainId } from '@thxnetwork/common/enums';
 
 const QUICKSWAP_TOKEN_LIST =
     'https://unpkg.com/quickswap-default-token-list@1.2.36/build/quickswap-default.tokenlist.json';

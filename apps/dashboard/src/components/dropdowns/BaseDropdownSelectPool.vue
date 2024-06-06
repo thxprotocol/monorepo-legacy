@@ -23,7 +23,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IPools } from '../../store/modules/pools';
-import { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
+import { ChainId } from '@thxnetwork/common/enums';
 import BaseIdenticon from '../BaseIdenticon.vue';
 import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
 

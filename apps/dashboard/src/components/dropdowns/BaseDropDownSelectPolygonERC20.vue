@@ -28,8 +28,8 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import BaseIdenticon from '../BaseIdenticon.vue';
+import { ChainId } from '@thxnetwork/common/enums';
 import type { TERC20 } from '@thxnetwork/dashboard/types/erc20';
-import type { ChainId } from '@thxnetwork/dashboard/types/enums/ChainId';
 
 const QUICKSWAP_TOKEN_LIST =
     'https://unpkg.com/quickswap-default-token-list@1.2.41/build/quickswap-default.tokenlist.json';
