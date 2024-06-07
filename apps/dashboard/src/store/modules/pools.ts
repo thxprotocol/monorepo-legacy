@@ -266,6 +266,8 @@ class PoolModule extends VuexModule {
 
     @Mutation
     set(pool: TPool) {
+        pool.settings.title = html.decode(pool.settings.title);
+        pool.settings.description = html.decode(pool.settings.description);
         Vue.set(this._all, pool._id, pool);
     }
 

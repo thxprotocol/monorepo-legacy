@@ -2,9 +2,9 @@ import { Vue } from 'vue-property-decorator';
 import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import type { IERC20s, TERC20, TERC20AllowanceState, TERC20BalanceState } from '@thxnetwork/dashboard/types/erc20';
-import { ChainId } from '../enums/chainId';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { track } from '@thxnetwork/common/mixpanel';
+import { ChainId } from '@thxnetwork/common/enums';
 
 @Module({ namespaced: true })
 class ERC20Module extends VuexModule {
