@@ -101,7 +101,7 @@
                     <template #description>
                         Your assets are stored in
                         <b-link
-                            :href="`https://app.safe.global/apps/home?safe=matic:${pool.safe && pool.safeAddress}`"
+                            :href="`https://app.safe.global/transactions/history?safe=${pool.safe && pool.safeAddress}`"
                             target="_blank"
                         >
                             Safe's battle-tested multisigs
