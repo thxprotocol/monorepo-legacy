@@ -15,7 +15,9 @@
                 </div>
             </b-col>
             <b-col md="8">
+                <b-spinner v-if="isLoading" small />
                 <BaseFormGroup
+                    v-else
                     label="Connected"
                     tooltip="Invite THX Bot to your server. It will only show in this list if your connected Discord account has MANAGE_SERVER permissions in that server."
                 >
@@ -77,28 +79,12 @@
                 </div>
             </b-col>
             <b-col md="8">
-                <BaseFormGroup
-                    :label="guild.name"
-                    :key="key"
-                    tooltip="Make sure THX Bot is invited to your server and has permissions to read channels."
+                <BaseCollapseDiscordNotifications
                     v-for="(guild, key) of connectedGuilds"
-                >
-                    <BaseDropdownDiscordChannel
-                        @click="updateDiscordGuild"
-                        :channel-id="guild.channelId"
-                        :guild="guild"
-                    />
-                    <div class="d-flex mt-2">
-                        <b-form-checkbox class="mr-2 mb-2" :checked="isChecked" disabled>
-                            Quest Publish
-                        </b-form-checkbox>
-                        <b-form-checkbox class="mr-2 mb-2" :checked="isChecked" disabled>
-                            Quest Complete
-                        </b-form-checkbox>
-                        <b-form-checkbox class="mr-2 mb-2" :checked="false" disabled> Reward Publish </b-form-checkbox>
-                        <b-form-checkbox class="mr-2 mb-2" :checked="false" disabled> Reward Payment </b-form-checkbox>
-                    </div>
-                </BaseFormGroup>
+                    :key="key"
+                    :guild="guild"
+                    @update="updateDiscordGuild"
+                />
             </b-col>
         </b-form-row>
     </div>
@@ -115,6 +101,7 @@ import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardU
 import BaseDropdownDiscordChannel from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownDiscordChannel.vue';
 import BaseDropdownDiscordRole from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownDiscordRole.vue';
 import BaseDropdownSelectMultiple from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownSelectMultiple.vue';
+import BaseCollapseDiscordNotifications from '@thxnetwork/dashboard/components/BaseCollapseDiscordNotifications.vue';
 
 @Component({
     components: {
@@ -122,6 +109,7 @@ import BaseDropdownSelectMultiple from '@thxnetwork/dashboard/components/dropdow
         BaseDropdownSelectMultiple,
         BaseDropdownDiscordChannel,
         BaseDropdownDiscordRole,
+        BaseCollapseDiscordNotifications,
     },
     computed: {
         ...mapGetters({
@@ -135,7 +123,7 @@ export default class IntegrationDiscordView extends Vue {
     BASE_URL = BASE_URL;
     discordBotInviteUrl = DISCORD_BOT_INVITE_URL;
     isChecked = true;
-
+    isLoading = false;
     account!: TAccount;
     pools!: IPools;
     guildList!: TGuildState;
@@ -182,9 +170,11 @@ export default class IntegrationDiscordView extends Vue {
         return this.guilds.filter((guild: TDiscordGuild) => guild.isConnected);
     }
 
-    mounted() {
+    async mounted() {
         if (this.discordToken) {
-            this.$store.dispatch('pools/listGuilds', this.pool);
+            this.isLoading = true;
+            await this.$store.dispatch('pools/listGuilds', this.pool);
+            this.isLoading = false;
         }
     }
 
@@ -200,7 +190,7 @@ export default class IntegrationDiscordView extends Vue {
         this.$store.dispatch('pools/updateGuild', guild);
     }
 
-    async onSelectGuild(guild: TDiscordGuild) {
+    onSelectGuild(guild: TDiscordGuild) {
         this.$store.dispatch('pools/createGuild', guild);
     }
 

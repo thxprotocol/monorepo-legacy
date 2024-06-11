@@ -1,7 +1,8 @@
 <template>
     <b-form-group label-class="d-flex">
         <template #label>
-            {{ label }}
+            <span v-if="label">{{ label }}</span>
+            <slot name="label" v-else />
             <span v-if="required" class="text-danger ml-1">*</span>
             <b-link v-if="tooltip" class="ml-auto" v-b-tooltip :title="tooltip">
                 <i class="fas fa-info-circle text-gray" />

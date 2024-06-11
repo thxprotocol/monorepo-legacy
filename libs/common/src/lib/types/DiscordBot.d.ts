@@ -15,6 +15,18 @@ type TDiscordGuild = {
     isShownSecret: boolean;
     icon: string;
     permissions: any;
+    notifications: {
+        questCreate: {
+            isEnabled: boolean;
+            message: string;
+            channelId: string;
+        };
+        questEntryCreate: {
+            isEnabled: boolean;
+            message: string;
+            channelId: string;
+        };
+    };
 };
 
 type TDiscordChannel = {
