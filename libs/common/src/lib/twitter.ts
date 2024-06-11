@@ -46,6 +46,7 @@ export class TwitterQuery {
     static create(operators: TTwitterOperators) {
         const operatorKeys = Object.keys(operators);
         if (!operatorKeys) return;
+        console.log(operators);
         const media =
             !operators['media'] || ['ignore', null].includes(operators['media']) ? '' : ` ${operators['media']}`;
         const query = operatorKeys
@@ -94,7 +95,7 @@ export class TwitterQuery {
                             .map((tag: string) => `#${tag}`)
                             .filter((v) => !!v)
                             .join(' OR ');
-                        return (items.length > 1 ? `(${hashtags})` : hashtags) + media;
+                        return items.length > 1 ? `(${hashtags})` : hashtags;
                     }
                     case 'mentions': {
                         const items = operators[key] as string[];
@@ -103,7 +104,7 @@ export class TwitterQuery {
                             .map((tag: string) => `@${tag}`)
                             .filter((v) => !!v)
                             .join(' OR ');
-                        return (items.length > 1 ? `(${mentions})` : mentions) + media;
+                        return items.length > 1 ? `(${mentions})` : mentions;
                     }
                     case 'excludes': {
                         const items = operators[key] as string[];
@@ -119,6 +120,6 @@ export class TwitterQuery {
             .filter((query) => !!query)
             .join(' ');
 
-        return `${query}`;
+        return `${query} ${media}`;
     }
 }
