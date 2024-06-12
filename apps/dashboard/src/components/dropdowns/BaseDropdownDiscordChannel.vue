@@ -35,8 +35,7 @@ export default class ModalRewardCustomCreate extends Vue {
     }
 
     onClick({ channelId }: { channelId: string }) {
-        const guild = Object.assign(this.guild, { channelId });
-        this.$emit('click', guild);
+        this.$emit('click', channelId);
     }
 }
 </script>
