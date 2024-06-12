@@ -46,7 +46,6 @@ export class TwitterQuery {
     static create(operators: TTwitterOperators) {
         const operatorKeys = Object.keys(operators);
         if (!operatorKeys) return;
-        console.log(operators);
         const media =
             !operators['media'] || ['ignore', null].includes(operators['media']) ? '' : ` ${operators['media']}`;
         const query = operatorKeys
