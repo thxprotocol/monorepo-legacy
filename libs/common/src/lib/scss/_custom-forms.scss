@@ -6,8 +6,8 @@
     display: block;
     border: $border-width solid $border-color;
     border-radius: $border-radius;
-    padding: 1rem 0rem;
-    padding-left: 4rem;
+    padding: .80rem 0rem;
+    padding-left: 3.25rem;
     padding-right: 1rem;
 
     p:last-of-type {
@@ -17,7 +17,7 @@
 .custom-control-label::after,
 .custom-control-label::before {
     top: 50%;
-    left: 1.75rem;
+    left: 1.25rem;
     margin-top: -0.5rem;
 }
 

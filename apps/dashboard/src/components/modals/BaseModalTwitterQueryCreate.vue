@@ -2,49 +2,97 @@
     <BaseModal size="xl" hide-footer title="Twitter Query" :id="id" @show="onShow" :error="error">
         <template #modal-body>
             <b-tabs v-model="tabIndex" content-class="mt-3" justified>
-                <b-tab title="Quest Content">
+                <b-tab>
+                    <template #title>
+                        Twitter Quest
+                        <i
+                            class="fas fa-info-circle ml-2"
+                            v-b-tooltip
+                            title="Set the defaults for the Repost & Like quests that are created when matches for your query are
+                        found."
+                        />
+                    </template>
                     <b-alert v-if="!isQueryValid" variant="primary" show>
                         <i class="fas fa-exclamation-circle mr-2" />
                         Please use the <b-link @click="tabIndex = 1">Query Builder</b-link> to create a valid search
                         query that we can use to find your posts.
                     </b-alert>
-                    <p class="text-muted">
-                        Set the defaults for the Repost & Like quests that are created when matches for your query are
-                        found.
-                    </p>
+
                     <b-row>
                         <b-col>
-                            <BaseFormGroup required label="Title">
+                            <BaseFormGroup
+                                label="Status"
+                                description="Publishing a quest will send a notification your campaign subscribers."
+                                tooltip="Show your quest to your users."
+                            >
+                                <b-checkbox :checked="isPublished" @change="isPublished = $event" class="mb-0">
+                                    Published
+                                </b-checkbox>
+                            </BaseFormGroup>
+                            <BaseFormGroup
+                                required
+                                label="Title"
+                                tooltip="A short and engaging title for your quest. Used when notifying subscribers and shown in the quest overview of your campaign."
+                            >
                                 <b-form-input v-model="title" />
                             </BaseFormGroup>
-                            <BaseFormGroup label="Description">
+                            <BaseFormGroup
+                                label="Description"
+                                tooltip="Little bit of information about the quest shown in the quest overview of your campaign."
+                            >
                                 <b-form-textarea v-model="description" />
                             </BaseFormGroup>
-                            <BaseFormGroup required label="Amount">
+                            <BaseFormGroup
+                                required
+                                label="Amount"
+                                tooltip="The amount of points the campaign participant will earn for completing this quest."
+                            >
                                 <b-form-input v-model="amount" type="number" />
                             </BaseFormGroup>
                         </b-col>
                         <b-col>
+                            <BaseFormGroup
+                                required
+                                label="Frequency (hours)"
+                                description="Minimum 1 hour, maximum 24 hours."
+                                tooltip="How often we should search for new posts and create quests."
+                            >
+                                <b-form-input
+                                    min="1"
+                                    max="24"
+                                    :state="isFrequencyValid"
+                                    v-model="frequencyInHours"
+                                    type="number"
+                                />
+                            </BaseFormGroup>
+                            <hr />
                             <BaseFormGroupQuestLocks @change-locks="locks = $event" :pool="pool" :locks="locks" />
-                            <BaseFormGroup label="Minimum amount of followers">
+                            <BaseFormGroup
+                                label="Followers Count"
+                                tooltip="We can check for a minimum follower count in order to mitigate against automated behavior. Note that how higher the follower base, the more reach your content gets."
+                            >
                                 <b-form-input v-model="minFollowersCount" />
                             </BaseFormGroup>
-                            <BaseFormGroup label="Expiry in days">
+                            <BaseFormGroup
+                                label="Expiry in days"
+                                tooltip="This expiry date will be used to hide your quest automatically when the time comes. Easy way to keep your quest overview nice and clean."
+                            >
                                 <b-form-input v-model="expiryInDays" type="number" />
-                            </BaseFormGroup>
-                            <BaseFormGroup>
-                                <b-checkbox :checked="isPublished" @change="isPublished = $event">
-                                    Published
-                                </b-checkbox>
                             </BaseFormGroup>
                         </b-col>
                     </b-row>
                 </b-tab>
-                <b-tab title="Search Posts">
-                    <p class="text-muted">
-                        Use this query builder to create requirements for posts that should be amplified with Repost &
-                        Like quests.
-                    </p>
+                <b-tab>
+                    <template #title>
+                        Configuration
+                        <i
+                            class="fas fa-info-circle ml-2"
+                            v-b-tooltip
+                            title="Use this query builder to create requirements for posts that should be amplified with Repost &
+                        Like quests."
+                        />
+                    </template>
+
                     <b-row>
                         <b-col>
                             <BaseCardTwitterQueryOperators
@@ -125,6 +173,7 @@ export default class BaseModalTwitterQueryCreate extends Vue {
     excludes: string[] = [excludeOptions[0].value, excludeOptions[1].value, excludeOptions[2].value];
 
     // defaults
+    frequencyInHours = 24;
     title = '';
     description = '';
     amount = 50;
@@ -158,14 +207,20 @@ export default class BaseModalTwitterQueryCreate extends Vue {
         return this.queryPreview !== '-is:retweet -is:quote -is:reply';
     }
 
+    get isFrequencyValid() {
+        if (!this.frequencyInHours) return false;
+        return !!Number(this.frequencyInHours);
+    }
+
     get isDisabled() {
         const isTitleValid = this.title.length > 0;
-        return !this.isQueryValid || !isTitleValid || this.isLoading;
+        return !this.isQueryValid || !isTitleValid || this.isLoading || !this.isFrequencyValid;
     }
 
     onShow() {
         if (!this.query) return;
 
+        this.frequencyInHours = this.query.frequencyInHours ? this.frequencyInHours : this.frequencyInHours;
         this.from = this.query.operators.from ? this.query.operators.from : this.from;
         this.to = this.query.operators.to ? this.query.operators.to : this.to;
         this.text = this.query.operators.text ? this.query.operators.text : this.text;
@@ -221,7 +276,7 @@ export default class BaseModalTwitterQueryCreate extends Vue {
             const operators = TwitterQuery.stringify(this.operators);
             await this.$store.dispatch('pools/createTwitterQuery', {
                 pool: this.pool,
-                data: { operators, defaults: this.defaults },
+                data: { frequencyInHours: Number(this.frequencyInHours), operators, defaults: this.defaults },
             });
             this.$store.dispatch('pools/listTwitterQueries', { pool: this.pool });
             this.$bvModal.hide(this.id);
