@@ -33,7 +33,7 @@
         "hooper": "^0.3.4",
         "html-entities": "^2.4.0",
         "jose": "^4.14.4",
-        "jsonwebtoken": "^8.5.1",
+        "jsonwebtoken": "^9.0.0",
         "jspdf": "^2.5.1",
         "jszip": "^3.10.0",
         "lodash": "^4.17.21",
@@ -68,8 +68,8 @@
         "vuex-module-decorators": "^1.0.1",
         "web3": "^1.7.3",
         "web3-utils": "^1.8.1",
-        "webpack": "^5.74.0",
-        "xml2js": "^0.4.23",
+        "webpack": "^5.76.0",
+        "xml2js": "^0.5.0",
         "yup": "0.32.11"
     },
     "devDependencies": {
