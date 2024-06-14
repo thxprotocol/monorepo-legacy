@@ -6,6 +6,7 @@
         :title="title"
         :id="id"
         centered
+        :no-close-on-backdrop="true"
         :body-bg-variant="loading ? 'light' : 'white'"
         :hide-footer="loading || hideFooter"
         :hide-header="loading"

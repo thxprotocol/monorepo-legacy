@@ -51,17 +51,11 @@ type TPoolSettings = {
     title: string;
     slug: string;
     description: string;
-    startDate: Date;
-    endDate?: Date;
+    leaderboardInWeeks: number;
     isPublished: boolean;
     isWeeklyDigestEnabled: boolean;
     isTwitterSyncEnabled: boolean;
-    discordWebhookUrl: string;
     galachainPrivateKey: string;
-    defaults: {
-        discordMessage: string;
-        conditionalRewards: TQuestSocial & { hashtag: string };
-    };
     authenticationMethods: AccountVariant[];
 };
 
