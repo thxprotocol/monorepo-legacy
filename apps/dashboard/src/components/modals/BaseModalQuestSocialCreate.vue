@@ -102,7 +102,7 @@ export default class ModalQuestSocialCreate extends Vue {
     profile!: TAccount;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     file: File | null = null;
-    expiryDate: Date | number | null = null;
+    expiryDate: Date | string = '';
     locks: TQuestLock[] = [];
 
     @Prop() id!: string;

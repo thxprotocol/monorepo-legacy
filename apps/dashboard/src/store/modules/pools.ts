@@ -858,6 +858,14 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async resetParticipants(pool: TPool) {
+        await axios({
+            method: 'POST',
+            url: `/pools/${pool._id}/participants/balance/reset`,
+        });
+    }
+
+    @Action({ rawError: true })
     async getLeaderboard({
         pool,
         limit,

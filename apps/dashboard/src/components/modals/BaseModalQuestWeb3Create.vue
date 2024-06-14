@@ -115,7 +115,7 @@ export default class ModalQuestWeb3Create extends Vue {
     threshold = '0';
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     contracts: { chainId: ChainId; address: string }[] = [{ chainId: ChainId.Polygon, address: '' }];
-    expiryDate: Date | number | null = null;
+    expiryDate: Date | string = '';
     locks: TQuestLock[] = [];
 
     @Prop() id!: string;

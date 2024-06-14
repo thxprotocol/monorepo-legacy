@@ -106,7 +106,7 @@ export default class ModalRewardDailyCreate extends Vue {
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     isEnabledWebhookQualification = false;
     file: File | null = null;
-    expiryDate: Date | number | null = null;
+    expiryDate: Date | string = '';
     eventName = '';
     isVisible = true;
     locks: TQuestLock[] = [];

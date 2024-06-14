@@ -106,7 +106,7 @@ import BaseCardQuestLocks from '../cards/BaseCardQuestLocks.vue';
 export default class ModalRewardERC20Create extends Vue {
     title = '';
     description = '';
-    expiryDate: Date | null = null;
+    expiryDate: Date | string = '';
     limit = 0;
     limitSupply = 0;
     pointPrice = 0;

@@ -83,7 +83,7 @@ export default class ModalQuestWebhookCreate extends Vue {
     description = '';
     amount = 0;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
-    expiryDate: Date | number | null = null;
+    expiryDate: Date | string = '';
     locks: TQuestLock[] = [];
     webhooks!: TWebhookState;
     webhook: TWebhook | null = null;

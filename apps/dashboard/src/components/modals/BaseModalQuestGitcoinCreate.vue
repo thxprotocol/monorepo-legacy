@@ -77,7 +77,7 @@ export default class ModalQuestWeb3Create extends Vue {
     description = '';
     amount = 0;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
-    expiryDate: Date | number | null = null;
+    expiryDate: Date | string = '';
     locks: TQuestLock[] = [];
     scorerId = GitcoinScorerVariant.UniqueHumanity;
     score = 0;

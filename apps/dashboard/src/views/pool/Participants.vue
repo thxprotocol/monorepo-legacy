@@ -12,16 +12,7 @@
             >
                 <template #button-content> <i class="fas fa-ellipsis-v ml-0" /> </template>
                 <b-dropdown-item v-b-modal="'BaseModalParticipantBalanceReset'"> Reset Points </b-dropdown-item>
-                <BaseModal id="BaseModalParticipantBalanceReset" title="Reset participant balances">
-                    <template #modal-body>
-                        <p>This action will set the point balance for all campaign participants to 0. Are you sure?</p>
-                    </template>
-                    <template #btn-primary>
-                        <b-button @click="onClickParticipantsReset" block class="rounded-pill" variant="primary">
-                            Reset all balances
-                        </b-button>
-                    </template>
-                </BaseModal>
+                <BaseModalParticipantBalanceReset :pool="pool" @hidden="getParticipants" />
                 <!-- <b-dropdown-item v-b-modal=""> Remove </b-dropdown-item> -->
             </b-dropdown>
         </div>
@@ -119,7 +110,7 @@ import BaseBtnSort from '@thxnetwork/dashboard/components/buttons/BaseBtnSort.vu
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
 import BaseModalParticipant from '@thxnetwork/dashboard/components/modals/BaseModalParticipant.vue';
-import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
+import BaseModalParticipantBalanceReset from '@thxnetwork/dashboard/components/modals/BaseModalParticipantBalanceReset.vue';
 import BaseParticipantConnectedAccount, {
     parseConnectedAccounts,
 } from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
@@ -128,11 +119,11 @@ import { IPools, TParticipantState } from '@thxnetwork/dashboard/store/modules/p
 
 @Component({
     components: {
-        BaseModal,
         BaseBtnSort,
         BaseCardTableHeader,
         BaseParticipantAccount,
         BaseParticipantConnectedAccount,
+        BaseModalParticipantBalanceReset,
         BaseModalParticipant,
     },
     computed: mapGetters({
@@ -255,10 +246,6 @@ export default class ViewParticipants extends Vue {
         this.page = 1;
         this.limit = limit;
         this.getParticipants();
-    }
-
-    onClickParticipantsReset() {
-        debugger;
     }
 }
 </script>

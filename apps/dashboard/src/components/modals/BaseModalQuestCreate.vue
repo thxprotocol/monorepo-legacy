@@ -145,7 +145,7 @@ import BaseCardQuestLocks from '@thxnetwork/dashboard/components/cards/BaseCardQ
 export default class ModalQuestCreate extends Vue {
     imageFile: File | null = null;
     image = '';
-    expirationDate: Date | null = null;
+    expirationDate: Date | string = '';
     expirationTime = '00:00:00';
 
     @Prop() id!: string;
@@ -188,7 +188,7 @@ export default class ModalQuestCreate extends Vue {
     }
 
     onClickExpiryRemove() {
-        this.expirationDate = null;
+        this.expirationDate = '';
         this.expirationTime = '00:00:00';
         this.$emit('change-date', '');
     }

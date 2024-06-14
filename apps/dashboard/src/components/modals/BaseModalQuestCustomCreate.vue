@@ -90,7 +90,7 @@ export default class ModalQuestCustomCreate extends Vue {
     error = '';
     title = '';
     description = '';
-    expiryDate: Date | number | null = null;
+    expiryDate: Date | string = '';
     isPublished = false;
     amount = 0;
     limit = 0;

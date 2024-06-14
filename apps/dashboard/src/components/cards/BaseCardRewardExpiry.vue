@@ -54,7 +54,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 @Component({})
 export default class BaseCardRewardExpiry extends Vue {
     isVisible = false;
-    expirationDate: Date | null = null;
+    expirationDate: Date | string = '';
     expirationTime = '00:00:00';
 
     @Prop() expiryDate!: Date;
@@ -86,7 +86,7 @@ export default class BaseCardRewardExpiry extends Vue {
     }
 
     onClickExpiryRemove() {
-        this.expirationDate = null;
+        this.expirationDate = '';
         this.expirationTime = '00:00:00';
         this.$emit('change-date', '');
     }
