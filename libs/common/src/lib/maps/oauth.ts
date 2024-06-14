@@ -27,9 +27,7 @@ export const providerAccountVariantMap = {
 export const interactionComponentMap = {
     [QuestSocialRequirement.YouTubeSubscribe]: 'BaseDropdownYoutubeChannels',
     [QuestSocialRequirement.YouTubeLike]: 'BaseDropdownYoutubeVideo',
-    [QuestSocialRequirement.TwitterLike]: 'BaseDropdownTwitterTweets',
     [QuestSocialRequirement.TwitterRetweet]: 'BaseDropdownTwitterTweets',
-    [QuestSocialRequirement.TwitterLikeRetweet]: 'BaseDropdownTwitterTweets',
     [QuestSocialRequirement.TwitterFollow]: 'BaseDropdownTwitterUsers',
     [QuestSocialRequirement.TwitterQuery]: 'BaseDropdownTwitterQuery',
     [QuestSocialRequirement.DiscordGuildJoined]: 'BaseDropdownDiscordGuilds',
