@@ -132,7 +132,7 @@ export default class ModalQuestCustomCreate extends Vue {
                 file: this.file,
                 amount: this.amount,
                 limit: this.limit,
-                expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
+                expiryDate: this.expiryDate,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
                 index: !this.reward ? this.total : this.reward.index,
                 eventName: this.eventName,

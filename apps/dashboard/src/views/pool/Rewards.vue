@@ -95,7 +95,13 @@
                     <BaseButtonRewardPayments :pool="pool" :reward="item.reward" />
                 </template>
                 <template #cell(expiry)="{ item }">
-                    <small class="text-gray">{{ item.expiry }}</small>
+                    <small class="text-gray">{{ item.expiry.label }}</small>
+                    <i
+                        v-if="item.expiry.isExpired"
+                        class="fas fa-exclamation-circle small text-danger ml-1"
+                        v-b-tooltip
+                        title="This reward has expired and is no longer visible in your campaign."
+                    />
                 </template>
                 <template #cell(created)="{ item }">
                     <small class="text-gray">{{ item.created }}</small>
@@ -215,14 +221,17 @@ export default class RewardsView extends Vue {
             title: reward.title,
             points: reward.pointPrice,
             payments: reward.paymentCount,
-            expiry: reward.expiryDate ? format(new Date(reward.expiryDate), 'dd-MM-yyyy HH:mm') : '',
+            expiry: {
+                isExpired: reward.expiryDate ? Date.now() > new Date(reward.expiryDate).getTime() : false,
+                label: reward.expiryDate ? format(new Date(reward.expiryDate), 'dd-MM-yyyy HH:mm') : '',
+            },
             created: format(new Date(reward.createdAt), 'dd-MM-yyyy HH:mm'),
             reward,
         }));
     }
 
     mounted() {
-        const { isPublished } = this.$route.query;
+        const { isPublished } = this.$route.query as { isPublished?: string };
         this.isPublished = isPublished ? JSON.parse(isPublished) : true;
         this.listRewards();
         this.listQuests();
