@@ -1,6 +1,7 @@
 <template>
     <b-card>
-        <bar-chart :chart-data="barChartData" :chart-options="chartOptions" />
+        <b-spinner v-if="isLoading" small />
+        <bar-chart v-else :chart-data="barChartData" :chart-options="chartOptions" />
     </b-card>
 </template>
 <script lang="ts">
@@ -24,7 +25,6 @@ import { QuestVariant } from '@thxnetwork/common/enums';
     },
 })
 export default class BaseChardQuests extends Vue {
-    isLoading = false;
     analytics!: IPoolAnalytics;
     chartOptions: ChartOptions = {
         plugins: {
@@ -59,17 +59,14 @@ export default class BaseChardQuests extends Vue {
     @Prop() pool!: TPool;
     @Prop() chartDates!: string[];
 
-    get poolAnalytics() {
-        return this.analytics[this.$route.params.id];
+    get isLoading() {
+        return !this.analytics[this.$route.params.id];
     }
 
     get barChartData() {
-        if (!this.poolAnalytics) return;
-
         const getData = (key: string) =>
             this.chartDates.map((data) => {
-                if (!this.poolAnalytics[key]) return 0;
-                const dayData = this.poolAnalytics[key].find((x) => x.day == data);
+                const dayData = this.analytics[this.$route.params.id][key].find((x) => x.day == data);
                 return dayData ? dayData.totalAmount : 0;
             });
 
