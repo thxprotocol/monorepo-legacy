@@ -238,8 +238,6 @@ export default class BaseCardReward extends Vue {
                 return `https://youtu.be/${channelItem}`;
             case ChannelAction.YouTubeSubscribe:
                 return `https://youtube.com/channel/${channelItem}`;
-            case ChannelAction.TwitterLike:
-                return `https://www.twitter.com/twitter/status/${channelItem}`;
             case ChannelAction.TwitterRetweet:
                 return `https://www.twitter.com/twitter/status/${channelItem}`;
             case ChannelAction.TwitterFollow:

@@ -129,7 +129,7 @@ export default class ModalQuestWebhookCreate extends Vue {
                 title: this.title,
                 description: this.description,
                 amount: this.amount,
-                expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
+                expiryDate: this.expiryDate,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
                 locks: JSON.stringify(this.locks),
                 webhookId: this.webhook?._id,

@@ -171,7 +171,7 @@ export default class ModalQuestInviteCreate extends Vue {
                 pathname: this.pathname,
                 amount: this.amount,
                 isPublished: this.isPublished,
-                expiryDate: this.expiryDate ? new Date(this.expiryDate).toISOString() : undefined,
+                expiryDate: this.expiryDate,
                 claimAmount: this.claimAmount,
                 successUrl: this.successUrl,
                 isMandatoryReview: this.isMandatoryReview,
