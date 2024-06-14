@@ -64,7 +64,7 @@ export default class BaseChardQuests extends Vue {
     get barChartData() {
         const getData = (key: string) =>
             this.chartDates.map((data) => {
-                if (!this.poolAnalytics[key]) return 0;
+                if (!this.poolAnalytics || !this.poolAnalytics[key]) return 0;
                 const dayData = this.poolAnalytics[key].find((date) => date.day == data);
                 return dayData ? dayData.totalAmount : 0;
             });

@@ -1,6 +1,30 @@
 <template>
     <div>
-        <h2 class="mb-3">Participants: {{ participants.total }}</h2>
+        <div class="mb-3 d-flex align-items-center">
+            <h2 class="m-0">Participants</h2>
+            <b-dropdown
+                no-caret
+                variant="primary"
+                class="ml-auto"
+                menu-class="w-100"
+                toggle-class="justify-content-between align-items-center d-flex"
+                right
+            >
+                <template #button-content> <i class="fas fa-ellipsis-v ml-0" /> </template>
+                <b-dropdown-item v-b-modal="'BaseModalParticipantBalanceReset'"> Reset Points </b-dropdown-item>
+                <BaseModal id="BaseModalParticipantBalanceReset" title="Reset participant balances">
+                    <template #modal-body>
+                        <p>This action will set the point balance for all campaign participants to 0. Are you sure?</p>
+                    </template>
+                    <template #btn-primary>
+                        <b-button @click="onClickParticipantsReset" block class="rounded-pill" variant="primary">
+                            Reset all balances
+                        </b-button>
+                    </template>
+                </BaseModal>
+                <!-- <b-dropdown-item v-b-modal=""> Remove </b-dropdown-item> -->
+            </b-dropdown>
+        </div>
         <BCard class="shadow-sm mb-5" no-body v-if="pool">
             <BaseCardTableHeader
                 :pool="pool"
@@ -36,7 +60,7 @@
                 </template>
                 <template #head(tokens)> Connected </template>
                 <template #head(pointBalance)>
-                    <BaseBtnSort @click="onClickSort('pointBalance', $event)">Point Balance</BaseBtnSort>
+                    <BaseBtnSort @click="onClickSort('pointBalance', $event)">Points</BaseBtnSort>
                 </template>
                 <template #head(subscription)>
                     <BaseBtnSort @click="onClickSort('subscription', $event)">Subscribed</BaseBtnSort>
@@ -95,15 +119,16 @@ import BaseBtnSort from '@thxnetwork/dashboard/components/buttons/BaseBtnSort.vu
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
 import BaseModalParticipant from '@thxnetwork/dashboard/components/modals/BaseModalParticipant.vue';
+import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseParticipantConnectedAccount, {
     parseConnectedAccounts,
 } from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
 import { format } from 'date-fns';
 import { IPools, TParticipantState } from '@thxnetwork/dashboard/store/modules/pools';
-import { on } from 'events';
 
 @Component({
     components: {
+        BaseModal,
         BaseBtnSort,
         BaseCardTableHeader,
         BaseParticipantAccount,
@@ -230,6 +255,10 @@ export default class ViewParticipants extends Vue {
         this.page = 1;
         this.limit = limit;
         this.getParticipants();
+    }
+
+    onClickParticipantsReset() {
+        debugger;
     }
 }
 </script>
