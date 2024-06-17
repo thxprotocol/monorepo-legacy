@@ -1,5 +1,5 @@
 <template>
-    <base-modal hide-footer size="xl" title="Participants" :id="id">
+    <base-modal size="xl" title="Participants" :id="id" :hide-footer="true">
         <template #modal-body>
             <BaseCardTableHeader
                 :page="page"

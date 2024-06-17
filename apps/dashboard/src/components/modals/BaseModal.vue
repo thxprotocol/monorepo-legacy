@@ -6,12 +6,15 @@
         :title="title"
         :size="size || 'lg'"
         :id="id"
+        :hide-footer="hideFooter"
         centered
     >
         <b-alert variant="danger" show v-if="error">
             {{ error }}
         </b-alert>
-        <slot name="modal-body"></slot>
+
+        <slot name="modal-body"> </slot>
+
         <template v-slot:modal-footer="{}">
             <slot name="btn-primary"></slot>
         </template>
