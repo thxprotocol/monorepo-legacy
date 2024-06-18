@@ -14,11 +14,9 @@
                         <b-dropdown-item-button
                             v-for="(variant, key) of Object.keys(QuestVariant).filter((v) => isNaN(Number(v)))"
                             :key="key"
-                            :disabled="QuestVariant[variant] == QuestVariant.Invite"
                             v-b-modal="`${questModalComponentMap[QuestVariant[variant]]}-${variant}`"
                             button-class="d-flex px-2"
                             style="flex: 1 0 50%"
-                            :class="{ 'text-opaque': QuestVariant[variant] === QuestVariant.Invite }"
                         >
                             <b-media>
                                 <template #aside>
@@ -298,7 +296,10 @@ export default class QuestsView extends Vue {
 
     async openPublished(isPublished: boolean) {
         try {
-            await this.$router.push({ path: `/pool/${this.pool._id}/quests`, query: { isPublished } });
+            this.$router.push({
+                path: `/pool/${this.pool._id}/quests`,
+                query: { isPublished: isPublished ? String(isPublished) : 'false' },
+            });
         } catch (error) {
             await this.listQuests();
         }

@@ -3,158 +3,119 @@
         variant="Invite Quest"
         @show="onShow"
         @submit="onSubmit"
+        @change-info-links="infoLinks = Object.values($event)"
         @change-title="title = $event"
+        @change-date="expiryDate = $event"
         @change-description="description = $event"
         @change-file="file = $event"
-        @change-info-links="infoLinks = Object.values($event)"
         @change-published="isPublished = $event"
-        @change-date="expiryDate = $event"
         @change-locks="locks = $event"
-        :info-links="infoLinks"
+        :pool="pool"
+        :published="isPublished"
         :id="id"
         :error="error"
+        :info-links="infoLinks"
         :loading="isLoading"
-        :published="isPublished"
-        :disabled="isSubmitDisabled || !amount || !title"
+        :disabled="isDisabled || !amount || !title"
         :quest="reward"
-        :pool="pool"
     >
         <template #col-left>
-            <b-form-group label="Amount">
-                <b-form-input v-model="amount" />
-            </b-form-group>
-            <b-form-group
-                label="Invite URL"
-                description="This URL will be appended with a code that identifies the user that refers a friend."
-                v-if="pool.widget"
+            <BaseFormGroup
+                required
+                label="Amount"
+                tooltip="The amount the inviter will earn once the invitee has completed the required quests."
             >
-                <b-input-group :prepend="`${pool.widget.domain}/`">
-                    <b-form-input v-model="pathname" />
-                </b-input-group>
-            </b-form-group>
-            <b-form-group label="Qualification">
-                <b-form-checkbox v-model="isMandatoryReview"> Enable mandatory manual review </b-form-checkbox>
-            </b-form-group>
+                <b-form-input v-model="amount" type="number" />
+            </BaseFormGroup>
+            <BaseFormGroup
+                label="Amount (Invitee)"
+                tooltip="The amount the invitee will earn when the required quests have been completed."
+            >
+                <b-form-input v-model="amountInvitee" type="number" />
+            </BaseFormGroup>
+            <BaseFormGroup
+                label="Required Quest"
+                tooltip="The invitee needs to complete this quest before points will be transferred."
+            >
+                <b-dropdown
+                    variant="light"
+                    toggle-class="form-control d-flex align-items-center justify-content-between"
+                    menu-class="w-100"
+                    class="w-100"
+                >
+                    <template #button-content>
+                        <div v-if="requiredQuest">{{ requiredQuest.title }}</div>
+                        <div v-else>Select a quest</div>
+                    </template>
+                    <b-dropdown-item-button @click="requiredQuest = quest" :key="key" v-for="(quest, key) of quests">
+                        {{ quest.title }}
+                    </b-dropdown-item-button>
+                </b-dropdown>
+            </BaseFormGroup>
         </template>
 
-        <template #col-right>
-            <BaseCardURLQualify :visible="isVisibleCardURLQualify" :url="successUrl" @input="successUrl = $event" />
-            <BaseCardURLWebhook
-                class="mb-3"
-                :visible="isVisibleCardWebhookQualify"
-                :code="code"
-                title="Webhook Qualification"
-                description="You can also choose to run this webhook to qualify the referral and trigger a point transfer."
-            >
-                <template #alerts>
-                    <b-alert show variant="info">
-                        <i class="fas fa-question-circle mr-2"></i> Take note of these development guidelines:
-                        <ul class="px-3 mb-0 mt-1 small">
-                            <li v-if="!reward">
-                                <strong>REFERRAL_TOKEN</strong> will be populated after creating this referral reward.
-                            </li>
-                            <li>
-                                <strong>REFERRAL_CODE</strong> should be derived from the
-                                <code>$_GET['ref']</code>
-                                value in the referral URL used on your site.
-                            </li>
-                        </ul>
-                    </b-alert>
-                </template>
-            </BaseCardURLWebhook>
-        </template>
+        <template #col-right> </template>
     </BaseModalQuestCreate>
 </template>
 
 <script lang="ts">
-import hljs from 'highlight.js/lib/core';
-import Shell from 'highlight.js/lib/languages/shell';
-import { QuestVariant } from '@thxnetwork/common/enums';
 import { mapGetters } from 'vuex';
-import { UserProfile } from 'oidc-client-ts';
+import { QuestVariant } from '@thxnetwork/common/enums';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
+import { TQuestState } from '@thxnetwork/dashboard/store/modules/pools';
 import BaseModal from './BaseModal.vue';
-import BaseCardRewardExpiry from '../cards/BaseCardRewardExpiry.vue';
-import BaseCardURLQualify from '@thxnetwork/dashboard/components/cards/BaseCardURLQualify.vue';
-import BaseCardURLWebhook from '@thxnetwork/dashboard/components/cards/BaseCardURLWebhook.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
-
-hljs.registerLanguage('shell', Shell);
 
 @Component({
     components: {
         BaseModal,
-        BaseCardRewardExpiry,
-        BaseCardURLQualify,
-        BaseCardURLWebhook,
         BaseModalQuestCreate,
     },
     computed: mapGetters({
-        profile: 'account/profile',
+        questList: 'pools/quests',
     }),
 })
 export default class ModalQuestInviteCreate extends Vue {
-    isSubmitDisabled = false;
-    isMandatoryReview = false;
     isLoading = false;
-    isVisibleCardURLQualify = true;
-    isVisibleCardWebhookQualify = false;
-    isCopied = false;
     error = '';
     title = '';
-    amount = '0';
-    isPublished = false;
-    successUrl = '';
     description = '';
-    pathname = '';
-    claimAmount = 1;
-    profile!: UserProfile;
+    amount = 0;
+    amountInvitee = 0;
+    isPublished = false;
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     file: File | null = null;
     expiryDate: Date | string = '';
     locks: TQuestLock[] = [];
+    requiredQuest: TQuest | null = null;
+    questList!: TQuestState;
 
     @Prop() id!: string;
     @Prop() total!: number;
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TQuestInvite;
 
-    get code() {
-        return `curl "${API_URL}/v1/webhook/referral/${this.reward ? this.reward.token : '<REFERRAL_TOKEN>'}/qualify" \\
--X POST \\
--d "code=<REFERRAL_CODE>"`;
+    get quests() {
+        if (!this.questList[this.pool._id]) return [];
+        return this.questList[this.pool._id].results;
     }
 
-    get codeExample() {
-        return hljs.highlight(this.code, { language: 'shell' }).value;
+    get isDisabled() {
+        return this.isLoading;
     }
 
     onShow() {
         this.title = this.reward ? this.reward.title : '';
         this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
         this.description = this.reward ? this.reward.description : '';
-        this.amount = this.reward ? String(this.reward.amount) : '0';
-        this.pathname = this.reward ? this.reward.pathname : '';
+        this.amount = this.reward ? this.reward.amount : this.amount;
+        this.amountInvitee = this.reward ? this.reward.amountInvitee : this.amountInvitee;
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
-        this.successUrl = this.reward ? this.reward.successUrl : '';
-        this.isVisibleCardURLQualify = this.reward ? !!this.reward.successUrl : true;
-        this.isVisibleCardWebhookQualify = this.reward ? !this.reward.successUrl : false;
-        this.isMandatoryReview = this.reward ? this.reward.isMandatoryReview : this.isMandatoryReview;
         this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
         this.locks = this.reward ? this.reward.locks : this.locks;
-    }
-
-    onChangeLink({ key, label, url }: TInfoLink & { key: number }) {
-        let update = {};
-
-        if (label || label === '') update = { ...this.infoLinks[key], label };
-        if (url || url === '') update = { ...this.infoLinks[key], url };
-        if (typeof label === 'undefined' && typeof url === 'undefined') {
-            Vue.delete(this.infoLinks, key);
-        } else {
-            Vue.set(this.infoLinks, key, update);
+        if (this.reward && this.reward.requiredQuest) {
+            this.requiredQuest = this.quests.find((quest) => quest._id === this.reward.requiredQuest.questId) as TQuest;
         }
     }
 
@@ -163,20 +124,19 @@ export default class ModalQuestInviteCreate extends Vue {
         this.$store
             .dispatch(`pools/${this.reward ? 'updateQuest' : 'createQuest'}`, {
                 ...this.reward,
-                variant: QuestVariant.Invite,
-                page: 1,
                 poolId: String(this.pool._id),
+                variant: QuestVariant.Invite,
                 title: this.title,
                 description: this.description,
-                pathname: this.pathname,
                 amount: this.amount,
+                amountInvitee: this.amountInvitee,
+                requiredQuest: this.requiredQuest && {
+                    questId: this.requiredQuest._id,
+                    variant: this.requiredQuest.variant,
+                },
                 isPublished: this.isPublished,
                 expiryDate: this.expiryDate,
-                claimAmount: this.claimAmount,
-                successUrl: this.successUrl,
-                isMandatoryReview: this.isMandatoryReview,
                 infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
-                index: !this.reward ? this.total : this.reward.index,
                 locks: this.locks,
             })
             .then(() => {
