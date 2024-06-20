@@ -120,6 +120,7 @@
                         v-if="
                             [
                                 QuestVariant.Daily,
+                                QuestVariant.Invite,
                                 QuestVariant.Twitter,
                                 QuestVariant.YouTube,
                                 QuestVariant.Discord,
