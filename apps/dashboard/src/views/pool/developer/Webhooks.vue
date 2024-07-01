@@ -46,12 +46,12 @@
                         <BaseModalWebhookCreate id="modalWebhookCreate" :pool="pool" />
                     </template>
 
-                    <BTable hover :items="webhooksList" id="table-webhooks" responsive="lg" show-empty>
+                    <BTable hover :items="webhooksList" id="table-webhooks" responsive="sm" show-empty>
                         <!-- Head formatting -->
                         <template #head(url)>URL</template>
                         <template #head(webhookRequests)> Requests </template>
                         <template #head(status)> Status </template>
-                        <template #head(id)> &nbsp;</template>
+                        <template #head(_id)> &nbsp;</template>
 
                         <!-- Cell formatting -->
                         <template #cell(url)="{ item }">
@@ -62,11 +62,11 @@
                         </template>
                         <template #cell(webhookRequests)="{ item }">
                             <BaseModalWebhookRequests
-                                :id="`modalWebhookRequest${item.id}`"
-                                :webhook="Object.values(webhooks[pool._id]).find((w) => w._id === item.id)"
+                                :id="`modalWebhookRequest${item._id}`"
+                                :webhook="Object.values(webhooks[pool._id]).find((w) => w._id === item._id)"
                                 :webhook-requests="item.webhookRequests"
                             />
-                            <b-link v-if="item.webhookRequests.length" v-b-modal="`modalWebhookRequest${item.id}`">
+                            <b-link v-if="item.webhookRequests.length" v-b-modal="`modalWebhookRequest${item._id}`">
                                 <i class="fas fa-exchange-alt mr-1 text-muted" />
                                 {{ item.webhookRequests.length }}
                             </b-link>
@@ -77,12 +77,12 @@
                                 {{ item.webhookRequests.length ? 'Active' : 'Inactive' }}
                             </b-badge>
                         </template>
-                        <template #cell(id)="{ item }">
+                        <template #cell(_id)="{ item }">
                             <b-dropdown variant="link" size="sm" no-caret right>
                                 <template #button-content>
                                     <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                                 </template>
-                                <b-dropdown-item v-b-modal="`modalWebhookCreate${item.id}`"> Edit </b-dropdown-item>
+                                <b-dropdown-item v-b-modal="`modalWebhookCreate${item._id}`"> Edit </b-dropdown-item>
                                 <b-dropdown-item @click="onClickDelete(item)"> Delete </b-dropdown-item>
                             </b-dropdown>
                             <BaseModalWebhookCreate
@@ -101,10 +101,9 @@
 import { mapGetters } from 'vuex';
 import { Component, Vue } from 'vue-property-decorator';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import { TAccount } from '@thxnetwork/types/interfaces';
+import { TWebhookState } from '@thxnetwork/dashboard/store/modules/webhooks';
 import BaseModalWebhookCreate from '@thxnetwork/dashboard/components/modals/BaseModalWebhookCreate.vue';
 import BaseModalWebhookRequests from '@thxnetwork/dashboard/components/modals/BaseModalWebhookRequests.vue';
-import { TWebhookState } from '@thxnetwork/dashboard/store/modules/webhooks';
 
 @Component({
     components: { BaseModalWebhookCreate, BaseModalWebhookRequests },
@@ -135,10 +134,9 @@ export default class CampaignConfigWebhooks extends Vue {
         return Object.values(this.webhooks[this.pool._id]).map((w) => {
             return {
                 url: w.url,
-                // _id: w._id,
                 webhookRequests: w.webhookRequests,
                 status: w.status,
-                id: w._id,
+                _id: w._id,
             };
         });
     }

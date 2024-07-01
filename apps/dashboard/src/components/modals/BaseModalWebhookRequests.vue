@@ -1,57 +1,52 @@
 <template>
     <base-modal size="xl" title="Recent Webhook Requests (Last 50)" :id="id" :error="error">
         <template #modal-body>
-            <b-row>
-                <b-col md="6">
-                    <b-list-group>
-                        <b-list-group-item
-                            :key="key"
-                            v-for="(webhookRequest, key) of webhookRequestList"
-                            class="bg-light p-2"
-                        >
-                            <div class="d-flex justify-content-between mb-2">
-                                <div>
-                                    <b-badge
-                                        class="p-1 mr-2"
-                                        :variant="
-                                            webhookRequest.httpStatus > 400 && webhookRequest.httpStatus < 600
-                                                ? 'danger'
-                                                : 'success'
-                                        "
-                                    >
-                                        {{ webhookRequest.httpStatus }}
-                                    </b-badge>
-                                    <code>POST {{ webhook.url }}</code>
-                                </div>
-                                <small class="text-muted" v-if="webhookRequest.createdAt">
-                                    {{ format(new Date(webhookRequest.createdAt), 'dd-MM-yyyy HH:mm') }}
-                                </small>
-                            </div>
-                            <pre
-                                v-if="webhookRequest.payloadFormatted"
-                                class="rounded p-3 mb-0 w-100 text-white small"
-                                style="background-color: #282c34; white-space: pre-line"
+            <p class="text-muted">
+                Set up your webhook endpoint to receive live events from THX API.
+                <b-link href="https://docs.thx.network/developers/webhooks" target="_blank">
+                    View webhook integration example
+                </b-link>
+            </p>
+            <b-list-group>
+                <b-list-group-item :key="key" v-for="(webhookRequest, key) of webhookRequestList" class="bg-light p-2">
+                    <div class="d-flex justify-content-between mb-2">
+                        <div>
+                            <b-badge
+                                class="p-1 mr-2"
+                                :variant="
+                                    webhookRequest.httpStatus > 400 && webhookRequest.httpStatus < 600
+                                        ? 'danger'
+                                        : 'success'
+                                "
                             >
-                                <code class="language-html" v-html="webhookRequest.payloadFormatted.value"></code>
-                            </pre>
-                            <b-alert show class="p-1 m-0 mt-2 small" variant="gray">
-                                {{ WebhookRequestState[webhookRequest.state] }}
-                                <template v-if="webhookRequest.failReason">: {{ webhookRequest.failReason }}</template>
-                            </b-alert>
-                        </b-list-group-item>
-                    </b-list-group>
-                </b-col>
-                <b-col md="6">
-                    <p class="text-muted">Set up your webhook endpoint to receive live events from THX API.</p>
-                    <b-link href="https://docs.thx.network/developers/webhooks" target="_blank">View Examples</b-link>
-                    <!-- <pre
-                        class="rounded p-3 mb-2 text-white w-auto small"
-                        style="background-color: #282c34; overflow: scroll; white-space: pre; tab-size: 2"
+                                {{ webhookRequest.httpStatus }}
+                            </b-badge>
+                            <code>POST {{ webhook.url }}</code>
+                        </div>
+                        <small class="text-muted" v-if="webhookRequest.createdAt">
+                            {{ format(new Date(webhookRequest.createdAt), 'dd-MM-yyyy HH:mm') }}
+                        </small>
+                    </div>
+                    <pre
+                        v-if="webhookRequest.payloadFormatted"
+                        class="rounded p-3 mb-0 w-100 text-white small"
+                        style="background-color: #282c34; white-space: pre-line"
                     >
-                        <code class="language-html" v-html="exampleController"></code>
-                    </pre> -->
-                </b-col>
-            </b-row>
+                        <code class="language-html" v-html="webhookRequest.payloadFormatted.value"></code>
+                    </pre>
+                    <hr class="my-1" />
+                    <pre
+                        class="rounded p-3 mb-0 w-100 text-white small"
+                        style="background-color: #282c34; white-space: pre-line"
+                    >
+                        <div class="text-gray"># Response {{ WebhookRequestState[webhookRequest.state] }}</div>
+                        <code
+                            class="language-html"
+                            v-html="webhookRequest.responseFormatted ? webhookRequest.responseFormatted.value : webhookRequest.failReason"
+                        />
+                    </pre>
+                </b-list-group-item>
+            </b-list-group>
         </template>
         <template #btn-primary> &nbsp; </template>
     </base-modal>
@@ -127,6 +122,8 @@ app.post('${path}', (req, res) => {
     get webhookRequestList() {
         return this.webhookRequests.map((request) => {
             request.payloadFormatted = hljs.highlight(request.payload, { language: 'javascript' });
+            request.responseFormatted =
+                request.response && hljs.highlight(request.response, { language: 'javascript' });
             return request;
         });
     }

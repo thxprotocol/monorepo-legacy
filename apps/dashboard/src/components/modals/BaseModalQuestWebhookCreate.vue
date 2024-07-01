@@ -25,7 +25,10 @@
                 label="Amount"
                 tooltip="The amount of points the campaign participant will earn for completing this quest."
             >
-                <b-form-input type="number" v-model="amount" />
+                <b-form-input type="number" :disabled="isAmountCustom" v-model="amount" class="mb-2" />
+                <b-form-checkbox v-model="isAmountCustom" class="text-muted">
+                    Enable custom <code>amount</code> in webhook response
+                </b-form-checkbox>
             </BaseFormGroup>
             <BaseFormGroup required label="Webhook" tooltip="Select a webhook to trigger when the quest is completed.">
                 <b-dropdown variant="link" class="dropdown-select" v-if="webhookList.length">
@@ -89,6 +92,7 @@ export default class ModalQuestWebhookCreate extends Vue {
     webhook: TWebhook | null = null;
     webhookId = '';
     metadata = '';
+    isAmountCustom = false;
 
     @Prop() id!: string;
     @Prop() total!: number;
@@ -110,6 +114,7 @@ export default class ModalQuestWebhookCreate extends Vue {
         this.locks = this.reward ? this.reward.locks : this.locks;
         this.webhookId = this.reward ? this.reward.webhookId : '';
         this.metadata = this.reward ? this.reward.metadata : this.metadata;
+        this.isAmountCustom = this.reward ? this.reward.isAmountCustom : this.isAmountCustom;
 
         await this.$store.dispatch('webhooks/list', this.pool);
         this.webhook = this.webhookId ? this.webhooks[this.pool._id][this.webhookId] : this.webhook;
@@ -134,6 +139,7 @@ export default class ModalQuestWebhookCreate extends Vue {
                 locks: JSON.stringify(this.locks),
                 webhookId: this.webhook?._id,
                 metadata: this.metadata,
+                isAmountCustom: this.isAmountCustom,
             })
             .then(() => {
                 this.$bvModal.hide(this.id);
