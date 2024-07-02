@@ -13,12 +13,24 @@
                 :src="pool.brand.logoImgUrl"
                 style="max-height: 170px; max-width: 100px; width: auto; height: auto"
             />
-            <div v-else>
-                <i class="fas fa-image" />
-            </div>
+            <i v-else class="fas fa-image text-white" style="font-size: 3rem" />
         </header>
-        <b-card-body class="p-3">
-            <strong>{{ pool.settings.title }}</strong>
+        <b-card-body class="p-3 d-flex align-items-center">
+            <div class="mr-auto">
+                <strong>{{ pool.settings.title }}</strong>
+            </div>
+            <b-dropdown variant="light" no-caret size="sm" right>
+                <template #button-content>
+                    <i class="fas fa-ellipsis-v m-0" />
+                </template>
+                <b-dropdown-item @click.stop="onClickDuplicate">Duplicate</b-dropdown-item>
+                <b-dropdown-item @click.stop="onClickDelete">Delete</b-dropdown-item>
+            </b-dropdown>
+            <BaseModalDelete
+                @submit="remove(pool._id)"
+                :id="`modalDelete-${pool._id}`"
+                :subject="pool.settings.title"
+            />
         </b-card-body>
         <div class="d-flex align-items-center justify-content-between px-3 pb-1" style="opacity: 0.5">
             <div class="d-flex align-items-center text-opaque small">
@@ -36,15 +48,41 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { format } from 'date-fns';
+import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
 
-@Component({})
+@Component({
+    components: {
+        BaseModalDelete,
+    },
+})
 export default class BaseCardPool extends Vue {
     format = format;
+
     @Prop() pool!: TPool;
 
     onClick() {
         this.$router.push({ name: 'pool', params: { id: this.pool._id } });
         this.$emit('click', this.pool);
+    }
+
+    async onClickDuplicate() {
+        try {
+            await this.$store.dispatch('pools/duplicate', this.pool);
+        } catch (error) {
+            this.$bvToast.toast((error as Error).toString(), {
+                title: 'Error',
+                variant: 'danger',
+                autoHideDelay: 5000,
+            });
+        }
+    }
+
+    onClickDelete() {
+        this.$bvModal.show(`modalDelete-${this.pool._id}`);
+    }
+
+    async remove(_id: string) {
+        this.$store.dispatch('pools/remove', { _id });
     }
 }
 </script>

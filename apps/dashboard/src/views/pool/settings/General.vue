@@ -187,7 +187,7 @@
             @submit="remove(pool._id)"
             :id="`modalDelete-${pool._id}`"
             :error="error"
-            :subject="pool._id"
+            :subject="pool.settings.title"
         />
     </div>
 </template>

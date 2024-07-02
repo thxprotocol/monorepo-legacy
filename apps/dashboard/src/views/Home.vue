@@ -25,7 +25,7 @@
                 <b-col md="3" :key="key" v-for="(pool, key) of pools" class="pb-3">
                     <BaseCardPool :pool="pool" />
                 </b-col>
-                <b-col md="3" v-if="Object.values(pools).length < 4">
+                <b-col v-if="Object.values(pools).length < 4" md="3" class="pb-3">
                     <b-card class="h-100" body-class="justify-content-center align-items-center d-flex">
                         <b-button v-b-modal="'modalCreateCampaign'" variant="primary">
                             <i class="fas fa-plus ml-0" />

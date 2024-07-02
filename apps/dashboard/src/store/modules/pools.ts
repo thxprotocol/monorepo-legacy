@@ -928,6 +928,16 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async duplicate(pool: TPool) {
+        const { data } = await axios({
+            method: 'POST',
+            url: `/pools/${pool._id}/duplicate`,
+        });
+
+        this.context.commit('set', data);
+    }
+
+    @Action({ rawError: true })
     async create(payload: {
         network: number;
         token: string;
