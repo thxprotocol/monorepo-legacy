@@ -11,10 +11,15 @@
                 right
             >
                 <template #button-content> <i class="fas fa-ellipsis-v ml-0" /> </template>
-                <b-dropdown-item v-b-modal="'BaseModalParticipantBalanceReset'"> Reset Points </b-dropdown-item>
-                <BaseModalParticipantBalanceReset :pool="pool" @hidden="getParticipants" />
-                <!-- <b-dropdown-item v-b-modal=""> Remove </b-dropdown-item> -->
+                <b-dropdown-item v-b-modal="'BaseModalParticipantBalanceReset'"> Reset </b-dropdown-item>
+                <b-dropdown-item v-b-modal="'BaseModalParticipantExport'"> Export </b-dropdown-item>
             </b-dropdown>
+            <BaseModalParticipantBalanceReset
+                id="BaseModalParticipantBalanceReset"
+                :pool="pool"
+                @hidden="getParticipants"
+            />
+            <BaseModalParticipantExport id="BaseModalParticipantExport" :pool="pool" />
         </div>
         <BCard class="shadow-sm mb-5" no-body v-if="pool">
             <BaseCardTableHeader
@@ -41,23 +46,33 @@
             >
                 <!-- Head formatting -->
                 <template #head(rank)>
-                    <BaseBtnSort @click="onClickSort('rank', $event)">Rank</BaseBtnSort>
+                    Rank
+                    <!-- <BaseBtnSort @click="onClickSort('rank', $event)">Rank</BaseBtnSort> -->
                 </template>
                 <template #head(account)>
-                    <BaseBtnSort @click="onClickSort('username', $event)">Username</BaseBtnSort>
+                    Username
+                    <!-- <BaseBtnSort @click="onClickSort('username', $event)">Username</BaseBtnSort> -->
                 </template>
                 <template #head(email)>
-                    <BaseBtnSort @click="onClickSort('email', $event)">E-mail</BaseBtnSort>
+                    E-mail
+                    <!-- <BaseBtnSort @click="onClickSort('email', $event)">E-mail</BaseBtnSort> -->
                 </template>
                 <template #head(tokens)> Connected </template>
                 <template #head(pointBalance)>
-                    <BaseBtnSort @click="onClickSort('pointBalance', $event)">Points</BaseBtnSort>
+                    Points
+                    <!-- <BaseBtnSort @click="onClickSort('pointBalance', $event)">Points</BaseBtnSort> -->
+                </template>
+                <template #head(wallets)>
+                    Wallets
+                    <!-- <BaseBtnSort @click="onClickSort('pointBalance', $event)">Points</BaseBtnSort> -->
                 </template>
                 <template #head(subscription)>
-                    <BaseBtnSort @click="onClickSort('subscription', $event)">Subscribed</BaseBtnSort>
+                    Subscribed
+                    <!-- <BaseBtnSort @click="onClickSort('subscription', $event)">Subscribed</BaseBtnSort> -->
                 </template>
                 <template #head(createdAt)>
-                    <BaseBtnSort @click="onClickSort('createdAt', $event)">Created</BaseBtnSort>
+                    Joined
+                    <!-- <BaseBtnSort @click="onClickSort('createdAt', $event)">Created</BaseBtnSort> -->
                 </template>
                 <template #head(participant)> &nbsp;</template>
 
@@ -72,6 +87,11 @@
                 </template>
                 <template #cell(pointBalance)="{ item }">
                     <strong class="text-primary">{{ item.pointBalance }}</strong>
+                </template>
+                <template #cell(wallets)="{ item }">
+                    <b-badge v-if="item.wallets.length">
+                        {{ `${item.wallets.length} wallet${item.wallets.length !== 1 ? '2' : ''}` }}
+                    </b-badge>
                 </template>
                 <template #cell(subscription)="{ item }">
                     <small class="text-muted">
@@ -111,6 +131,7 @@ import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCard
 import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
 import BaseModalParticipant from '@thxnetwork/dashboard/components/modals/BaseModalParticipant.vue';
 import BaseModalParticipantBalanceReset from '@thxnetwork/dashboard/components/modals/BaseModalParticipantBalanceReset.vue';
+import BaseModalParticipantExport from '@thxnetwork/dashboard/components/modals/BaseModalParticipantExport.vue';
 import BaseParticipantConnectedAccount, {
     parseConnectedAccounts,
 } from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
@@ -123,6 +144,7 @@ import { IPools, TParticipantState } from '@thxnetwork/dashboard/store/modules/p
         BaseCardTableHeader,
         BaseParticipantAccount,
         BaseParticipantConnectedAccount,
+        BaseModalParticipantExport,
         BaseModalParticipantBalanceReset,
         BaseModalParticipant,
     },

@@ -1,26 +1,16 @@
 <template>
-    <BaseModal :id="id" title="Reset participant balances">
+    <BaseModal @show="onShow" :id="id" title="Export participant list">
         <template #modal-body>
             <b-alert variant="danger" show v-if="error">
                 <i class="fas fa-exclamation-circle mr-2" />
                 {{ error }}
             </b-alert>
-            <p>This action will reset the point balance for all campaign participants. Are you sure?</p>
-            <b-form-group class="mb-0">
-                <template #label> Please, type "reset" to confirm the action </template>
-                <b-form-input v-model="checkReset" placeholder="reset" />
-            </b-form-group>
+            <p>This action will create a CSV containing detailed information about your campaign participants.</p>
         </template>
         <template #btn-primary>
-            <b-button
-                @click="onClickParticipantsReset"
-                block
-                class="rounded-pill"
-                variant="danger"
-                :disabled="isDisabled"
-            >
+            <b-button @click="onClick" block class="rounded-pill" variant="primary" :disabled="isDisabled">
                 <b-spinner v-if="isLoading" small />
-                <template v-else>Reset balances</template>
+                <template v-else>Download CSV</template>
             </b-button>
         </template>
     </BaseModal>
@@ -34,22 +24,25 @@ import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
         BaseModal,
     },
 })
-export default class BaseModalParticipantBalanceReset extends Vue {
+export default class BaseModalParticipantExport extends Vue {
     isLoading = false;
     error = '';
-    checkReset = '';
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
 
     get isDisabled() {
-        return this.checkReset !== 'reset';
+        return this.isLoading;
     }
 
-    async onClickParticipantsReset() {
+    onShow() {
+        this.error = '';
+    }
+
+    async onClick() {
         try {
             this.isLoading = true;
-            await this.$store.dispatch('pools/resetParticipants', this.pool);
+            await this.$store.dispatch('pools/exportParticipants', this.pool);
             this.$emit('hidden');
             this.$bvModal.hide(this.id);
         } catch (error) {

@@ -866,6 +866,31 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async exportParticipants(pool: TPool) {
+        const response = await axios({
+            method: 'get',
+            url: `/pools/${pool._id}/participants/export`,
+            responseType: 'blob',
+        });
+        // Create a URL for the blob
+        const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/csv' }));
+
+        // Create a link element
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `participants${pool._id}.csv`); // Set file name
+
+        // Append the link to the body (required for Firefox)
+        document.body.appendChild(link);
+
+        // Simulate a click to trigger download
+        link.click();
+
+        // Clean up and remove the link
+        link.parentNode?.removeChild(link);
+    }
+
+    @Action({ rawError: true })
     async getLeaderboard({
         pool,
         limit,
