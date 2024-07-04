@@ -1,5 +1,5 @@
 <template>
-    <b-link @click="openAddressUrl()" class="d-flex align-items-center">
+    <b-link @click.stop="openAddressUrl()" class="d-flex align-items-center">
         <span class="text-truncate">
             {{ address }}
         </span>

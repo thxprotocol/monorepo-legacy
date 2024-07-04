@@ -1,19 +1,19 @@
 <template>
     <div class="page-token">
         <base-token-jumbotron />
-        <base-token-subscribe />
+        <!-- <base-token-subscribe /> -->
         <base-token-contract />
         <base-token-distribution />
         <base-token-benefits />
         <base-token-circulation />
         <base-team />
-        <div class="container">
+        <!-- <div class="container">
             <div class="row">
                 <div class="col-lg-6 offset-lg-3 text-center">
                     <base-use-case-contact />
                 </div>
             </div>
-        </div>
+        </div> -->
         <base-partners />
         <base-contact :dark="true" />
     </div>

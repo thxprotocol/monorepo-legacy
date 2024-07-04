@@ -1,8 +1,9 @@
 <template>
     <b-card
-        class="mb-3 shadow-sm"
+        class="mb-3 shadow-sm cursor-pointer"
         header-bg-variant="light"
         header-class="p-2 d-flex justify-content-between align-items-center"
+        @click="onClickMetadata"
     >
         <template #header>
             <div class="d-flex">
@@ -24,7 +25,7 @@
                     <i class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted" aria-hidden="true" style="font-size: 1rem"></i>
                 </template>
                 <b-dropdown-item @click="onClickMetadata"> Metadata </b-dropdown-item>
-                <b-dropdown-item @click="onClickDelete"> Delete </b-dropdown-item>
+                <b-dropdown-item @click.stop="onClickDelete"> Delete </b-dropdown-item>
             </b-dropdown>
         </template>
         <b-media class="mb-3">

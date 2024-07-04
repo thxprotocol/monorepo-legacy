@@ -216,7 +216,7 @@ export const features = {
     },
 };
 
-export const content = {
+export const content: any = {
     'gala': {
         logo: require('../../public/assets/img/logo-gala-white.png'),
         title: 'Gala',
@@ -231,6 +231,7 @@ export const content = {
         ],
         video: 'https://www.youtube.com/embed/GWkzpRithHY?rel=0',
         to: '/use-cases/gala',
+        tag: ['all', 'gaming', 'defi'],
     },
     'titanborn': {
         logo: require('../../public/assets/img/logo-titanborn.png'),
@@ -245,6 +246,7 @@ export const content = {
         ],
         video: 'https://www.youtube.com/embed/PChhRNrLFcc?rel=0',
         to: '/use-cases/titanborn',
+        tag: ['all', 'gaming'],
     },
     'royal-dutch-mint': {
         logo: require('../../public/assets/img/logo-rdm.png'),
@@ -254,6 +256,7 @@ export const content = {
         features: [features['qr-codes'], features['nft-reward']],
         video: 'https://www.youtube.com/embed/VC3cGMdTF5k?rel=0',
         to: '/use-cases/royal-dutch-mint',
+        tag: ['all', 'digital-twin'],
     },
     'forest-knight': {
         logo: require('../../public/assets/img/logo-forest-knight.png'),
@@ -269,6 +272,7 @@ export const content = {
         ],
         video: 'https://www.youtube.com/embed/ZKqkdNKb3ks?rel=0',
         to: '/use-cases/forest-knight',
+        tag: ['all', 'gaming'],
     },
     'carbify': {
         logo: require('../../public/assets/img/logo-carbify.png'),
@@ -279,6 +283,7 @@ export const content = {
         features: [features['twitter-quest'], features['coin-reward'], features['nft-reward']],
         video: 'https://www.youtube.com/embed/P16POP4Y1qs?rel=0',
         to: '/use-cases/carbify',
+        tag: ['all', 'gaming', 'defi'],
     },
     'apebond': {
         logo: require('../../public/assets/img/logo-apebond.png'),
@@ -293,6 +298,7 @@ export const content = {
         ],
         video: 'https://www.youtube.com/embed/wu9arfmIAHo?rel=0',
         to: '/use-cases/apebond',
+        tag: ['all', 'defi'],
     },
     '2tokens': {
         logo: require('../../public/assets/img/logo-2tokens.webp'),
@@ -308,6 +314,7 @@ export const content = {
         ],
         video: 'https://www.youtube.com/embed/E9OMkvp78lA?rel=0',
         to: '/use-cases/2tokens',
+        tag: ['all', 'defi'],
     },
     'tryhards': {
         logo: require('../../public/assets/img/logo-tryhards.png'),
@@ -324,6 +331,7 @@ export const content = {
         ],
         video: 'https://www.youtube.com/embed/B1qa-xYAA-A?rel=0',
         to: '/use-cases/tryhards',
+        tag: ['all', 'gaming'],
     },
     'blind-boxes': {
         logo: require('../../public/assets/img/logo-blindboxes.webp'),
@@ -340,6 +348,7 @@ export const content = {
         ],
         video: 'https://www.youtube.com/embed/msKSs-DrfeY?rel=0',
         to: '/use-cases/blind-boxes',
+        tag: ['all', 'defi'],
     },
     'toshimon': {
         logo: require('../../public/assets/img/logo-toshimon.webp'),
@@ -350,6 +359,7 @@ export const content = {
         features: [features['discord-quest'], features['twitter-quest'], features['coin-reward']],
         video: '',
         to: '/use-cases/blind-boxes',
+        tag: ['all', 'gaming'],
     },
     'human-divergence': {
         logo: require('../../public/assets/img/logo-tryhards.png'),
@@ -360,6 +370,7 @@ export const content = {
         features: [features['daily-quest'], features['custom-quest'], features['nft-reward']],
         video: '',
         to: '/use-cases/human-divergence',
+        tag: ['all', 'gaming'],
     },
 };
 

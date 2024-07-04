@@ -1,29 +1,19 @@
 <template>
     <div v-if="nft">
         <b-row class="mb-3">
-            <b-col class="d-flex align-items-center">
+            <b-col class="d-flex align-items-center justify-content-between">
                 <h2 class="mb-0">NFT Metadata</h2>
+                <b-dropdown variant="primary" right no-caret size="sm" class="ml-auto">
+                    <template #button-content>
+                        <i class="fas fa-ellipsis-v m-0 p-1 px-2"></i>
+                    </template>
+                    <b-dropdown-item v-b-modal="'modalERC721MetadataCreate'">
+                        <i class="fas fa-plus mr-2"></i>
+                        Create Metadata
+                    </b-dropdown-item>
+                </b-dropdown>
+                <BaseModalErc721MetadataCreate @update="listMetadata" id="modalERC721MetadataCreate" :nft="nft" />
             </b-col>
-            <b-dropdown variant="light" dropleft no-caret size="sm" class="ml-2">
-                <template #button-content>
-                    <i class="fas fa-ellipsis-v m-0 p-1 px-2 text-muted" style="font-size: 1.2rem"></i>
-                </template>
-                <b-dropdown-item v-b-modal="'modalERC721MetadataCreate'">
-                    <i class="fas fa-plus mr-2"></i>
-                    Create Metadata
-                </b-dropdown-item>
-                <b-dropdown-item v-b-modal="'modalERC721MetadataBulkCreate'">
-                    <i class="fas fa-upload mr-2"></i>
-                    Upload Images
-                </b-dropdown-item>
-                <b-dropdown-item v-b-modal="'modalERC721MetadataCsv'">
-                    <i class="fas fa-exchange-alt mr-2"></i>
-                    Import/Export
-                </b-dropdown-item>
-            </b-dropdown>
-            <BaseModalErc721MetadataCreate @update="listMetadata" id="modalERC721MetadataCreate" :nft="nft" />
-            <BaseModalErc721MetadataBulkCreate @update="listMetadata" :erc721="nft" />
-            <BaseModalErc721MetadataUploadCSV @update="listMetadata" :erc721="nft" />
         </b-row>
         <BCard variant="white" body-class="p-0 shadow-sm">
             <BaseCardTableHeader

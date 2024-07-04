@@ -72,7 +72,7 @@
                 <b-navbar-nav>
                     <b-nav-item to="/pricing" :title="TITLES.PRICING">Pricing</b-nav-item>
                     <b-nav-item to="/use-cases" :title="TITLES.USECASES">Use Cases</b-nav-item>
-                    <b-nav-item to="/solutions" :title="TITLES.SOLUTIONS">Solutions</b-nav-item>
+                    <b-nav-item to="/token" :title="TITLES.SOLUTIONS">Token</b-nav-item>
                     <b-nav-item to="/contact" :title="TITLES.CONTACT">Contact</b-nav-item>
 
                     <b-nav-item-dropdown no-caret right>
@@ -80,13 +80,7 @@
                             More
                             <i class="fas fa-caret-down" />
                         </template>
-                        <b-dropdown-item
-                            :title="TITLES.TOKEN"
-                            target="_blank"
-                            href="https://www.coingecko.com/en/coins/thx-network"
-                        >
-                            $THX Token
-                        </b-dropdown-item>
+                        <b-dropdown-item to="/solutions"> Features </b-dropdown-item>
                         <b-dropdown-item
                             target="_blank"
                             href="https://opensea.io/assets/matic/0x804ad6f73c17bcb4e87cbc7cdf7e05fc6e4469b5/5"
@@ -97,7 +91,7 @@
                 </b-navbar-nav>
 
                 <div class="navbar-nav-right">
-                    <b-button
+                    <!-- <b-button
                         class="rounded-pill order-1 order-xl-0"
                         :variant="isDarkJumbotron && !toggle ? 'link-light' : 'link-dark'"
                         :href="dashboardUrl"
@@ -105,7 +99,7 @@
                     >
                         <i class="fas fa-user mr-2" style="font-size: 1.1rem"></i>
                         Dashboard
-                    </b-button>
+                    </b-button> -->
                     <b-button class="rounded-pill ml-3" variant="primary" :href="widgetUrl" target="_blank">
                         <span>Launch App</span>
                     </b-button>

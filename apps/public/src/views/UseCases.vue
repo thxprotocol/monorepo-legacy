@@ -11,20 +11,49 @@
                 </div>
             </div>
         </b-container>
+        <b-button-group class="w-100 text-center filter-use-cases">
+            <b-button
+                v-for="(r, key) of [
+                    {
+                        label: 'All',
+                        hash: '#all',
+                        icon: 'fas fa-th-large',
+                    },
+                    {
+                        label: 'Gaming',
+                        hash: '#gaming',
+                        icon: 'fas fa-gamepad-alt',
+                    },
+                    {
+                        label: 'Defi',
+                        hash: '#defi',
+                        icon: 'fas fa-chart-network',
+                    },
+                    {
+                        label: 'Digital Twin',
+                        hash: '#digital-twin',
+                        icon: 'fas fa-qrcode',
+                    },
+                ]"
+                :key="key"
+                :variant="$route.hash === r.hash ? 'light' : 'link'"
+                :to="`/use-cases${r.hash}`"
+                class="rounded-pill p-2 pr-3 mx-2 mb-5"
+                :class="{ active: $route.hash === r.hash }"
+            >
+                <i :class="r.icon" class="mr-2"></i> {{ r.label }}
+            </b-button>
+        </b-button-group>
         <b-container class="pb-5">
             <b-row>
-                <b-col lg="5" offset-lg="1">
-                    <BaseCardUseCase :content="content['gala']" />
-                    <BaseCardUseCase :content="content['titanborn']" />
-                    <BaseCardUseCase :content="content['carbify']" />
-                    <BaseCardUseCase :content="content['tryhards']" />
-                    <BaseCardUseCase :content="content['blind-boxes']" />
-                </b-col>
-                <b-col lg="5" class="pt-lg-5 mt-lg-5">
-                    <BaseCardUseCase :content="content['forest-knight']" />
-                    <BaseCardUseCase :content="content['apebond']" />
-                    <BaseCardUseCase :content="content['royal-dutch-mint']" />
-                    <BaseCardUseCase :content="content['2tokens']" />
+                <b-col
+                    lg="5"
+                    :offset-lg="key % 2 ? '0' : '1'"
+                    :class="{ 'pt-lg-5 mt-lg-5': key % 2 }"
+                    :key="key"
+                    v-for="(c, key) of useCases"
+                >
+                    <BaseCardUseCase :content="c" />
                 </b-col>
             </b-row>
         </b-container>
@@ -91,10 +120,34 @@ export default class Home extends Vue {
     content = content;
     ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;
+    _tabIndex = 0;
+
+    get useCases() {
+        return [
+            'gala',
+            'titanborn',
+            'carbify',
+            'tryhards',
+            'royal-dutch-mint',
+            'forest-knight',
+            'apebond',
+            'blind-boxes',
+            '2tokens',
+        ]
+            .map((key) => ({
+                key,
+                ...content[key],
+            }))
+            .filter((c) => c.tag.map((t) => `#${t}`).includes(this.$route.hash));
+    }
 }
 </script>
-<style scoped>
+<style>
 h3.mt-2.font-size-l.font-weight-normal a:hover {
     text-decoration: none;
+}
+
+.filter-use-cases .btn-link:not(.active) {
+    color: white !important;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <b-card class="border-0 mt-5">
+    <b-card class="border-0 mt-5" v-if="content">
         <!-- <div class="mb-2">
             <b-badge
                 variant="gray"
