@@ -13,28 +13,7 @@
         </b-container>
         <b-button-group class="w-100 text-center filter-use-cases">
             <b-button
-                v-for="(r, key) of [
-                    {
-                        label: 'All',
-                        hash: '#all',
-                        icon: 'fas fa-th-large',
-                    },
-                    {
-                        label: 'Gaming',
-                        hash: '#gaming',
-                        icon: 'fas fa-gamepad-alt',
-                    },
-                    {
-                        label: 'Defi',
-                        hash: '#defi',
-                        icon: 'fas fa-chart-network',
-                    },
-                    {
-                        label: 'Digital Twin',
-                        hash: '#digital-twin',
-                        icon: 'fas fa-qrcode',
-                    },
-                ]"
+                v-for="(r, key) of filters"
                 :key="key"
                 :variant="$route.hash === r.hash ? 'light' : 'link'"
                 :to="`/use-cases${r.hash}`"
@@ -121,6 +100,28 @@ export default class Home extends Vue {
     ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;
     _tabIndex = 0;
+    filters = [
+        {
+            label: 'All',
+            hash: '#all',
+            icon: 'fas fa-th-large',
+        },
+        {
+            label: 'Gaming',
+            hash: '#gaming',
+            icon: 'fas fa-gamepad-alt',
+        },
+        {
+            label: 'Defi',
+            hash: '#defi',
+            icon: 'fas fa-chart-network',
+        },
+        {
+            label: 'Digital Twin',
+            hash: '#digital-twin',
+            icon: 'fas fa-qrcode',
+        },
+    ];
 
     get useCases() {
         return [
@@ -139,6 +140,13 @@ export default class Home extends Vue {
                 ...content[key],
             }))
             .filter((c) => c.tag.map((t) => `#${t}`).includes(this.$route.hash));
+    }
+
+    mounted() {
+        const hashes = this.filters.map((f) => f.hash);
+        if (!hashes.includes(this.$route.hash)) {
+            this.$router.push('/use-cases#all');
+        }
     }
 }
 </script>
