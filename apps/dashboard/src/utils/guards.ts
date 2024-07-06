@@ -59,15 +59,3 @@ export function redirectVerifyEmail(to: Route) {
         verifyEmailToken: to.query.verifyEmailToken || null,
     });
 }
-
-export async function downloadScreenshot(to: Route) {
-    const url = new URL(API_URL);
-    url.pathname = `v1/pools/${to.params.id}/preview`;
-
-    const { data } = await axios(url.toString());
-
-    const link = document.createElement('a');
-    link.href = data;
-    link.download = to.params.id + '.png'; // Specify the download filename
-    link.click();
-}

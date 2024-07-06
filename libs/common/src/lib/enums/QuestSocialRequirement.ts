@@ -1,7 +1,7 @@
 export enum QuestSocialRequirement {
     YouTubeLike = 0,
     YouTubeSubscribe = 1,
-    // TwitterLike = 2,
+    TwitterReply = 2,
     TwitterRetweet = 3,
     TwitterFollow = 4,
     DiscordGuildJoined = 5,

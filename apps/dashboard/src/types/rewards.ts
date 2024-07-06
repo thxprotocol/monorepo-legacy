@@ -42,6 +42,7 @@ export const providerList: TQuestSocialProvider[] = [
         logoURI: require('@thxnetwork/dashboard/../public/assets/logo-twitter.png'),
         actions: [
             QuestSocialRequirement.TwitterFollow,
+            QuestSocialRequirement.TwitterReply,
             QuestSocialRequirement.TwitterRetweet,
             QuestSocialRequirement.TwitterQuery,
         ],
@@ -68,6 +69,11 @@ export const providerInteractionList: TQuestSocialInteraction[] = [
     {
         type: QuestSocialRequirement.YouTubeSubscribe,
         name: 'Subscribe',
+        items: [],
+    },
+    {
+        type: QuestSocialRequirement.TwitterReply,
+        name: 'Reply',
         items: [],
     },
     {

@@ -113,7 +113,7 @@
         </template>
         <template #btn-primary>
             <b-button
-                :disabled="disabled"
+                :disabled="disabled || loading"
                 class="rounded-pill"
                 type="submit"
                 form="formQuestCreate"
