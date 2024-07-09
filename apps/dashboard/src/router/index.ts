@@ -135,6 +135,11 @@ const routes: Array<RouteConfig> = [
                         component: () => import('../views/pool/settings/Team.vue'),
                     },
                     {
+                        name: 'SettingsWallets',
+                        path: 'wallets',
+                        component: () => import('../views/pool/settings/Wallets.vue'),
+                    },
+                    {
                         name: 'SettingsAppearance',
                         path: 'appearance',
                         component: () => import('../views/pool/settings/Appearance.vue'),

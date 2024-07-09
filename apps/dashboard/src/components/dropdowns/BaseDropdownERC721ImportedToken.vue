@@ -16,7 +16,6 @@
     </b-dropdown>
 </template>
 <script lang="ts">
-import type { TPool } from '@thxnetwork/types/index';
 import type { IERC721Tokens, TERC721Token } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 

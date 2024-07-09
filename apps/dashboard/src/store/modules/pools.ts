@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { track } from '@thxnetwork/common/mixpanel';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
-import { AccountPlanType } from '@thxnetwork/common/enums';
+import { AccountPlanType, ChainId } from '@thxnetwork/common/enums';
 import * as html from 'html-entities';
 
 export interface IPoolAnalytic {
@@ -186,6 +186,10 @@ export type TTwitterQueryState = {
     [poolId: string]: TTwitterQuery[];
 };
 
+export type TWalletState = {
+    [poolId: string]: TWallet[];
+};
+
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
     _all: IPools = {};
@@ -194,6 +198,7 @@ class PoolModule extends VuexModule {
     _rewards: TQuestState = {};
     _rewardPayments: TQuestState = {};
     _guilds: TGuildState = {};
+    _wallets: TWalletState = {};
     _events: TEventState = {};
     _identities: TIdentityState = {};
     _participants: TParticipantState = {};
@@ -262,6 +267,10 @@ class PoolModule extends VuexModule {
 
     get analyticsMetrics() {
         return this._analyticsMetrics;
+    }
+
+    get wallets() {
+        return this._wallets;
     }
 
     @Mutation
@@ -440,6 +449,20 @@ class PoolModule extends VuexModule {
         Vue.set(this._invoices, data[0].poolId, data);
     }
 
+    @Mutation
+    setWallets(wallets: TWallet[]) {
+        Vue.set(this._wallets, wallets[0].poolId, wallets);
+    }
+
+    @Action({ rawError: true })
+    async listWallets({ pool }) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/wallets`,
+        });
+        this.context.commit('setWallets', data);
+    }
+
     @Action({ rawError: true })
     async listEvents({ pool, page, limit }) {
         const { data } = await axios({
@@ -494,6 +517,19 @@ class PoolModule extends VuexModule {
             data: payload,
         });
         this.context.commit('setGuild', { ...payload, ...data, isConnected: true });
+    }
+
+    @Action({ rawError: true })
+    async createWallet({ pool, chainId }: { pool: TPool; chainId: ChainId }) {
+        await axios({
+            method: 'POST',
+            url: `/pools/${pool._id}/wallets`,
+            data: {
+                chainId,
+            },
+        });
+
+        await this.context.dispatch('listWallets', { pool });
     }
 
     @Action({ rawError: true })
