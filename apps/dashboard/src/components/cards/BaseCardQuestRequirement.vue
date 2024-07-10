@@ -132,8 +132,8 @@ export default class BaseCardQuestRequirement extends Vue {
     }
 
     get isPlatformAvailable() {
-        if (!this.provider || !this.provider.kind || !this.pool.owner) return true;
-        return this.pool.owner.tokens.find(
+        if (!this.provider || !this.provider.kind || !this.profile) return true;
+        return this.profile.tokens.find(
             ({ kind, scopes }) =>
                 this.provider.kind === kind && this.provider.scopes.every((scope) => scopes.includes(scope)),
         );
