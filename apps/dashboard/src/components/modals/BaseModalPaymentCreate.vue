@@ -33,7 +33,7 @@
                     {{ duration }}
                 </b-form-group>
                 <hr />
-                <b-form-group v-if="pool && pool.safeAddress">
+                <b-form-group v-if="wallet">
                     <template #label>
                         Transfer
                         <strong class="text-success">
@@ -46,7 +46,7 @@
                         </b-link>
                         on {{ chain.name }} to your campaign address:
                     </template>
-                    <b-form-input v-model="pool.safeAddress" readonly />
+                    <b-form-input v-model="wallet.address" readonly />
                 </b-form-group>
                 <template v-if="isChecked">
                     <b-alert show variant="primary">
@@ -102,7 +102,7 @@
 </template>
 
 <script lang="ts">
-import { AccountPlanType } from '@thxnetwork/common/enums';
+import { ChainId, AccountPlanType } from '@thxnetwork/common/enums';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { contractNetworks, planPricingMap } from '@thxnetwork/common/constants';
 import { toFiatPrice } from '@thxnetwork/dashboard/utils/price';
@@ -112,6 +112,7 @@ import { TERC20AllowanceState, TERC20BalanceState } from '@thxnetwork/dashboard/
 import { BigNumber, ethers } from 'ethers';
 import { formatUnits, parseUnits, poll } from 'ethers/lib/utils';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
+import { TWalletState } from '@thxnetwork/dashboard/store/modules/pools';
 import BaseModal from './BaseModal.vue';
 
 @Component({
@@ -119,6 +120,7 @@ import BaseModal from './BaseModal.vue';
         BaseModal,
     },
     computed: mapGetters({
+        walletList: 'pools/wallets',
         erc20BalanceList: 'erc20/balances',
         erc20AllowanceList: 'erc20/allowances',
     }),
@@ -138,13 +140,19 @@ export default class BaseModalPaymentCreate extends Vue {
     isChecked = false;
     isPolling = false;
     chainInfo = chainInfo;
+    walletList!: TWalletState;
 
     @Prop() id!: string;
     @Prop() pool!: TPool;
 
     get chain() {
-        if (!this.pool || !this.pool.safe) return { name: 'Unknown', blockExplorer: '' };
-        return chainInfo[this.pool.safe.chainId];
+        if (!this.pool || !this.wallet) return { name: 'Unknown', blockExplorer: '' };
+        return chainInfo[this.wallet.chainId];
+    }
+
+    get wallet() {
+        if (!this.pool || !this.walletList[this.pool._id]) return;
+        return this.walletList[this.pool._id].find((w) => w.chainId === ChainId.Polygon);
     }
 
     get paymentAmount() {
@@ -165,14 +173,14 @@ export default class BaseModalPaymentCreate extends Vue {
     }
 
     get balanceInWei() {
-        if (!this.erc20BalanceList[this.addresses.USDC]) return '';
-        return this.erc20BalanceList[this.addresses.USDC][this.pool.safeAddress as string];
+        if (!this.wallet || !this.erc20BalanceList[this.addresses.USDC]) return '';
+        return this.erc20BalanceList[this.addresses.USDC][this.wallet.address];
     }
 
     get allowanceInWei() {
-        if (!this.erc20AllowanceList[this.addresses.USDC]) return '';
-        if (!this.erc20AllowanceList[this.addresses.USDC][this.pool.safeAddress]) return '';
-        return this.erc20AllowanceList[this.addresses.USDC][this.pool.safeAddress][this.addresses.THXPaymentSplitter];
+        if (!this.wallet || !this.erc20AllowanceList[this.addresses.USDC]) return '';
+        if (!this.erc20AllowanceList[this.addresses.USDC][this.wallet.address]) return '';
+        return this.erc20AllowanceList[this.addresses.USDC][this.wallet.address][this.addresses.THXPaymentSplitter];
     }
 
     get balanceInUSD() {
@@ -182,20 +190,20 @@ export default class BaseModalPaymentCreate extends Vue {
     }
 
     get addresses() {
-        if (!this.pool || !this.pool.safe) return '';
-        return contractNetworks[this.pool.safe.chainId];
+        if (!this.wallet) return '';
+        return contractNetworks[this.wallet.chainId];
     }
 
     async getBalance() {
         await this.$store.dispatch('erc20/balanceOf', {
-            pool: this.pool,
+            wallet: this.wallet,
             tokenAddress: this.addresses.USDC,
         });
     }
 
     async getAllowance() {
         await this.$store.dispatch('erc20/allowance', {
-            pool: this.pool,
+            wallet: this.wallet,
             tokenAddress: this.addresses.USDC,
             spender: this.addresses.THXPaymentSplitter,
         });
@@ -203,7 +211,7 @@ export default class BaseModalPaymentCreate extends Vue {
 
     async approve() {
         await this.$store.dispatch('erc20/approve', {
-            pool: this.pool,
+            wallet: this.wallet,
             tokenAddress: this.addresses.USDC,
             spender: this.addresses.THXPaymentSplitter,
             amountInWei: ethers.constants.MaxUint256.toString(),

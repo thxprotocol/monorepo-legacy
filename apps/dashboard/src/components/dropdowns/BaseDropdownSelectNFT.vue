@@ -50,7 +50,7 @@ import type { IERC1155s, TERC1155 } from '@thxnetwork/dashboard/types/erc1155';
         erc1155s: 'erc1155/all',
     }),
 })
-export default class BaseDropdownSelectERC721 extends Vue {
+export default class BaseDropdownSelectNFT extends Vue {
     ChainId = ChainId;
     tokenList: TERC721[] = [];
 

@@ -3,16 +3,17 @@
         <template #modal-body title="Campaign">
             <b-card bg-variant="light" class="mb-3">
                 <p class="text-muted">Select a campaign that should distribute your NFT rewards.</p>
-                <BaseFormSelectNetwork @selected="onChangeNetwork" />
-                <base-dropdown-select-pool class="ml-auto" :chainId="chainId" @selected="onChangePool" />
+                <BaseDropdownSelectWallet class="ml-auto" :wallet="wallet" @selected="wallet = $event" />
             </b-card>
-            <b-alert v-if="pool" variant="info" show>
-                Please transfer or mint tokens to this campaign contract address on {{ chainInfo[pool.chainId].name }}:
+            <b-alert v-if="wallet" variant="info" show>
+                Please transfer or mint tokens to this campaign wallet on
+                <strong> {{ chainInfo[wallet.chainId].name }} </strong>:
                 <b-link
-                    :href="`${chainInfo[pool.chainId].blockExplorer}/address/${pool.safeAddress}`"
+                    :href="`${chainInfo[wallet.chainId].blockExplorer}/address/${wallet.address}`"
+                    target="_blank"
                     class="font-weight-bold"
                 >
-                    {{ pool.safeAddress }}
+                    {{ wallet.address }}
                 </b-link>
             </b-alert>
             <b-card bg-variant="light">
@@ -34,7 +35,7 @@
                 </b-form-group>
                 <b-form-group label="NFT Contract Address" class="mb-0">
                     <b-input-group>
-                        <b-form-input v-model="nftAddress" @input="getPreview" :disabled="!pool" />
+                        <b-form-input v-model="nftAddress" @input="getPreview" :disabled="!wallet" />
                     </b-input-group>
                 </b-form-group>
             </b-card>
@@ -68,7 +69,7 @@
         <template #btn-primary>
             <b-button
                 @click="submit"
-                :disabled="loading || !pool || !variant || !isValidAddress || !tokens.length"
+                :disabled="loading || !wallet || !variant || !isValidAddress || !tokens.length"
                 class="rounded-pill"
                 variant="primary"
                 block
@@ -82,21 +83,21 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import BaseDropDownSelectPolygonERC20 from '../dropdowns/BaseDropDownSelectPolygonERC20.vue';
-import BaseModal from './BaseModal.vue';
-import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { isAddress } from 'web3-utils';
-import BaseDropdownSelectPool from '../dropdowns/BaseDropdownSelectPool.vue';
-import BaseDropdownSelectNftVariant from '../dropdowns/BaseDropdownSelectNftVariant.vue';
+import BaseDropDownSelectPolygonERC20 from '../dropdowns/BaseDropDownSelectPolygonERC20.vue';
+import BaseModal from './BaseModal.vue';
 import { ChainId, NFTVariant } from '@thxnetwork/common/enums';
+import BaseFormGroupNetwork from '../form-group/BaseFormGroupNetwork.vue';
+import BaseDropdownSelectWallet from '../dropdowns/BaseDropdownSelectWallet.vue';
+import BaseDropdownSelectNftVariant from '../dropdowns/BaseDropdownSelectNftVariant.vue';
 
 @Component({
     components: {
         BaseModal,
-        BaseFormSelectNetwork,
+        BaseFormGroupNetwork,
         BaseDropDownSelectPolygonERC20,
-        BaseDropdownSelectPool,
+        BaseDropdownSelectWallet,
         BaseDropdownSelectNftVariant,
     },
 })
@@ -116,20 +117,11 @@ export default class ModalNftImport extends Vue {
         tokenUri: { raw: string };
     }[] = [];
     previewLoading = false;
-    pool: TPool | null = null;
+    wallet: TWallet | null = null;
     chainId: ChainId = ChainId.Polygon;
 
     get isValidAddress() {
         return isAddress(this.nftAddress);
-    }
-
-    onChangePool(pool: TPool) {
-        this.pool = pool;
-    }
-
-    onChangeNetwork(chainId: ChainId) {
-        this.chainId = chainId;
-        this.pool = null;
     }
 
     onChangeVariant(variant: NFTVariant) {
@@ -138,13 +130,13 @@ export default class ModalNftImport extends Vue {
     }
 
     async submit() {
-        if (!this.pool) return;
+        if (!this.wallet) return;
         this.loading = true;
 
         try {
             await this.$store.dispatch(`${this.variant}/import`, {
                 chainId: this.chainId,
-                address: this.pool.safe.address,
+                address: this.wallet.address,
                 contractAddress: this.nftAddress,
             });
 
@@ -158,7 +150,7 @@ export default class ModalNftImport extends Vue {
     }
 
     async getPreview(address: string) {
-        if (!this.pool || !isAddress(address)) {
+        if (!this.wallet || !isAddress(address)) {
             this.showPreview = false;
             this.tokens = [];
             return;
@@ -168,7 +160,7 @@ export default class ModalNftImport extends Vue {
             this.previewLoading = true;
             this.tokens = await this.$store.dispatch(`${this.variant}/preview`, {
                 chainId: this.chainId,
-                address: this.pool.safe.address,
+                address: this.wallet.address,
                 contractAddress: address,
             });
             this.previewLoading = false;

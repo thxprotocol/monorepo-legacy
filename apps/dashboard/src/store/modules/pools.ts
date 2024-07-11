@@ -454,6 +454,11 @@ class PoolModule extends VuexModule {
         Vue.set(this._wallets, wallets[0].poolId, wallets);
     }
 
+    @Mutation
+    unsetWallet({ pool, walletId }) {
+        Vue.delete(this._wallets[pool._id], walletId);
+    }
+
     @Action({ rawError: true })
     async listWallets({ pool }) {
         const { data } = await axios({
@@ -461,6 +466,15 @@ class PoolModule extends VuexModule {
             url: `/pools/${pool._id}/wallets`,
         });
         this.context.commit('setWallets', data);
+    }
+
+    @Action({ rawError: true })
+    async removeWallet({ pool, walletId }) {
+        await axios({
+            method: 'DELETE',
+            url: `/pools/${pool._id}/wallets/${walletId}`,
+        });
+        this.context.commit('unsetWallet', { pool, walletId });
     }
 
     @Action({ rawError: true })
@@ -782,13 +796,11 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async read(_id: string) {
+    async read(poolId: string) {
         const r = await axios({
             method: 'get',
-            url: '/pools/' + _id,
-            headers: { 'X-PoolId': _id },
+            url: '/pools/' + poolId,
         });
-
         this.context.commit('set', r.data);
         return r.data;
     }

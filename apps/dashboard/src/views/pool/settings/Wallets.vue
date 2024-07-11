@@ -27,16 +27,26 @@
                 <hr />
                 <BTable hover :items="wallets" show-empty responsive="lg" class="flex-grow-1">
                     <!-- Head formatting -->
-                    <template #head(chainId)> Chain </template>
+                    <template #head(chainId)> Network </template>
                     <template #head(address)> Address </template>
                     <template #head(createdAt)> Created </template>
+                    <template #head(id)> &nbsp;</template>
 
                     <!-- Cell formatting -->
                     <template #cell(chainId)="{ item }">
-                        <span>{{ item.chainId }}</span>
+                        <b-img
+                            v-b-tooltip
+                            :title="chainInfo[item.chainId].name"
+                            :src="chainInfo[item.chainId].logo"
+                            height="15"
+                            width="15"
+                        />
                     </template>
                     <template #cell(address)="{ item }">
-                        <code>{{ item.address }}</code>
+                        <b-link :href="item.address.url" target="_blank">
+                            {{ item.address.address }}
+                            <i class="fas fa-external-link-alt ml-1 small" />
+                        </b-link>
                     </template>
                     <template #cell(createdAt)="{ item }">
                         <small class="text-muted">
@@ -50,17 +60,17 @@
                         </b-link>
                     </template>
                     <template #cell(id)="{ item }">
-                        <b-dropdown variant="link" size="sm" no-caret>
+                        <b-dropdown variant="link" size="sm" no-caret right>
                             <template #button-content>
                                 <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                             </template>
                             <b-dropdown-item v-b-modal="`modalDelete${item.id}`"> Remove </b-dropdown-item>
                         </b-dropdown>
                         <BaseModalDelete
-                            :id="`modalDelete${item.id.id}`"
+                            :id="`modalDelete${item.id}`"
                             :error="error"
-                            @submit="onDelete"
-                            :subject="item.address"
+                            @submit="onDelete(item.id)"
+                            :subject="`${item.address.address} on ${chainInfo[item.chainId].name}`"
                         />
                     </template>
                 </BTable>
@@ -75,6 +85,7 @@ import { mapGetters } from 'vuex';
 import { ChainId } from '@thxnetwork/common/enums';
 import { format } from 'date-fns';
 import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
+import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
 import BaseModalWalletCreate from '@thxnetwork/dashboard/components/modals/BaseModalWalletCreate.vue';
 
@@ -97,6 +108,7 @@ export default class SettingsWallets extends Vue {
     error = '';
     isCopied = false;
     format = format;
+    chainInfo = chainInfo;
 
     walletList!: TWallet[];
     poolList!: IPools;
@@ -109,12 +121,12 @@ export default class SettingsWallets extends Vue {
         if (!this.walletList[this.pool._id]) return [];
         return this.walletList[this.pool._id].map((wallet: TWallet) => ({
             chainId: wallet.chainId,
-            address: wallet.address,
-            createdAt: wallet.createdAt,
-            id: {
-                id: wallet._id,
+            address: {
+                address: wallet.address,
                 url: `${safeURLMap[wallet.chainId]}/transactions/history?safe=${wallet.address}`,
             },
+            createdAt: wallet.createdAt,
+            id: wallet._id,
         }));
     }
 
@@ -122,8 +134,8 @@ export default class SettingsWallets extends Vue {
         this.$store.dispatch('pools/listWallets', { pool: this.pool });
     }
 
-    onDelete() {
-        debugger;
+    onDelete(walletId) {
+        this.$store.dispatch('pools/removeWallet', { pool: this.pool, walletId });
     }
 }
 </script>

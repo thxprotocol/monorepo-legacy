@@ -21,7 +21,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import BaseFormSelectNetwork from '@thxnetwork/dashboard/components/form-select/BaseFormSelectNetwork.vue';
 import BaseModal from './BaseModal.vue';
 import BaseIdenticon from '../BaseIdenticon.vue';
 import BaseCampaignDuration from '@thxnetwork/dashboard/components/form-group/BaseDateDuration.vue';
@@ -32,7 +31,6 @@ import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
     components: {
         chainInfo,
         BaseModal,
-        BaseFormSelectNetwork,
         BaseIdenticon,
         BaseCampaignDuration,
         BaseFormGroup,

@@ -1,6 +1,6 @@
 <template>
     <BaseFormGroup label="Network">
-        <BaseDropdownNetwork :chain-id="chainId" :disabled="disabled" />
+        <BaseDropdownNetwork @selected="$emit('selected', $event)" :chain-id="chainId" :disabled="disabled" />
     </BaseFormGroup>
 </template>
 

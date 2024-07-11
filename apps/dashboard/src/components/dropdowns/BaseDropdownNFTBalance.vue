@@ -106,7 +106,7 @@ export default class BaseDropdownERC721Metadata extends Vue {
         if ((token as TERC1155Token).erc1155Id) {
             await this.$store.dispatch('erc1155/getToken', token);
         }
-        this.$emit('selected', this.tokens[this.nft._id][token._id]);
+        this.$emit('selected', token ? this.tokens[this.nft._id as string][token._id] : null);
     }
 }
 </script>

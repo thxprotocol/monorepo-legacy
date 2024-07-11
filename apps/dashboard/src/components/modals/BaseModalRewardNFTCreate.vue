@@ -8,12 +8,25 @@
         :error="error"
         :is-loading="isLoading"
     >
-        <BaseFormGroup required label="NFT" tooltip="Select the NFT collection that you want to use for this reward.">
-            <BaseDropdownSelectERC721 :nft="nft" @selected="onSelectNFT" />
+        <BaseFormGroup
+            label="Wallet"
+            required
+            tooltip="This Safe multisig will be used to automatically transfer coins towards participants upon reward purchase."
+        >
+            <BaseDropdownSelectWallet @selected="onSelectWallet" :pool="pool" :wallet="wallet" />
+        </BaseFormGroup>
+        <BaseFormGroup
+            v-if="wallet"
+            required
+            label="NFT"
+            tooltip="Select the NFT collection that you want to use for this reward."
+        >
+            <BaseDropdownSelectNFT :chain-id="wallet.chainId" :nft="nft" @selected="onSelectNFT" />
             <template #description>
                 You can import your own <b-link :to="`/nft/`">NFT collections</b-link> and use them for rewards.
             </template>
         </BaseFormGroup>
+        <b-alert v-else variant="primary"> Create a campaign wallet first. </b-alert>
         <BaseFormGroup
             required
             label="Metadata"
@@ -65,16 +78,18 @@ import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
 import BaseDropdownNFTBalance from '../dropdowns/BaseDropdownNFTBalance.vue';
 import BaseDropdownNFTMetadata from '../dropdowns/BaseDropdownNFTMetadata.vue';
-import BaseDropdownSelectERC721 from '../dropdowns/BaseDropdownSelectERC721.vue';
+import BaseDropdownSelectNFT from '../dropdowns/BaseDropdownSelectNFT.vue';
 import BaseDropdownERC721ImportedToken from '../dropdowns/BaseDropdownERC721ImportedToken.vue';
+import BaseDropdownSelectWallet from '../dropdowns/BaseDropdownSelectWallet.vue';
 
 @Component({
     components: {
         BaseModalRewardCreate,
-        BaseDropdownSelectERC721,
+        BaseDropdownSelectNFT,
         BaseDropdownNFTBalance,
         BaseDropdownNFTMetadata,
         BaseDropdownERC721ImportedToken,
+        BaseDropdownSelectWallet,
     },
     computed: mapGetters({
         erc721s: 'erc721/all',
@@ -88,6 +103,7 @@ export default class ModalRewardNFTCreate extends Vue {
     isLoading = false;
     error = '';
 
+    wallet: TWallet | null = null;
     nft: TERC721 | TERC1155 | null = null;
     erc721s!: IERC721s;
     erc721Tokens!: IERC721Tokens;
@@ -120,6 +136,7 @@ export default class ModalRewardNFTCreate extends Vue {
             await this.$store.dispatch('erc1155/read', this.reward.erc1155Id);
             this.nft = this.erc1155s[this.reward.erc1155Id];
         }
+        this.wallet = this.reward ? this.reward.wallet : this.wallet;
         this.metadataId = this.reward && this.reward.metadataId ? this.reward.metadataId : this.metadataId;
         this.tokenId = this.reward && this.reward.tokenId ? this.reward.tokenId : this.tokenId;
         this.erc1155Amount =
@@ -127,11 +144,16 @@ export default class ModalRewardNFTCreate extends Vue {
         this.redirectUrl = this.reward ? this.reward.redirectUrl : this.redirectUrl;
     }
 
+    onSelectWallet(wallet) {
+        this.wallet = wallet;
+        this.nft = null;
+    }
+
     async onSelectNFT(nft: TERC721 | TERC1155) {
         this.nft = nft;
 
         if (nft) {
-            await this.$store.dispatch(nft.variant + '/listTokens', this.pool);
+            await this.$store.dispatch(nft.variant + '/listTokens', this.wallet);
         }
     }
 
