@@ -2,7 +2,7 @@
     <b-dropdown
         variant="light"
         class="w-100"
-        menu-class="w-100"
+        menu-class="w-100 v-overflow"
         toggle-class="justify-content-between align-items-center d-flex form-control"
     >
         <template #button-content>
@@ -48,3 +48,9 @@ export default class BaseDropdownDiscordRole extends Vue {
     }
 }
 </script>
+<style>
+.v-overflow {
+    max-height: 300px;
+    overflow-y: auto;
+}
+</style>
