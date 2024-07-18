@@ -46,6 +46,7 @@ export default class BaseModalWalletCreate extends Vue {
                 pool: this.pool,
                 chainId: this.chainId,
             });
+            this.$bvModal.hide(this.id);
         } catch (error) {
             this.error = error as string;
         } finally {
