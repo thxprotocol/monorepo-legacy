@@ -38,7 +38,7 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         blockExplorer: 'https://zkevm.polygonscan.com',
     },
     [ChainId.Linea]: {
-        disabled: true,
+        disabled: false,
         chainId: ChainId.Linea,
         name: 'Linea',
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_linea.svg'),

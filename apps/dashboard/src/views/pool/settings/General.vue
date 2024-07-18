@@ -104,43 +104,6 @@
         </b-form-row>
         <hr />
         <b-form-row>
-            <b-col md="4">
-                <strong>Wallet</strong>
-                <div class="text-muted">This wallet is used for reward distribution and fee payments.</div>
-            </b-col>
-            <b-col md="8">
-                <BaseFormGroup
-                    label="Safe Wallet Address"
-                    tooltip="Your assets are stored in Safe's battle-tested multisigs."
-                >
-                    <b-input-group>
-                        <b-form-input disabled :value="pool.safe && pool.safeAddress" />
-                        <template #append>
-                            <b-button
-                                :disabled="!slug.length"
-                                variant="dark"
-                                v-clipboard:copy="pool.safe && pool.safeAddress"
-                                v-clipboard:success="() => (isCopied = true)"
-                                class="ml-0"
-                            >
-                                <i class="fas ml-0" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
-                            </b-button>
-                        </template>
-                    </b-input-group>
-                    <template #description>
-                        Your assets are stored in
-                        <b-link
-                            :href="`https://app.safe.global/transactions/history?safe=${pool.safe && pool.safeAddress}`"
-                            target="_blank"
-                        >
-                            Safe's battle-tested multisigs
-                        </b-link>
-                    </template>
-                </BaseFormGroup>
-            </b-col>
-        </b-form-row>
-        <hr />
-        <b-form-row>
             <b-col md="4"> </b-col>
             <b-col md="8">
                 <b-form-group>

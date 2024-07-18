@@ -46,6 +46,11 @@ export default class SettingsView extends Vue {
             route: 'team',
         },
         {
+            name: 'Wallets',
+            class: 'far fa-wallet',
+            route: 'wallets',
+        },
+        {
             name: 'Appearance',
             class: 'fas fa-sliders-h',
             route: 'appearance',

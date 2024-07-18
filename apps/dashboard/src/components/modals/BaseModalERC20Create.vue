@@ -1,7 +1,7 @@
 <template>
     <base-modal :error="error" title="Create Coin" id="modalERC20Create">
-        <template #modal-body v-if="!loading">
-            <base-form-select-network @selected="selectedChainId = $event" :chainId="selectedChainId" />
+        <template #modal-body>
+            <BaseFormGroupNetwork @selected="chainId = $event" :chainId="chainId" />
             <b-form-group label="Variant">
                 <b-form-radio v-model="tokenType" name="tokenType" :value="ERC20Type.Unlimited">
                     <strong>Unlimited Supply Token </strong>
@@ -39,7 +39,8 @@
         </template>
         <template #btn-primary>
             <b-button :disabled="loading" class="rounded-pill" @click="submit()" variant="primary" block>
-                Create Coin
+                <b-spinner v-if="loading" small />
+                <template v-else>Create Coin</template>
             </b-button>
         </template>
     </base-modal>
@@ -48,16 +49,16 @@
 <script lang="ts">
 import { ChainId } from '@thxnetwork/common/enums';
 import { ERC20Type, TERC20 } from '@thxnetwork/dashboard/types/erc20';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
-import BaseModal from './BaseModal.vue';
 import { toWei } from 'web3-utils';
+import BaseFormGroupNetwork from '../form-group/BaseFormGroupNetwork.vue';
+import BaseModal from './BaseModal.vue';
 
 @Component({
     components: {
         BaseModal,
-        BaseFormSelectNetwork,
+        BaseFormGroupNetwork,
     },
     computed: mapGetters({}),
 })
@@ -70,7 +71,7 @@ export default class ModalERC20Create extends Vue {
 
     tokenType = ERC20Type.Unlimited;
     tokenList: TERC20[] = [];
-    selectedChainId: ChainId = ChainId.Polygon;
+    chainId: ChainId = ChainId.Polygon;
 
     erc20Token: TERC20 | null = null;
     erc20TokenAddress = '';
@@ -80,26 +81,25 @@ export default class ModalERC20Create extends Vue {
     totalSupply = 0;
     logoImg: File | null = null;
 
-    @Prop() chainId!: ChainId;
-
-    mounted() {
-        this.selectedChainId = this.chainId;
-    }
-
     async submit() {
-        this.loading = true;
+        try {
+            this.loading = true;
 
-        await this.$store.dispatch('erc20/create', {
-            chainId: this.selectedChainId,
-            name: this.name,
-            symbol: this.symbol,
-            type: this.tokenType,
-            totalSupply: this.tokenType === ERC20Type.Limited ? toWei(String(this.totalSupply)) : 0,
-            file: this.logoImg,
-        });
+            await this.$store.dispatch('erc20/create', {
+                chainId: this.chainId,
+                name: this.name,
+                symbol: this.symbol,
+                type: this.tokenType,
+                totalSupply: this.tokenType === ERC20Type.Limited ? toWei(String(this.totalSupply)) : 0,
+                file: this.logoImg,
+            });
 
-        this.$bvModal.hide(`modalERC20Create`);
-        this.loading = false;
+            this.$bvModal.hide(`modalERC20Create`);
+        } catch (error) {
+            throw error;
+        } finally {
+            this.loading = false;
+        }
     }
 }
 </script>

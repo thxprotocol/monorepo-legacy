@@ -44,12 +44,12 @@ class ERC20Module extends VuexModule {
     }
 
     @Mutation
-    setAllowance(data: { tokenAddress: string; poolAddress: string; spender: string; allowance: string }) {
+    setAllowance(data: { tokenAddress: string; walletAddress: string; spender: string; allowance: string }) {
         if (!this._allowances[data.tokenAddress]) Vue.set(this._allowances, data.tokenAddress, {});
-        if (!this._allowances[data.tokenAddress][data.poolAddress]) {
-            Vue.set(this._allowances[data.tokenAddress], data.poolAddress, {});
+        if (!this._allowances[data.tokenAddress][data.walletAddress]) {
+            Vue.set(this._allowances[data.tokenAddress], data.walletAddress, {});
         }
-        Vue.set(this._allowances[data.tokenAddress][data.poolAddress], data.spender, data.allowance);
+        Vue.set(this._allowances[data.tokenAddress][data.walletAddress], data.spender, data.allowance);
     }
 
     @Mutation
@@ -73,10 +73,10 @@ class ERC20Module extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async allowance({ pool, tokenAddress, spender }: { pool: TPool; tokenAddress: string; spender: string }) {
+    async allowance({ wallet, tokenAddress, spender }: { wallet: TWallet; tokenAddress: string; spender: string }) {
         const { data } = await axios({
             method: 'GET',
-            url: `/pools/${pool._id}/erc20/allowance`,
+            url: `/pools/${wallet.poolId}/erc20/allowance`,
             params: {
                 tokenAddress,
                 spender,
@@ -84,7 +84,7 @@ class ERC20Module extends VuexModule {
         });
         this.context.commit('setAllowance', {
             tokenAddress,
-            poolAddress: pool.safeAddress,
+            walletAddress: wallet.address,
             spender,
             allowance: data.allowanceInWei,
         });
@@ -92,19 +92,19 @@ class ERC20Module extends VuexModule {
 
     @Action({ rawError: true })
     async approve({
-        pool,
+        wallet,
         tokenAddress,
         spender,
         amountInWei,
     }: {
-        pool: TPool;
+        wallet: TWallet;
         tokenAddress: string;
         spender: string;
         amountInWei: string;
     }) {
         const { data } = await axios({
             method: 'POST',
-            url: `/pools/${pool._id}/erc20/allowance`,
+            url: `/pools/${wallet.poolId}/erc20/allowance`,
             data: {
                 tokenAddress,
                 spender,
@@ -113,22 +113,23 @@ class ERC20Module extends VuexModule {
         });
         this.context.commit('setAllowance', {
             tokenAddress,
-            poolAddress: pool.safeAddress,
+            walletAddress: wallet.address,
             spender,
             allowance: data.allowanceInWei,
         });
     }
 
     @Action({ rawError: true })
-    async balanceOf({ pool, tokenAddress }: { pool: TPool; tokenAddress: string }) {
+    async balanceOf({ wallet, tokenAddress }: { wallet: TWallet; tokenAddress: string }) {
         const { data } = await axios({
             method: 'GET',
-            url: `/pools/${pool._id}/erc20/balance`,
+            url: `/pools/${wallet.poolId}/erc20/balance`,
             params: {
                 tokenAddress,
+                walletId: wallet._id,
             },
         });
-        this.context.commit('setBalance', { tokenAddress, address: pool.safeAddress, balance: data.balanceInWei });
+        this.context.commit('setBalance', { tokenAddress, address: wallet.address, balance: data.balanceInWei });
     }
 
     @Action({ rawError: true })

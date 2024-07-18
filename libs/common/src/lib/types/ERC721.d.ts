@@ -12,6 +12,7 @@ type TERC721Token = {
     metadata: TERC721Metadata;
     walletId: string;
     balance?: string;
+    chainId: ChainId;
 };
 
 type TERC721 = {

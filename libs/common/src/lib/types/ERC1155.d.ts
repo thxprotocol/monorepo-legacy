@@ -18,6 +18,7 @@ type TERC1155Token = {
     walletId: string;
     metadata: TERC1155Metadata;
     balance: string;
+    chainId: ChainId;
 };
 
 type TERC1155 = {

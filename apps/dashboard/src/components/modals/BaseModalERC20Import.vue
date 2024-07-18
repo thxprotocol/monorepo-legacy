@@ -1,7 +1,7 @@
 <template>
     <base-modal :loading="loading" title="Import Token Contract" id="modalERC20Import">
         <template #modal-body v-if="!loading">
-            <BaseFormSelectNetwork :chainId="selectedChainId" @selected="selectedChainId = $event" />
+            <BaseFormGroupNetwork :chainId="selectedChainId" @selected="selectedChainId = $event" />
             <b-form-group label="Existing ERC20 contract">
                 <BaseDropDownSelectPolygonERC20
                     :erc20="erc20"
@@ -61,14 +61,14 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseDropDownSelectPolygonERC20 from '../dropdowns/BaseDropDownSelectPolygonERC20.vue';
 import BaseModal from './BaseModal.vue';
-import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
+import BaseFormGroupNetwork from '../form-group/BaseFormGroupNetwork.vue';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import { isAddress } from 'web3-utils';
 
 @Component({
     components: {
         BaseModal,
-        BaseFormSelectNetwork,
+        BaseFormGroupNetwork,
         BaseDropDownSelectPolygonERC20,
     },
     computed: mapGetters({}),

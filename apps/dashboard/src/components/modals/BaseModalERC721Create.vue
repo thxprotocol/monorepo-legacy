@@ -1,7 +1,7 @@
 <template>
     <base-modal :error="error" title="Create NFT collection" id="modalERC721Create">
         <template #modal-body v-if="!loading">
-            <base-form-select-network @selected="chainId = $event" />
+            <BaseFormGroupNetwork @selected="chainId = $event" />
             <b-form-group label="Variant">
                 <b-row>
                     <b-col>
@@ -50,14 +50,14 @@
 import { ChainId } from '@thxnetwork/common/enums';
 import { ERC721Variant, TERC721 } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Vue } from 'vue-property-decorator';
-import BaseFormSelectNetwork from '../form-select/BaseFormSelectNetwork.vue';
+import BaseFormGroupNetwork from '../form-group/BaseFormGroupNetwork.vue';
 import BaseModal from './BaseModal.vue';
 import { NFTVariant } from '@thxnetwork/common/enums';
 
 @Component({
     components: {
         BaseModal,
-        BaseFormSelectNetwork,
+        BaseFormGroupNetwork,
     },
 })
 export default class ModalERC721Create extends Vue {

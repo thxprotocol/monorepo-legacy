@@ -1,7 +1,5 @@
 import store from '@thxnetwork/dashboard/store';
 import { Route } from 'vue-router';
-import { API_URL } from '@thxnetwork/dashboard/config/secrets';
-import axios from 'axios';
 
 export function redirectCollaborationRequest(to: Route) {
     // Store data in state
