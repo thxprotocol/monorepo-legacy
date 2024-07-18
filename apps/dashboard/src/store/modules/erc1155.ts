@@ -278,7 +278,7 @@ class ERC1155Module extends VuexModule {
         const { data } = await axios({
             method: 'GET',
             url: '/erc1155/token',
-            params: { walletId: wallet._id },
+            params: { walletId: wallet._id, chainId: wallet.chainId },
         });
 
         data.forEach((token: TERC1155Token & { nft: TERC1155 }) => {

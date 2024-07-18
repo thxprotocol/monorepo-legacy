@@ -165,7 +165,11 @@ export default class ModalRewardNFTCreate extends Vue {
         this.tokenId = token ? token._id : '';
 
         if (token && (token as any).nft.variant == NFTVariant.ERC1155) {
-            const balance = await this.$store.dispatch('erc1155/getBalance', { pool: this.pool, token });
+            const balance = await this.$store.dispatch('erc1155/getBalance', {
+                pool: this.pool,
+                token,
+                chainId: token.chainId,
+            });
             this.erc1155Balance = balance;
         }
     }
