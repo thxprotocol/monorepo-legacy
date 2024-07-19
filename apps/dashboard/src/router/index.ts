@@ -74,11 +74,6 @@ const routes: Array<RouteConfig> = [
                         component: () => import('../views/pool/integrations/Discord.vue'),
                     },
                     {
-                        name: 'IntegrationsGalachain',
-                        path: 'galachain',
-                        component: () => import('../views/pool/integrations/Galachain.vue'),
-                    },
-                    {
                         name: 'IntegrationsTelegram',
                         path: 'telegram',
                         component: () => import('../views/pool/integrations/Telegram.vue'),

@@ -47,11 +47,6 @@ export default class SettingsTwitterView extends Vue {
             route: 'discord',
         },
         {
-            name: 'Galachain',
-            class: 'fa-kit fa-gala',
-            route: 'galachain',
-        },
-        {
             name: 'Telegram',
             class: 'fab fa-telegram',
             route: 'telegram',

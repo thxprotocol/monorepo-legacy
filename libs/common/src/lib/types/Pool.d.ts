@@ -55,7 +55,6 @@ type TPoolSettings = {
     isPublished: boolean;
     isWeeklyDigestEnabled: boolean;
     isTwitterSyncEnabled: boolean;
-    galachainPrivateKey: string;
     authenticationMethods: AccountVariant[];
 };
 

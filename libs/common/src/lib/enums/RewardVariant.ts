@@ -4,7 +4,6 @@ export enum RewardVariant {
     Custom = 2,
     Coupon = 3,
     DiscordRole = 4,
-    Galachain = 5,
 }
 
 export enum QuestVariant {
