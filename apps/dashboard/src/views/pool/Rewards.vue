@@ -255,7 +255,10 @@ export default class RewardsView extends Vue {
 
     async openPublished(isPublished: boolean) {
         try {
-            await this.$router.push({ path: `/pool/${this.pool._id}/rewards`, query: { isPublished } });
+            await this.$router.push({
+                path: `/pool/${this.pool._id}/rewards`,
+                query: { isPublished: isPublished ? String(isPublished) : 'false' },
+            });
         } catch (error) {
             await this.listRewards();
         }
