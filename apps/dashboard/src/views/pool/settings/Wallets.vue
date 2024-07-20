@@ -68,6 +68,7 @@
                         </b-dropdown>
                         <BaseModalDelete
                             :id="`modalDelete${item.id}`"
+                            :loading="isLoading"
                             :error="error"
                             @submit="onDelete(item.id)"
                             :subject="`${item.address.address} on ${chainInfo[item.chainId].name}`"
@@ -109,7 +110,7 @@ export default class SettingsWallets extends Vue {
     isCopied = false;
     format = format;
     chainInfo = chainInfo;
-
+    isLoading = false;
     walletList!: TWallet[];
     poolList!: IPools;
 
@@ -131,11 +132,24 @@ export default class SettingsWallets extends Vue {
     }
 
     mounted() {
-        this.$store.dispatch('pools/listWallets', { pool: this.pool });
+        this.listWallets();
     }
 
-    onDelete(walletId) {
-        this.$store.dispatch('pools/removeWallet', { pool: this.pool, walletId });
+    async listWallets() {
+        await this.$store.dispatch('pools/listWallets', { pool: this.pool });
+    }
+
+    async onDelete(walletId) {
+        this.isLoading = true;
+        try {
+            await this.$store.dispatch('pools/removeWallet', { pool: this.pool, walletId });
+            await this.listWallets();
+            this.$bvModal.hide(`modalDelete${walletId}`);
+        } catch (error) {
+            throw error;
+        } finally {
+            this.isLoading = false;
+        }
     }
 }
 </script>
