@@ -1,6 +1,6 @@
 <template>
     <base-modal :error="error" title="Create NFT collection" id="modalERC721Create">
-        <template #modal-body v-if="!loading">
+        <template #modal-body>
             <BaseFormGroupNetwork @selected="chainId = $event" />
             <b-form-group label="Variant">
                 <b-row>
@@ -40,7 +40,8 @@
         </template>
         <template #btn-primary>
             <b-button :disabled="loading" class="rounded-pill" @click="onClickSubmit" variant="primary" block>
-                Create NFT
+                <b-spinner small v-if="loading" />
+                <template v-else>Create NFT</template>
             </b-button>
         </template>
     </base-modal>
