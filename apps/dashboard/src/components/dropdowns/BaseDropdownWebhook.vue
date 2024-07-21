@@ -14,7 +14,7 @@
         </template>
         <b-dropdown-item-button @click="$emit('click', null)"> None </b-dropdown-item-button>
         <b-dropdown-divider />
-        <b-dropdown-item-button :key="key" v-for="(w, key) of pool.webhooks" @click="$emit('click', webhook)">
+        <b-dropdown-item-button :key="key" v-for="(w, key) of pool.webhooks" @click="$emit('click', w)">
             <code>{{ w.url }}</code>
         </b-dropdown-item-button>
         <b-dropdown-divider />

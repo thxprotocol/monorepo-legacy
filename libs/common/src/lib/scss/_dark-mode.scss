@@ -3,6 +3,10 @@
 .dark-mode {
     background-color: $darkest !important;
     
+    [disabled] {
+        cursor:not-allowed;
+    }
+
     body {
         background-color: $darkest !important;
         color: $light !important;
