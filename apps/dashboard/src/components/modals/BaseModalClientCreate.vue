@@ -59,7 +59,6 @@ export default class BaseModalClientCreate extends Vue {
     requestUri = '';
 
     @Prop() id!: string;
-    @Prop() pool!: TPool;
     @Prop() client!: TClient;
 
     get isValid() {
@@ -80,9 +79,8 @@ export default class BaseModalClientCreate extends Vue {
 
     async submit() {
         this.isLoading = true;
-        const action = this.client ? 'update' : 'create';
-        await this.$store.dispatch('clients/' + action, {
-            pool: this.pool,
+        const action = this.client ? 'updateClient' : 'createClient';
+        await this.$store.dispatch('developer/' + action, {
             payload: {
                 ...this.client,
                 name: this.name,

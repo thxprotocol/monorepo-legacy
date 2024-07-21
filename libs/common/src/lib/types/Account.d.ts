@@ -22,4 +22,6 @@ type TAccount = {
     identity: string;
     createdAt: Date;
     updatedAt: Date;
+
+    signingSecret: string;
 };

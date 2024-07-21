@@ -6,6 +6,8 @@ import { config } from '@thxnetwork/dashboard/utils/oidc';
 import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
 import Mixpanel, { track } from '@thxnetwork/common/mixpanel';
 
+export type TInvoiceState = TInvoice[];
+
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
     userManager: UserManager = new UserManager(config);
@@ -13,6 +15,7 @@ class AccountModule extends VuexModule {
     version = '';
     _user!: User;
     _profile: TAccount | null = null;
+    _invoices: TInvoiceState = [];
 
     get user() {
         return this._user;
@@ -22,9 +25,18 @@ class AccountModule extends VuexModule {
         return this._profile;
     }
 
+    get invoices() {
+        return this._invoices;
+    }
+
     @Mutation
     setUser(user: User) {
         this._user = user;
+    }
+
+    @Mutation
+    setInvoices(invoices: TInvoice[]) {
+        this._invoices = invoices;
     }
 
     @Mutation
@@ -80,6 +92,15 @@ class AccountModule extends VuexModule {
             data,
         });
         this.context.dispatch('getProfile');
+    }
+
+    @Action({ rawError: true })
+    async listInvoices() {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/account/invoices`,
+        });
+        this.context.commit('setInvoices', data);
     }
 
     @Action({ rawError: true })

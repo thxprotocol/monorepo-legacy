@@ -5,4 +5,7 @@ type TEvent = {
     poolId: string;
     name: string;
     createdAt: Date;
+    account?: TAccount;
 };
+
+type TEventState = TPaginationParams & { results: TEvent[]; metadata: { eventTypes: string[[]] } };

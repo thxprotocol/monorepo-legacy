@@ -31,7 +31,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { IERC20s, TERC20 } from '@thxnetwork/dashboard/types/erc20';
+import { IERC20s } from '@thxnetwork/dashboard/types/erc20';
 import { ChainId } from '@thxnetwork/common/enums';
 import BaseIdenticon from '../BaseIdenticon.vue';
 

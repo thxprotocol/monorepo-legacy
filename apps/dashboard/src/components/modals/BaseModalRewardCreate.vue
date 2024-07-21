@@ -5,6 +5,13 @@
                 <b-row>
                     <b-col md="6">
                         <BaseFormGroup
+                            label="Status"
+                            description="Publishing a reward will allow users to purchase it with points or claim it for free."
+                            tooltip="Show your reward to your users."
+                        >
+                            <b-form-checkbox v-model="isPublished" class="mb-0">Published</b-form-checkbox>
+                        </BaseFormGroup>
+                        <BaseFormGroup
                             required
                             label="Title"
                             tooltip="A short and engaging title for this reward. Shown in the reward shop of your campaign."
@@ -62,9 +69,6 @@
                         />
                         <b-form-group class="mb-0">
                             <b-form-checkbox v-model="isPromoted">Promoted</b-form-checkbox>
-                        </b-form-group>
-                        <b-form-group>
-                            <b-form-checkbox v-model="isPublished">Published</b-form-checkbox>
                         </b-form-group>
                     </b-col>
                 </b-row>

@@ -1,23 +1,17 @@
 <template>
-    <b-link :to="account.username ? `/pool/${$route.params.id}/participants/${account.username.toLowerCase()}` : null">
-        <b-media v-if="account">
-            <template #aside>
-                <b-avatar
-                    v-b-tooltip
-                    :title="account.id ? `${account.id} (${account.variant})` : ''"
-                    :src="account.profileImg"
-                    size="sm"
-                    variant="light"
-                />
-            </template>
-            {{ account.username }}
-        </b-media>
+    <BaseAvatar v-if="plain" :account="account" />
+    <b-link
+        v-else
+        :to="account.username ? `/pool/${$route.params.id}/participants/${account.username.toLowerCase()}` : null"
+    >
+        <BaseAvatar :account="account" />
     </b-link>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { AccountVariant, AccessTokenKind } from '@thxnetwork/common/enums';
+import BaseAvatar from '@thxnetwork/dashboard/components/BaseAvatar.vue';
 
 export function parseAccount({ id, account }) {
     if (!account) return;
@@ -31,8 +25,13 @@ export function parseAccount({ id, account }) {
     };
 }
 
-@Component({})
+@Component({
+    components: {
+        BaseAvatar,
+    },
+})
 export default class BaseParticipantAccount extends Vue {
+    @Prop() plain!: { type: boolean; default: false };
     @Prop() account!: { id: string; variant: AccessTokenKind; username: string; profileImg: string; email: string };
 }
 </script>

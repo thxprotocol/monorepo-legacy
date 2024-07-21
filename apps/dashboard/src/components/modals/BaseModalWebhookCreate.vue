@@ -4,7 +4,7 @@
             <form v-on:submit.prevent="onSubmit" id="formWebhookCreate">
                 <BaseFormGroup
                     required
-                    label="URL"
+                    label="Endpoint URL"
                     tooltip="Provide a public endpoint of your system that is protected with your signing secret."
                     :state="isValidWebhook"
                 >
@@ -57,7 +57,6 @@ export default class ModalWebhookCreate extends Vue {
     url = '';
 
     @Prop() id!: string;
-    @Prop() pool!: TPool;
     @Prop({ required: false }) webhook!: TWebhook;
 
     get isValidWebhook() {
@@ -76,9 +75,8 @@ export default class ModalWebhookCreate extends Vue {
     onSubmit() {
         this.isLoading = true;
         this.$store
-            .dispatch(`webhooks/${this.webhook ? 'update' : 'create'}`, {
+            .dispatch(`developer/${this.webhook ? 'updateWebhook' : 'createWebhook'}`, {
                 ...this.webhook,
-                poolId: this.pool._id,
                 url: this.url,
             })
             .then(() => {

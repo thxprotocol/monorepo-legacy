@@ -28,7 +28,8 @@ type TPool = {
     transactions: string[];
     version?: string;
     variant?: 'defaultDiamond' | 'registry' | 'factory' | 'sharedWallet';
-    events: string[];
+    eventNames: string[];
+    webhooks: TWebhook[];
     brand: TBrand;
     // wallets: TWallet[];
     settings: TPoolSettings;
@@ -71,4 +72,103 @@ type TPoolTransferResponse = TPoolTransfer & {
     isCopied: boolean;
     url: string;
     now: number;
+};
+
+type IPoolAnalytic = {
+    _id: string;
+    erc20Perks: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+    erc721Perks: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+    customRewards: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+    couponRewards: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+    discordRoleRewards: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+
+    //
+    dailyRewards: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+    referralRewards: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+    pointRewards: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+    milestoneRewards: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+    web3Quests: [
+        {
+            day: string;
+            totalAmount: number;
+        },
+    ];
+};
+
+type IPoolAnalyticMetrics = {
+    _id: string;
+    participantActiveCount: number;
+    participantCount: number;
+    subscriptionCount: number;
+    dailyQuest: PoolMetric;
+    socialQuest: PoolMetric;
+    inviteQuest: PoolMetric;
+    customQuest: PoolMetric;
+    web3Quest: PoolMetric;
+    gitcoinQuest: PoolMetric;
+    coinReward: PoolMetric;
+    nftReward: PoolMetric;
+    customReward: PoolMetric;
+    couponReward: PoolMetric;
+    discordRoleReward: PoolMetric;
+};
+type IPools = {
+    [id: string]: TPool;
+};
+
+type IPoolAnalytics = {
+    [id: string]: IPoolAnalytic;
+};
+
+type IPoolAnalyticsLeaderBoard = {
+    [id: string]: IPoolAnalyticLeaderBoard[];
+};
+
+type IPoolAnalyticsMetrics = {
+    [id: string]: IPoolAnalyticMetrics;
 };

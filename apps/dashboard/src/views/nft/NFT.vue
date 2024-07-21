@@ -7,7 +7,6 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { TAccount } from '../../types/account';
 import { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import { NFTVariant } from '@thxnetwork/common/enums';
 import { IERC1155s } from '@thxnetwork/dashboard/types/erc1155';

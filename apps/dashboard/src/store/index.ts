@@ -8,8 +8,7 @@ import WidgetStore from './modules/widgets';
 import ERC20Store from './modules/erc20';
 import ERC721Store from './modules/erc721';
 import ERC1155Store from './modules/erc1155';
-import ClientStore from './modules/clients';
-import WebhookStore from './modules/webhooks';
+import DeveloperStore from './modules/developer';
 import QRCodeStore from './modules/qrcodes';
 import ImageStore from './modules/images';
 
@@ -20,14 +19,13 @@ const actions = {};
 const getters = {};
 const modules = {
     account: AccountStore,
+    developer: DeveloperStore,
     pools: PoolStore,
     widgets: WidgetStore,
     erc20: ERC20Store,
     erc721: ERC721Store,
     erc1155: ERC1155Store,
-    clients: ClientStore,
     brands: BrandStore,
-    webhooks: WebhookStore,
     images: ImageStore,
     qrcodes: QRCodeStore,
 };

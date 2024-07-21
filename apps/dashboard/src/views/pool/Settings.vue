@@ -24,7 +24,6 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 
 @Component({
     computed: mapGetters({
@@ -59,11 +58,6 @@ export default class SettingsView extends Vue {
             name: 'Widget',
             class: 'fas fa-share-alt',
             route: 'widget',
-        },
-        {
-            name: 'Invoices',
-            class: 'fas fa-credit-card',
-            route: 'invoices',
         },
     ];
 

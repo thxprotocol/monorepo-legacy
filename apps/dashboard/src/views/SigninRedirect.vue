@@ -8,7 +8,6 @@
 import { track } from '@thxnetwork/common/mixpanel';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { IPools } from '../store/modules/pools';
 import { User } from 'oidc-client-ts';
 
 @Component({

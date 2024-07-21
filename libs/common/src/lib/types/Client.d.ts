@@ -13,5 +13,5 @@ type TClient = {
 };
 
 type TClientState = {
-    [poolId: string]: { [clientId: string]: TClient };
+    [clientId: string]: TClient;
 };

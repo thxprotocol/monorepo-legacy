@@ -1,14 +1,14 @@
 <template>
-    <div>
-        <h2 class="mb-3">Developer</h2>
-        <b-card class="shadow-sm mb-5" v-if="pool" header-class="p-0">
+    <div class="container-md">
+        <h2 class="my-3">Developer</h2>
+        <b-card class="shadow-sm mb-5" header-class="p-0">
             <template #header>
                 <b-nav card-header tabs pills class="px-3 border-0">
                     <b-nav-text active v-for="(item, key) in childRoutes" :key="key">
                         <b-button
                             :variant="$route.path.endsWith(item.route) ? 'primary' : 'link'"
                             class="rounded-pill"
-                            :to="`/pool/${pool._id}/developer/${item.route}`"
+                            :to="`/developer/${item.route}`"
                         >
                             <i class="ml-0 mr-2" :class="item.class"></i>
                             {{ item.name }}
@@ -22,24 +22,21 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
+import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 
 @Component({
+    components: {
+        BaseModal,
+    },
     computed: mapGetters({
         pools: 'pools/all',
         profile: 'account/profile',
     }),
 })
-export default class PoolView extends Vue {
-    pools!: IPools;
+export default class DeveloperView extends Vue {
     childRoutes = [
-        {
-            name: 'General',
-            class: 'fas fa-cog',
-            route: 'general',
-        },
         {
             name: 'API',
             class: 'fas fa-key',
@@ -61,9 +58,8 @@ export default class PoolView extends Vue {
             route: 'webhooks',
         },
     ];
-
-    get pool() {
-        return this.pools[this.$route.params.id];
+    mounted() {
+        this.$store.dispatch('account/getProfile');
     }
 }
 </script>

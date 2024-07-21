@@ -7,6 +7,7 @@ type TWebhook = {
     active: boolean;
     webhookRequests: TWebhookRequest[];
     createdAt?: Date;
+    signingSecret: string;
 };
 
 type TWebhookRequest = {
@@ -21,4 +22,8 @@ type TWebhookRequest = {
     state: WebhookRequestState;
     failReason: string;
     createdAt?: Date;
+};
+
+type TWebhookState = {
+    [id: string]: TWebhook;
 };

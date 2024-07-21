@@ -1,5 +1,5 @@
 <template>
-    <base-modal size="xl" title="Participants" :id="id" :hide-footer="true">
+    <BaseModal size="xl" title="Participants" :id="id" :hide-footer="true">
         <template #modal-body>
             <BaseCardTableHeader
                 :page="page"
@@ -26,8 +26,6 @@
                 >
                     <!-- Head formatting -->
                     <template #head(account)> Username </template>
-                    <template #head(email)> E-mail</template>
-                    <template #head(tokens)> Connected </template>
                     <template #head(pointBalance)> Point Balance </template>
                     <template #head(amount)> Amount </template>
                     <template #head(entry)> Created </template>
@@ -35,17 +33,6 @@
                     <!-- Cell formatting -->
                     <template #cell(account)="{ item }">
                         <BaseParticipantAccount :account="item.account" />
-                    </template>
-                    <template #cell(email)="{ item }">
-                        {{ item.email }}
-                    </template>
-                    <template #cell(tokens)="{ item }">
-                        <BaseParticipantConnectedAccount
-                            :id="`entry${item.entry._id}`"
-                            :account="a"
-                            :key="key"
-                            v-for="(a, key) in item.tokens"
-                        />
                     </template>
                     <template #cell(pointBalance)="{ item }">
                         <strong class="text-primary">{{ item.pointBalance }}</strong>
@@ -61,28 +48,24 @@
                 </b-table>
             </b-card>
         </template>
-    </base-modal>
+    </BaseModal>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
+import { TRewardPaymentState } from '@thxnetwork/dashboard/store/modules/pools';
+import { getAddressURL } from '../../utils/chains';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModal from './BaseModal.vue';
-import { getAddressURL } from '../../utils/chains';
 import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
-import BaseParticipantConnectedAccount, {
-    parseConnectedAccounts,
-} from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
-import { TRewardPaymentState } from '@thxnetwork/dashboard/store/modules/pools';
 
 @Component({
     components: {
         BaseModal,
         BaseCardTableHeader,
         BaseParticipantAccount,
-        BaseParticipantConnectedAccount,
     },
     computed: mapGetters({
         paymentsList: 'pools/rewardPayments',
@@ -117,8 +100,6 @@ export default class BaseModalParticipants extends Vue {
             .sort((a: TRewardPayment, b: TRewardPayment) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((entry: any) => ({
                 account: parseAccount({ id: entry._id, account: entry.account }),
-                email: entry.account && entry.account.email,
-                tokens: entry.account && parseConnectedAccounts(entry.account),
                 pointBalance: entry.pointBalance,
                 amount: entry.amount,
                 entry,

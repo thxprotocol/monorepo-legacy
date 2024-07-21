@@ -60,7 +60,7 @@
                 </b-col>
                 <b-col md="4">
                     <b-card
-                        @click="window.open('https://discord.com/invite/TzbbSmkE7Y', '_blank')"
+                        @click="window.open('https://discord.com/invite/thx-network-836147176270856243', '_blank')"
                         class="mt-3 mb-3 cursor-pointer"
                         :img-src="require('../../public/assets/thx-home-discord.png')"
                         img-alt="Image"
@@ -83,7 +83,7 @@ import BaseModalRequestAccountEmailUpdate from '@thxnetwork/dashboard/components
 import BaseCardHome from '@thxnetwork/dashboard/components/cards/BaseCardHome.vue';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import BaseCardPool from '@thxnetwork/dashboard/components/cards/BaseCardPool.vue';
-import { IPools } from '../store/modules/pools';
+
 import { NODE_ENV } from '@thxnetwork/dashboard/config/secrets';
 import { ChainId, QuestVariant } from '@thxnetwork/common/enums';
 import { contentQuests, contentRewards } from '@thxnetwork/common/constants';

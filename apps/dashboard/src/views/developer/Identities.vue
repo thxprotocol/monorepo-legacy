@@ -7,12 +7,13 @@
         </b-col>
         <b-col md="8">
             <b-form-group>
+                Identities
                 <b-button @click="onClickCreate" variant="primary" size="sm" class="rounded-pill float-right">
                     <b-spinner v-if="isLoadingCreate" small />
                     <i v-else class="fas fa-plus mx-1" /> New Identity
                 </b-button>
             </b-form-group>
-            <b-form-group label="Identities">
+            <b-form-group>
                 <BTable :items="identities" hover show-empty responsive="lg">
                     <!-- Head formatting -->
                     <template #head(uuid)>Code</template>
@@ -25,7 +26,7 @@
                         <code>{{ item.uuid }}</code>
                     </template>
                     <template #cell(participant)="{ item }">
-                        <BaseParticipantAccount v-if="item.participant" :account="item.participant" />
+                        <BaseParticipantAccount v-if="item.participant" :plain="true" :account="item.participant" />
                     </template>
                     <template #cell(createdAt)="{ item }">
                         <small class="text-muted">
@@ -44,14 +45,14 @@
             </b-form-group>
             <div class="d-flex">
                 <b-pagination
-                    v-if="identitiesList[pool._id]"
+                    v-if="identitiesList"
                     @change="onChangePage"
                     v-model="page"
                     first-number
                     last-number
                     class="mx-auto"
                     size="sm"
-                    :total-rows="identitiesList[pool._id].total"
+                    :total-rows="identitiesList.total"
                     :per-page="limit"
                 />
             </div>
@@ -61,10 +62,8 @@
 <script lang="ts">
 import { mapGetters } from 'vuex';
 import { Component, Vue } from 'vue-property-decorator';
-import { IPools, TIdentityState } from '@thxnetwork/dashboard/store/modules/pools';
 import { format } from 'date-fns';
 import BaseCode from '@thxnetwork/dashboard/components/BaseCode.vue';
-import { TIdentity } from '@thxnetwork/common/lib/types/interfaces/Identity';
 import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
 
 const exampleCode = `const identity = await thx.identity.create();
@@ -77,8 +76,7 @@ const identity = await thx.identity.get("a unique string");
 @Component({
     components: { BaseCode, BaseParticipantAccount },
     computed: mapGetters({
-        pools: 'pools/all',
-        identitiesList: 'pools/identities',
+        identitiesList: 'developer/identities',
     }),
 })
 export default class IdentitiesView extends Vue {
@@ -93,13 +91,8 @@ export default class IdentitiesView extends Vue {
     page = 1;
     limit = 10;
 
-    get pool() {
-        return this.pools[this.$route.params.id];
-    }
-
     get identities() {
-        if (!this.identitiesList[this.pool._id]) return [];
-        return this.identitiesList[this.pool._id].results.map((identity) => ({
+        return this.identitiesList.results.map((identity) => ({
             uuid: identity.uuid,
             participant: parseAccount({ id: identity.sub, account: identity.account }),
             createdAt: identity.createdAt,
@@ -113,19 +106,19 @@ export default class IdentitiesView extends Vue {
 
     async listIdentities() {
         this.isLoadingList = true;
-        await this.$store.dispatch('pools/listIdentities', { pool: this.pool, limit: this.limit, page: this.page });
+        await this.$store.dispatch('developer/listIdentities', { limit: this.limit, page: this.page });
         this.isLoadingList = false;
     }
 
     async onClickCreate() {
         this.isLoadingCreate = true;
-        await this.$store.dispatch('pools/createIdentity', this.pool);
+        await this.$store.dispatch('developer/createIdentity');
         this.listIdentities();
         this.isLoadingCreate = false;
     }
 
     onClickDelete(identity: TIdentity) {
-        this.$store.dispatch('pools/removeIdentity', identity);
+        this.$store.dispatch('developer/removeIdentity', identity);
     }
 
     onChangePage(page: number) {

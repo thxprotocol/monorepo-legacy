@@ -9,34 +9,35 @@
                 <BaseCode :codes="[code]" :languages="['JavaScript']" />
             </b-col>
             <b-col md="8">
-                <b-form-group>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <label> Search Events </label>
+                <b-form-group label-class="d-flex align-items-center justify-content-between">
+                    <template #label>
+                        Search Events
                         <b-dropdown
+                            size="sm"
                             variant="light"
                             class="ml-auto"
                             menu-class="w-100"
                             toggle-class="justify-content-between align-items-center d-flex form-control"
                         >
                             <template #button-content> Filter events </template>
-                            <b-dropdown-item :key="key" v-for="(event, key) of pool.events">
+                            <b-dropdown-item :key="key" v-for="(event, key) of eventList.metadata.eventTypes">
                                 {{ event }}
                             </b-dropdown-item>
                         </b-dropdown>
-                    </div>
-                    <hr />
+                    </template>
+
                     <BTable hover :items="events" show-empty responsive="lg" class="flex-grow-1">
                         <!-- Head formatting -->
+                        <template #head(participant)> Participant </template>
                         <template #head(name)> Name </template>
-                        <template #head(identity)> Identity </template>
                         <template #head(createdAt)> Created </template>
 
                         <!-- Cell formatting -->
-                        <template #cell(name)="{ item }">
-                            <span>{{ item.name }}</span>
+                        <template #cell(participant)="{ item }">
+                            <BaseParticipantAccount v-if="item.participant" :plain="true" :account="item.participant" />
                         </template>
-                        <template #cell(identity)="{ item }">
-                            <code>{{ item.identity ? item.identity.uuid : '' }}</code>
+                        <template #cell(name)="{ item }">
+                            <code>{{ item.name }}</code>
                         </template>
                         <template #cell(createdAt)="{ item }">
                             <small class="text-muted">
@@ -44,6 +45,20 @@
                             </small>
                         </template>
                     </BTable>
+
+                    <div class="d-flex">
+                        <b-pagination
+                            v-if="eventList"
+                            @change="onChangePage"
+                            v-model="page"
+                            first-number
+                            last-number
+                            class="mx-auto"
+                            size="sm"
+                            :total-rows="eventList.total"
+                            :per-page="limit"
+                        />
+                    </div>
                 </b-form-group>
             </b-col>
         </b-form-row>
@@ -51,12 +66,11 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { TEventState } from '@thxnetwork/dashboard/store/modules/pools';
 import { format } from 'date-fns';
 import BaseCode from '@thxnetwork/dashboard/components/BaseCode.vue';
+import BaseParticipantAccount from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
 
 const exampleCode = `await thx.events.create({
     event: 'sign_up',
@@ -67,29 +81,24 @@ const exampleCode = `await thx.events.create({
 @Component({
     components: {
         BaseCode,
+        BaseParticipantAccount,
     },
     computed: mapGetters({
-        poolEvents: 'pools/events',
-        pools: 'pools/all',
+        eventList: 'developer/events',
     }),
 })
 export default class DeveloperEventsView extends Vue {
-    poolEvents!: TEventState;
+    eventList!: TEventState;
     pools!: IPools;
     code = exampleCode;
     page = 1;
     limit = 10;
     format = format;
 
-    get pool() {
-        return this.pools[this.$route.params.id];
-    }
-
     get events() {
-        if (!this.poolEvents || !this.poolEvents[this.pool._id]) return [];
-        return this.poolEvents[this.pool._id].results.map((event: TEvent) => ({
+        return this.eventList.results.map((event: TEvent) => ({
+            participant: event.account,
             name: event.name,
-            identity: event.identity,
             createdAt: event.createdAt,
         }));
     }
@@ -98,8 +107,13 @@ export default class DeveloperEventsView extends Vue {
         this.listEvents();
     }
 
-    listEvents() {
-        this.$store.dispatch('pools/listEvents', { pool: this.pool, page: this.page, limit: this.limit });
+    async listEvents() {
+        await this.$store.dispatch('developer/listEvents', { page: this.page, limit: this.limit });
+    }
+
+    onChangePage(page: number) {
+        this.page = page;
+        this.listEvents();
     }
 }
 </script>

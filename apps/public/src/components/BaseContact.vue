@@ -171,7 +171,7 @@
                         <b-button
                             variant="dark"
                             class="btn-icon rounded-circle text-secondary"
-                            href="https://discord.com/invite/TzbbSmkE7Y"
+                            href="https://discord.com/invite/thx-network-836147176270856243"
                         >
                             <i class="fab fa-discord"></i>
                         </b-button>

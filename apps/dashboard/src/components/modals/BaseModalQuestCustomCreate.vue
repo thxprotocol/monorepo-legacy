@@ -46,11 +46,7 @@
                             label="Event Type"
                             tooltip="Requires this event for a participant to complete the quest."
                         >
-                            <BaseDropdownEventType
-                                @click="eventName = $event"
-                                :events="pool.events"
-                                :event-name="eventName"
-                            />
+                            <BaseDropdownEventType @click="eventName = $event" :pool="pool" :event-name="eventName" />
                             <template #description>
                                 Use our
                                 <b-link href="https://docs.thx.network/developers/js-sdk">JavaScript SDK</b-link> or

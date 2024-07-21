@@ -31,22 +31,7 @@
                 </b-form-checkbox>
             </BaseFormGroup>
             <BaseFormGroup required label="Webhook" tooltip="Select a webhook to trigger when the quest is completed.">
-                <b-dropdown variant="link" class="dropdown-select" v-if="webhookList.length">
-                    <template #button-content>
-                        <div class="d-flex align-items-center" v-if="webhook">
-                            <i class="fas fa-globe text-muted mr-2"></i>
-                            <span class="mr-1">{{ webhook.url }}</span>
-                        </div>
-                        <div v-else>Select a Webhook</div>
-                    </template>
-                    <b-dropdown-item-button :key="key" v-for="(w, key) of webhookList" @click="webhook = w">
-                        {{ w.url }}
-                    </b-dropdown-item-button>
-                    <b-dropdown-divider />
-                </b-dropdown>
-                <b-button v-else variant="light" block :to="`/pool/${pool._id}/developer/webhooks`">
-                    Create Webhook
-                </b-button>
+                <BaseDropdownWebhook :pool="pool" :webhook="webhook" @click="webhook = $event" />
             </BaseFormGroup>
             <BaseFormGroup
                 label="Metadata"
@@ -63,16 +48,13 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { QuestVariant } from '@thxnetwork/common/enums';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
-import { mapGetters } from 'vuex';
-import { TWebhookState } from '@thxnetwork/dashboard/store/modules/webhooks';
+import BaseDropdownWebhook from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownWebhook.vue';
 
 @Component({
     components: {
         BaseModalQuestCreate,
+        BaseDropdownWebhook,
     },
-    computed: mapGetters({
-        webhooks: 'webhooks/all',
-    }),
 })
 export default class ModalQuestWebhookCreate extends Vue {
     isSubmitDisabled = false;
@@ -88,7 +70,6 @@ export default class ModalQuestWebhookCreate extends Vue {
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     expiryDate: Date | string = '';
     locks: TQuestLock[] = [];
-    webhooks!: TWebhookState;
     webhook: TWebhook | null = null;
     webhookId = '';
     metadata = '';
@@ -99,11 +80,6 @@ export default class ModalQuestWebhookCreate extends Vue {
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TQuestWebhook;
 
-    get webhookList() {
-        if (!this.webhooks[this.pool._id]) return [];
-        return Object.values(this.webhooks[this.pool._id]);
-    }
-
     async onShow() {
         this.title = this.reward ? this.reward.title : this.title;
         this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
@@ -112,12 +88,13 @@ export default class ModalQuestWebhookCreate extends Vue {
         this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
         this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
         this.locks = this.reward ? this.reward.locks : this.locks;
-        this.webhookId = this.reward ? this.reward.webhookId : '';
         this.metadata = this.reward ? this.reward.metadata : this.metadata;
         this.isAmountCustom = this.reward ? this.reward.isAmountCustom : this.isAmountCustom;
 
-        await this.$store.dispatch('webhooks/list', this.pool);
-        this.webhook = this.webhookId ? this.webhooks[this.pool._id][this.webhookId] : this.webhook;
+        this.webhookId = this.reward ? this.reward.webhookId : '';
+        this.webhook = this.webhookId
+            ? this.pool.webhooks.find((webhook) => webhook._id === this.webhookId) || null
+            : null;
     }
 
     onSubmit() {

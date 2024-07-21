@@ -3,7 +3,7 @@
         <base-navbar v-if="profile" />
         <div class="sidebar-sibling">
             <b-navbar
-                class="px-4 py-0 navbar-top"
+                class="py-0 navbar-top"
                 toggleable="md"
                 :type="isDarkModeEnabled ? 'dark' : 'light'"
                 :variant="isDarkModeEnabled ? 'darker' : 'white'"
@@ -24,15 +24,9 @@
                             <i class="fas fa-palette mr-2" />
                             NFT
                         </b-nav-item>
-                    </b-navbar-nav>
-                    <b-navbar-nav class="ml-auto">
-                        <b-nav-item class="mx-3" :href="docsUrl" target="_blank">
-                            <i class="fas fa-graduation-cap mr-2"></i>
-                            User Guides
-                        </b-nav-item>
-                        <b-nav-item class="mx-3" href="https://discord.com/invite/TzbbSmkE7Y" target="_blank">
-                            <i class="fab fa-discord mr-2" />
-                            Support
+                        <b-nav-item class="mx-3" to="/developer">
+                            <i class="fas fa-code mr-2" />
+                            Developer
                         </b-nav-item>
                     </b-navbar-nav>
                 </b-collapse>
@@ -48,6 +42,12 @@
                         <b-avatar size="sm" variant="light" :src="profile && profile.profileImg"></b-avatar>
                     </template>
                     <b-dropdown-item to="/account">Account</b-dropdown-item>
+                    <b-dropdown-item :href="docsUrl" target="_blank">Guides</b-dropdown-item>
+                    <b-dropdown-item href="https://discord.com/invite/thx-network-836147176270856243" target="_blank">
+                        Support
+                    </b-dropdown-item>
+                    <!-- <b-dropdown-item to="/invoices" disabled>Invoices</b-dropdown-item> -->
+                    <b-dropdown-divider />
                     <b-dropdown-item to="/signout">Sign out</b-dropdown-item>
                 </b-dropdown>
             </b-navbar>

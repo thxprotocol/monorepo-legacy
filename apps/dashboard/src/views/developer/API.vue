@@ -6,7 +6,7 @@
             <BaseCode :codes="[code]" :languages="['JavaScript']" />
         </b-col>
         <b-col md="8">
-            <b-form-group>
+            <b-form-group label-class="d-flex align-items-center justify-content-between">
                 <template #label>
                     Clients
                     <b-button
@@ -18,7 +18,7 @@
                         <i class="fas fa-plus mr-2"></i>
                         New API Key
                     </b-button>
-                    <BaseModalClientCreate id="modalClientCreate" :pool="pool" @submit="onSubmit" />
+                    <BaseModalClientCreate id="modalClientCreate" @submit="onSubmit" />
                 </template>
                 <BTable hover :busy="isLoading" :items="clients" responsive="lg" show-empty>
                     <!-- Head formatting -->
@@ -67,16 +67,16 @@
                         </b-form-row>
                     </template>
                     <template #cell(id)="{ item }">
-                        <b-dropdown variant="link" size="sm" no-caret>
+                        <b-dropdown variant="link" size="sm" no-caret right>
                             <template #button-content>
                                 <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                             </template>
                             <b-dropdown-item v-b-modal="`modalClientCreate${item.id}`"> Edit </b-dropdown-item>
+                            <!-- <b-dropdown-item v-b-modal="`modalClientDelete${item.id}`"> Delete </b-dropdown-item> -->
                         </b-dropdown>
                         <BaseModalClientCreate
                             :id="`modalClientCreate${item.id}`"
-                            :pool="pool"
-                            :client="clientList[pool._id][item.id]"
+                            :client="clientList[item.id]"
                             @submit="onSubmit"
                         />
                     </template>
@@ -88,8 +88,6 @@
 <script lang="ts">
 import { mapGetters } from 'vuex';
 import { Component, Vue } from 'vue-property-decorator';
-import type { IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import type { TClient, TClientState } from '@thxnetwork/types/interfaces';
 import BaseModalClientCreate from '@thxnetwork/dashboard/components/modals/BaseModalClientCreate.vue';
 import BaseCode from '@thxnetwork/dashboard/components/BaseCode.vue';
 
@@ -108,7 +106,7 @@ const thx = new THXAPIClient({
     },
     computed: mapGetters({
         pools: 'pools/all',
-        clientList: 'clients/all',
+        clientList: 'developer/clients',
     }),
 })
 export default class Clients extends Vue {
@@ -119,13 +117,9 @@ export default class Clients extends Vue {
     pools!: IPools;
     clientList!: TClientState;
 
-    get pool() {
-        return this.pools[this.$route.params.id];
-    }
-
     get clients() {
-        if (!this.clientList[this.$route.params.id]) return [];
-        return Object.values(this.clientList[this.$route.params.id]).map((client: TClient) => ({
+        if (!this.clientList) return [];
+        return Object.values(this.clientList).map((client: TClient) => ({
             name: client.name,
             grantType: client.grantType,
             info: {
@@ -151,7 +145,7 @@ export default class Clients extends Vue {
 
     async listClients() {
         this.isLoading = true;
-        await this.$store.dispatch('clients/list', this.pool);
+        await this.$store.dispatch('developer/listClients');
         this.isLoading = false;
     }
 }

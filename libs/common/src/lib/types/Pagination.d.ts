@@ -4,6 +4,7 @@ type TPaginationParams = Partial<{
     total: number;
     previous?: { page: number };
     next?: { page: number };
+    metadata?: Record<string, any>;
 }>;
 
 type TPaginationResult = {

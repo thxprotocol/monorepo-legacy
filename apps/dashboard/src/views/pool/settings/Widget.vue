@@ -1,5 +1,52 @@
 <template>
     <div>
+        <b-form-row v-if="error">
+            <b-col md="4"></b-col>
+            <b-col md="4">
+                <b-alert variant="danger" show>
+                    {{ error }}
+                </b-alert>
+            </b-col>
+        </b-form-row>
+        <b-form-row>
+            <b-col md="4">
+                <strong>HTML Widget</strong>
+                <p class="text-muted">
+                    Place this script in HTML page and your campaign widget will show for your web page visitors.
+                </p>
+            </b-col>
+            <b-col md="8">
+                <BaseCodeExample :pool="pool" class="mb-1" />
+                <p class="text-muted small">
+                    Alternatively you can use the
+                    <b-link target="_blank" href="https://www.npmjs.com/package/@thxnetwork/sdk">
+                        @thxnetwork/sdk
+                    </b-link>
+                    for this.
+                </p>
+            </b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
+            <b-col md="4">
+                <strong>Origin</strong>
+                <div class="text-muted">Configure the domain the widget will be loaded on.</div>
+            </b-col>
+            <b-col md="8">
+                <BaseFormGroup
+                    label="Domain"
+                    tooltip="Allowed domain for integration with your campaign widget HTML script."
+                >
+                    <b-form-input
+                        @change="onChangeDomain"
+                        v-model="domain"
+                        :state="isValidDomain"
+                        placeholder="https://www.example.com"
+                    />
+                </BaseFormGroup>
+            </b-col>
+        </b-form-row>
+        <hr />
         <b-form-row>
             <b-col md="4">
                 <strong>Visibility</strong>
@@ -159,11 +206,11 @@
 
 <script lang="ts">
 import Color from 'color';
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { IWidgets } from '@thxnetwork/dashboard/store/modules/widgets';
 import { DEFAULT_ELEMENTS } from '@thxnetwork/common/constants';
+import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import BaseWidgetAlertPreview from '@thxnetwork/dashboard/components/widget/BaseWidgetAlertPreview.vue';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 
@@ -187,7 +234,10 @@ export default class WidgetsView extends Vue {
     iconImg = '';
     cssSelector = '';
     isPublished = true;
+    domain = '';
+    error = '';
 
+    isLoading = false;
     isSubmitting = false;
 
     get pool() {
@@ -205,6 +255,10 @@ export default class WidgetsView extends Vue {
         return elements;
     }
 
+    get isValidDomain() {
+        return this.domain ? isValidUrl(this.domain) : null;
+    }
+
     mounted() {
         this.$store.dispatch('widgets/list', this.pool).then(async () => {
             if (!this.widget) return;
@@ -214,7 +268,17 @@ export default class WidgetsView extends Vue {
             this.iconImg = this.widget.iconImg;
             this.cssSelector = this.widget.cssSelector;
             this.isPublished = this.widget.isPublished;
+            this.domain = this.widget.domain;
         });
+    }
+
+    async onChangeDomain(url: string) {
+        if (!isValidUrl(url)) return;
+        this.isLoading = true;
+        const domain = new URL(url);
+        await this.$store.dispatch('widgets/update', { ...this.widget, domain: domain.origin });
+        this.domain = url;
+        this.isLoading = false;
     }
 
     onChangeCSSSelector(value: string) {
@@ -260,6 +324,7 @@ export default class WidgetsView extends Vue {
             message: this.message,
             align: this.align,
             cssSelector: this.cssSelector,
+            domain: this.domain,
         });
         this.isSubmitting = false;
     }

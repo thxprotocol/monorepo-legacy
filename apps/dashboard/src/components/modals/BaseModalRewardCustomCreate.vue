@@ -9,22 +9,7 @@
         :is-loading="isLoading"
     >
         <BaseFormGroup required label="Webhook" tooltip="Select a webhook to trigger when the quest is completed.">
-            <b-dropdown variant="link" class="dropdown-select" v-if="webhookList.length">
-                <template #button-content>
-                    <div class="d-flex align-items-center" v-if="webhook">
-                        <i class="fas fa-globe text-muted mr-2"></i>
-                        <span class="mr-1">{{ webhook.url }}</span>
-                    </div>
-                    <div v-else>Select a Webhook</div>
-                </template>
-                <b-dropdown-item-button :key="key" v-for="(w, key) of webhookList" @click="webhook = w">
-                    {{ w.url }}
-                </b-dropdown-item-button>
-                <b-dropdown-divider />
-            </b-dropdown>
-            <b-button v-else variant="light" block :to="`/pool/${pool._id}/developer/webhooks`">
-                Create Webhook
-            </b-button>
+            <BaseDropdownWebhook :pool="pool" :webhook="webhook" @click="webhook = $event" />
         </BaseFormGroup>
         <BaseFormGroup label="Metadata" tooltip="Provide metadata for your system to use.">
             <b-textarea v-model="metadata" />
@@ -34,18 +19,15 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
-import { TWebhookState } from '@thxnetwork/dashboard/store/modules/webhooks';
-import BaseModalRewardCreate from './BaseModalRewardCreate.vue';
 import { RewardVariant } from '@thxnetwork/common/enums';
+import BaseModalRewardCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCreate.vue';
+import BaseDropdownWebhook from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownWebhook.vue';
 
 @Component({
     components: {
         BaseModalRewardCreate,
+        BaseDropdownWebhook,
     },
-    computed: mapGetters({
-        webhooks: 'webhooks/all',
-    }),
 })
 export default class ModalRewardCustomCreate extends Vue {
     isLoading = false;
@@ -60,17 +42,14 @@ export default class ModalRewardCustomCreate extends Vue {
     @Prop() pool!: TPool;
     @Prop({ required: false }) reward!: TRewardCustom;
 
-    get webhookList() {
-        if (!this.webhooks[this.pool._id]) return [];
-        return Object.values(this.webhooks[this.pool._id]);
-    }
-
     async onShow() {
         this.metadata = this.reward ? this.reward.metadata : this.metadata;
         this.webhookId = this.reward ? this.reward.webhookId : '';
 
-        await this.$store.dispatch('webhooks/list', this.pool);
-        this.webhook = this.webhookId ? this.webhooks[this.pool._id][this.webhookId] : this.webhook;
+        this.webhookId = this.reward ? this.reward.webhookId : '';
+        this.webhook = this.webhookId
+            ? this.pool.webhooks.find((webhook) => webhook._id === this.webhookId) || null
+            : null;
     }
 
     async onSubmit(payload: TReward) {

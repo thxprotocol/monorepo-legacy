@@ -6,31 +6,6 @@
                 <p class="text-muted">Listen to live THX events and forward them to your server.</p>
             </b-col>
             <b-col md="8">
-                <b-form-group label="Webhook Signing Secret">
-                    <b-input-group>
-                        <b-form-input :value="signingSecret" />
-                        <b-input-group-append>
-                            <b-button
-                                size="sm"
-                                variant="primary"
-                                @click="issigningSecretHidden = !issigningSecretHidden"
-                            >
-                                <i v-if="issigningSecretHidden" class="fas fa-eye px-2 m-0"></i>
-                                <i v-else class="fas fa-eye-slash px-2 m-0"></i>
-                            </b-button>
-                            <b-button
-                                size="sm"
-                                variant="primary"
-                                v-clipboard:copy="pool.signingSecret"
-                                v-clipboard:success="(isCopied = true)"
-                            >
-                                <i v-if="isCopied" class="fas fa-clipboard-check px-2 m-0"></i>
-                                <i v-else class="fas fa-clipboard px-2 m-0"></i>
-                            </b-button>
-                        </b-input-group-append>
-                    </b-input-group>
-                </b-form-group>
-                <hr />
                 <b-form-group>
                     <template #label>
                         Hosted endpoints
@@ -43,12 +18,13 @@
                             <i class="fas fa-plus mr-2"></i>
                             Add Endpoint
                         </b-button>
-                        <BaseModalWebhookCreate id="modalWebhookCreate" :pool="pool" />
+                        <BaseModalWebhookCreate id="modalWebhookCreate" />
                     </template>
 
-                    <BTable hover :items="webhooksList" id="table-webhooks" responsive="sm" show-empty>
+                    <BTable hover :items="webhooks" id="table-webhooks" responsive="sm" show-empty>
                         <!-- Head formatting -->
                         <template #head(url)>URL</template>
+                        <template #head(signingSecret)> Secret </template>
                         <template #head(webhookRequests)> Requests </template>
                         <template #head(status)> Status </template>
                         <template #head(_id)> &nbsp;</template>
@@ -60,10 +36,22 @@
                                 <code>{{ item.url }}</code>
                             </div>
                         </template>
+                        <template #cell(signingSecret)="{ item }">
+                            <b-link
+                                v-b-tooltip
+                                title="Copy signing secret!"
+                                v-clipboard:copy="item.signingSecret"
+                                v-clipboard:success="() => (isCopied = true)"
+                                class="d-flex align-items-center"
+                            >
+                                <code>{{ item.signingSecret.substring(1, 10) }}...</code>
+                                <i class="fas small ml-1" :class="isCopied ? 'fa-clipboard-check' : 'fa-clipboard'"></i>
+                            </b-link>
+                        </template>
                         <template #cell(webhookRequests)="{ item }">
                             <BaseModalWebhookRequests
                                 :id="`modalWebhookRequest${item._id}`"
-                                :webhook="Object.values(webhooks[pool._id]).find((w) => w._id === item._id)"
+                                :webhook="Object.values(webhooks).find((w) => w._id === item._id)"
                                 :webhook-requests="item.webhookRequests"
                             />
                             <b-link v-if="item.webhookRequests.length" v-b-modal="`modalWebhookRequest${item._id}`">
@@ -85,11 +73,7 @@
                                 <b-dropdown-item v-b-modal="`modalWebhookCreate${item._id}`"> Edit </b-dropdown-item>
                                 <b-dropdown-item @click="onClickDelete(item)"> Delete </b-dropdown-item>
                             </b-dropdown>
-                            <BaseModalWebhookCreate
-                                :id="`modalWebhookCreate${item._id}`"
-                                :pool="pool"
-                                :webhook="item"
-                            />
+                            <BaseModalWebhookCreate :id="`modalWebhookCreate${item._id}`" :webhook="item" />
                         </template>
                     </BTable>
                 </b-form-group>
@@ -100,53 +84,37 @@
 <script lang="ts">
 import { mapGetters } from 'vuex';
 import { Component, Vue } from 'vue-property-decorator';
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import { TWebhookState } from '@thxnetwork/dashboard/store/modules/webhooks';
 import BaseModalWebhookCreate from '@thxnetwork/dashboard/components/modals/BaseModalWebhookCreate.vue';
 import BaseModalWebhookRequests from '@thxnetwork/dashboard/components/modals/BaseModalWebhookRequests.vue';
 
 @Component({
     components: { BaseModalWebhookCreate, BaseModalWebhookRequests },
     computed: mapGetters({
-        webhooks: 'webhooks/all',
-        pools: 'pools/all',
+        webhookList: 'developer/webhooks',
+        account: 'account/profile',
     }),
 })
 export default class CampaignConfigWebhooks extends Vue {
-    profile!: TAccount;
     pools!: IPools;
-    webhooks!: TWebhookState;
-    issigningSecretHidden = true;
+    webhookList!: TWebhookState;
+    account!: TAccount;
+
     isCopied = false;
 
-    get pool() {
-        return this.pools[this.$route.params.id];
-    }
-
-    get signingSecret() {
-        if (!this.pool.signingSecret) return '';
-        if (this.issigningSecretHidden) return this.pool.signingSecret.replace(/./g, '•');
-        return this.pool.signingSecret;
-    }
-
-    get webhooksList() {
-        if (!this.webhooks[this.pool._id]) return [];
-        return Object.values(this.webhooks[this.pool._id]).map((w) => {
+    get webhooks() {
+        return Object.values(this.webhookList).map((w) => {
             return {
                 url: w.url,
                 webhookRequests: w.webhookRequests,
+                signingSecret: w.signingSecret,
                 status: w.status,
                 _id: w._id,
             };
         });
     }
 
-    mounted() {
-        this.$store.dispatch('webhooks/list', this.pool);
-    }
-
-    onCopySuccess() {
-        this.isCopied = true;
+    async mounted() {
+        await this.$store.dispatch('developer/listWebhooks');
     }
 
     onClickWebhookRequests() {
@@ -154,8 +122,8 @@ export default class CampaignConfigWebhooks extends Vue {
     }
 
     async onClickDelete(item: { id: string }) {
-        const webhook = Object.values(this.webhooks[this.pool._id]).find((webhook) => webhook._id === item.id);
-        await this.$store.dispatch('webhooks/delete', webhook);
+        const webhook = Object.values(this.webhooks).find((webhook) => webhook._id === item.id);
+        await this.$store.dispatch('webhooks/deleteWebhook', webhook);
     }
 }
 </script>
@@ -164,12 +132,12 @@ export default class CampaignConfigWebhooks extends Vue {
     width: auto;
 }
 #table-webhooks th:nth-child(2) {
-    width: auto;
+    width: 150px;
 }
 #table-webhooks th:nth-child(3) {
-    width: 100px;
+    width: 150px;
 }
 #table-webhooks th:nth-child(4) {
-    width: 50px;
+    width: 100px;
 }
 </style>

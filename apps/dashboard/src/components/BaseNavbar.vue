@@ -25,7 +25,7 @@
                                 {{ selectedPool.settings.title }}
                             </div>
                         </b-button>
-                        <b-dropdown size="sm" variant="light" right no-caret>
+                        <b-dropdown size="sm" variant="light" right no-caret menu-class="v-overflow">
                             <template #button-content>
                                 <i
                                     v-if="selectedPool"
@@ -34,36 +34,34 @@
                                 />
                                 <b-spinner v-else variant="primary" small />
                             </template>
-                            <div style="max-height: 300px; overflow: auto">
-                                <b-dropdown-item-btn
-                                    class="small"
-                                    :key="key"
-                                    v-for="(p, key) of pools"
-                                    @click="onPoolSelect(p)"
+                            <b-dropdown-text>
+                                <b-button
+                                    v-b-modal="'modalCreateCampaign'"
+                                    variant="primary"
+                                    size="sm"
+                                    block
+                                    class="rounded-pill"
                                 >
-                                    <div class="d-flex align-items-center justify-content-between">
-                                        <div class="d-flex align-items-center">
-                                            <span class="truncate-pool-title">
-                                                {{ p.settings.title }}
-                                            </span>
-                                            <i class="fas fa-caret-right text-muted ml-2"></i>
-                                        </div>
+                                    <i class="fas fa-plus mr-1 ml-0" />
+                                    Campaign
+                                </b-button>
+                                <BaseModalPoolCreate id="modalCreateCampaign" />
+                            </b-dropdown-text>
+                            <b-dropdown-item-btn
+                                class="small"
+                                :key="key"
+                                v-for="(p, key) of pools"
+                                @click="onPoolSelect(p)"
+                            >
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <span class="truncate-pool-title">
+                                            {{ p.settings.title }}
+                                        </span>
+                                        <i class="fas fa-caret-right text-muted ml-2"></i>
                                     </div>
-                                </b-dropdown-item-btn>
-                                <b-dropdown-text>
-                                    <b-button
-                                        v-b-modal="'modalCreateCampaign'"
-                                        variant="primary"
-                                        size="sm"
-                                        block
-                                        class="rounded-pill"
-                                    >
-                                        <i class="fas fa-plus mr-1 ml-0" />
-                                        Campaign
-                                    </b-button>
-                                    <BaseModalPoolCreate id="modalCreateCampaign" />
-                                </b-dropdown-text>
-                            </div>
+                                </div>
+                            </b-dropdown-item-btn>
                         </b-dropdown>
                     </b-button-group>
                 </b-form-group>
@@ -146,27 +144,6 @@
                             </div>
                         </b-nav-item>
                         <b-nav-item
-                            :to="`/pool/${selectedPool._id}/developer`"
-                            link-classes="nav-link-wrapper"
-                            class="nav-link-plain"
-                        >
-                            <div class="d-flex">
-                                <div class="nav-link-icon">
-                                    <i class="fas fa-code"></i>
-                                </div>
-                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                    <span>Developer</span>
-                                    <div
-                                        v-if="selectedPool.widget ? !selectedPool.widget.active : false"
-                                        variant="gray"
-                                        class="mr-3"
-                                    >
-                                        <i class="fas fa-exclamation text-danger"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </b-nav-item>
-                        <b-nav-item
                             :to="`/pool/${selectedPool._id}/settings`"
                             link-classes="nav-link-wrapper"
                             class="nav-link-plain"
@@ -205,7 +182,6 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { ERC20Type } from '@thxnetwork/dashboard/types/erc20';
 import { plans } from '@thxnetwork/dashboard/utils/plans';
 import { Component, Vue } from 'vue-property-decorator';
@@ -277,14 +253,7 @@ export default class BaseNavbar extends Vue {
     }
 
     mounted() {
-        this.$store.dispatch('pools/list', { archived: false }).then(async () => {
-            // if (this.$route.params.id) {
-            //     await this.$store.dispatch('pools/read', this.$route.params.id);
-            // } else {
-            //     if (!this.firstPool) return;
-            //     await this.$store.dispatch('pools/read', this.firstPool._id);
-            // }
-        });
+        this.$store.dispatch('pools/list', { archived: false });
     }
 
     onClickCampaignURL() {
@@ -340,5 +309,9 @@ export default class BaseNavbar extends Vue {
             color: var(--gray) !important;
         }
     }
+}
+.v-overflow {
+    max-height: 300px;
+    overflow: auto;
 }
 </style>

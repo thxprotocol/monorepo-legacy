@@ -6,3 +6,5 @@ type TIdentity = {
     createdAt: Date;
     account?: TAccount;
 };
+
+type TIdentityState = TPaginationResult & { results: TIdentity[] };
