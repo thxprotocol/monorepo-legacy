@@ -137,7 +137,7 @@ import { BButton, BJumbotron, BFormInput } from 'bootstrap-vue';
 import { Component, Vue } from 'vue-property-decorator';
 
 const Calendly = (window as any).Calendly;
-const CALENDLY_STEFFEN = 'https://calendly.com/steffenboode/demo';
+const CALENDLY_STEFFEN = 'https://calendly.com/mieszko/demo';
 const CALENDLY_MIESZKO = 'https://calendly.com/mieszko/demo';
 
 @Component({

@@ -85,30 +85,6 @@
                                     </a>
                                 </li>
                             </ul>
-                            <hr />
-                            <h3 class="text-dark">Media Materials</h3>
-                            <p class="mb-3">
-                                Download and share THX press materials or reach out to our press contact
-                                <a class="text-dark font-weight-bold" href="mailto:info@thx.network">Jorrit Horstman</a
-                                >.
-                            </p>
-                            <b-button
-                                target="_blank"
-                                class="btn btn-outline-dark rounded-pill text-decoration-none"
-                                href="https://drive.google.com/drive/folders/1a3cc5mekZfJuHHxRbAc9vQ-DORMFHvG9?usp=sharing"
-                            >
-                                Download press pack
-                                <i class="fas fa-chevron-right"></i>
-                            </b-button>
-                            <a href="#">
-                                <img
-                                    onclick="logBadgeClick()"
-                                    id="badge-button"
-                                    style="width: 180px; height: 39px; margin-top: 3rem"
-                                    src="https://static.alchemyapi.io/images/marketing/badge.png"
-                                    alt="Alchemy Supercharged"
-                                />
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -151,7 +127,7 @@
                             <b-button
                                 variant="outline-secondary rounded-pill"
                                 class="mt-3 rounder-pill"
-                                href="https://calendly.com/steffenboode/demo"
+                                href="https://calendly.com/mieszko/demo"
                                 target="_blank"
                                 :title="TITLES.SCHEDULE_A_DEMO"
                             >
