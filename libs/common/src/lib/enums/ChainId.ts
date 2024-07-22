@@ -8,4 +8,5 @@ export enum ChainId {
     Linea = 59144,
     Metis = 1088,
     Base = 8453,
+    IOTA = 8822,
 }

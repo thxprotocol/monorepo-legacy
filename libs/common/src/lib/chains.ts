@@ -51,6 +51,12 @@ const chainList: { [chainId: number]: ChainInfo } = {
         blockExplorer: 'https://basescan.org',
         rpc: 'https://mainnet.base.org',
     },
+    [ChainId.IOTA]: {
+        chainId: ChainId.IOTA,
+        name: 'Hardhat',
+        blockExplorer: 'https://explorer.evm.iota.org',
+        rpc: 'https://json-rpc.evm.iotaledger.net',
+    },
 };
 
 if (process.env['NODE_ENV'] !== 'production') {

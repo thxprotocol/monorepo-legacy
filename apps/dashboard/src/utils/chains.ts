@@ -58,6 +58,13 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_base.svg'),
         blockExplorer: 'https://basescan.org',
     },
+    [ChainId.IOTA]: {
+        disabled: true,
+        chainId: ChainId.IOTA,
+        name: 'IOTA EVM',
+        logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_iota.svg'),
+        blockExplorer: 'https://explorer.evm.iota.org',
+    },
 };
 
 if (process.env.NODE_ENV !== 'production') {
