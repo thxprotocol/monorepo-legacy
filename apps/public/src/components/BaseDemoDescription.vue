@@ -53,7 +53,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-const CALENDLY_STEFFEN = 'https://calendly.com/steffenboode/demo';
+const CALENDLY_STEFFEN = 'https://calendly.com/mieszko/demo';
 const CALENDLY_MIESZKO = 'https://calendly.com/mieszko/demo';
 
 @Component({
