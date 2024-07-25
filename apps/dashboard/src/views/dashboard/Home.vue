@@ -8,7 +8,7 @@
                 :style="{
                     'border-radius': '1rem',
                     'background-size': 'cover',
-                    'background-image': `url(${require('../../public/assets/thx_jumbotron.webp')})`,
+                    'background-image': `url(${require('@thxnetwork/dashboard/../public/assets/thx_jumbotron.webp')})`,
                 }"
             >
                 <b-container class="container-md py-5">
@@ -36,9 +36,9 @@
             <b-row>
                 <b-col md="4">
                     <b-card
-                        @click="$router.push(`/pool/${firstPool ? firstPool._id : 'unknown'}/settings/widget`)"
+                        @click="$router.push(`/campaign/${firstPool ? firstPool._id : 'unknown'}/settings/widget`)"
                         class="mt-3 mb-3 cursor-pointer"
-                        :img-src="require('../../public/assets/thx-home-widget.png')"
+                        :img-src="require('@thxnetwork/dashboard/../public/assets/thx-home-widget.png')"
                         img-alt="Image"
                         img-top
                     >
@@ -50,7 +50,7 @@
                     <b-card
                         @click="window.open(docsUrl, '_blank')"
                         class="mt-3 mb-3 cursor-pointer"
-                        :img-src="require('../../public/assets/thx_docs.webp')"
+                        :img-src="require('@thxnetwork/dashboard/../public/assets/thx_docs.webp')"
                         img-alt="Image"
                         img-top
                     >
@@ -62,7 +62,7 @@
                     <b-card
                         @click="window.open('https://discord.com/invite/thx-network-836147176270856243', '_blank')"
                         class="mt-3 mb-3 cursor-pointer"
-                        :img-src="require('../../public/assets/thx-home-discord.png')"
+                        :img-src="require('@thxnetwork/dashboard/../public/assets/thx-home-discord.png')"
                         img-alt="Image"
                         img-top
                     >
@@ -117,7 +117,6 @@ export default class HomeView extends Vue {
     }
 
     async mounted() {
-        await this.$store.dispatch('account/getProfile');
         await this.$store.dispatch('pools/list');
 
         if (!Object.values(this.pools).length) {

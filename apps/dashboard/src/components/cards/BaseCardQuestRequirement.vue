@@ -23,7 +23,7 @@
                     show
                     variant="warning"
                     class="d-flex align-items-center justify-content-between"
-                    v-if="!isPlatformAvailable"
+                    v-if="!isProviderAvailable"
                 >
                     <div>
                         <i class="fas fa-exclamation-circle mr-1" />
@@ -68,6 +68,8 @@ import {
     TQuestSocialInteraction,
 } from '@thxnetwork/dashboard/types/rewards';
 import { AccessTokenKind, QuestSocialRequirement } from '@thxnetwork/common/enums';
+import { interactionComponentMap } from '@thxnetwork/common/maps';
+import { UserIdentity } from '@supabase/supabase-js';
 import BaseDropdownQuestProvider from '../dropdowns/BaseDropdownQuestProvider.vue';
 import BaseDropdownQuestProviderInteractions from '../dropdowns/BaseDropdownQuestProviderInteractions.vue';
 import BaseDropdownYoutubeChannels from '../dropdowns/BaseDropdownYoutubeChannels.vue';
@@ -79,7 +81,6 @@ import BaseDropdownDiscordRoles from '../dropdowns/BaseDropdownDiscordRoles.vue'
 import BaseDropdownDiscordMessage from '../dropdowns/BaseDropdownDiscordMessage.vue';
 import BaseDropdownDiscordMessageReaction from '../dropdowns/BaseDropdownDiscordMessageReaction.vue';
 import BaseDropdownTwitterQuery from '../dropdowns/BaseDropdownTwitterQuery.vue';
-import { interactionComponentMap } from '@thxnetwork/common/maps';
 
 @Component({
     components: {
@@ -96,7 +97,7 @@ import { interactionComponentMap } from '@thxnetwork/common/maps';
         BaseDropdownDiscordRoles,
     },
     computed: mapGetters({
-        profile: 'account/profile',
+        identities: 'auth/identities',
     }),
 })
 export default class BaseCardQuestRequirement extends Vue {
@@ -117,7 +118,7 @@ export default class BaseCardQuestRequirement extends Vue {
     content = '';
     contentMetadata: unknown = {};
     isVisible = true;
-    profile!: TAccount;
+    identities!: UserIdentity[];
 
     @Prop() pool!: TPool;
     @Prop({ required: false }) requirement!: {
@@ -131,12 +132,10 @@ export default class BaseCardQuestRequirement extends Vue {
         return providerInteractionList.filter((a) => this.provider.actions.includes(a.type));
     }
 
-    get isPlatformAvailable() {
-        if (!this.provider || !this.provider.kind || !this.profile) return true;
-        return this.profile.tokens.find(
-            ({ kind, scopes }) =>
-                this.provider.kind === kind && this.provider.scopes.every((scope) => scopes.includes(scope)),
-        );
+    get isProviderAvailable() {
+        if (!this.provider || !this.provider.kind || !this.identities.length) return false;
+        return this.identities.find(({ provider }) => this.provider.kind === provider);
+        // && this.provider.scopes.every((scope) => scopes.includes(scope))
     }
 
     async mounted() {
@@ -151,7 +150,7 @@ export default class BaseCardQuestRequirement extends Vue {
     }
 
     async onClickConnect(provider: TQuestSocialProvider) {
-        await this.$store.dispatch('account/connect', { kind: provider.kind, scopes: provider.scopes });
+        await this.$store.dispatch('auth/connect', { kind: provider.kind, scopes: provider.scopes });
     }
 
     onSelectProvider(provider: TQuestSocialProvider) {

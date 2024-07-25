@@ -1,3 +1,5 @@
+import { AccountVariant } from './AccountVariant';
+
 export enum AccessTokenKind {
     Auth = 'authentication',
     Signup = 'signup',
@@ -67,6 +69,22 @@ export const OAuthRequiredScopes = {
     DiscordValidateGuild: [OAuthDiscordScope.Identify, OAuthDiscordScope.Email, OAuthDiscordScope.Guilds],
     TwitchAuth: [OAuthTwitchScope.Email, OAuthTwitchScope.Follows, OAuthTwitchScope.Broadcast],
     GithubAuth: [OAuthGithubScope.PublicRepo],
+};
+
+export const OAuthScopes: { [provider: string]: string[] } = {
+    [AccessTokenKind.Google]: OAuthRequiredScopes.GoogleAuth,
+    [AccessTokenKind.Discord]: OAuthRequiredScopes.DiscordAuth,
+    [AccessTokenKind.Twitter]: OAuthRequiredScopes.TwitterAuth,
+    [AccessTokenKind.Github]: OAuthRequiredScopes.GithubAuth,
+    [AccessTokenKind.Twitch]: OAuthRequiredScopes.TwitchAuth,
+};
+
+export const accountVariantProviderKindMap: { [variant: number]: string } = {
+    [AccountVariant.SSOGoogle]: 'google',
+    [AccountVariant.SSOTwitter]: 'twitter',
+    [AccountVariant.SSODiscord]: 'discord',
+    [AccountVariant.SSOGithub]: 'github',
+    [AccountVariant.SSOTwitch]: 'twitch',
 };
 
 export type OAuthScope = OAuthGoogleScope | OAuthTwitterScope | OAuthDiscordScope | OAuthTwitchScope | OAuthGithubScope;

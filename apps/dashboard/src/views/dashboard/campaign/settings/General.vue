@@ -97,7 +97,7 @@
                         View the
                         <b-link :to="`${widgetUrl}/c/${pool.settings.slug}/ranking`">public leaderboard</b-link> for
                         your campaign or learn more about your top participants in
-                        <b-link :to="`/pool/${pool._id}/dashboard`">campaign analytics</b-link>.
+                        <b-link :to="`/campaign/${pool._id}/dashboard`">campaign analytics</b-link>.
                     </template>
                 </BaseFormGroup>
             </b-col>

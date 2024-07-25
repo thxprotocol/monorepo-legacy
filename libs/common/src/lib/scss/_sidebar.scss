@@ -3,21 +3,6 @@ body {
     height: 100%;
 }
 
-@media (min-width: map-get($grid-breakpoints, 'md')) {
-    .sidebar-sibling {
-        margin-left: 260px;
-        border-left: 1px solid $gray-200;
-    }
-}
-
-.b-sidebar {
-    width: 260px;
-}
-
-.b-sidebar-outer ~ .sidebar-sibling {
-    height: 100%;
-}
-
 .sidebar {
     display: flex;
     height: 100%;

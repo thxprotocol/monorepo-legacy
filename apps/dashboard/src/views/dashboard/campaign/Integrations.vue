@@ -8,7 +8,7 @@
                         <b-button
                             :variant="$route.path.endsWith(item.route) ? 'primary' : 'link'"
                             class="rounded-pill"
-                            :to="`/pool/${pool._id}/integrations/${item.route}`"
+                            :to="`/campaign/${pool._id}/integrations/${item.route}`"
                         >
                             <i class="ml-0 mr-2" :class="item.class"></i>
                             {{ item.name }}
@@ -22,19 +22,10 @@
 </template>
 
 <script lang="ts">
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
-import { Component, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
-@Component({
-    computed: {
-        ...mapGetters({
-            pools: 'pools/all',
-        }),
-    },
-})
+@Component({})
 export default class SettingsTwitterView extends Vue {
-    pools!: IPools;
     childRoutes = [
         {
             name: 'Twitter',
@@ -53,12 +44,6 @@ export default class SettingsTwitterView extends Vue {
         },
     ];
 
-    get pool() {
-        return this.pools[this.$route.params.id];
-    }
-
-    mounted() {
-        this.$store.dispatch('pools/read', this.$route.params.id);
-    }
+    @Prop() pool!: TPool;
 }
 </script>

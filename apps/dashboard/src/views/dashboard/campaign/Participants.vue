@@ -124,7 +124,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseBtnSort from '@thxnetwork/dashboard/components/buttons/BaseBtnSort.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
@@ -136,7 +136,7 @@ import BaseParticipantConnectedAccount, {
     parseConnectedAccounts,
 } from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
 import { format } from 'date-fns';
-import { IPools, TParticipantState } from '@thxnetwork/dashboard/store/modules/pools';
+import { TParticipantState } from '@thxnetwork/dashboard/store/modules/pools';
 
 @Component({
     components: {
@@ -149,13 +149,11 @@ import { IPools, TParticipantState } from '@thxnetwork/dashboard/store/modules/p
         BaseModalParticipant,
     },
     computed: mapGetters({
-        pools: 'pools/all',
         profile: 'account/profile',
         participantList: 'pools/participants',
     }),
 })
 export default class ViewParticipants extends Vue {
-    pools!: IPools;
     isLoading = false;
     format = format;
     participantList!: TParticipantState;
@@ -197,9 +195,7 @@ export default class ViewParticipants extends Vue {
         },
     };
 
-    get pool() {
-        return this.pools[this.$route.params.id];
-    }
+    @Prop() pool!: TPool;
 
     get participants() {
         if (!this.participantList[this.$route.params.id]) return { total: 0, results: [] };
@@ -234,7 +230,7 @@ export default class ViewParticipants extends Vue {
 
         // Updates URL in addressbar
         const url = new URL(window.location.href);
-        url.pathname = `/pool/${this.pool._id}/participants/${query}`;
+        url.pathname = `/campaign/${this.pool._id}/participants/${query}`;
         history.pushState(null, '', url);
     }
 

@@ -105,15 +105,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { goalLabelMap, roleLabelMap } from '@thxnetwork/common/constants';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
+import { validateEmail } from '@thxnetwork/dashboard/utils/email';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
-
-export function validateEmail(email: string) {
-    return String(email)
-        .toLowerCase()
-        .match(
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        );
-}
 
 @Component({
     components: {

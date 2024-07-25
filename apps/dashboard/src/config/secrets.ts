@@ -13,3 +13,5 @@ export const PKG_ENV = process.env.VUE_APP_PKG_ENV as 'local' | 'dev' | 'prod';
 export const MIXPANEL_TOKEN = process.env.VUE_APP_MIXPANEL_TOKEN || '';
 export const NODE_ENV = process.env.NODE_ENV;
 export const DISCORD_CLIENT_ID = process.env.VUE_APP_DISCORD_CLIENT_ID;
+export const SUPABASE_URL = process.env.VUE_APP_SUPABASE_URL || '';
+export const SUPABASE_PUBLIC_KEY = process.env.VUE_APP_SUPABASE_PUBLIC_KEY || '';

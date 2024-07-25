@@ -12,17 +12,17 @@
                 <b-card class="bg-dark text-white shadow-lg mb-10 mb-md-0 d-none d-md-flex">
                     <b-card-title>Hi👋</b-card-title>
                     <p>Read about the widget features below and feel free to reach out if you have any questions.</p>
-                    <b-link :to="`/pool/${$route.params.poolId}/developer/general`">
+                    <b-link :to="`/campaign/${$route.params.poolId}/developer/general`">
                         <i class="fas fa-caret-right mr-1" />
                         Add to your HTML page
                     </b-link>
                     <br />
-                    <b-link :to="`/pool/${$route.params.poolId}/settings/appearance`">
+                    <b-link :to="`/campaign/${$route.params.poolId}/settings/appearance`">
                         <i class="fas fa-caret-right mr-1" />
                         Change color theme
                     </b-link>
                     <br />
-                    <b-link :to="`/pool/${$route.params.poolId}/settings/widget`">
+                    <b-link :to="`/campaign/${$route.params.poolId}/settings/widget`">
                         <i class="fas fa-caret-right mr-1" />
                         Change widget settings
                     </b-link>
@@ -180,17 +180,13 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { initWidget } from '../utils/widget';
-import { TBrand } from '../store/modules/brands';
+import { initWidget } from '@thxnetwork/dashboard/utils/widget';
+import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
 import { API_URL, PUBLIC_URL, WIDGET_URL } from '@thxnetwork/dashboard/config/secrets';
 import { format, formatDistance } from 'date-fns';
-import axios, { AxiosError } from 'axios';
-import { UserManager } from 'oidc-client-ts';
-import { config } from '../utils/oidc';
-import { BASE_URL } from '@thxnetwork/dashboard/config/secrets';
-import { track } from '@thxnetwork/common/mixpanel';
-import BaseCodeExample from '../components/BaseCodeExample.vue';
 import { contentQuests, contentRewards } from '@thxnetwork/common/constants';
+import axios from 'axios';
+import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 
 @Component({
     metaInfo() {
@@ -237,10 +233,9 @@ export default class WidgetPreviewView extends Vue {
     logoImgUrl = '';
     backgroundImgUrl = '';
     poolTransfer: TPoolTransferResponse | null = null;
-    defaultLogoImgUrl = require('../../public/assets/logo.png');
-    defaultBackgroundImgUrl = require('../../public/assets/thx_jumbotron.webp');
+    defaultLogoImgUrl = require('@thxnetwork/dashboard/../public/assets/logo.png');
+    defaultBackgroundImgUrl = require('@thxnetwork/dashboard/../public/assets/thx_jumbotron.webp');
     error = '';
-    userManager = new UserManager(config);
     contentQuests = contentQuests;
     contentRewards = contentRewards;
     title = '';
@@ -264,11 +259,6 @@ export default class WidgetPreviewView extends Vue {
             : 'expired';
     }
     async mounted() {
-        // Ping mixpanel that the page is visited
-        this.userManager.getUser().then((user) => {
-            track('UserVisits', [user?.profile.sub, 'preview', { poolId: this.$route.params.poolId }]);
-        });
-
         // Inject the widget
         initWidget(this.$route.params.poolId, '#thx-widget-preview');
 
@@ -286,46 +276,6 @@ export default class WidgetPreviewView extends Vue {
         app.style.opacity = '1';
         document.body.style.height = 'auto';
         document.body.style.backgroundColor = '#212529';
-        // document.body.style.backgroundSize = 'cover';
-        // document.body.style.backgroundAttachment = 'fixed';
-        // document.body.style.backgroundPosition = 'center center';
-        // document.body.style.backgroundImage = src ? `url('${src}')` : '';
-    }
-
-    async onClickTransfer() {
-        if (!this.poolTransfer) return;
-        this.isTransferLoading = true;
-
-        const user = await this.userManager.getUser();
-        if (!user || user.expired) {
-            await this.$store.dispatch('account/signinRedirect', {
-                poolId: this.poolTransfer.poolId,
-                poolTransferToken: this.poolTransfer.token,
-            });
-            this.isTransferLoading = false;
-            return;
-        }
-
-        try {
-            await axios({
-                method: 'POST',
-                url: `/pools/${this.$route.params.poolId}/transfers`,
-                data: {
-                    sub: user.profile.sub,
-                    token: this.$route.query.token,
-                },
-            });
-
-            window.location.href = `${BASE_URL}/pool/${this.poolTransfer.poolId}`;
-        } catch (error) {
-            this.setError(error as AxiosError);
-        } finally {
-            this.isTransferLoading = false;
-        }
-    }
-
-    setError(error: AxiosError) {
-        this.error = error.response?.data.error.message || 'Something went wrong...';
     }
 }
 </script>

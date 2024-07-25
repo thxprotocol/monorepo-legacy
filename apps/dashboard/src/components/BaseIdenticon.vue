@@ -14,13 +14,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
 
-@Component({
-    computed: mapGetters({
-        profile: 'account/profile',
-    }),
-})
+@Component({})
 export default class BaseIdenticon extends Vue {
     width = 40;
     height = 40;

@@ -1,184 +1,159 @@
 <template>
-    <b-sidebar
-        class="d-none d-md-flex"
-        bg-variant="white"
-        id="sidebar-left"
-        no-header
-        no-header-close
-        no-close-on-esc
-        no-close-on-route-change
-        no-slide
-        :visible="true"
-    >
-        <b-navbar toggleable="lg" class="sidebar">
-            <div class="flex-grow-1 w-100 h-25 overflow-auto d-flex justify-content-end flex-column">
-                <b-form-group class="my-3 mx-2">
-                    <b-button-group class="w-100">
-                        <b-button
-                            v-if="selectedPool"
-                            class="d-flex p-2 text-muted align-items-center"
-                            variant="light"
-                            @click="onClickCampaignURL"
-                        >
-                            <b-img-lazy style="max-height: 20px; max-width: 20px" :src="selectedPoolLogoImg" />
-                            <div class="truncate-pool-title flex-grow-1 pl-2">
-                                {{ selectedPool.settings.title }}
-                            </div>
-                        </b-button>
-                        <b-dropdown size="sm" variant="light" right no-caret menu-class="v-overflow">
-                            <template #button-content>
-                                <i
-                                    v-if="selectedPool"
-                                    class="fas fa-caret-down text-muted m-0"
-                                    style="font-size: 1.1rem"
-                                />
-                                <b-spinner v-else variant="primary" small />
-                            </template>
-                            <b-dropdown-text>
-                                <b-button
-                                    v-b-modal="'modalCreateCampaign'"
-                                    variant="primary"
-                                    size="sm"
-                                    block
-                                    class="rounded-pill"
-                                >
-                                    <i class="fas fa-plus mr-1 ml-0" />
-                                    Campaign
-                                </b-button>
-                                <BaseModalPoolCreate id="modalCreateCampaign" />
-                            </b-dropdown-text>
-                            <b-dropdown-item-btn
-                                class="small"
-                                :key="key"
-                                v-for="(p, key) of pools"
-                                @click="onPoolSelect(p)"
-                            >
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center">
-                                        <span class="truncate-pool-title">
-                                            {{ p.settings.title }}
-                                        </span>
-                                        <i class="fas fa-caret-right text-muted ml-2"></i>
-                                    </div>
-                                </div>
-                            </b-dropdown-item-btn>
-                        </b-dropdown>
-                    </b-button-group>
-                </b-form-group>
-                <b-form-group class="mb-3 mx-2">
-                    <b-button variant="primary" @click="onClickCampaignURL" class="p-2 w-100">
-                        Campaign URL
-                        <i class="fas fa-external-link-alt" />
+    <b-navbar toggleable="lg" class="sidebar">
+        <div class="flex-grow-1 w-100 h-25 overflow-auto d-flex justify-content-end flex-column">
+            <b-form-group class="my-3 mx-2">
+                <b-button-group class="w-100">
+                    <b-button
+                        v-if="selectedPool"
+                        class="d-flex p-2 text-muted align-items-center"
+                        variant="light"
+                        @click="onClickCampaignURL"
+                    >
+                        <b-img-lazy style="max-height: 20px; max-width: 20px" :src="selectedPoolLogoImg" />
+                        <div class="truncate-pool-title flex-grow-1 pl-2">
+                            {{ selectedPool.settings.title }}
+                        </div>
                     </b-button>
-                </b-form-group>
-                <template v-if="selectedPool">
-                    <b-navbar-nav class="py-0">
-                        <b-nav-item
-                            :to="`/pool/${selectedPool._id}/dashboard`"
-                            link-classes="nav-link-wrapper"
-                            class="nav-link-plain"
+                    <b-dropdown size="sm" variant="light" right no-caret menu-class="v-overflow">
+                        <template #button-content>
+                            <i v-if="selectedPool" class="fas fa-caret-down text-muted m-0" style="font-size: 1.1rem" />
+                            <b-spinner v-else variant="primary" small />
+                        </template>
+                        <b-dropdown-text>
+                            <b-button
+                                v-b-modal="'modalCreateCampaign'"
+                                variant="primary"
+                                size="sm"
+                                block
+                                class="rounded-pill"
+                            >
+                                <i class="fas fa-plus mr-1 ml-0" />
+                                Campaign
+                            </b-button>
+                            <BaseModalPoolCreate id="modalCreateCampaign" />
+                        </b-dropdown-text>
+                        <b-dropdown-item-btn
+                            class="small"
+                            :key="key"
+                            v-for="(p, key) of pools"
+                            @click="onPoolSelect(p)"
                         >
-                            <div class="d-flex">
-                                <div class="nav-link-icon">
-                                    <i class="fas fa-chart-line"></i>
-                                </div>
-                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                    <span>Analytics</span>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <span class="truncate-pool-title">
+                                        {{ p.settings.title }}
+                                    </span>
+                                    <i class="fas fa-caret-right text-muted ml-2"></i>
                                 </div>
                             </div>
-                        </b-nav-item>
-                        <b-nav-item
-                            :to="`/pool/${selectedPool._id}/quests`"
-                            link-classes="nav-link-wrapper"
-                            class="nav-link-plain"
-                        >
-                            <div class="d-flex">
-                                <div class="nav-link-icon">
-                                    <i class="fas fa-trophy"></i>
-                                </div>
-                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                    <span>Quests</span>
-                                </div>
+                        </b-dropdown-item-btn>
+                    </b-dropdown>
+                </b-button-group>
+            </b-form-group>
+            <b-form-group class="mb-3 mx-2">
+                <b-button variant="primary" @click="onClickCampaignURL" class="p-2 w-100">
+                    Campaign URL
+                    <i class="fas fa-external-link-alt" />
+                </b-button>
+            </b-form-group>
+            <template v-if="selectedPool">
+                <b-navbar-nav class="py-0">
+                    <b-nav-item
+                        :to="`/campaign/${selectedPool._id}/analytics`"
+                        link-classes="nav-link-wrapper"
+                        class="nav-link-plain"
+                    >
+                        <div class="d-flex">
+                            <div class="nav-link-icon">
+                                <i class="fas fa-chart-line"></i>
                             </div>
-                        </b-nav-item>
-                        <b-nav-item
-                            :to="`/pool/${selectedPool._id}/rewards`"
-                            link-classes="nav-link-wrapper"
-                            class="nav-link-plain"
-                        >
-                            <div class="d-flex">
-                                <div class="nav-link-icon">
-                                    <i class="fas fa-gift"></i>
-                                </div>
-                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                    <span>Rewards</span>
-                                </div>
+                            <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                <span>Analytics</span>
                             </div>
-                        </b-nav-item>
-                        <b-nav-item
-                            :to="`/pool/${selectedPool._id}/participants`"
-                            link-classes="nav-link-wrapper"
-                            class="nav-link-plain"
-                        >
-                            <div class="d-flex">
-                                <div class="nav-link-icon">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                    <span>Participants</span>
-                                </div>
+                        </div>
+                    </b-nav-item>
+                    <b-nav-item
+                        :to="`/campaign/${selectedPool._id}/quests`"
+                        link-classes="nav-link-wrapper"
+                        class="nav-link-plain"
+                    >
+                        <div class="d-flex">
+                            <div class="nav-link-icon">
+                                <i class="fas fa-trophy"></i>
                             </div>
-                        </b-nav-item>
-                        <b-nav-item
-                            :to="`/pool/${selectedPool._id}/integrations`"
-                            link-classes="nav-link-wrapper"
-                            class="nav-link-plain"
-                        >
-                            <div class="d-flex">
-                                <div class="nav-link-icon">
-                                    <i class="fas fa-exchange-alt"></i>
-                                </div>
-                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                    <span>Integrations</span>
-                                </div>
+                            <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                <span>Quests</span>
                             </div>
-                        </b-nav-item>
-                        <b-nav-item
-                            :to="`/pool/${selectedPool._id}/settings`"
-                            link-classes="nav-link-wrapper"
-                            class="nav-link-plain"
-                        >
-                            <div class="d-flex">
-                                <div class="nav-link-icon">
-                                    <i class="fas fa-cogs"></i>
-                                </div>
-                                <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                    <span>Settings</span>
-                                </div>
+                        </div>
+                    </b-nav-item>
+                    <b-nav-item
+                        :to="`/campaign/${selectedPool._id}/rewards`"
+                        link-classes="nav-link-wrapper"
+                        class="nav-link-plain"
+                    >
+                        <div class="d-flex">
+                            <div class="nav-link-icon">
+                                <i class="fas fa-gift"></i>
                             </div>
-                        </b-nav-item>
-                    </b-navbar-nav>
+                            <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                <span>Rewards</span>
+                            </div>
+                        </div>
+                    </b-nav-item>
+                    <b-nav-item
+                        :to="`/campaign/${selectedPool._id}/participants`"
+                        link-classes="nav-link-wrapper"
+                        class="nav-link-plain"
+                    >
+                        <div class="d-flex">
+                            <div class="nav-link-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                <span>Participants</span>
+                            </div>
+                        </div>
+                    </b-nav-item>
+                    <b-nav-item
+                        :to="`/campaign/${selectedPool._id}/integrations`"
+                        link-classes="nav-link-wrapper"
+                        class="nav-link-plain"
+                    >
+                        <div class="d-flex">
+                            <div class="nav-link-icon">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                            <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                <span>Integrations</span>
+                            </div>
+                        </div>
+                    </b-nav-item>
+                    <b-nav-item
+                        :to="`/campaign/${selectedPool._id}/settings`"
+                        link-classes="nav-link-wrapper"
+                        class="nav-link-plain"
+                    >
+                        <div class="d-flex">
+                            <div class="nav-link-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                                <span>Settings</span>
+                            </div>
+                        </div>
+                    </b-nav-item>
+                </b-navbar-nav>
 
-                    <hr />
-                </template>
-                <hr class="m-0 mt-auto" />
-                <div class="d-flex py-4 px-3 align-items-center justify-content-between">
-                    <router-link to="/" custom v-slot="{ navigate }" class="cursor-pointer">
-                        <img
-                            :src="require('../../public/assets/logo.png')"
-                            width="30"
-                            height="30"
-                            alt="THX logo"
-                            @click="navigate"
-                            @keypress.enter="navigate"
-                            role="link"
-                        />
-                    </router-link>
-                    <b-badge variant="primary" class="p-2">Plan: {{ AccountPlanType[account.plan] }}</b-badge>
-                </div>
+                <hr />
+            </template>
+            <hr class="m-0 mt-auto" />
+            <div class="d-flex py-4 px-3 align-items-center justify-content-between">
+                <b-badge variant="primary" class="p-2">
+                    Plan: {{ AccountPlanType[account.plan] || AccountPlanType[AccountPlanType.Lite] }}
+                </b-badge>
             </div>
-        </b-navbar>
-    </b-sidebar>
+        </div>
+    </b-navbar>
 </template>
 
 <script lang="ts">
@@ -211,23 +186,6 @@ export default class BaseNavbar extends Vue {
     pools!: IPools;
     account!: TAccount;
     isVisible = true;
-
-    get tokenRoutes() {
-        return [
-            {
-                path: '/coins',
-                label: 'Coins',
-                iconClasses: 'fas fa-coins',
-                children: [],
-            },
-            {
-                path: '/nft',
-                label: 'NFT',
-                iconClasses: 'fas fa-palette',
-                children: [],
-            },
-        ];
-    }
 
     get selectedPoolLogoImg() {
         if (!this.selectedPool) return;
@@ -264,7 +222,7 @@ export default class BaseNavbar extends Vue {
     async onPoolSelect(pool: TPool) {
         await this.$store.dispatch('pools/read', pool._id);
         if (pool._id === this.$route.params.id) return;
-        this.$router.push({ path: `/pool/${pool._id}`, params: { id: pool._id } });
+        this.$router.push({ path: `/campaign/${pool._id}`, params: { id: pool._id } });
     }
 }
 </script>

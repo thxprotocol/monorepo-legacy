@@ -8,7 +8,7 @@
                     'min-height': 'none',
                     'border-radius': '1rem',
                     'background-size': 'cover',
-                    'background-image': `url(${require('../../public/assets/thx_jumbotron.webp')})`,
+                    'background-image': `url(${require('@thxnetwork/dashboard/../public/assets/thx_jumbotron.webp')})`,
                 }"
             >
                 <div class="container container-md py-5">
@@ -94,7 +94,7 @@ export default class NFTView extends Vue {
     erc1155s!: IERC1155s;
 
     mounted() {
-        this.$store.dispatch('account/getProfile');
+        this.$store.dispatch('account/get');
         this.$store.dispatch('erc721/list');
         this.$store.dispatch('erc1155/list');
     }

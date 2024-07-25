@@ -89,7 +89,7 @@ export default class CoinsView extends Vue {
     }
 
     mounted() {
-        this.$store.dispatch('account/getProfile');
+        this.$store.dispatch('account/get');
         this.loadList();
     }
 }

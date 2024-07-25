@@ -2,7 +2,7 @@
     <BaseAvatar v-if="plain" :account="account" />
     <b-link
         v-else
-        :to="account.username ? `/pool/${$route.params.id}/participants/${account.username.toLowerCase()}` : null"
+        :to="account.username ? `/campaign/${$route.params.id}/participants/${account.username.toLowerCase()}` : null"
     >
         <BaseAvatar :account="account" />
     </b-link>

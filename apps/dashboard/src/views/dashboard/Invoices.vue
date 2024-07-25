@@ -83,7 +83,7 @@ export default class WidgetsView extends Vue {
     }
 
     async mounted() {
-        await this.$store.dispatch('account/getProfile');
+        await this.$store.dispatch('account/get');
         this.getInvoices();
     }
 

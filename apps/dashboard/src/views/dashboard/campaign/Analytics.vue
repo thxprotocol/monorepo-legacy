@@ -1,5 +1,5 @@
 <template>
-    <div class="mb-3">
+    <div>
         <b-row class="d-flex justify-content-between">
             <b-col class="">
                 <h2 class="mb-3">Analytics</h2>
@@ -134,7 +134,7 @@
                                 </div>
                             </b-list-group-item>
                             <b-list-group-item>
-                                <b-link :to="`/pool/${pool._id}/quests`">All Quests</b-link>
+                                <b-link :to="`/campaign/${pool._id}/quests`">All Quests</b-link>
                             </b-list-group-item>
                         </b-list-group>
                     </b-col>
@@ -172,7 +172,7 @@
                                 </div>
                             </b-list-group-item>
                             <b-list-group-item>
-                                <b-link :to="`/pool/${pool._id}/rewards`">All Rewards</b-link>
+                                <b-link :to="`/campaign/${pool._id}/rewards`">All Rewards</b-link>
                             </b-list-group-item>
                         </b-list-group>
                     </b-col>
@@ -195,10 +195,9 @@
 
 <script lang="ts">
 import { mapGetters } from 'vuex';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { fromWei } from 'web3-utils';
 import { format } from 'date-fns';
-import { IPoolAnalyticsMetrics, IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
 import BaseChartQuests from '@thxnetwork/dashboard/components/charts/BaseChartQuests.vue';
 import BaseChartRewards from '@thxnetwork/dashboard/components/charts/BaseChartRewards.vue';
@@ -219,7 +218,6 @@ endDate.setHours(23, 59, 59, 999);
         BaseCardLeaderboard,
     },
     computed: mapGetters({
-        pools: 'pools/all',
         analyticsMetrics: 'pools/analyticsMetrics',
     }),
 })
@@ -236,7 +234,6 @@ export default class ViewAnalyticsMetrics extends Vue {
         'Gitcoin Quests completed and the total amount of points earned.',
     ];
     metricRewardLabelMap = ['Coin', 'NFT', 'Custom', 'Coupon', 'Discord Role'];
-    pools!: IPools;
     isLoadingCharts = false;
     isLoadingMetrics = false;
     analyticsMetrics!: IPoolAnalyticsMetrics;
@@ -247,13 +244,11 @@ export default class ViewAnalyticsMetrics extends Vue {
     startDate = startDate;
     endDate = endDate;
 
+    @Prop() pool!: TPool;
+
     get metrics() {
         if (!this.analyticsMetrics[this.$route.params.id]) return null;
         return this.analyticsMetrics[this.$route.params.id];
-    }
-
-    get pool() {
-        return this.pools[this.$route.params.id];
     }
 
     get isLoading() {
@@ -273,7 +268,6 @@ export default class ViewAnalyticsMetrics extends Vue {
     }
 
     async mounted() {
-        await this.$store.dispatch('pools/read', this.$route.params.id);
         this.getCharts();
         this.getMetrics();
     }

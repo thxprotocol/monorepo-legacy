@@ -58,7 +58,7 @@
                         <strong>Visible</strong><br />
                         <span class="text-muted">
                             Allows you to show/hide the campaign launcher after embedding the
-                            <b-link :to="`/pool/${pool._id}/developer`">campaign widget script</b-link>.
+                            <b-link :to="`/campaign/${pool._id}/developer`">campaign widget script</b-link>.
                         </span>
                     </b-form-checkbox>
                 </b-form-group>

@@ -58,7 +58,7 @@ export default class Tokens extends Vue {
     pools!: IPools;
 
     mounted() {
-        this.$store.dispatch('account/getProfile');
+        this.$store.dispatch('pools/list');
     }
 }
 </script>

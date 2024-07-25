@@ -1,14 +1,14 @@
 <template>
-    <div class="container-md">
-        <h2 class="my-3">Developer</h2>
-        <b-card class="shadow-sm mb-5" header-class="p-0">
+    <div>
+        <h2 class="mb-3">Settings</h2>
+        <b-card class="shadow-sm mb-5" v-if="pool" header-class="p-0">
             <template #header>
                 <b-nav card-header tabs pills class="px-3 border-0">
                     <b-nav-text active v-for="(item, key) in childRoutes" :key="key">
                         <b-button
                             :variant="$route.path.endsWith(item.route) ? 'primary' : 'link'"
                             class="rounded-pill"
-                            :to="`/developer/${item.route}`"
+                            :to="`/campaign/${pool._id}/settings/${item.route}`"
                         >
                             <i class="ml-0 mr-2" :class="item.class"></i>
                             {{ item.name }}
@@ -22,44 +22,43 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 
 @Component({
-    components: {
-        BaseModal,
-    },
     computed: mapGetters({
-        pools: 'pools/all',
         profile: 'account/profile',
     }),
 })
-export default class DeveloperView extends Vue {
+export default class SettingsView extends Vue {
     childRoutes = [
         {
-            name: 'API',
-            class: 'fas fa-key',
-            route: 'api',
+            name: 'General',
+            class: 'fas fa-cog',
+            route: 'general',
         },
         {
-            name: 'Identity',
-            class: 'fas fa-id-badge',
-            route: 'identities',
+            name: 'Team',
+            class: 'fas fa-users',
+            route: 'team',
         },
         {
-            name: 'Events',
-            class: 'fas fa-bullhorn',
-            route: 'events',
+            name: 'Wallets',
+            class: 'far fa-wallet',
+            route: 'wallets',
         },
         {
-            name: 'Webhooks',
-            class: 'fas fa-globe',
-            route: 'webhooks',
+            name: 'Appearance',
+            class: 'fas fa-sliders-h',
+            route: 'appearance',
+        },
+        {
+            name: 'Widget',
+            class: 'fas fa-share-alt',
+            route: 'widget',
         },
     ];
-    mounted() {
-        this.$store.dispatch('account/getProfile');
-    }
+
+    @Prop() pool!: TPool;
 }
 </script>

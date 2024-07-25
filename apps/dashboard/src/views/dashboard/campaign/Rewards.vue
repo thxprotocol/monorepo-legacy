@@ -139,7 +139,7 @@
 
 <script lang="ts">
 import { IPools, TRewardState } from '@thxnetwork/dashboard/store/modules/pools';
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { RewardVariant } from '@thxnetwork/common/enums';
 import { format } from 'date-fns';
@@ -164,7 +164,6 @@ import BaseButtonRewardPayments from '@thxnetwork/dashboard/components/buttons/B
         BaseModalQRCodes,
     },
     computed: mapGetters({
-        pools: 'pools/all',
         rewards: 'pools/rewards',
         totals: 'erc20Perks/totals',
     }),
@@ -196,13 +195,9 @@ export default class RewardsView extends Vue {
         [RewardVariant.Coupon]: 'fas fa-tags',
         [RewardVariant.DiscordRole]: 'fab fa-discord',
     };
-
-    pools!: IPools;
     rewards!: TRewardState;
 
-    get pool() {
-        return this.pools[this.$route.params.id];
-    }
+    @Prop() pool!: TPool;
 
     get total() {
         if (!this.rewards[this.$route.params.id]) return 0;
@@ -256,7 +251,7 @@ export default class RewardsView extends Vue {
     async openPublished(isPublished: boolean) {
         try {
             await this.$router.push({
-                path: `/pool/${this.pool._id}/rewards`,
+                path: `/campaign/${this.pool._id}/rewards`,
                 query: { isPublished: isPublished ? String(isPublished) : 'false' },
             });
         } catch (error) {

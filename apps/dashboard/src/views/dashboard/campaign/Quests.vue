@@ -171,11 +171,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { format } from 'date-fns';
 import { QuestVariant } from '@thxnetwork/common/enums';
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { TQuestState } from '@thxnetwork/dashboard/store/modules/pools';
 import { contentQuests } from '@thxnetwork/common/constants';
 import BaseModalQuestDailyCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestDailyCreate.vue';
@@ -203,7 +202,6 @@ import BaseButtonQuestEntries from '@thxnetwork/dashboard/components/buttons/Bas
         BaseModalQuestInviteClaims,
     },
     computed: mapGetters({
-        pools: 'pools/all',
         quests: 'pools/quests',
     }),
 })
@@ -244,12 +242,9 @@ export default class QuestsView extends Vue {
     };
     isPublished = true;
 
-    pools!: IPools;
     quests!: TQuestState;
 
-    get pool() {
-        return this.pools[this.$route.params.id];
-    }
+    @Prop() pool!: TPool;
 
     get total() {
         if (!this.quests[this.$route.params.id]) return 0;
@@ -298,7 +293,7 @@ export default class QuestsView extends Vue {
     async openPublished(isPublished: boolean) {
         try {
             await this.$router.push({
-                path: `/pool/${this.pool._id}/quests`,
+                path: `/campaign/${this.pool._id}/quests`,
                 query: { isPublished: isPublished ? String(isPublished) : 'false' },
             });
         } catch (error) {

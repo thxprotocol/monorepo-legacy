@@ -33,7 +33,7 @@ export default class PoolView extends Vue {
     }
 
     async mounted() {
-        this.$store.dispatch('account/getProfile');
+        this.$store.dispatch('account/get');
 
         switch (this.$route.params.variant) {
             case NFTVariant.ERC721:
