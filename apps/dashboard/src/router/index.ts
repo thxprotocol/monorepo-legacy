@@ -1,10 +1,16 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
+import store from '@thxnetwork/dashboard/store';
 import { redirectCollaborationRequest, redirectSignout, redirectVerifyEmail } from '@thxnetwork/dashboard/utils/guards';
 
 Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
+    {
+        name: 'login',
+        path: '/login',
+        component: () => import('../views/Login.vue'),
+    },
     {
         name: 'authRedirect',
         path: '/auth/redirect',
@@ -14,6 +20,7 @@ const routes: Array<RouteConfig> = [
         name: 'dashboard',
         path: '/',
         component: () => import('../views/Dashboard.vue'),
+        meta: { requiresAuth: true },
         children: [
             {
                 name: 'home',
@@ -184,11 +191,6 @@ const routes: Array<RouteConfig> = [
         ],
     },
     {
-        name: 'home',
-        path: '/',
-        component: () => import('../views/dashboard/Home.vue'),
-    },
-    {
         name: 'verify email',
         path: '/verify_email',
         beforeEnter: redirectVerifyEmail,
@@ -203,6 +205,25 @@ const routes: Array<RouteConfig> = [
 const router = new VueRouter({
     mode: 'history',
     routes,
+});
+
+router.beforeEach((to, from, next) => {
+    if (to.matched.some((record) => record.meta.requiresAuth)) {
+        // This route requires auth, check if logged in
+        if (!store.getters['auth/isAuthenticated']) {
+            // Not logged in, redirect to login page
+            next({
+                path: '/login',
+                query: { redirect: to.fullPath },
+            });
+        } else {
+            // Logged in, proceed to route
+            next();
+        }
+    } else {
+        // Route does not require auth, proceed
+        next();
+    }
 });
 
 export default router;

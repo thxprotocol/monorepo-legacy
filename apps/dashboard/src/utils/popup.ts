@@ -12,10 +12,10 @@ export const popup = {
         const left = screen.width / 2 - width / 2;
         const top = screen.height / 2 - height / 2;
 
-        window.open(
+        return window.open(
             url,
             '_blank',
             `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=no,toolbar=no,menubar=no,location=no`,
-        );
+        ) as Window;
     },
 };

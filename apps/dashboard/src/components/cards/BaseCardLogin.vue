@@ -37,7 +37,8 @@
                             class="mr-2"
                             @click="onClickSigninWithOAuth(provider.variant)"
                         >
-                            <i :class="provider.icon" class="m-0" style="font-size: 1rem" />
+                            <b-spinner small v-if="provider.isLoading" />
+                            <i v-else :class="provider.icon" class="m-0" style="font-size: 1rem" />
                         </b-button>
                     </BaseFormGroup>
                 </b-card>
@@ -51,9 +52,15 @@ import { Component, Vue } from 'vue-property-decorator';
 import { providerIconMap } from '@thxnetwork/common/maps';
 import { AccessTokenKind, AccountVariant } from '@thxnetwork/common/enums';
 import { validateEmail } from '@thxnetwork/dashboard/utils/email';
+import { mapGetters } from 'vuex';
 
-@Component({})
+@Component({
+    computed: mapGetters({
+        account: 'account/profile',
+    }),
+})
 export default class BaseCardLeaderboard extends Vue {
+    account!: TAccount;
     email = '';
     otp = '';
     error = '';
@@ -107,10 +114,6 @@ export default class BaseCardLeaderboard extends Vue {
         return this.otp.length === 6;
     }
 
-    mounted() {
-        //
-    }
-
     async onClickSigninWithOTP() {
         this.isLoadingOTP = true;
         try {
@@ -127,6 +130,9 @@ export default class BaseCardLeaderboard extends Vue {
         this.isLoadingOTPVerify = false;
         try {
             await this.$store.dispatch('auth/verifyOtp', { email: this.email, token: this.otp });
+            if (this.account) {
+                this.$router.push({ name: 'dashboard' });
+            }
         } catch (error) {
             this.error = (error as Error).message;
         } finally {
@@ -138,6 +144,9 @@ export default class BaseCardLeaderboard extends Vue {
         this.providers[variant].isLoading = true;
         try {
             await this.$store.dispatch('auth/signinWithOAuth', { variant, skipBrowserRedirect: false });
+            if (this.account) {
+                this.$router.push({ name: 'dashboard' });
+            }
         } catch (error) {
             this.error = (error as Error).message;
         } finally {

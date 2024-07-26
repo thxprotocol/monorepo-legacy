@@ -40,29 +40,28 @@ export default class ViewAuthRedirect extends Vue {
     pools!: IPools;
     account!: TAccount;
     error = '';
+
     get isAlertDangerShown() {
         return this.error !== '';
     }
     get isAlertSuccessShown() {
         return !this.error;
     }
-    async mounted() {
-        await this.$store.dispatch('account/get');
+    async created() {
+        // Start listening for signed_in event
+        supabase.auth.onAuthStateChange(async (event, session) => {
+            // Wait until signed in and close the window
+            if (event === 'SIGNED_IN') {
+                // Connect any new identities
+                track('UserSignsIn', [this.account]);
+            }
+        });
+    }
 
+    async mounted() {
         // Check query params for error
         if (this.$route.query.error) {
-            this.error = this.$route.query.error_description;
-        }
-
-        // Start listening for signed_in event
-        else {
-            supabase.auth.onAuthStateChange(async (event) => {
-                // Wait until signed in and close the window
-                if (event === 'SIGNED_IN') {
-                    track('UserSignsIn', [this.account]);
-                    window.close();
-                }
-            });
+            this.error = this.$route.query.error_description as string;
         }
     }
 

@@ -1,9 +1,12 @@
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { createClient, Session, Provider } from '@supabase/supabase-js';
-import { SUPABASE_URL, SUPABASE_PUBLIC_KEY, BASE_URL } from '@thxnetwork/dashboard/config/secrets';
+import { SUPABASE_URL, SUPABASE_PUBLIC_KEY, BASE_URL, API_URL } from '@thxnetwork/dashboard/config/secrets';
 import { AccountVariant, accountVariantProviderKindMap, OAuthScopes } from '@thxnetwork/common/enums';
 import { popup } from '@thxnetwork/dashboard/utils/popup';
 import store from '@thxnetwork/dashboard/store';
+import axios from 'axios';
+import { poll } from 'ethers/lib/utils';
+import router from '../../router';
 
 export type TSession = Session;
 export type TProvider = Provider;
@@ -13,7 +16,6 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY);
 const supabaseAuthEventMap = {
     SIGNED_IN: async (session: Session) => {
         await store.dispatch('auth/onSignedIn', session);
-        if (session) await store.dispatch('account/get');
     },
     SIGNED_OUT: (session: Session) => store.dispatch('auth/onSignedOut', session),
 };
@@ -34,6 +36,10 @@ export default class AuthModule extends VuexModule {
         return this.session.user.identities;
     }
 
+    get isAuthenticated() {
+        return this.session && this.session.expires_in > 0;
+    }
+
     @Mutation
     setSession(session: Session | null) {
         this.session = session;
@@ -49,6 +55,17 @@ export default class AuthModule extends VuexModule {
         const isExpired = session?.expires_at ? new Date(session.expires_at * 1000) < new Date() : false;
         if (!session || isExpired) return;
         this.context.commit('setSession', session);
+        await store.dispatch('account/get');
+
+        // On login page we redirect to redirect url or dashboard if an account is found
+        const route = router.currentRoute;
+        if (route.name === 'login') {
+            if (route.query.redirect) {
+                router.push({ path: route.query.redirect as string });
+            } else {
+                router.push({ name: 'dashboard' });
+            }
+        }
     }
 
     @Action({ rawError: true })
@@ -56,19 +73,23 @@ export default class AuthModule extends VuexModule {
         this.context.commit('setSession', null);
         this.context.commit('account/setAccount', null, { root: true });
     }
+
     @Action({ rawError: true })
     async connect({ kind, scopes }: { kind: string; scopes: string[] }) {
-        const config = await this.context.dispatch('getOAuthConfig', {
-            provider: kind,
-            options: {
-                scopes,
-                skipBrowserRedirect: true,
-                redirectTo: BASE_URL + '/auth/redirect',
-            },
-        });
-        const { data, error } = await supabase.auth.linkIdentity(config);
-        if (error) throw error;
-        popup.open(data.url);
+        const url = new URL(API_URL);
+        url.pathname = '/v1/oauth/authorize/' + kind;
+        url.searchParams.append('scopes', scopes.map((scope) => encodeURIComponent(scope)).join(','));
+        url.searchParams.append('returnTo', BASE_URL + '/auth/redirect');
+
+        try {
+            const { data } = await axios({ method: 'GET', url: url.toString() });
+            if (!data.url) throw new Error('Could not get authorize URL');
+
+            // TODO Poll for account tokens
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
     }
 
     @Action({ rawError: true })
@@ -105,6 +126,7 @@ export default class AuthModule extends VuexModule {
             type: 'email',
         });
         if (error) throw new Error(error.message);
+        await this.context.dispatch('account/waitForAccount', null, { root: true });
     }
 
     @Action({ rawError: true })
@@ -124,6 +146,7 @@ export default class AuthModule extends VuexModule {
         const { data, error } = await supabase.auth.signInWithOAuth(config);
         if (error) throw new Error(error.message);
         popup.open(data.url);
+        await this.context.dispatch('account/waitForAccount', null, { root: true });
     }
 
     @Action({ rawError: true })
@@ -142,18 +165,23 @@ export default class AuthModule extends VuexModule {
             skipBrowserRedirect: boolean;
             redirectTo: string;
             data?: { variant: AccountVariant };
+            queryParams?: { sub: string };
         };
     }) {
         return {
             provider,
-            options: {
-                queryParams: {
-                    access_type: 'offline',
-                    prompt: 'consent',
+            options: Object.assign(
+                {
+                    queryParams: {
+                        access_type: 'offline',
+                        prompt: 'consent',
+                    },
                 },
-                ...options,
-                scopes: options.scopes.join(' '),
-            },
+                {
+                    ...options,
+                    scopes: options.scopes.join(' '),
+                },
+            ),
         };
     }
 }

@@ -69,7 +69,6 @@ import {
 } from '@thxnetwork/dashboard/types/rewards';
 import { AccessTokenKind, QuestSocialRequirement } from '@thxnetwork/common/enums';
 import { interactionComponentMap } from '@thxnetwork/common/maps';
-import { UserIdentity } from '@supabase/supabase-js';
 import BaseDropdownQuestProvider from '../dropdowns/BaseDropdownQuestProvider.vue';
 import BaseDropdownQuestProviderInteractions from '../dropdowns/BaseDropdownQuestProviderInteractions.vue';
 import BaseDropdownYoutubeChannels from '../dropdowns/BaseDropdownYoutubeChannels.vue';
@@ -97,6 +96,7 @@ import BaseDropdownTwitterQuery from '../dropdowns/BaseDropdownTwitterQuery.vue'
         BaseDropdownDiscordRoles,
     },
     computed: mapGetters({
+        account: 'account/profile',
         identities: 'auth/identities',
     }),
 })
@@ -104,6 +104,7 @@ export default class BaseCardQuestRequirement extends Vue {
     AccessTokenKind = AccessTokenKind;
     QuestSocialRequirement = QuestSocialRequirement;
     interactionComponentMap = interactionComponentMap;
+    account!: TAccount;
 
     isLoadingPlatform = false;
     title = '';
@@ -118,7 +119,6 @@ export default class BaseCardQuestRequirement extends Vue {
     content = '';
     contentMetadata: unknown = {};
     isVisible = true;
-    identities!: UserIdentity[];
 
     @Prop() pool!: TPool;
     @Prop({ required: false }) requirement!: {
@@ -133,8 +133,8 @@ export default class BaseCardQuestRequirement extends Vue {
     }
 
     get isProviderAvailable() {
-        if (!this.provider || !this.provider.kind || !this.identities.length) return false;
-        return this.identities.find(({ provider }) => this.provider.kind === provider);
+        if (!this.provider || !this.provider.kind || !this.account) return false;
+        return this.account.tokens.find(({ kind }) => this.provider.kind === kind);
         // && this.provider.scopes.every((scope) => scopes.includes(scope))
     }
 

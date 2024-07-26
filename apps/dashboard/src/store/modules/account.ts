@@ -60,6 +60,18 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    waitForAccount() {
+        return new Promise((resolve, reject) => {
+            const poll = () => {
+                const profile = this.context.rootGetters['account/profile'];
+                if (!profile) setTimeout(poll, 100);
+                return profile ? resolve('') : reject('account_invalid');
+            };
+            poll();
+        });
+    }
+
+    @Action({ rawError: true })
     async update(data: TAccount) {
         await axios({
             method: 'PATCH',
