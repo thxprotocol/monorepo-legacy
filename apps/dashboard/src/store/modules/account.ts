@@ -2,6 +2,7 @@ import axios from 'axios';
 import store from '..';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { track } from '@thxnetwork/common/mixpanel';
+import { AccessTokenKind, OAuthScope } from '@thxnetwork/common/enums';
 
 export type TInvoiceState = TInvoice[];
 
@@ -78,6 +79,22 @@ class AccountModule extends VuexModule {
                 const profile = this.context.rootGetters['account/profile'];
                 if (!profile) setTimeout(poll, 100);
                 return profile ? resolve('') : reject('account_invalid');
+            };
+            poll();
+        });
+    }
+
+    @Action({ rawError: true })
+    waitForToken({ kind, scope }: { kind: AccessTokenKind; scope: OAuthScope[] }) {
+        return new Promise((resolve, reject) => {
+            const poll = async () => {
+                await this.context.dispatch('get');
+
+                const account = this.context.rootGetters['account/profile'];
+                const isAuthorized = account.tokens.find((token) => token.kind === kind && token.scopes.some(scope));
+                if (!isAuthorized) setTimeout(poll, 1000);
+
+                return isAuthorized ? resolve('') : reject('token_invalid');
             };
             poll();
         });

@@ -155,7 +155,7 @@ export default class BaseCardLeaderboard extends Vue {
 }
 </script>
 <style>
-hr {
+.or-separator {
     border: 0;
     border-top: 1px solid rgba(255, 255, 255, 0.25);
     margin: 2rem 0 1.5rem;

@@ -1,11 +1,16 @@
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { createClient, Session, Provider } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_PUBLIC_KEY, BASE_URL, API_URL } from '@thxnetwork/dashboard/config/secrets';
-import { AccountVariant, accountVariantProviderKindMap, OAuthScopes } from '@thxnetwork/common/enums';
+import {
+    AccessTokenKind,
+    AccountVariant,
+    accountVariantProviderKindMap,
+    OAuthScope,
+    OAuthScopes,
+} from '@thxnetwork/common/enums';
 import { popup } from '@thxnetwork/dashboard/utils/popup';
 import store from '@thxnetwork/dashboard/store';
 import axios from 'axios';
-import { poll } from 'ethers/lib/utils';
 import router from '../../router';
 
 export type TSession = Session;
@@ -75,7 +80,7 @@ export default class AuthModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async connect({ kind, scopes }: { kind: string; scopes: string[] }) {
+    async connect({ kind, scopes }: { kind: AccessTokenKind; scopes: OAuthScope[] }) {
         const url = new URL(API_URL);
         url.pathname = '/v1/oauth/authorize/' + kind;
         url.searchParams.append('scopes', scopes.map((scope) => encodeURIComponent(scope)).join(','));
@@ -84,8 +89,9 @@ export default class AuthModule extends VuexModule {
         try {
             const { data } = await axios({ method: 'GET', url: url.toString() });
             if (!data.url) throw new Error('Could not get authorize URL');
+            popup.open(data.url);
 
-            // TODO Poll for account tokens
+            await this.context.dispatch('account/waitForToken', { kind, scopes }, { root: true });
         } catch (error) {
             console.error(error);
             throw error;
