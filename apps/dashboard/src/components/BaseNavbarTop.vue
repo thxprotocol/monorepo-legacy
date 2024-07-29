@@ -61,35 +61,26 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import { DOCS_URL } from '@thxnetwork/dashboard/config/secrets';
 
 @Component({
-    computed: mapGetters({
-        account: 'account/profile',
-    }),
+    computed: {
+        ...mapState('account', {
+            isDarkModeEnabled: 'isDarkModeEnabled',
+        }),
+        ...mapGetters({
+            account: 'account/profile',
+        }),
+    },
 })
 export default class BaseNavbarTop extends Vue {
-    isDarkModeEnabled = false;
     docsUrl = DOCS_URL;
     account!: TAccount;
-
-    created() {
-        this.isDarkModeEnabled = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        this.setDarkMode(this.isDarkModeEnabled);
-
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ({ matches }) => {
-            this.isDarkModeEnabled = matches;
-            this.setDarkMode(this.isDarkModeEnabled);
-        });
-    }
-    setDarkMode(state: boolean) {
-        document.documentElement.classList[state ? 'add' : 'remove']('dark-mode');
-    }
+    isDarkModeEnabled!: boolean;
 
     onClickDarkModeToggle() {
-        this.isDarkModeEnabled = !this.isDarkModeEnabled;
-        this.setDarkMode(this.isDarkModeEnabled);
+        this.$store.commit('account/setDarkMode', !this.isDarkModeEnabled);
     }
 
     async onClickSignout() {

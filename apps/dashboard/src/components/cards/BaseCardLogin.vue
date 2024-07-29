@@ -1,50 +1,53 @@
 <template>
-    <b-container class="m-auto">
-        <b-row>
-            <b-col md="6" offset-md="3">
-                <b-card>
-                    <template v-if="!isEmailSent">
-                        <BaseFormGroup label="Use your e-mail">
-                            <b-form-input v-model="email" placeholder="yourname@example.com" />
-                        </BaseFormGroup>
-                        <b-button :disabled="!isEmailValid" variant="primary" block @click="onClickSigninWithOTP">
-                            <b-spinner small v-if="isLoadingOTP" />
-                            <template v-else>
-                                Send one-time password
-                                <i class="fas fa-chevron-right" />
-                            </template>
-                        </b-button>
-                    </template>
-                    <template v-else>
-                        <BaseFormGroup label="Check your e-mail for the OTP">
-                            <b-form-input v-model="otp" placeholder="******" />
-                        </BaseFormGroup>
-                        <b-button :disabled="!isOTPValid" variant="primary" block @click="onClickVerifyOTP">
-                            <b-spinner small v-if="isLoadingOTPVerify" />
-                            <template v-else>
-                                Verify OTP
-                                <i class="fas fa-chevron-right" />
-                            </template>
-                        </b-button>
-                    </template>
-                    <hr />
-                    <BaseFormGroup label="Use a trusted provider">
-                        <b-button
-                            variant="primary"
-                            :title="provider.title"
-                            :key="key"
-                            v-for="(provider, key) of providers"
-                            class="mr-2"
-                            @click="onClickSigninWithOAuth(provider.variant)"
-                        >
-                            <b-spinner small v-if="provider.isLoading" />
-                            <i v-else :class="provider.icon" class="m-0" style="font-size: 1rem" />
-                        </b-button>
-                    </BaseFormGroup>
-                </b-card>
-            </b-col>
-        </b-row>
-    </b-container>
+    <b-card footer-class="text-right small">
+        <b-form @submit.prevent="onSubmitSigninWithOTP" v-if="!isEmailSent">
+            <BaseFormGroup label="Use your e-mail">
+                <b-form-input v-model="email" placeholder="yourname@example.com" />
+            </BaseFormGroup>
+            <b-button :disabled="!isEmailValid" variant="primary" block type="submit">
+                <b-spinner small v-if="isLoadingOTP" />
+                <template v-else>
+                    Send one-time password
+                    <i class="fas fa-chevron-right" />
+                </template>
+            </b-button>
+        </b-form>
+        <b-form @submit.prevent="onSubmitVerifyOTP" v-else>
+            <BaseFormGroup label="Check your e-mail for the OTP">
+                <b-form-input v-model="otp" placeholder="******" />
+            </BaseFormGroup>
+            <b-button :disabled="!isOTPValid" variant="primary" block type="submit">
+                <b-spinner small v-if="isLoadingOTPVerify" />
+                <template v-else>
+                    Verify OTP
+                    <i class="fas fa-chevron-right" />
+                </template>
+            </b-button>
+        </b-form>
+        <hr class="or-separator" />
+        <BaseFormGroup label="Use a trusted provider">
+            <b-button
+                variant="primary"
+                :title="provider.title"
+                :key="key"
+                v-for="(provider, key) of providers"
+                class="mr-2 p-2 px-3"
+                @click="onClickSigninWithOAuth(provider.variant)"
+            >
+                <b-spinner small v-if="provider.isLoading" />
+                <i v-else :class="provider.icon" class="m-0" style="font-size: 1rem" />
+            </b-button>
+        </BaseFormGroup>
+        <template #footer>
+            <b-link class="ml-1" href="https://discord.com/invite/thx-network-836147176270856243" target="_blank">
+                Help
+            </b-link>
+            <b-link class="ml-1" href="https://thx.network/privacy-policy.pdf" target="_blank"> Privacy </b-link>
+            <b-link class="ml-1" href="https://thx.network/general-terms-and-conditions.pdf" target="_blank">
+                Terms
+            </b-link>
+        </template>
+    </b-card>
 </template>
 
 <script lang="ts">
@@ -114,7 +117,7 @@ export default class BaseCardLeaderboard extends Vue {
         return this.otp.length === 6;
     }
 
-    async onClickSigninWithOTP() {
+    async onSubmitSigninWithOTP() {
         this.isLoadingOTP = true;
         try {
             await this.$store.dispatch('auth/signInWithOtp', { email: this.email });
@@ -126,13 +129,11 @@ export default class BaseCardLeaderboard extends Vue {
         }
     }
 
-    async onClickVerifyOTP() {
-        this.isLoadingOTPVerify = false;
+    async onSubmitVerifyOTP() {
+        this.isLoadingOTPVerify = true;
         try {
             await this.$store.dispatch('auth/verifyOtp', { email: this.email, token: this.otp });
-            if (this.account) {
-                this.$router.push({ name: 'dashboard' });
-            }
+            if (!this.account) throw new Error('An issue occured while verifying OTP. Please try again.');
         } catch (error) {
             this.error = (error as Error).message;
         } finally {
@@ -144,9 +145,7 @@ export default class BaseCardLeaderboard extends Vue {
         this.providers[variant].isLoading = true;
         try {
             await this.$store.dispatch('auth/signinWithOAuth', { variant, skipBrowserRedirect: false });
-            if (this.account) {
-                this.$router.push({ name: 'dashboard' });
-            }
+            if (!this.account) throw new Error('An issue occured while verifying OTP. Please try again.');
         } catch (error) {
             this.error = (error as Error).message;
         } finally {
@@ -155,3 +154,26 @@ export default class BaseCardLeaderboard extends Vue {
     }
 }
 </script>
+<style>
+hr {
+    border: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    margin: 2rem 0 1.5rem;
+}
+.or-separator:after {
+    display: block;
+    content: 'OR';
+    background-color: #fff !important;
+    color: gray;
+    width: 40px;
+    font-size: 0.8rem;
+    margin-top: -0.7rem;
+    margin-left: -20px;
+    left: 50%;
+    text-align: center;
+    position: absolute;
+}
+.dark-mode .or-separator:after {
+    background: #1f2129 !important;
+}
+</style>

@@ -1,7 +1,7 @@
 <template>
     <div class="d-flex h-100 flex-column">
         <BaseNavbarTop />
-        <router-view />
+        <router-view style="height: calc(100% - 70px) !important" />
     </div>
 </template>
 <script lang="ts">

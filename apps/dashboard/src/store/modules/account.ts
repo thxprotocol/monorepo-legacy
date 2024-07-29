@@ -1,8 +1,13 @@
 import axios from 'axios';
+import store from '..';
 import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
 import { track } from '@thxnetwork/common/mixpanel';
 
 export type TInvoiceState = TInvoice[];
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function ({ matches }) {
+    store.commit('account/setDarkMode', matches);
+});
 
 @Module({ namespaced: true })
 class AccountModule extends VuexModule {
@@ -10,6 +15,7 @@ class AccountModule extends VuexModule {
     version = '';
     _profile: TAccount | null = null;
     _invoices: TInvoiceState = [];
+    isDarkModeEnabled = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
     get profile() {
         return this._profile;
@@ -27,6 +33,12 @@ class AccountModule extends VuexModule {
     @Mutation
     setAccount(profile: TAccount) {
         this._profile = profile;
+    }
+
+    @Mutation
+    setDarkMode(isEnabled: boolean) {
+        this.isDarkModeEnabled = isEnabled;
+        document.documentElement.classList[isEnabled ? 'add' : 'remove']('dark-mode');
     }
 
     @Action({ rawError: true })

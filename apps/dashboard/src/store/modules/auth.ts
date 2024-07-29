@@ -63,7 +63,7 @@ export default class AuthModule extends VuexModule {
             if (route.query.redirect) {
                 router.push({ path: route.query.redirect as string });
             } else {
-                router.push({ name: 'dashboard' });
+                router.push({ name: 'home' });
             }
         }
     }

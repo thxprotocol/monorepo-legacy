@@ -23,6 +23,9 @@ export default class App extends Vue {
 
     created() {
         if (GTM) initGTM();
+
+        const isDarkModeEnabled = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        this.$store.commit('account/setDarkMode', isDarkModeEnabled);
     }
 }
 </script>

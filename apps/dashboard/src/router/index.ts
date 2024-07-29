@@ -208,16 +208,14 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
+    // This route requires auth, check if logged in
     if (to.matched.some((record) => record.meta.requiresAuth)) {
-        // This route requires auth, check if logged in
+        // Not logged in, redirect to login page
         if (!store.getters['auth/isAuthenticated']) {
-            // Not logged in, redirect to login page
-            next({
-                path: '/login',
-                query: { redirect: to.fullPath },
-            });
-        } else {
-            // Logged in, proceed to route
+            next({ name: 'login', query: { redirect: to.fullPath } });
+        }
+        // Logged in, proceed to route
+        else {
             next();
         }
     } else {
