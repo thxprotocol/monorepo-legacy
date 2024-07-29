@@ -60,15 +60,6 @@ class AccountModule extends VuexModule {
 
         track('UserIdentify', [data]);
 
-        // const { poolId, collaboratorRequestToken } = this.state as any;
-        // if (poolId && collaboratorRequestToken) {
-        //     await this.context.dispatch(
-        //         'pools/updateCollaborator',
-        //         { poolId, uuid: collaboratorRequestToken },
-        //         { root: true },
-        //     );
-        // }
-
         this.context.commit('setAccount', data);
     }
 

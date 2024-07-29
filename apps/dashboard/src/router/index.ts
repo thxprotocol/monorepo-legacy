@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import store from '@thxnetwork/dashboard/store';
-import { redirectCollaborationRequest, redirectSignout, redirectVerifyEmail } from '@thxnetwork/dashboard/utils/guards';
+import { redirectSignout, redirectVerifyEmail } from '@thxnetwork/dashboard/utils/guards';
 
 Vue.use(VueRouter);
 
@@ -12,9 +12,25 @@ const routes: Array<RouteConfig> = [
         component: () => import('../views/Login.vue'),
     },
     {
+        name: 'signout',
+        path: '/signout',
+        beforeEnter: redirectSignout,
+    },
+    {
         name: 'authRedirect',
         path: '/auth/redirect',
         component: () => import('../views/AuthRedirect.vue'),
+    },
+    {
+        name: 'verify',
+        path: '/verify',
+        beforeEnter: redirectVerifyEmail,
+    },
+    {
+        name: 'invite',
+        path: '/invite',
+        component: () => import('../views/Invite.vue'),
+        meta: { requiresAuth: true },
     },
     {
         name: 'dashboard',
@@ -119,6 +135,11 @@ const routes: Array<RouteConfig> = [
                 ],
             },
             {
+                name: 'account',
+                path: '/account',
+                component: () => import('../views/dashboard/Account.vue'),
+            },
+            {
                 name: 'Developer',
                 path: '/developer',
                 redirect: 'developer/api',
@@ -183,22 +204,7 @@ const routes: Array<RouteConfig> = [
                     },
                 ],
             },
-            {
-                name: 'collaboration request',
-                path: '/collaborator',
-                beforeEnter: redirectCollaborationRequest,
-            },
         ],
-    },
-    {
-        name: 'verify email',
-        path: '/verify_email',
-        beforeEnter: redirectVerifyEmail,
-    },
-    {
-        name: 'signout',
-        path: '/signout',
-        beforeEnter: redirectSignout,
     },
 ];
 

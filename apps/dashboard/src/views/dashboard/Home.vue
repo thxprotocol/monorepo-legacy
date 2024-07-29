@@ -1,6 +1,5 @@
 <template>
     <section class="section-home" v-if="account">
-        <BaseModalRequestAccountEmailUpdate :pool="firstPool" :deploying="!firstPool" />
         <div class="container-xl">
             <b-jumbotron
                 class="text-left mt-3 jumbotron-header"
@@ -79,18 +78,14 @@
 import { AccountPlanType } from '@thxnetwork/common/enums';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import BaseModalRequestAccountEmailUpdate from '@thxnetwork/dashboard/components/modals/BaseModalRequestAccountEmailUpdate.vue';
 import BaseCardHome from '@thxnetwork/dashboard/components/cards/BaseCardHome.vue';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import BaseCardPool from '@thxnetwork/dashboard/components/cards/BaseCardPool.vue';
-
-import { NODE_ENV } from '@thxnetwork/dashboard/config/secrets';
-import { ChainId, QuestVariant } from '@thxnetwork/common/enums';
+import { QuestVariant } from '@thxnetwork/common/enums';
 import { contentQuests, contentRewards } from '@thxnetwork/common/constants';
 
 @Component({
     components: {
-        BaseModalRequestAccountEmailUpdate,
         BaseCardHome,
         BaseCodeExample,
         BaseCardPool,
@@ -116,18 +111,8 @@ export default class HomeView extends Vue {
         return pools[0];
     }
 
-    async mounted() {
-        await this.$store.dispatch('pools/list');
-
-        if (!Object.values(this.pools).length) {
-            this.$store.dispatch('pools/create', {
-                chainId: NODE_ENV === 'production' ? ChainId.Polygon : ChainId.Hardhat,
-            });
-        }
-
-        if (!this.account.website || !this.account.email || !this.account.role || !this.account.goal.length) {
-            this.$bvModal.show('modalRequestAccountEmailUpdate');
-        }
+    mounted() {
+        this.$store.dispatch('pools/list');
     }
 }
 </script>

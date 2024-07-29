@@ -1,5 +1,5 @@
 <template>
-    <div class="h-100">
+    <div class="h-100" v-if="isReady">
         <b-container class="m-auto h-100" fluid>
             <b-row class="h-100">
                 <b-col md="6" class="h-100 d-flex align-items-center justify-content-center flex-column">
@@ -28,18 +28,18 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 import BaseCardLogin from '@thxnetwork/dashboard/components/cards/BaseCardLogin.vue';
 
 @Component({
     components: {
         BaseCardLogin,
     },
-    computed: mapGetters({
-        account: 'account/profile',
+    computed: mapState('auth', {
+        isReady: 'isReady',
     }),
 })
 export default class App extends Vue {
-    account!: TAccount;
+    isReady!: boolean;
 }
 </script>

@@ -80,7 +80,9 @@
                 <template #cell(rank)="{ item }">
                     <span>{{ item.rank }}</span>
                 </template>
-                <template #cell(account)="{ item }"> <BaseParticipantAccount :account="item.account" /> </template>
+                <template #cell(account)="{ item }">
+                    <BaseAvatar :account="item.account" />
+                </template>
                 <template #cell(email)="{ item }"> {{ item.email }} </template>
                 <template #cell(tokens)="{ item }">
                     <BaseParticipantConnectedAccount :account="token" :key="key" v-for="(token, key) in item.tokens" />
@@ -128,7 +130,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseBtnSort from '@thxnetwork/dashboard/components/buttons/BaseBtnSort.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
-import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
+import BaseAvatar from '@thxnetwork/dashboard/components/BaseAvatar.vue';
 import BaseModalParticipant from '@thxnetwork/dashboard/components/modals/BaseModalParticipant.vue';
 import BaseModalParticipantBalanceReset from '@thxnetwork/dashboard/components/modals/BaseModalParticipantBalanceReset.vue';
 import BaseModalParticipantExport from '@thxnetwork/dashboard/components/modals/BaseModalParticipantExport.vue';
@@ -142,7 +144,7 @@ import { TParticipantState } from '@thxnetwork/dashboard/store/modules/pools';
     components: {
         BaseBtnSort,
         BaseCardTableHeader,
-        BaseParticipantAccount,
+        BaseAvatar,
         BaseParticipantConnectedAccount,
         BaseModalParticipantExport,
         BaseModalParticipantBalanceReset,
@@ -205,7 +207,7 @@ export default class ViewParticipants extends Vue {
     get participantsByPage() {
         return Object.values(this.participants.results).map((p: any) => ({
             rank: p.rank,
-            account: parseAccount({ id: p._id, account: p.account }),
+            account: p.account,
             email: p.account && p.account.email,
             tokens: p.account && parseConnectedAccounts(p.account),
             pointBalance: p.balance,

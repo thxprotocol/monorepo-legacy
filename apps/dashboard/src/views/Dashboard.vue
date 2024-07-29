@@ -1,27 +1,22 @@
 <template>
     <div class="d-flex h-100 flex-column">
+        <BaseModalOnboarding />
         <BaseNavbarTop />
         <router-view style="height: calc(100% - 70px) !important" />
     </div>
 </template>
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
 import BaseNavbarTop from '@thxnetwork/dashboard/components/BaseNavbarTop.vue';
+import BaseModalOnboarding from '@thxnetwork/dashboard/components/modals/BaseModalOnboarding.vue';
 
 @Component({
     components: {
         BaseNavbarTop,
-    },
-    computed: {
-        ...mapGetters({
-            account: 'account/profile',
-        }),
+        BaseModalOnboarding,
     },
 })
-export default class App extends Vue {
-    account!: TAccount;
-}
+export default class App extends Vue {}
 </script>
 
 <style lang="scss">

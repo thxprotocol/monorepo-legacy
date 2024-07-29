@@ -10,20 +10,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { AccountVariant, AccessTokenKind } from '@thxnetwork/common/enums';
+import { AccessTokenKind } from '@thxnetwork/common/enums';
 import BaseAvatar from '@thxnetwork/dashboard/components/BaseAvatar.vue';
-
-export function parseAccount({ id, account }) {
-    if (!account) return;
-    return {
-        id,
-        email: account && account.email,
-        username: account && account.username,
-        profileImg: account && account.profileImg,
-        twitterUsername: account && account.twitterUsername,
-        variant: account && AccountVariant[account.variant],
-    };
-}
 
 @Component({
     components: {

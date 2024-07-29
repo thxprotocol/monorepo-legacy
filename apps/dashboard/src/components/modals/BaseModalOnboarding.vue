@@ -101,7 +101,7 @@
 
 <script lang="ts">
 import { Goal, Role } from '@thxnetwork/common/enums';
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { goalLabelMap, roleLabelMap } from '@thxnetwork/common/constants';
 import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
@@ -114,9 +114,10 @@ import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vu
     },
     computed: mapGetters({
         account: 'account/profile',
+        pools: 'pools/all',
     }),
 })
-export default class BaseModalRequestAccountEmailUpdate extends Vue {
+export default class BaseModalOnboarding extends Vue {
     Roles = Role;
     Goals = Goal;
     roleLabelMap = roleLabelMap;
@@ -130,12 +131,22 @@ export default class BaseModalRequestAccountEmailUpdate extends Vue {
     timer: number | unknown;
     progress = 5;
 
+    pools!: IPools;
     account!: TAccount;
 
-    @Prop() deploying!: boolean;
-    @Prop() pool!: TPool;
+    get pool() {
+        const pools = Object.values(this.pools || {});
+        if (!pools.length) return;
+        return pools[0];
+    }
 
-    mounted() {
+    async mounted() {
+        await this.$store.dispatch('pools/list');
+
+        if (!this.account.website || !this.account.email || !this.account.role || !this.account.goal.length) {
+            this.$bvModal.show('modalRequestAccountEmailUpdate');
+        }
+
         this.timer = setInterval(() => {
             this.progress += 7 + Math.random() * 10;
             if (this.progress > 100) this.reset();
@@ -144,6 +155,12 @@ export default class BaseModalRequestAccountEmailUpdate extends Vue {
         this.website = this.account.website;
         this.role = this.account.role || Role.None;
         this.goal = this.account.goal;
+    }
+
+    get firstPool() {
+        const pools = Object.values(this.pools);
+        if (!pools.length) return;
+        return pools[0];
     }
 
     get isSubmitDisabled() {

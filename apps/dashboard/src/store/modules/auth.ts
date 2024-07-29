@@ -19,9 +19,7 @@ export type TProvider = Provider;
 export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLIC_KEY);
 
 const supabaseAuthEventMap = {
-    SIGNED_IN: async (session: Session) => {
-        await store.dispatch('auth/onSignedIn', session);
-    },
+    SIGNED_IN: async (session: Session) => store.dispatch('auth/onSignedIn', session),
     SIGNED_OUT: (session: Session) => store.dispatch('auth/onSignedOut', session),
 };
 
@@ -67,6 +65,13 @@ export default class AuthModule extends VuexModule {
         if (route.name === 'login') {
             if (route.query.redirect) {
                 router.push({ path: route.query.redirect as string });
+            } else if (route.query.collaboratorRequestToken) {
+                const { poolId, collaboratorRequestToken } = route.query;
+                await this.context.dispatch(
+                    'pools/updateCollaborator',
+                    { poolId, uuid: collaboratorRequestToken },
+                    { root: true },
+                );
             } else {
                 router.push({ name: 'home' });
             }

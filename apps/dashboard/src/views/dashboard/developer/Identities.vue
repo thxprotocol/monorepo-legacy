@@ -64,7 +64,7 @@ import { mapGetters } from 'vuex';
 import { Component, Vue } from 'vue-property-decorator';
 import { format } from 'date-fns';
 import BaseCode from '@thxnetwork/dashboard/components/BaseCode.vue';
-import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
+import BaseParticipantAccount from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
 
 const exampleCode = `const identity = await thx.identity.create();
 // 36d33a59-5398-463a-ac98-0f7d9b201648
@@ -94,7 +94,7 @@ export default class IdentitiesView extends Vue {
     get identities() {
         return this.identitiesList.results.map((identity) => ({
             uuid: identity.uuid,
-            participant: parseAccount({ id: identity.sub, account: identity.account }),
+            participant: identity.account,
             createdAt: identity.createdAt,
             identity,
         }));

@@ -38,7 +38,6 @@
                     <template #head(tokens)> Connected </template>
                     <template #head(amount)> Amount </template>
                     <template #head(metadata)> Metadata </template>
-                    <template #head(duration)> Duration </template>
                     <template #head(entry)> Created </template>
 
                     <!-- Cell formatting -->
@@ -59,9 +58,6 @@
                     <template #cell(metadata)="{ item }">
                         <code>{{ item.metadata }}</code>
                     </template>
-                    <template #cell(duration)="{ item }">
-                        <code>{{ item.duration }}</code>
-                    </template>
                     <template #cell(entry)="{ item }">
                         <small class="text-muted">{{
                             format(new Date(item.entry.createdAt), 'dd-MM-yyyy HH:mm')
@@ -75,13 +71,12 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import type { TQuestSocial, TQuest, TQuestEntry } from '@thxnetwork/types/interfaces';
 import { mapGetters } from 'vuex';
 import { format, differenceInMilliseconds } from 'date-fns';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModal from './BaseModal.vue';
 import { getAddressURL } from '../../utils/chains';
-import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
+import BaseParticipantAccount from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
 import BaseParticipantConnectedAccount, {
     parseConnectedAccounts,
 } from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
@@ -149,11 +144,10 @@ export default class BaseModalQuestSocialEntries extends Vue {
         return this.questEntries.results
             .sort((a: TQuestEntry, b: TQuestEntry) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((entry: any) => ({
-                account: parseAccount({ id: entry._id, account: entry.account }),
+                account: entry.account,
                 tokens: entry.account && parseConnectedAccounts(entry.account),
                 amount: entry.amount,
                 metadata: entry.metadata,
-                duration: this.getDuration(this.quest, entry),
                 entry,
             }));
     }
