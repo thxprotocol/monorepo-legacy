@@ -154,10 +154,9 @@ export default class IntegrationTwitterView extends Vue {
     }
 
     onClickConnect() {
-        this.$store.dispatch('account/connectRedirect', {
+        this.$store.dispatch('auth/connect', {
             kind: AccessTokenKind.Twitter,
             scopes: OAuthRequiredScopes.TwitterAutoQuest,
-            returnUrl: window.location.href,
         });
     }
 }

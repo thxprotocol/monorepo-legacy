@@ -17,7 +17,6 @@
 </template>
 
 <script lang="ts">
-import { TAccount } from '@thxnetwork/types/interfaces';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseIdenticon from '../BaseIdenticon.vue';

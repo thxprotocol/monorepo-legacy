@@ -35,18 +35,6 @@
             <b-row>
                 <b-col md="4">
                     <b-card
-                        @click="$router.push(`/campaign/${firstPool ? firstPool._id : 'unknown'}/settings/widget`)"
-                        class="mt-3 mb-3 cursor-pointer"
-                        :img-src="require('@thxnetwork/dashboard/../public/assets/thx-home-widget.png')"
-                        img-alt="Image"
-                        img-top
-                    >
-                        <strong>Widget</strong>
-                        <p class="text-muted m-0">Embed and increase customer loyalty!</p>
-                    </b-card>
-                </b-col>
-                <b-col md="4">
-                    <b-card
                         @click="window.open(docsUrl, '_blank')"
                         class="mt-3 mb-3 cursor-pointer"
                         :img-src="require('@thxnetwork/dashboard/../public/assets/thx_docs.webp')"
@@ -54,7 +42,19 @@
                         img-top
                     >
                         <strong>User Guides</strong>
-                        <p class="text-muted m-0">Learn how to configure your Loyalty Campaign.</p>
+                        <p class="text-muted m-0">Learn how to configure quests and rewards for your campaign.</p>
+                    </b-card>
+                </b-col>
+                <b-col md="4">
+                    <b-card
+                        @click="$router.push(`/developer`)"
+                        class="mt-3 mb-3 cursor-pointer"
+                        :img-src="require('@thxnetwork/dashboard/../public/assets/thx-home-widget.png')"
+                        img-alt="Image"
+                        img-top
+                    >
+                        <strong>Developer</strong>
+                        <p class="text-muted m-0">Reward in-app user behavior using webhook and the JavaScript SDK.</p>
                     </b-card>
                 </b-col>
                 <b-col md="4">
@@ -66,7 +66,7 @@
                         img-top
                     >
                         <strong>Discord</strong>
-                        <p class="text-muted m-0">If you need some help we are over here!</p>
+                        <p class="text-muted m-0">If you need some help you can reach us over here!</p>
                     </b-card>
                 </b-col>
             </b-row>

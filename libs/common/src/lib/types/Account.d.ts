@@ -22,6 +22,13 @@ type TAccount = {
     identity: string;
     createdAt: Date;
     updatedAt: Date;
-
+    providerUserId: string;
     signingSecret: string;
+};
+
+type TProvider = {
+    kind: AccessTokenKind;
+    scopes: OAuthRequiredScopes;
+    label: string;
+    color: string;
 };

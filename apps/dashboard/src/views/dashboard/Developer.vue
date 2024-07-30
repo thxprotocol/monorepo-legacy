@@ -1,5 +1,5 @@
 <template>
-    <div class="container-xl">
+    <div class="container-xxl">
         <b-jumbotron
             class="mt-3 jumbotron-header"
             bg-variant="light"

@@ -37,11 +37,11 @@ export default class SettingsTwitterView extends Vue {
             class: 'fab fa-discord',
             route: 'discord',
         },
-        {
-            name: 'Telegram',
-            class: 'fab fa-telegram',
-            route: 'telegram',
-        },
+        // {
+        //     name: 'Telegram',
+        //     class: 'fab fa-telegram',
+        //     route: 'telegram',
+        // },
     ];
 
     @Prop() pool!: TPool;

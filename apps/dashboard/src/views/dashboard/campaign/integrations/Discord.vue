@@ -199,10 +199,9 @@ export default class IntegrationDiscordView extends Vue {
     }
 
     onClickConnect() {
-        this.$store.dispatch('account/connectRedirect', {
+        this.$store.dispatch('auth/connect', {
             kind: AccessTokenKind.Discord,
             scopes: [OAuthDiscordScope.Identify, OAuthDiscordScope.Email, OAuthDiscordScope.Guilds],
-            returnUrl: window.location.href,
         });
     }
 }

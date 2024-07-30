@@ -12,6 +12,7 @@ import { popup } from '@thxnetwork/dashboard/utils/popup';
 import store from '@thxnetwork/dashboard/store';
 import axios from 'axios';
 import router from '../../router';
+import { logger } from 'ethers';
 
 export type TSession = Session;
 export type TProvider = Provider;
@@ -104,15 +105,16 @@ export default class AuthModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async disconnect(kind: Provider) {
-        const { data, error } = await supabase.auth.getUserIdentities();
-        if (error) throw error;
+    async disconnect(kind: AccessTokenKind) {
+        try {
+            const url = new URL(API_URL);
+            url.pathname = '/v1/account/disconnect/' + kind;
+            await axios({ method: 'DELETE', url: url.toString() });
 
-        const identity = data.identities.find((i) => i.provider === kind);
-        if (!identity) throw new Error('Identity not found');
-
-        await supabase.auth.unlinkIdentity(identity);
-        await supabase.auth.getUserIdentities();
+            await this.context.dispatch('account/waitForToken', { kind, scope: [] }, { root: true });
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     @Action({ rawError: true })

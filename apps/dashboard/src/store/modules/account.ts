@@ -82,6 +82,8 @@ class AccountModule extends VuexModule {
                 await this.context.dispatch('get');
 
                 const account = this.context.rootGetters['account/profile'];
+                if (!account) setTimeout(poll, 1000);
+
                 const isAuthorized = account.tokens.find((token) => token.kind === kind && token.scopes.some(scope));
                 if (!isAuthorized) setTimeout(poll, 1000);
 
@@ -98,7 +100,7 @@ class AccountModule extends VuexModule {
             url: '/account',
             data,
         });
-        this.context.dispatch('getProfile');
+        this.context.dispatch('get');
     }
 
     @Action({ rawError: true })
