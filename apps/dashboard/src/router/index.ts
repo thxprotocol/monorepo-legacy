@@ -1,7 +1,6 @@
 import Vue from 'vue';
-import VueRouter, { RouteConfig } from 'vue-router';
+import VueRouter, { Route, RouteConfig } from 'vue-router';
 import store from '@thxnetwork/dashboard/store';
-import { redirectSignout, redirectVerifyEmail } from '@thxnetwork/dashboard/utils/guards';
 
 Vue.use(VueRouter);
 
@@ -14,7 +13,9 @@ const routes: Array<RouteConfig> = [
     {
         name: 'signout',
         path: '/signout',
-        beforeEnter: redirectSignout,
+        beforeEnter: (to: Route) => {
+            return store.dispatch('auth/signOut');
+        },
     },
     {
         name: 'authRedirect',
@@ -22,9 +23,9 @@ const routes: Array<RouteConfig> = [
         component: () => import('../views/AuthRedirect.vue'),
     },
     {
-        name: 'verify',
-        path: '/verify',
-        beforeEnter: redirectVerifyEmail,
+        name: 'confirm',
+        path: '/confirm',
+        component: () => import('../views/Confirm.vue'),
     },
     {
         name: 'invite',
