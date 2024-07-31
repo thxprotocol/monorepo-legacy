@@ -59,7 +59,7 @@ import { TRewardPaymentState } from '@thxnetwork/dashboard/store/modules/pools';
 import { getAddressURL } from '../../utils/chains';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModal from './BaseModal.vue';
-import BaseParticipantAccount, { parseAccount } from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
+import BaseParticipantAccount from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
 
 @Component({
     components: {
@@ -99,7 +99,7 @@ export default class BaseModalParticipants extends Vue {
         return this.rewardPayments.results
             .sort((a: TRewardPayment, b: TRewardPayment) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((entry: any) => ({
-                account: parseAccount({ id: entry._id, account: entry.account }),
+                account: entry.account,
                 pointBalance: entry.pointBalance,
                 amount: entry.amount,
                 entry,

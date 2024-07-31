@@ -3,7 +3,7 @@
         <b-alert show variant="primary" v-if="!guilds.length">
             <i class="fas fa-exclamation-circle mr-1" />
             Please
-            <b-link :to="`/pool/${pool._id}/integrations/discord`"> invite THX Bot </b-link>
+            <b-link :to="`/campaign/${pool._id}/integrations/discord`"> invite THX Bot </b-link>
             to your server.
         </b-alert>
         <template v-else>

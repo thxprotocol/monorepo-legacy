@@ -1,0 +1,56 @@
+
+:root {
+    --thx-linear-gradient-line: linear-gradient(0deg, #5942c1,  rgb(162, 0, 255),rgba(162, 0, 255,0.5), #5942c1) !important;
+    --thx-linear-gradient-bg: linear-gradient(140deg, #5942c1,#5942c1, rgba(162, 0, 255,0.5)) !important;
+    --thx-linear-gradient-bg-opacity: linear-gradient(70deg, rgb(89, 66, 193, 0.0),rgb(89, 66, 193, 0.0), rgba(162, 0, 255, 0.3)) !important;
+    --thx-linear-gradient-border: linear-gradient(-45deg, rgb(162, 0, 255), #5942c1, rgb(162, 0, 255)) !important;
+    --thx-linear-gradient-shadow: linear-gradient(-45deg, #a200ff, #5942c1, rgb(52, 17, 177)) !important;
+}
+
+.gradient-bg {
+    background: var(--thx-linear-gradient-bg);
+}
+
+.gradient-bg-opacity {
+    background: var(--thx-linear-gradient-bg-opacity);
+}
+
+.gradient-border-xl {
+    $border: 5px;
+    color: #fff;
+    background: #000;
+    background-clip: padding-box; /* !importanté */
+    border: $border solid transparent; /* !importanté */
+    
+    &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 0;
+        margin: -$border; /* !importanté */
+        border-radius: inherit; /* !importanté */
+        background: var(--thx-linear-gradient-border);
+    }
+}
+
+.gradient-shadow:before {
+    content: '';
+    position: absolute;
+    inset: -15px; /* control the spread */
+    z-index: -1; /* place the element behind */
+    background: var(--thx-linear-gradient-shadow);
+    filter: blur(15px); /* control the blur */
+}
+
+.gradient-shadow-xl:before {
+    content: '';
+    position: absolute;
+    inset: -35px; /* control the spread */
+    z-index: -1; /* place the element behind */
+    background: var(--thx-linear-gradient-shadow);
+    filter: blur(35px); /* control the blur */
+    opacity: 0.75;
+}

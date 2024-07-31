@@ -14,7 +14,7 @@
         </b-dropdown-item-button>
         <template v-if="pool">
             <b-dropdown-divider />
-            <b-dropdown-item :to="`/pool/${pool._id}/settings/wallets`" link-class="d-flex align-items-center">
+            <b-dropdown-item :to="`/campaign/${pool._id}/settings/wallets`" link-class="d-flex align-items-center">
                 Create a wallet <i class="fas fa-chevron-right ml-auto" />
             </b-dropdown-item>
         </template>

@@ -44,7 +44,6 @@ import BaseBadgeNetwork from '@thxnetwork/dashboard/components/badges/BaseBadgeN
 import BaseIdenticon from '@thxnetwork/dashboard/components/BaseIdenticon.vue';
 import BaseAnchorAddress from '../BaseAnchorAddress.vue';
 import { mapGetters } from 'vuex';
-import { TAccount } from '@thxnetwork/common/lib/types';
 
 @Component({
     components: {

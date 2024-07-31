@@ -42,32 +42,14 @@ axios.defaults.maxRedirects = 0;
 
 // Add a request interceptor
 axios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-    const user = store.getters['account/user'];
-    if (user && !user.expired) {
+    const { session } = store.state.auth;
+    const isExpired = session?.expires_at ? new Date(session.expires_at * 1000) < new Date() : false;
+    if (session && !isExpired) {
         config.headers = config.headers || {};
-        config.headers.Authorization = `Bearer ${user.access_token}`;
+        config.headers.Authorization = `Bearer ${session.access_token}`;
     }
     return config;
 });
-
-// Add a response interceptor
-axios.interceptors.response.use(
-    (res: AxiosResponse) => res,
-    async (error: AxiosError) => {
-        if (error.response?.status === 401) {
-            const user = await store.dispatch('account/getUser');
-            if (user) {
-                // Token expired or invalid, signout id_token_hint
-                await store.dispatch('account/signoutRedirect');
-            } else {
-                // id_token_hint not available, force signout and request signin
-                await store.dispatch('account/signout');
-                await store.dispatch('account/signinRedirect');
-            }
-        }
-        throw error;
-    },
-);
 
 // Set Vue default config and attach plugins
 Vue.config.productionTip = false;

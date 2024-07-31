@@ -21,7 +21,7 @@
             <p class="mb-0 text-gray">Could not find any campaign participants yet!</p>
         </b-list-group-item>
         <b-list-group-item>
-            <b-link :to="`/pool/${pool._id}/participants`">All Participants</b-link>
+            <b-link :to="`/campaign/${pool._id}/participants`">All Participants</b-link>
         </b-list-group-item>
     </b-list-group>
 </template>

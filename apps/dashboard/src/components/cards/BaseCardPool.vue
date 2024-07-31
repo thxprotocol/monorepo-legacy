@@ -61,7 +61,7 @@ export default class BaseCardPool extends Vue {
     @Prop() pool!: TPool;
 
     onClick() {
-        this.$router.push({ name: 'pool', params: { id: this.pool._id } });
+        this.$router.push({ name: 'campaign', params: { id: this.pool._id } });
         this.$emit('click', this.pool);
     }
 
