@@ -11,7 +11,9 @@
                 }"
             >
                 <b-container class="container-md py-5">
-                    <b-badge variant="primary" class="p-2">Plan: {{ AccountPlanType[account.plan] }}</b-badge>
+                    <b-badge variant="primary" class="p-2">
+                        Plan: {{ account.plan ? AccountPlanType[account.plan] : 'Free Trial' }}
+                    </b-badge>
                     <p class="brand-text">
                         {{ 'Hi ' + (!account.firstName ? 'Anon' : account.firstName) }}
                     </p>

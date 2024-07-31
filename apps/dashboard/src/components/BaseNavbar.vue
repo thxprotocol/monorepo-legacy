@@ -1,7 +1,7 @@
 <template>
     <b-navbar toggleable="lg" class="sidebar">
-        <div class="flex-grow-1 w-100 h-25 overflow-auto d-flex justify-content-end flex-column">
-            <b-form-group class="my-3 mx-2">
+        <div class="d-flex justify-content-end flex-column flex-grow-1 w-100">
+            <b-form-group class="mb-3 mx-2">
                 <b-button-group class="w-100">
                     <b-button
                         v-if="selectedPool"
@@ -56,102 +56,92 @@
                     <i class="fas fa-external-link-alt" />
                 </b-button>
             </b-form-group>
-            <template v-if="selectedPool">
-                <b-navbar-nav class="py-0">
-                    <b-nav-item
-                        :to="`/campaign/${selectedPool._id}/analytics`"
-                        link-classes="nav-link-wrapper"
-                        class="nav-link-plain"
-                    >
-                        <div class="d-flex">
-                            <div class="nav-link-icon">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                <span>Analytics</span>
-                            </div>
+            <b-navbar-nav class="py-0 mb-auto" v-if="selectedPool">
+                <b-nav-item
+                    :to="`/campaign/${selectedPool._id}/analytics`"
+                    link-classes="nav-link-wrapper"
+                    class="nav-link-plain"
+                >
+                    <div class="d-flex">
+                        <div class="nav-link-icon">
+                            <i class="fas fa-chart-line"></i>
                         </div>
-                    </b-nav-item>
-                    <b-nav-item
-                        :to="`/campaign/${selectedPool._id}/quests`"
-                        link-classes="nav-link-wrapper"
-                        class="nav-link-plain"
-                    >
-                        <div class="d-flex">
-                            <div class="nav-link-icon">
-                                <i class="fas fa-trophy"></i>
-                            </div>
-                            <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                <span>Quests</span>
-                            </div>
+                        <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                            <span>Analytics</span>
                         </div>
-                    </b-nav-item>
-                    <b-nav-item
-                        :to="`/campaign/${selectedPool._id}/rewards`"
-                        link-classes="nav-link-wrapper"
-                        class="nav-link-plain"
-                    >
-                        <div class="d-flex">
-                            <div class="nav-link-icon">
-                                <i class="fas fa-gift"></i>
-                            </div>
-                            <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                <span>Rewards</span>
-                            </div>
+                    </div>
+                </b-nav-item>
+                <b-nav-item
+                    :to="`/campaign/${selectedPool._id}/quests`"
+                    link-classes="nav-link-wrapper"
+                    class="nav-link-plain"
+                >
+                    <div class="d-flex">
+                        <div class="nav-link-icon">
+                            <i class="fas fa-trophy"></i>
                         </div>
-                    </b-nav-item>
-                    <b-nav-item
-                        :to="`/campaign/${selectedPool._id}/participants`"
-                        link-classes="nav-link-wrapper"
-                        class="nav-link-plain"
-                    >
-                        <div class="d-flex">
-                            <div class="nav-link-icon">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                <span>Participants</span>
-                            </div>
+                        <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                            <span>Quests</span>
                         </div>
-                    </b-nav-item>
-                    <b-nav-item
-                        :to="`/campaign/${selectedPool._id}/integrations`"
-                        link-classes="nav-link-wrapper"
-                        class="nav-link-plain"
-                    >
-                        <div class="d-flex">
-                            <div class="nav-link-icon">
-                                <i class="fas fa-exchange-alt"></i>
-                            </div>
-                            <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                <span>Integrations</span>
-                            </div>
+                    </div>
+                </b-nav-item>
+                <b-nav-item
+                    :to="`/campaign/${selectedPool._id}/rewards`"
+                    link-classes="nav-link-wrapper"
+                    class="nav-link-plain"
+                >
+                    <div class="d-flex">
+                        <div class="nav-link-icon">
+                            <i class="fas fa-gift"></i>
                         </div>
-                    </b-nav-item>
-                    <b-nav-item
-                        :to="`/campaign/${selectedPool._id}/settings`"
-                        link-classes="nav-link-wrapper"
-                        class="nav-link-plain"
-                    >
-                        <div class="d-flex">
-                            <div class="nav-link-icon">
-                                <i class="fas fa-cogs"></i>
-                            </div>
-                            <div class="flex-grow-1 justify-content-between d-flex align-items-center">
-                                <span>Settings</span>
-                            </div>
+                        <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                            <span>Rewards</span>
                         </div>
-                    </b-nav-item>
-                </b-navbar-nav>
-
-                <hr />
-            </template>
-            <hr class="m-0 mt-auto" />
-            <div class="d-flex py-4 px-3 align-items-center justify-content-between">
-                <b-badge variant="primary" class="p-2">
-                    Plan: {{ AccountPlanType[account.plan] || AccountPlanType[AccountPlanType.Lite] }}
-                </b-badge>
-            </div>
+                    </div>
+                </b-nav-item>
+                <b-nav-item
+                    :to="`/campaign/${selectedPool._id}/participants`"
+                    link-classes="nav-link-wrapper"
+                    class="nav-link-plain"
+                >
+                    <div class="d-flex">
+                        <div class="nav-link-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                            <span>Participants</span>
+                        </div>
+                    </div>
+                </b-nav-item>
+                <b-nav-item
+                    :to="`/campaign/${selectedPool._id}/integrations`"
+                    link-classes="nav-link-wrapper"
+                    class="nav-link-plain"
+                >
+                    <div class="d-flex">
+                        <div class="nav-link-icon">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                            <span>Integrations</span>
+                        </div>
+                    </div>
+                </b-nav-item>
+                <b-nav-item
+                    :to="`/campaign/${selectedPool._id}/settings`"
+                    link-classes="nav-link-wrapper"
+                    class="nav-link-plain"
+                >
+                    <div class="d-flex">
+                        <div class="nav-link-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <div class="flex-grow-1 justify-content-between d-flex align-items-center">
+                            <span>Settings</span>
+                        </div>
+                    </div>
+                </b-nav-item>
+            </b-navbar-nav>
         </div>
     </b-navbar>
 </template>
@@ -163,7 +153,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import BaseNavbarNav from './BaseNavbarNav.vue';
 import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
-import { AccountPlanType } from '@thxnetwork/common/enums';
 import { BASE_URL, WIDGET_URL } from '@thxnetwork/dashboard/config/secrets';
 
 @Component({
@@ -177,7 +166,6 @@ import { BASE_URL, WIDGET_URL } from '@thxnetwork/dashboard/config/secrets';
     }),
 })
 export default class BaseNavbar extends Vue {
-    AccountPlanType = AccountPlanType;
     dashboardUrl = BASE_URL;
     plans = plans;
     ERC20Type = ERC20Type;
