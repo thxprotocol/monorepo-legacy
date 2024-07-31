@@ -97,8 +97,8 @@ export default class DeveloperEventsView extends Vue {
 
     get events() {
         return this.eventList.results.map((event: TEvent) => ({
-            participant: event.account,
             name: event.name,
+            participant: event.account,
             createdAt: event.createdAt,
         }));
     }

@@ -116,7 +116,6 @@ class DeveloperModule extends VuexModule {
         const { data } = await axios({
             method: 'GET',
             url: '/account/developer/clients/' + client._id,
-            data: { clientId: client.clientId },
         });
 
         const existingClient = this.context.rootGetters['clients/all'][client._id];

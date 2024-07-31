@@ -57,14 +57,17 @@ export default class ModalAssetPoolCreate extends Vue {
 
     async submit() {
         this.isLoading = true;
+        try {
+            await this.$store.dispatch('pools/create', {
+                title: this.title,
+            });
 
-        const data = await this.$store.dispatch('pools/create', {
-            title: this.title,
-        });
-
-        this.$bvModal.hide(this.id);
-        this.$router.push({ name: 'pool', params: { id: data._id } });
-        this.isLoading = false;
+            this.$bvModal.hide(this.id);
+        } catch (error: any) {
+            this.error = error.toString();
+        } finally {
+            this.isLoading = false;
+        }
     }
 }
 </script>

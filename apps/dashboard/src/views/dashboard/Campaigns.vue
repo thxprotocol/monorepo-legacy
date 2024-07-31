@@ -38,6 +38,7 @@
                 </b-col>
             </b-row>
         </b-container>
+        <BaseModalCreateCampaign id="modalCreateCampaign" />
     </div>
 </template>
 
@@ -49,6 +50,7 @@ import { mapGetters } from 'vuex';
 @Component({
     components: {
         BaseCardPool,
+        BaseModalCreateCampaign: () => import('@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue'),
     },
     computed: mapGetters({
         pools: 'pools/all',

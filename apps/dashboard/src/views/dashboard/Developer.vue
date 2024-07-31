@@ -1,5 +1,5 @@
 <template>
-    <div class="container-xxl">
+    <div class="container-xl">
         <b-jumbotron
             class="mt-3 jumbotron-header"
             bg-variant="light"
@@ -14,7 +14,7 @@
                 <p class="brand-text">Developer</p>
             </div>
         </b-jumbotron>
-        <div class="container">
+        <div class="container-md">
             <b-card class="shadow-sm mb-5" header-class="p-0">
                 <template #header>
                     <b-nav card-header tabs pills class="px-3 border-0">

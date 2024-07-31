@@ -2,7 +2,7 @@
     <div class="d-flex h-100 flex-column">
         <BaseModalOnboarding />
         <BaseNavbarTop />
-        <router-view style="height: calc(100% - 70px) !important" />
+        <router-view :key="$router.currentRoute.params.id" style="height: calc(100% - 70px) !important" />
     </div>
 </template>
 <script lang="ts">
@@ -16,7 +16,7 @@ import BaseModalOnboarding from '@thxnetwork/dashboard/components/modals/BaseMod
         BaseModalOnboarding,
     },
 })
-export default class App extends Vue {}
+export default class ViewDashboard extends Vue {}
 </script>
 
 <style lang="scss">

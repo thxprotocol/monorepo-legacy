@@ -73,6 +73,7 @@
                 </b-col>
             </b-row>
         </b-container>
+        <BaseModalPoolCreate id="modalCreateCampaign" />
     </section>
 </template>
 
@@ -83,6 +84,7 @@ import { mapGetters } from 'vuex';
 import BaseCardHome from '@thxnetwork/dashboard/components/cards/BaseCardHome.vue';
 import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 import BaseCardPool from '@thxnetwork/dashboard/components/cards/BaseCardPool.vue';
+import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 import { QuestVariant } from '@thxnetwork/common/enums';
 import { contentQuests, contentRewards } from '@thxnetwork/common/constants';
 
@@ -91,6 +93,7 @@ import { contentQuests, contentRewards } from '@thxnetwork/common/constants';
         BaseCardHome,
         BaseCodeExample,
         BaseCardPool,
+        BaseModalPoolCreate,
     },
     computed: mapGetters({
         account: 'account/profile',

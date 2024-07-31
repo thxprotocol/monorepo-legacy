@@ -22,49 +22,29 @@
                 </template>
                 <BTable hover :busy="isLoading" :items="clients" responsive="lg" show-empty>
                     <!-- Head formatting -->
-                    <template #head(name)> Client Name </template>
-                    <template #head(grantType)> Grant Type </template>
-                    <template #head(info)> &nbsp; </template>
+                    <template #head(name)> Name </template>
+                    <template #head(secret)> Secret </template>
+                    <template #head(createdAt)>Created </template>
                     <template #head(id)> &nbsp; </template>
 
                     <!-- Cell formatting -->
                     <template #cell(name)="{ item }">
                         {{ item.name }}
                     </template>
-                    <template #cell(type)="{ item }">
-                        {{ item.grantType }}
+                    <template #cell(secret)="{ item }">
+                        <b-input-group size="sm" class="mb-2">
+                            <b-form-input readonly size="sm" :value="item.secret" />
+                            <template #append>
+                                <b-button size="sm" variant="dark" v-clipboard:copy="item.secret">
+                                    <i class="fas fa-clipboard m-0"></i>
+                                </b-button>
+                            </template>
+                        </b-input-group>
                     </template>
-                    <template #cell(info)="{ item }">
-                        <b-form-row>
-                            <b-col md="3">
-                                <label class="text-gray">Client ID</label>
-                            </b-col>
-                            <b-col>
-                                <b-input-group size="sm" class="mb-2">
-                                    <b-form-input readonly size="sm" :value="item.info.clientId" />
-                                    <template #append>
-                                        <b-button size="sm" variant="dark" v-clipboard:copy="item.info.clientId">
-                                            <i class="fas fa-clipboard m-0"></i>
-                                        </b-button>
-                                    </template>
-                                </b-input-group>
-                            </b-col>
-                        </b-form-row>
-                        <b-form-row>
-                            <b-col md="3">
-                                <label class="text-gray">Client Secret</label>
-                            </b-col>
-                            <b-col>
-                                <b-input-group size="sm">
-                                    <b-form-input readonly size="sm" :value="item.info.clientSecret" />
-                                    <template #append>
-                                        <b-button size="sm" variant="dark" v-clipboard:copy="item.info.clientSecret">
-                                            <i class="fas fa-clipboard m-0"></i>
-                                        </b-button>
-                                    </template>
-                                </b-input-group>
-                            </b-col>
-                        </b-form-row>
+                    <template #cell(createdAt)="{ item }">
+                        <small class="text-muted">
+                            {{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}
+                        </small>
                     </template>
                     <template #cell(id)="{ item }">
                         <b-dropdown variant="link" size="sm" no-caret right>
@@ -90,12 +70,12 @@ import { mapGetters } from 'vuex';
 import { Component, Vue } from 'vue-property-decorator';
 import BaseModalClientCreate from '@thxnetwork/dashboard/components/modals/BaseModalClientCreate.vue';
 import BaseCode from '@thxnetwork/dashboard/components/BaseCode.vue';
+import { format } from 'date-fns';
 
 const exampleCode = `import { THXAPIClient } from '@thxnetwork/sdk';
 
 const thx = new THXAPIClient({
-    clientId: 'chyBeltL7rmOeTwVu-YiM',
-    clientSecret: 'q4ilZuGA4VPtrGhXug3i5taXrvDtidrzyv-gJN3yVo8T2stL6RwYQjqRoK-iUiAGGvhbG_F3TEFFuD_56Q065Q'
+    apiKey: 'q4ilZuGA4VPtrGhXug3i5taXrvDtidrzyv-gJN3yVo8T2stL6RwYQjqRoK-iUiAGGvhbG_F3TEFFuD_56Q065Q'
 });
 `;
 
@@ -116,16 +96,14 @@ export default class Clients extends Vue {
     code = exampleCode;
     pools!: IPools;
     clientList!: TClientState;
+    format = format;
 
     get clients() {
         if (!this.clientList) return [];
         return Object.values(this.clientList).map((client: TClient) => ({
             name: client.name,
-            grantType: client.grantType,
-            info: {
-                clientId: client.clientId,
-                clientSecret: client.clientSecret,
-            },
+            secret: client.secret,
+            createdAt: client.createdAt,
             id: client._id,
         }));
     }

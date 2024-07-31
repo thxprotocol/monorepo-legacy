@@ -210,7 +210,7 @@ export default class BaseNavbar extends Vue {
     async onPoolSelect(pool: TPool) {
         await this.$store.dispatch('pools/read', pool._id);
         if (pool._id === this.$route.params.id) return;
-        this.$router.push({ path: `/campaign/${pool._id}`, params: { id: pool._id } });
+        await this.$router.push({ name: 'campaign', params: { id: pool._id } });
     }
 }
 </script>

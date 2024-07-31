@@ -292,8 +292,12 @@ export default class QuestsView extends Vue {
 
     async openPublished(isPublished: boolean) {
         try {
+            this.isPublished = isPublished;
             await this.$router.push({
-                path: `/campaign/${this.pool._id}/quests`,
+                name: `quests`,
+                params: {
+                    id: this.pool._id,
+                },
                 query: { isPublished: isPublished ? String(isPublished) : 'false' },
             });
         } catch (error) {

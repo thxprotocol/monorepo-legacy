@@ -138,7 +138,7 @@
 </template>
 
 <script lang="ts">
-import { IPools, TRewardState } from '@thxnetwork/dashboard/store/modules/pools';
+import { TRewardState } from '@thxnetwork/dashboard/store/modules/pools';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { RewardVariant } from '@thxnetwork/common/enums';
@@ -250,6 +250,7 @@ export default class RewardsView extends Vue {
 
     async openPublished(isPublished: boolean) {
         try {
+            this.isPublished = isPublished;
             await this.$router.push({
                 path: `/campaign/${this.pool._id}/rewards`,
                 query: { isPublished: isPublished ? String(isPublished) : 'false' },
