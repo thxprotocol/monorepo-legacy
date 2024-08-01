@@ -13,8 +13,13 @@ const routes: Array<RouteConfig> = [
     {
         name: 'signout',
         path: '/signout',
-        beforeEnter: (to: Route) => {
-            return store.dispatch('auth/signOut');
+        beforeEnter: async (to: Route, from: Route, next) => {
+            await store.dispatch('auth/signOut');
+            try {
+                await next({ name: 'login' });
+            } catch (error) {
+                // Ignore redundant navigation to current location error
+            }
         },
     },
     {

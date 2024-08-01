@@ -95,7 +95,7 @@
                 <i class="fas fa-chevron-right ml-2"></i>
             </template>
         </b-button>
-        <b-button block variant="link" to="/signout">Sign out</b-button>
+        <b-button block variant="link" @click="onClickSignout">Sign out</b-button>
     </b-modal>
 </template>
 
@@ -128,8 +128,6 @@ export default class BaseModalOnboarding extends Vue {
     role: Role = Role.None;
     goal: Goal[] = [];
     isLoadingSubmit = false;
-    timer: number | unknown;
-    progress = 5;
 
     pools!: IPools;
     account!: TAccount;
@@ -147,27 +145,14 @@ export default class BaseModalOnboarding extends Vue {
             this.$bvModal.show('modalRequestAccountEmailUpdate');
         }
 
-        this.timer = setInterval(() => {
-            this.progress += 7 + Math.random() * 10;
-            if (this.progress > 100) this.reset();
-        }, 2000);
         this.email = this.account.email;
         this.website = this.account.website;
         this.role = this.account.role || Role.None;
         this.goal = this.account.goal;
     }
 
-    get firstPool() {
-        const pools = Object.values(this.pools);
-        if (!pools.length) return;
-        return pools[0];
-    }
-
     get isSubmitDisabled() {
-        return (
-            (!this.isValidWebsite || this.role === Role.None || !this.goal.length || this.isLoadingSubmit) &&
-            (this.progress < 100 || !this.deploying)
-        );
+        return !this.isValidWebsite || this.role === Role.None || !this.goal.length || this.isLoadingSubmit;
     }
 
     get isValidEmail() {
@@ -198,13 +183,13 @@ export default class BaseModalOnboarding extends Vue {
         }
     }
 
-    reset() {
-        clearInterval(this.timer as number);
-        this.timer = null;
-    }
-
-    beforeDestroy() {
-        this.reset();
+    async onClickSignout() {
+        await this.$store.dispatch('auth/signOut');
+        try {
+            await this.$router.push({ name: 'login' });
+        } catch (error) {
+            // Ignore redundant navigation to current location error
+        }
     }
 }
 </script>

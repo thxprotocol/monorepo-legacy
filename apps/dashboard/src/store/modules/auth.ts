@@ -13,6 +13,7 @@ import store from '@thxnetwork/dashboard/store';
 import axios from 'axios';
 import router from '../../router';
 import { logger } from 'ethers';
+import { track } from '@thxnetwork/common/mixpanel';
 
 export type TSession = Session;
 export type TProvider = Provider;
@@ -64,15 +65,10 @@ export default class AuthModule extends VuexModule {
         // On login page we redirect to redirect url or dashboard if an account is found
         const route = router.currentRoute;
         if (route.name === 'login') {
+            track('UserSignsIn', [store.getters['account/profile']]);
+
             if (route.query.redirect) {
                 router.push({ path: route.query.redirect as string });
-            } else if (route.query.collaboratorRequestToken) {
-                const { poolId, collaboratorRequestToken } = route.query;
-                await this.context.dispatch(
-                    'pools/updateCollaborator',
-                    { poolId, uuid: collaboratorRequestToken },
-                    { root: true },
-                );
             } else {
                 router.push({ name: 'home' });
             }

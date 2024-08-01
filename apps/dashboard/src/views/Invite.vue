@@ -16,8 +16,11 @@
                                 You have access to <strong>{{ pool.settings.title }} </strong>
                             </b-alert>
                             <b-button @click="onClickContinue" block variant="primary">
-                                Continue
-                                <i class="fas fa-chevron-right ml-2" />
+                                <b-spinner v-if="isLoading" small />
+                                <template v-else>
+                                    Continue
+                                    <i class="fas fa-chevron-right ml-2" />
+                                </template>
                             </b-button>
                         </b-card>
                     </div>
@@ -52,17 +55,18 @@ import BaseCardLogin from '@thxnetwork/dashboard/components/cards/BaseCardLogin.
     },
 })
 export default class App extends Vue {
-    isReady!: boolean;
     account!: TAccount;
     pools!: IPools;
+    isLoading = false;
 
     get pool() {
         const { poolId } = this.$route.query;
-        if (!poolId) return null;
+        if (!poolId) return;
         return this.pools[poolId as string];
     }
 
     async mounted() {
+        this.isLoading = true;
         try {
             await this.$store.dispatch('account/waitForAccount');
             if (this.account) {
@@ -72,6 +76,8 @@ export default class App extends Vue {
             }
         } catch (error) {
             console.error(error);
+        } finally {
+            this.isLoading = false;
         }
     }
 

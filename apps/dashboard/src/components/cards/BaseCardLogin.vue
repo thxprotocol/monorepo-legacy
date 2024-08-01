@@ -1,11 +1,14 @@
 <template>
     <b-card footer-class="text-right small">
-        <p class="text-muted">If you don't have an account, we create one for you.</p>
+        <b-alert show variant="primary">
+            <i class="fas fa-info-circle ml-0 mr-2" />
+            Don't worry, we'll create an account for you automatically.
+        </b-alert>
         <b-form @submit.prevent="onSubmitSigninWithOTP" v-if="!isEmailSent">
             <BaseFormGroup label="Use your e-mail">
                 <b-form-input v-model="email" placeholder="yourname@example.com" />
             </BaseFormGroup>
-            <b-button :disabled="!isEmailValid" variant="primary" block type="submit">
+            <b-button :disabled="!isEmailValid" variant="primary" block type="submit" class="rounded-pill">
                 <b-spinner small v-if="isLoadingOTP" />
                 <template v-else>
                     Send one-time password
@@ -17,7 +20,7 @@
             <BaseFormGroup label="Check your e-mail for the OTP">
                 <b-form-input v-model="otp" placeholder="******" />
             </BaseFormGroup>
-            <b-button :disabled="!isOTPValid" variant="primary" block type="submit">
+            <b-button :disabled="!isOTPValid" variant="primary" block type="submit" class="rounded-pill">
                 <b-spinner small v-if="isLoadingOTPVerify" />
                 <template v-else>
                     Verify OTP
