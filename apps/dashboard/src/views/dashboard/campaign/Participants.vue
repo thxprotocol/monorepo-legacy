@@ -66,10 +66,6 @@
                     Wallets
                     <!-- <BaseBtnSort @click="onClickSort('pointBalance', $event)">Points</BaseBtnSort> -->
                 </template>
-                <template #head(subscription)>
-                    Subscribed
-                    <!-- <BaseBtnSort @click="onClickSort('subscription', $event)">Subscribed</BaseBtnSort> -->
-                </template>
                 <template #head(createdAt)>
                     Joined
                     <!-- <BaseBtnSort @click="onClickSort('createdAt', $event)">Created</BaseBtnSort> -->
@@ -91,8 +87,14 @@
                     <strong class="text-primary">{{ item.pointBalance }}</strong>
                 </template>
                 <template #cell(wallets)="{ item }">
-                    <b-badge v-if="item.wallets.length">
-                        {{ `${item.wallets.length} wallet${item.wallets.length !== 1 ? '2' : ''}` }}
+                    <b-badge
+                        v-if="item.wallets.length"
+                        variant="light"
+                        class="p-2"
+                        v-b-tooltip
+                        :title="item.wallets.map((w) => w.address).join(' ')"
+                    >
+                        {{ item.wallets.length !== 1 ? `${item.wallets.length} wallets` : item.wallets[0].short }}
                     </b-badge>
                 </template>
                 <template #cell(subscription)="{ item }">
@@ -139,6 +141,7 @@ import BaseParticipantConnectedAccount, {
 } from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
 import { format } from 'date-fns';
 import { TParticipantState } from '@thxnetwork/dashboard/store/modules/pools';
+import { shortenAddress } from '@thxnetwork/dashboard/utils/wallet';
 
 @Component({
     components: {
@@ -210,6 +213,7 @@ export default class ViewParticipants extends Vue {
             account: p.account,
             email: p.account && p.account.email,
             tokens: p.account && parseConnectedAccounts(p.account),
+            wallets: p.wallets.map((w: any) => ({ address: w.address, short: shortenAddress(w.address) })),
             pointBalance: p.balance,
             subscription: p.isSubscribed ? 'Yes' : 'No',
             createdAt: p.createdAt,
