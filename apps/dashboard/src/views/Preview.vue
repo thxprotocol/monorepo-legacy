@@ -182,46 +182,12 @@ import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { initWidget } from '@thxnetwork/dashboard/utils/widget';
 import { TBrand } from '@thxnetwork/dashboard/store/modules/brands';
-import { API_URL, PUBLIC_URL, WIDGET_URL } from '@thxnetwork/dashboard/config/secrets';
-import { format, formatDistance } from 'date-fns';
+import { API_URL, WIDGET_URL } from '@thxnetwork/dashboard/config/secrets';
+import { format } from 'date-fns';
 import { contentQuests, contentRewards } from '@thxnetwork/common/constants';
 import axios from 'axios';
-import BaseCodeExample from '@thxnetwork/dashboard/components/BaseCodeExample.vue';
 
 @Component({
-    metaInfo() {
-        const { $route } = this as WidgetPreviewView;
-        const { poolId } = $route.params;
-        const previewImage = `${API_URL}/pools/preview/default/${poolId}.png`;
-        const title = this.title + ' | THX Network';
-        const description = 'Web preview of your Quest & Reward campaign.';
-
-        return {
-            title,
-            meta: [
-                { name: 'title', content: title },
-                { vmid: 'description', name: 'description', content: description },
-                { name: 'keywords', content: '' },
-                { name: 'twitter:card', content: this.logoImgUrl },
-                { name: 'twitter:site', content: PUBLIC_URL },
-                { name: 'twitter:creator', content: '@thxprotocol' },
-                { name: 'twitter:title', content: title },
-                { name: 'twitter:description', content: '' },
-                { name: 'twitter:image', content: previewImage },
-                { name: 'twitter:image:alt', content: title },
-                { name: 'og:title', content: title },
-                { name: 'og:description', content: description },
-                { name: 'og:type', content: 'website' },
-                { name: 'og:site_name', content: title },
-                { name: 'og:url', content: this.$route.fullPath },
-                { name: 'og:image', content: previewImage },
-            ],
-            link: [{ rel: 'canonical', href: this.$route.fullPath }],
-        };
-    },
-    components: {
-        BaseCodeExample,
-    },
     computed: mapGetters({
         brands: 'brands/all',
     }),
@@ -230,34 +196,18 @@ export default class WidgetPreviewView extends Vue {
     format = format;
     isTransferLoading = false;
     brands!: { [poolId: string]: TBrand };
-    logoImgUrl = '';
-    backgroundImgUrl = '';
     poolTransfer: TPoolTransferResponse | null = null;
-    defaultLogoImgUrl = require('@thxnetwork/dashboard/../public/assets/logo.png');
-    defaultBackgroundImgUrl = require('@thxnetwork/dashboard/../public/assets/thx_jumbotron.webp');
     error = '';
     contentQuests = contentQuests;
     contentRewards = contentRewards;
     title = '';
     slug = '';
+    logoImgUrl = require('@thxnetwork/dashboard/../public/assets/logo.png');
 
     get campaignUrl() {
         return `${WIDGET_URL}/c/${this.slug}`;
     }
 
-    get isExpired() {
-        if (!this.poolTransfer) return;
-        return this.poolTransfer.expiry && this.poolTransfer.now - new Date(this.poolTransfer.expiry).getTime() > 0;
-    }
-
-    get expiryDate() {
-        if (!this.poolTransfer) return;
-        return !this.isExpired && this.poolTransfer.expiry
-            ? formatDistance(new Date(this.poolTransfer.expiry), new Date(this.poolTransfer.now), {
-                  addSuffix: false,
-              })
-            : 'expired';
-    }
     async mounted() {
         // Inject the widget
         initWidget(this.$route.params.poolId, '#thx-widget-preview');
@@ -265,21 +215,14 @@ export default class WidgetPreviewView extends Vue {
         const { data } = await axios.get(API_URL + '/v1/widget/' + this.$route.params.poolId);
         this.title = data.title;
         this.slug = data.slug;
-        this.logoImgUrl = data.logoUrl || this.defaultLogoImgUrl;
-
-        this.setBackground();
-    }
-
-    setBackground() {
-        const app = document.getElementById('app');
-        if (!app) return;
-        app.style.opacity = '1';
-        document.body.style.height = 'auto';
-        document.body.style.backgroundColor = '#212529';
+        this.logoImgUrl = data.logoUrl ? data.logoUrl : this.logoImgUrl;
     }
 }
 </script>
 <style>
+body {
+    background-color: #212529;
+}
 #app {
     background-size: cover;
     background-repeat: no-repeat;

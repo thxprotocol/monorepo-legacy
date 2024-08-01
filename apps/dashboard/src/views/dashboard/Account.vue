@@ -113,8 +113,8 @@ export default class App extends Vue {
             [AccessTokenKind.Google]: {
                 kind: AccessTokenKind.Google,
                 scopes: OAuthRequiredScopes.GoogleAuth,
-                label: 'YouTube (Google)',
-                color: '#FF0000',
+                label: 'Google (YouTube)',
+                color: '#4285F4',
             },
             [AccessTokenKind.Twitter]: {
                 kind: AccessTokenKind.Twitter,

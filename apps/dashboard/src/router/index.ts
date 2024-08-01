@@ -34,6 +34,11 @@ const routes: Array<RouteConfig> = [
         meta: { requiresAuth: true },
     },
     {
+        name: 'preview',
+        path: '/preview/:poolId',
+        component: () => import('../views/Preview.vue'),
+    },
+    {
         name: 'dashboard',
         path: '/',
         component: () => import('../views/Dashboard.vue'),
@@ -172,11 +177,6 @@ const routes: Array<RouteConfig> = [
                 name: 'Invoices',
                 path: '/invoices',
                 component: () => import('../views/dashboard/Invoices.vue'),
-            },
-            {
-                name: 'preview',
-                path: '/preview/:poolId',
-                component: () => import('../views/dashboard/Preview.vue'),
             },
             {
                 name: 'campaigns',

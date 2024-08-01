@@ -1,8 +1,11 @@
 <template>
     <div class="d-flex justify-content-between align-items-center py-2">
-        <strong>
-            <i :class="platformIconMap[provider.kind]" class="mr-2" :style="{ color: provider.color }"></i>
-        </strong>
+        <div
+            class="d-flex align-items-center justify-content-center py-2 bg-light mr-2 rounded"
+            style="width: 40px; height: 40px"
+        >
+            <i :class="providerIconMap[provider.kind]" :style="{ color: provider.color, fontSize: '1rem' }"></i>
+        </div>
         <div class="mr-auto">
             <strong>{{ provider.label }}</strong>
             <div v-if="token" class="small">
@@ -32,13 +35,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { AccessTokenKind } from '@thxnetwork/common/enums';
-
-const platformIconMap: { [kind: string]: string } = {
-    [AccessTokenKind.Google]: 'fab fa-youtube',
-    [AccessTokenKind.Twitter]: 'fab fa-twitter',
-    [AccessTokenKind.Discord]: 'fab fa-discord',
-};
+import { providerIconMap } from '@thxnetwork/common/maps';
 
 @Component({
     computed: {
@@ -51,7 +48,7 @@ export default class App extends Vue {
     account!: TAccount;
     username = '';
     email = '';
-    platformIconMap = platformIconMap;
+    providerIconMap = providerIconMap;
     isLoading = false;
 
     @Prop() provider!: TProvider;

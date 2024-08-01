@@ -1,5 +1,6 @@
 <template>
     <b-card footer-class="text-right small">
+        <p class="text-muted">If you don't have an account, we create one for you.</p>
         <b-form @submit.prevent="onSubmitSigninWithOTP" v-if="!isEmailSent">
             <BaseFormGroup label="Use your e-mail">
                 <b-form-input v-model="email" placeholder="yourname@example.com" />
