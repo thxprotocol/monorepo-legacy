@@ -76,7 +76,7 @@ class AccountModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    waitForToken({ kind, scope }: { kind: AccessTokenKind; scope: OAuthScope[] }) {
+    waitForToken({ kind, scopes }: { kind: AccessTokenKind; scopes: OAuthScope[] }) {
         return new Promise((resolve, reject) => {
             const poll = async () => {
                 await this.context.dispatch('get');
@@ -84,7 +84,9 @@ class AccountModule extends VuexModule {
                 const account = this.context.rootGetters['account/profile'];
                 if (!account) setTimeout(poll, 1000);
 
-                const isAuthorized = account.tokens.find((token) => token.kind === kind && token.scopes.some(scope));
+                const isAuthorized = account.tokens.find(
+                    (token) => token.kind === kind && scopes.every((scope) => token.scopes.includes(scope)),
+                );
                 if (!isAuthorized) setTimeout(poll, 1000);
 
                 return isAuthorized ? resolve('') : reject('token_invalid');

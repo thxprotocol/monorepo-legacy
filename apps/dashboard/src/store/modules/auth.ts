@@ -111,7 +111,7 @@ export default class AuthModule extends VuexModule {
             url.pathname = '/v1/account/disconnect/' + kind;
             await axios({ method: 'DELETE', url: url.toString() });
 
-            await this.context.dispatch('account/waitForToken', { kind, scope: [] }, { root: true });
+            await this.context.dispatch('account/waitForToken', { kind, scopes: [] }, { root: true });
         } catch (error) {
             console.error(error);
         }
