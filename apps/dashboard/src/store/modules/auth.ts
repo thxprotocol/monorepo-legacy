@@ -114,6 +114,15 @@ export default class AuthModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async signInWithPassword({ email, password }: { email: string; password: string }) {
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+        if (error) throw new Error(error.message);
+    }
+
+    @Action({ rawError: true })
     async signInWithOtp({ email }: { email: string }) {
         const { error } = await supabase.auth.signInWithOtp({
             email,
