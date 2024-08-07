@@ -317,31 +317,6 @@ export default class QuestsView extends Vue {
         this.openPublished(query.isPublished);
     }
 
-    onClickUp(quest: TQuest, i: number) {
-        const min = 0;
-        const targetIndex = i - 1;
-        const newIndex = targetIndex < min ? min : targetIndex;
-        const otherQuest = this.quests[this.$route.params.id].results[newIndex];
-
-        this.move(quest, i, newIndex, otherQuest);
-    }
-
-    onClickDown(quest: TQuest, i: number) {
-        const maxIndex = this.allQuests.length - 1;
-        const targetIndex = i + 1;
-        const newIndex = targetIndex > maxIndex ? maxIndex : targetIndex;
-        const otherQuest = this.quests[this.$route.params.id].results[newIndex];
-
-        this.move(quest, i, newIndex, otherQuest);
-    }
-
-    async move(quest: TQuest, currentIndex: number, newIndex: number, other: TQuest) {
-        const p = [quest.update({ ...quest, index: newIndex })];
-        if (other) p.push(other.update({ ...other, index: currentIndex }));
-        await Promise.all(p);
-        this.listQuests();
-    }
-
     async onClickFilterPublished(value: boolean) {
         this.openPublished(value);
         await this.listQuests();

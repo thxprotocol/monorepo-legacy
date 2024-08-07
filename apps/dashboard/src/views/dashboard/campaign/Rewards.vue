@@ -61,16 +61,6 @@
                 <template #head(reward)> &nbsp; </template>
 
                 <!-- Cell formatting -->
-                <template #cell(index)="{ item, index }">
-                    <div class="btn btn-sort p-0">
-                        <b-link block @click="onClickUp(item.reward, index)">
-                            <i class="fas fa-caret-up ml-0"></i>
-                        </b-link>
-                        <b-link block @click="onClickDown(item.reward, index)">
-                            <i class="fas fa-caret-down ml-0"></i>
-                        </b-link>
-                    </div>
-                </template>
                 <template #cell(checkbox)="{ item }">
                     <b-form-checkbox :value="item.reward" v-model="selectedItems" />
                 </template>
@@ -270,31 +260,6 @@ export default class RewardsView extends Vue {
 
     onSubmit(query: { isPublished: boolean }) {
         this.openPublished(query.isPublished);
-    }
-
-    onClickUp(reward: TReward, i: number) {
-        const min = 0;
-        const targetIndex = i - 1;
-        const newIndex = targetIndex < min ? min : targetIndex;
-        const otherQuest = this.rewards[this.$route.params.id].results[newIndex];
-
-        this.move(reward, i, newIndex, otherQuest);
-    }
-
-    onClickDown(reward: TReward, i: number) {
-        const maxIndex = this.allRewards.length - 1;
-        const targetIndex = i + 1;
-        const newIndex = targetIndex > maxIndex ? maxIndex : targetIndex;
-        const otherQuest = this.rewards[this.$route.params.id].results[newIndex];
-
-        this.move(reward, i, newIndex, otherQuest);
-    }
-
-    async move(reward: TReward, currentIndex: number, newIndex: number, other: TReward) {
-        const p = [reward.update({ ...reward, index: newIndex })];
-        if (other) p.push(other.update({ ...other, index: currentIndex }));
-        await Promise.all(p);
-        this.listRewards();
     }
 
     onClickFilterPublished(isPublished: boolean) {
