@@ -162,7 +162,7 @@
                         :id="questModalComponentMap[item.quest.variant] + item.quest._id"
                         :pool="pool"
                         :total="allQuests.length"
-                        :reward="quests[$route.params.id].results.find((q) => q._id === item.quest._id)"
+                        :quest="quests[$route.params.id].results.find((q) => q._id === item.quest._id)"
                     />
                 </template>
             </BTable>

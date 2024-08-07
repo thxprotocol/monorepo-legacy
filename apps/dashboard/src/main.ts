@@ -2,8 +2,7 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
-import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
-import { BootstrapVue, TooltipPlugin, ModalPlugin, ToastPlugin, VBTogglePlugin } from 'bootstrap-vue';
+import axios, { InternalAxiosRequestConfig } from 'axios';
 import './main.scss';
 import VueClipboard from 'vue-clipboard2';
 import * as rules from 'vee-validate/dist/rules';
@@ -12,6 +11,7 @@ import BaseFormGroup from '@thxnetwork/dashboard/components/form-group/BaseFormG
 import { ValidationObserver, ValidationProvider, extend, localize } from 'vee-validate';
 import { NODE_ENV, API_URL, AUTH_URL, BASE_URL, MIXPANEL_TOKEN } from '@thxnetwork/dashboard/config/secrets';
 import { Sentry } from '@thxnetwork/common/sentry';
+import { BootstrapVue, TooltipPlugin, ModalPlugin, ToastPlugin, VBTogglePlugin } from 'bootstrap-vue';
 import VueMeta from 'vue-meta';
 import Mixpanel from '@thxnetwork/common/mixpanel';
 

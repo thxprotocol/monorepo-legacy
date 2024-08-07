@@ -3,21 +3,12 @@
         variant="Custom Quest"
         @show="onShow"
         @submit="onSubmit"
-        @change-info-links="infoLinks = Object.values($event)"
-        @change-title="title = $event"
-        @change-date="expiryDate = $event"
-        @change-description="description = $event"
-        @change-file="file = $event"
-        @change-published="isPublished = $event"
-        @change-locks="locks = $event"
         :pool="pool"
-        :published="isPublished"
         :id="id"
         :error="error"
-        :info-links="infoLinks"
         :loading="isLoading"
         :disabled="isSubmitDisabled || !title"
-        :quest="reward"
+        :quest="quest"
     >
         <template #col-left>
             <BaseFormGroup

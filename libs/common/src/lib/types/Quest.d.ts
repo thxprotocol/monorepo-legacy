@@ -28,6 +28,7 @@ type TBaseQuest = {
     expiryDate: Date;
     locks: TQuestLock[];
     isPublished: boolean;
+    isIPLimitEnabled: boolean;
     createdAt: string;
     updatedAt: string;
     update: (payload: Partial<TQuest>) => Promise<void>;

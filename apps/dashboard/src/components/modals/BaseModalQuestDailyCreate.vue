@@ -1,23 +1,14 @@
 <template>
     <BaseModalQuestCreate
-        variant="Daily Quest"
-        @show="onShow"
+        label="Daily Quest"
         @submit="onSubmit"
-        @change-info-links="infoLinks = Object.values($event)"
-        @change-title="title = $event"
-        @change-description="description = $event"
-        @change-file="file = $event"
-        @change-published="isPublished = $event"
-        @change-date="expiryDate = $event"
-        @change-locks="locks = $event"
-        :info-links="infoLinks"
+        @show="onShow"
         :id="id"
-        :error="error"
-        :loading="isLoading"
-        :published="isPublished"
-        :disabled="isSubmitDisabled || !title"
-        :quest="reward"
         :pool="pool"
+        :quest="quest"
+        :disabled="isSubmitDisabled"
+        :loading="isLoading"
+        :error="error"
     >
         <template #col-left>
             <BaseFormGroup
@@ -75,7 +66,6 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { API_URL } from '@thxnetwork/dashboard/config/secrets';
-import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { QuestVariant } from '@thxnetwork/common/enums';
 import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseDropdownEventType from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownEventType.vue';
@@ -88,73 +78,52 @@ import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseMo
         BaseDropdownEventType,
     },
     computed: mapGetters({
-        totals: 'dailyRewards/totals',
+        totals: 'dailyquests/totals',
     }),
 })
-export default class ModalRewardDailyCreate extends Vue {
-    isSubmitDisabled = false;
+export default class ModalquestDailyCreate extends Vue {
     isLoading = false;
-    isPublished = false;
     error = '';
-    title = '';
     amounts = [5, 10, 20, 40, 80, 160, 360];
-    description = '';
-    limit = 0;
-    infoLinks: TInfoLink[] = [{ label: '', url: '' }];
-    isEnabledWebhookQualification = false;
-    file: File | null = null;
-    expiryDate: Date | string = '';
     eventName = '';
     isVisible = true;
-    locks: TQuestLock[] = [];
 
     @Prop() id!: string;
-    @Prop() total!: number;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TQuestDaily;
+    @Prop({ required: false }) quest!: TQuestDaily;
 
     get code() {
-        return `curl "${API_URL}/v1/webhook/daily/${this.reward ? this.reward.uuid : '<TOKEN>'}" \\
+        return `curl "${API_URL}/v1/webhook/daily/${this.quest ? this.quest.uuid : '<TOKEN>'}" \\
 -X POST \\
 -d "code=<CODE>"`;
     }
 
-    onShow() {
-        this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
-        this.title = this.reward ? this.reward.title : this.title;
-        this.description = this.reward ? this.reward.description : this.description;
-        this.amounts = this.reward ? this.reward.amounts : this.amounts;
-        this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
-        this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
-        this.eventName = this.reward ? this.reward.eventName : this.eventName;
-        this.locks = this.reward ? this.reward.locks : this.locks;
+    get isSubmitDisabled() {
+        return false;
     }
 
-    onSubmit() {
+    onShow() {
+        this.amounts = this.quest ? this.quest.amounts : this.amounts;
+        this.eventName = this.quest ? this.quest.eventName : this.eventName;
+    }
+
+    async onSubmit(payload: TBaseQuest) {
         this.isLoading = true;
-        this.$store
-            .dispatch(`pools/${this.reward ? 'updateQuest' : 'createQuest'}`, {
-                ...this.reward,
+        try {
+            await this.$store.dispatch(`pools/${this.quest ? 'updateQuest' : 'createQuest'}`, {
+                ...this.quest,
+                ...payload,
                 variant: QuestVariant.Daily,
-                _id: this.reward ? this.reward._id : undefined,
-                poolId: this.pool._id,
-                title: this.title,
-                description: this.description,
                 amounts: JSON.stringify(this.amounts),
-                limit: this.limit,
-                file: this.file,
-                isPublished: this.isPublished,
                 eventName: this.eventName,
-                expiryDate: this.expiryDate,
-                infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
-                index: this.reward ? this.reward.index : this.total,
-                locks: JSON.stringify(this.locks),
-            })
-            .then(() => {
-                this.$bvModal.hide(this.id);
-                this.$emit('submit', { isPublished: this.isPublished });
-                this.isLoading = false;
             });
+            this.$bvModal.hide(this.id);
+            this.$emit('submit', { isPublished: payload.isPublished });
+        } catch (error: any) {
+            this.error = error.message;
+        } finally {
+            this.isLoading = false;
+        }
     }
 }
 </script>
