@@ -67,110 +67,116 @@
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
-            <BTable
-                id="table-quests"
-                hover
-                :busy="isLoading"
-                :items="allQuests"
-                responsive="lg"
-                show-empty
-                :tbody-tr-class="rowClass"
-            >
-                <!-- Head formatting -->
-                <template #head(checkbox)>
-                    <b-form-checkbox :checked="isCheckedAll" @change="onChecked" />
-                </template>
-                <template #head(title)> Title </template>
-                <template #head(points)> Points </template>
-                <template #head(entries)> Entries </template>
-                <template #head(quest)> &nbsp; </template>
-
-                <!-- Cell formatting -->
-                <template #cell(index)="{ item, index }">
-                    <div class="btn btn-sort p-0">
-                        <b-link block @click="onClickUp(item.quest, index)">
-                            <i class="fas fa-caret-up ml-0"></i>
-                        </b-link>
-                        <b-link block @click="onClickDown(item.quest, index)">
-                            <i class="fas fa-caret-down ml-0"></i>
-                        </b-link>
-                    </div>
-                </template>
-                <template #cell(checkbox)="{ item }">
-                    <b-form-checkbox :value="item.quest" v-model="selectedItems" />
-                </template>
-                <template #cell(points)="{ item }">
-                    <strong class="text-primary">{{ item.points }} </strong>
-                </template>
-                <template #cell(title)="{ item }">
-                    <b-badge variant="light" class="p-2 mr-2">
-                        <i :class="questIconClassMap[item.quest.variant]" class="text-muted" />
-                    </b-badge>
-                    <i
-                        v-if="item.quest.locks.length"
-                        class="fas fa-lock mx-1 text-muted"
-                        v-b-tooltip
-                        :title="`Locked with ${item.quest.locks.length} quest${item.quest.locks.length > 1 ? 's' : ''}`"
-                    />
-                    {{ item.title }}
-                </template>
-                <template #cell(entries)="{ item }">
-                    <BaseButtonQuestEntries
-                        v-if="
-                            [
-                                QuestVariant.Daily,
-                                QuestVariant.Invite,
-                                QuestVariant.Twitter,
-                                QuestVariant.YouTube,
-                                QuestVariant.Discord,
-                                QuestVariant.Custom,
-                                QuestVariant.Web3,
-                                QuestVariant.Gitcoin,
-                                QuestVariant.Webhook,
-                            ].includes(item.quest.variant)
-                        "
-                        :pool="pool"
-                        :quest="item.quest"
-                    />
-                </template>
-                <template #cell(expiry)="{ item }">
-                    <small class="text-gray">{{ item.expiry.label }}</small>
-                    <i
-                        v-if="item.expiry.isExpired"
-                        class="fas fa-exclamation-circle small text-danger ml-1"
-                        v-b-tooltip
-                        title="This quest has expired and is no longer visible in your campaign."
-                    />
-                </template>
-                <template #cell(created)="{ item }">
-                    <small class="text-gray">{{ item.created }}</small>
-                </template>
-                <template #cell(quest)="{ item }">
-                    <b-dropdown variant="link" size="sm" right no-caret>
-                        <template #button-content>
-                            <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
-                        </template>
-                        <b-dropdown-item v-b-modal="questModalComponentMap[item.quest.variant] + item.quest._id">
-                            Edit
-                        </b-dropdown-item>
-                        <b-dropdown-item v-b-modal="`modalDelete-${item.quest._id}`"> Delete </b-dropdown-item>
-                    </b-dropdown>
-                    <component
-                        @submit="onSubmit"
-                        :key="item.quest._id"
-                        :is="questModalComponentMap[item.quest.variant]"
-                        :id="questModalComponentMap[item.quest.variant] + item.quest._id"
-                        :pool="pool"
-                        :total="allQuests.length"
-                        :quest="quests[$route.params.id].results.find((q) => q._id === item.quest._id)"
-                    />
-                    <BaseModalDelete
-                        @submit="onClickDelete(item.quest)"
-                        :id="`modalDelete-${item.quest._id}`"
-                        :subject="item.quest.title"
-                    />
-                </template>
-            </BTable>
+            <div class="table-responsive">
+                <table id="table-quests" class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <td>
+                                <b-form-checkbox :checked="isCheckedAll" @change="onChecked" />
+                            </td>
+                            <td>Title</td>
+                            <td>Points</td>
+                            <td>Entries</td>
+                            <td>Expiry</td>
+                            <td>Created</td>
+                            <td>&nbsp;</td>
+                        </tr>
+                    </thead>
+                    <draggable v-model="allQuests" tag="tbody" @start="isDragging = true" , @end="isDragging = false">
+                        <tr
+                            :class="{
+                                'bg-light text-gray': !item.quest.isPublished,
+                                'text-gray': isDragging,
+                            }"
+                            :items="allQuests"
+                            :key="index"
+                            class="w-100"
+                            v-for="(item, index) of allQuests"
+                        >
+                            <td style="cursor: move">
+                                <b-form-checkbox :value="item.quest" v-model="selectedItems" />
+                            </td>
+                            <td>
+                                <b-badge variant="light" class="p-2 mr-2">
+                                    <i :class="questIconClassMap[item.quest.variant]" class="text-muted" />
+                                </b-badge>
+                                <i
+                                    v-if="item.quest.locks.length"
+                                    class="fas fa-lock mx-1 text-muted"
+                                    v-b-tooltip
+                                    :title="`Locked with ${item.quest.locks.length} quest${
+                                        item.quest.locks.length > 1 ? 's' : ''
+                                    }`"
+                                />
+                                {{ item.title }}
+                            </td>
+                            <td>
+                                <strong class="text-primary">{{ item.points }} </strong>
+                            </td>
+                            <td>
+                                <BaseButtonQuestEntries
+                                    v-if="
+                                        [
+                                            QuestVariant.Daily,
+                                            QuestVariant.Invite,
+                                            QuestVariant.Twitter,
+                                            QuestVariant.YouTube,
+                                            QuestVariant.Discord,
+                                            QuestVariant.Custom,
+                                            QuestVariant.Web3,
+                                            QuestVariant.Gitcoin,
+                                            QuestVariant.Webhook,
+                                        ].includes(item.quest.variant)
+                                    "
+                                    :pool="pool"
+                                    :quest="item.quest"
+                                />
+                            </td>
+                            <td>
+                                <small class="text-gray">{{ item.expiry.label }}</small>
+                                <i
+                                    v-if="item.expiry.isExpired"
+                                    class="fas fa-exclamation-circle small text-danger ml-1"
+                                    v-b-tooltip
+                                    title="This quest has expired and is no longer visible in your campaign."
+                                />
+                            </td>
+                            <td>
+                                <small class="text-gray">{{ item.created }}</small>
+                            </td>
+                            <td>
+                                <b-dropdown variant="link" size="sm" right no-caret>
+                                    <template #button-content>
+                                        <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
+                                    </template>
+                                    <b-dropdown-item
+                                        v-b-modal="questModalComponentMap[item.quest.variant] + item.quest._id"
+                                    >
+                                        Edit
+                                    </b-dropdown-item>
+                                    <b-dropdown-item v-b-modal="`modalDelete-${item.quest._id}`">
+                                        Delete
+                                    </b-dropdown-item>
+                                </b-dropdown>
+                                <component
+                                    @submit="onSubmit"
+                                    :key="item.quest._id"
+                                    :is="questModalComponentMap[item.quest.variant]"
+                                    :id="questModalComponentMap[item.quest.variant] + item.quest._id"
+                                    :pool="pool"
+                                    :total="allQuests.length"
+                                    :quest="quests[$route.params.id].results.find((q) => q._id === item.quest._id)"
+                                />
+                                <BaseModalDelete
+                                    @submit="onClickDelete(item.quest)"
+                                    :id="`modalDelete-${item.quest._id}`"
+                                    :subject="item.quest.title"
+                                />
+                            </td>
+                        </tr>
+                    </draggable>
+                </table>
+            </div>
         </BCard>
     </div>
 </template>
@@ -193,6 +199,7 @@ import BaseModalQuestWebhookCreate from '@thxnetwork/dashboard/components/modals
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseButtonQuestEntries from '@thxnetwork/dashboard/components/buttons/BaseButtonQuestEntries.vue';
 import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
+import draggable from 'vuedraggable';
 
 @Component({
     components: {
@@ -207,6 +214,7 @@ import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDe
         BaseModalQuestWebhookCreate,
         BaseModalQuestInviteClaims,
         BaseModalDelete,
+        draggable,
     },
     computed: mapGetters({
         quests: 'pools/quests',
@@ -219,6 +227,7 @@ export default class QuestsView extends Vue {
         { label: 'Unpublish all', variant: 1 },
         { label: 'Delete all', variant: 2 },
     ];
+    isDragging = false;
     isLoading = true;
     limit = 25;
     page = 1;
@@ -253,6 +262,10 @@ export default class QuestsView extends Vue {
 
     @Prop() pool!: TPool;
 
+    get isBusy() {
+        return this.isDragging || this.isLoading;
+    }
+
     get total() {
         if (!this.quests[this.$route.params.id]) return 0;
         return this.quests[this.$route.params.id].total;
@@ -260,29 +273,43 @@ export default class QuestsView extends Vue {
 
     get allQuests() {
         if (!this.quests[this.$route.params.id]) return [];
-        return this.quests[this.$route.params.id].results.map((quest: any) => ({
-            checkbox: quest._id,
-            title: quest.title,
-            points: quest.amounts ? `${quest.amounts.length} days` : quest.amount,
-            entries: quest.entryCount,
-            expiry: {
-                isExpired: quest.expiryDate ? Date.now() > new Date(quest.expiryDate).getTime() : false,
-                label: quest.expiryDate ? format(new Date(quest.expiryDate), 'dd-MM-yyyy HH:mm') : '',
-            },
-            created: format(new Date(quest.createdAt), 'dd-MM-yyyy HH:mm'),
-            quest,
-        }));
+        return this.quests[this.$route.params.id].results
+            .map((quest: any, index: number) => ({
+                index: quest.index,
+                checkbox: quest._id,
+                title: quest.title,
+                points: quest.amounts ? `${quest.amounts.length} days` : quest.amount,
+                entries: quest.entryCount,
+                expiry: {
+                    isExpired: quest.expiryDate ? Date.now() > new Date(quest.expiryDate).getTime() : false,
+                    label: quest.expiryDate ? format(new Date(quest.expiryDate), 'dd-MM-yyyy HH:mm') : '',
+                },
+                created: format(new Date(quest.createdAt), 'dd-MM-yyyy HH:mm'),
+                quest,
+            }))
+            .sort((a, b) => a.index - b.index);
     }
 
-    mounted() {
+    set allQuests(items) {
+        this.$store.dispatch('pools/sortQuests', {
+            pool: this.pool,
+            quests: JSON.stringify(items.map((item) => ({ variant: item.quest.variant, questId: item.quest._id }))),
+            page: this.page,
+            limit: this.limit,
+            isPublished: this.isPublished,
+        });
+    }
+
+    get sortableOptions() {
+        return {
+            chosenClass: 'is-selected',
+        };
+    }
+
+    async mounted() {
         const { isPublished } = this.$route.query as { isPublished?: string };
         this.isPublished = isPublished ? JSON.parse(isPublished) : true;
-        this.listQuests();
-    }
-
-    rowClass(item, type) {
-        if (!item || type !== 'row') return;
-        if (!item.quest.isPublished) return 'bg-light text-gray';
+        await this.listQuests();
     }
 
     async listQuests() {

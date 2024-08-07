@@ -1,7 +1,19 @@
+import Vue from 'vue';
+import { Route, Router } from 'vue-router';
+import { Store } from 'vuex';
+
+declare module 'vue/types/vue' {
+    interface Vue {
+        $route: Route;
+        $router: Router;
+        $store: Store;
+    }
+}
+
 declare module '*.vue' {
-    import Vue from 'vue';
     export default Vue;
 }
+
 declare module 'vue-qr';
 declare module 'promise-poller';
 declare module 'file-saver';

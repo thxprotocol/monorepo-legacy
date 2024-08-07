@@ -492,6 +492,16 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async sortQuests({ pool, quests, page, limit, isPublished }) {
+        await axios({
+            method: 'POST',
+            url: `/pools/${pool._id}/quests`,
+            data: { quests },
+        });
+        await this.context.dispatch('listQuests', { pool, page, limit, isPublished });
+    }
+
+    @Action({ rawError: true })
     async listQuestsAll(pool: TPool) {
         const { data } = await axios({
             method: 'GET',
