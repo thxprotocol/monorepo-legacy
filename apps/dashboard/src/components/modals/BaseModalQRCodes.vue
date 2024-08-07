@@ -199,7 +199,7 @@ import { loadImage } from '@thxnetwork/dashboard/utils/loadImage';
 import { format } from 'date-fns';
 import { TQRCodeEntryState } from '@thxnetwork/dashboard/store/modules/qrcodes';
 import { mapGetters } from 'vuex';
-import BaseParticipantAccount, { parseAccount } from '../BaseParticipantAccount.vue';
+import BaseParticipantAccount from '../BaseParticipantAccount.vue';
 
 const unitList = [
     { label: 'Pixels', value: 'px' },
@@ -272,7 +272,7 @@ export default class BaseModalQRCodes extends Vue {
         return this.qrCodes.results.map((entry: TQRCodeEntry) => ({
             checkbox: entry.uuid,
             url: this.getUrl(entry.uuid),
-            account: parseAccount({ id: entry.sub, account: entry.account }),
+            account: entry.account,
             claimedAt: entry.claimedAt,
             createdAt: entry.createdAt,
             entry,
