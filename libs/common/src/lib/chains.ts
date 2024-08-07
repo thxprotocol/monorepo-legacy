@@ -19,7 +19,7 @@ const chainList: { [chainId: number]: ChainInfo } = {
         chainId: ChainId.Arbitrum,
         name: 'Arbitrum',
         blockExplorer: 'https://arbiscan.io',
-        rpc: 'https://arb1.arbitrum.io/rpc',
+        rpc: 'https://arbitrum.llamarpc.com',
     },
     [ChainId.Polygon]: {
         chainId: ChainId.Polygon,

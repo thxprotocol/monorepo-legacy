@@ -14,7 +14,7 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         chainId: ChainId.Arbitrum,
         name: 'Arbitrum',
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_arbitrum.svg'),
-        blockExplorer: 'https://mumbai.polygonscan.com',
+        blockExplorer: 'https://arbiscan.io',
     },
     [ChainId.BNBChain]: {
         disabled: true,
