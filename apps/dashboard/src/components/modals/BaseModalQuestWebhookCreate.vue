@@ -1,23 +1,14 @@
 <template>
     <BaseModalQuestCreate
-        variant="Webhook Quest"
+        label="Webhook Quest"
         @show="onShow"
         @submit="onSubmit"
-        @change-info-links="infoLinks = Object.values($event)"
-        @change-title="title = $event"
-        @change-description="description = $event"
-        @change-file="file = $event"
-        @change-published="isPublished = $event"
-        @change-date="expiryDate = $event"
-        @change-locks="locks = $event"
-        :published="isPublished"
         :id="id"
-        :error="error"
-        :info-links="infoLinks"
+        :pool="pool"
+        :quest="quest"
         :loading="isLoading"
         :disabled="isSubmitDisabled"
-        :quest="reward"
-        :pool="pool"
+        :error="error"
     >
         <template #col-left>
             <BaseFormGroup
@@ -45,7 +36,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { QuestVariant } from '@thxnetwork/common/enums';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
 import BaseDropdownWebhook from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownWebhook.vue';
@@ -57,72 +47,50 @@ import BaseDropdownWebhook from '@thxnetwork/dashboard/components/dropdowns/Base
     },
 })
 export default class ModalQuestWebhookCreate extends Vue {
-    isSubmitDisabled = false;
     isLoading = false;
     isVisible = true;
-    isPublished = false;
     error = '';
-    title = '';
-    image = '';
-    file: File | null = null;
-    description = '';
     amount = 0;
-    infoLinks: TInfoLink[] = [{ label: '', url: '' }];
-    expiryDate: Date | string = '';
-    locks: TQuestLock[] = [];
     webhook: TWebhook | null = null;
-    webhookId = '';
     metadata = '';
     isAmountCustom = false;
 
     @Prop() id!: string;
-    @Prop() total!: number;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TQuestWebhook;
+    @Prop({ required: false }) quest!: TQuestWebhook;
 
-    async onShow() {
-        this.title = this.reward ? this.reward.title : this.title;
-        this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
-        this.description = this.reward ? this.reward.description : this.description;
-        this.amount = this.reward ? this.reward.amount : this.amount;
-        this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
-        this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
-        this.locks = this.reward ? this.reward.locks : this.locks;
-        this.metadata = this.reward ? this.reward.metadata : this.metadata;
-        this.isAmountCustom = this.reward ? this.reward.isAmountCustom : this.isAmountCustom;
-
-        this.webhookId = this.reward ? this.reward.webhookId : '';
-        this.webhook = this.webhookId
-            ? this.pool.webhooks.find((webhook) => webhook._id === this.webhookId) || null
+    onShow() {
+        this.amount = this.quest ? this.quest.amount : this.amount;
+        this.metadata = this.quest ? this.quest.metadata : this.metadata;
+        this.isAmountCustom = this.quest ? this.quest.isAmountCustom : this.isAmountCustom;
+        this.webhook = this.quest
+            ? this.pool.webhooks.find((webhook) => webhook._id === this.quest.webhookId) || null
             : null;
     }
 
-    onSubmit() {
+    get isSubmitDisabled() {
+        return !this.webhook;
+    }
+
+    async onSubmit(payload: TBaseQuest) {
         this.isLoading = true;
-        this.$store
-            .dispatch(`pools/${this.reward ? 'updateQuest' : 'createQuest'}`, {
-                ...this.reward,
+        try {
+            await this.$store.dispatch(`pools/${this.quest ? 'updateQuest' : 'createQuest'}`, {
+                ...this.quest,
+                ...payload,
                 variant: QuestVariant.Webhook,
-                page: 1,
-                index: this.reward ? this.reward.index : this.total,
-                isPublished: this.isPublished,
-                poolId: String(this.pool._id),
-                file: this.file,
-                title: this.title,
-                description: this.description,
                 amount: this.amount,
-                expiryDate: this.expiryDate,
-                infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
-                locks: JSON.stringify(this.locks),
                 webhookId: this.webhook?._id,
                 metadata: this.metadata,
                 isAmountCustom: this.isAmountCustom,
-            })
-            .then(() => {
-                this.$bvModal.hide(this.id);
-                this.$emit('submit', { isPublished: this.isPublished });
-                this.isLoading = false;
             });
+            this.$bvModal.hide(this.id);
+            this.$emit('submit', { isPublished: payload.isPublished });
+        } catch (error: any) {
+            this.error = error.message;
+        } finally {
+            this.isLoading = false;
+        }
     }
 }
 </script>

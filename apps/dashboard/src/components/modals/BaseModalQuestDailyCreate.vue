@@ -67,13 +67,11 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { API_URL } from '@thxnetwork/dashboard/config/secrets';
 import { QuestVariant } from '@thxnetwork/common/enums';
-import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseDropdownEventType from '@thxnetwork/dashboard/components/dropdowns/BaseDropdownEventType.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
 
 @Component({
     components: {
-        BaseModal,
         BaseModalQuestCreate,
         BaseDropdownEventType,
     },

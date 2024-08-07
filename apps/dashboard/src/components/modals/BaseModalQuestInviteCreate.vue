@@ -1,23 +1,14 @@
 <template>
     <BaseModalQuestCreate
-        variant="Invite Quest"
+        label="Invite Quest"
         @show="onShow"
         @submit="onSubmit"
-        @change-info-links="infoLinks = Object.values($event)"
-        @change-title="title = $event"
-        @change-date="expiryDate = $event"
-        @change-description="description = $event"
-        @change-file="file = $event"
-        @change-published="isPublished = $event"
-        @change-locks="locks = $event"
-        :pool="pool"
-        :published="isPublished"
         :id="id"
-        :error="error"
-        :info-links="infoLinks"
+        :pool="pool"
+        :quest="quest"
         :loading="isLoading"
-        :disabled="isDisabled || !amount || !title"
-        :quest="reward"
+        :disabled="isSubmitDisabled"
+        :error="error"
     >
         <template #col-left>
             <BaseFormGroup
@@ -62,14 +53,11 @@
 import { mapGetters } from 'vuex';
 import { QuestVariant } from '@thxnetwork/common/enums';
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { TQuestState } from '@thxnetwork/dashboard/store/modules/pools';
-import BaseModal from './BaseModal.vue';
 import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestCreate.vue';
 
 @Component({
     components: {
-        BaseModal,
         BaseModalQuestCreate,
     },
     computed: mapGetters({
@@ -79,71 +67,57 @@ import BaseModalQuestCreate from '@thxnetwork/dashboard/components/modals/BaseMo
 export default class ModalQuestInviteCreate extends Vue {
     isLoading = false;
     error = '';
-    title = '';
-    description = '';
     amount = 0;
     amountInvitee = 0;
-    isPublished = false;
-    infoLinks: TInfoLink[] = [{ label: '', url: '' }];
-    file: File | null = null;
-    expiryDate: Date | string = '';
-    locks: TQuestLock[] = [];
     requiredQuest: TQuest | null = null;
+
     questList!: TQuestState;
 
     @Prop() id!: string;
     @Prop() total!: number;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TQuestInvite;
+    @Prop({ required: false }) quest!: TQuestInvite;
 
     get quests() {
         if (!this.questList[this.pool._id]) return [];
         return this.questList[this.pool._id].results;
     }
 
-    get isDisabled() {
+    get isSubmitDisabled() {
         return this.isLoading;
     }
 
     onShow() {
-        this.title = this.reward ? this.reward.title : '';
-        this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
-        this.description = this.reward ? this.reward.description : '';
-        this.amount = this.reward ? this.reward.amount : this.amount;
-        this.amountInvitee = this.reward ? this.reward.amountInvitee : this.amountInvitee;
-        this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
-        this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
-        this.locks = this.reward ? this.reward.locks : this.locks;
-        if (this.reward && this.reward.requiredQuest) {
-            this.requiredQuest = this.quests.find((quest) => quest._id === this.reward.requiredQuest.questId) as TQuest;
-        }
+        this.amount = this.quest ? this.quest.amount : this.amount;
+        this.amountInvitee = this.quest ? this.quest.amountInvitee : this.amountInvitee;
+        this.requiredQuest =
+            this.quest && this.quest.requiredQuest
+                ? (this.quests.find((quest) => quest._id === this.quest.requiredQuest.questId) as TQuest)
+                : this.requiredQuest;
     }
 
-    onSubmit() {
+    async onSubmit(payload: TBaseQuest) {
         this.isLoading = true;
-        this.$store
-            .dispatch(`pools/${this.reward ? 'updateQuest' : 'createQuest'}`, {
-                ...this.reward,
-                poolId: String(this.pool._id),
+        try {
+            await this.$store.dispatch(`pools/${this.quest ? 'updateQuest' : 'createQuest'}`, {
+                ...this.quest,
+                ...payload,
                 variant: QuestVariant.Invite,
-                title: this.title,
-                description: this.description,
                 amount: this.amount,
                 amountInvitee: this.amountInvitee,
                 requiredQuest: this.requiredQuest && {
                     questId: this.requiredQuest._id,
                     variant: this.requiredQuest.variant,
                 },
-                isPublished: this.isPublished,
-                expiryDate: this.expiryDate,
-                infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
-                locks: this.locks,
-            })
-            .then(() => {
-                this.$bvModal.hide(this.id);
-                this.$emit('submit', { isPublished: this.isPublished });
-                this.isLoading = false;
             });
+            this.$bvModal.hide(this.id);
+            this.$emit('submit', { isPublished: payload.isPublished });
+            this.isLoading = false;
+        } catch (error: any) {
+            this.error = error.message;
+        } finally {
+            this.isLoading = false;
+        }
     }
 }
 </script>

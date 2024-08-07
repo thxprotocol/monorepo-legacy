@@ -154,7 +154,12 @@
                         <b-dropdown-item v-b-modal="questModalComponentMap[item.quest.variant] + item.quest._id">
                             Edit
                         </b-dropdown-item>
-                        <b-dropdown-item @click="onClickDelete(item.quest)"> Delete </b-dropdown-item>
+                        <b-dropdown-item v-b-modal="`modalDelete-${item.quest._id}`"> Delete </b-dropdown-item>
+                        <BaseModalDelete
+                            @submit="onClickDelete(item.quest)"
+                            :id="`modalDelete-${item.quest._id}`"
+                            :subject="item.quest.title"
+                        />
                     </b-dropdown>
                     <component
                         @submit="onSubmit"
@@ -187,6 +192,7 @@ import BaseModalQuestGitcoinCreate from '@thxnetwork/dashboard/components/modals
 import BaseModalQuestWebhookCreate from '@thxnetwork/dashboard/components/modals/BaseModalQuestWebhookCreate.vue';
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseButtonQuestEntries from '@thxnetwork/dashboard/components/buttons/BaseButtonQuestEntries.vue';
+import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
 
 @Component({
     components: {
@@ -200,6 +206,7 @@ import BaseButtonQuestEntries from '@thxnetwork/dashboard/components/buttons/Bas
         BaseModalQuestInviteCreate,
         BaseModalQuestWebhookCreate,
         BaseModalQuestInviteClaims,
+        BaseModalDelete,
     },
     computed: mapGetters({
         quests: 'pools/quests',

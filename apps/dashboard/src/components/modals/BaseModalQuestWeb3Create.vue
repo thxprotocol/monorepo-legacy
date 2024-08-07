@@ -1,23 +1,14 @@
 <template>
     <BaseModalQuestCreate
-        variant="Web3 Quest"
+        label="Web3 Quest"
         @show="onShow"
         @submit="onSubmit"
-        @change-info-links="infoLinks = Object.values($event)"
-        @change-title="title = $event"
-        @change-description="description = $event"
-        @change-file="file = $event"
-        @change-published="isPublished = $event"
-        @change-date="expiryDate = $event"
-        @change-locks="locks = $event"
-        :published="isPublished"
         :id="id"
-        :error="error"
-        :info-links="infoLinks"
+        :pool="pool"
+        :quest="quest"
         :loading="isLoading"
         :disabled="isSubmitDisabled"
-        :quest="reward"
-        :pool="pool"
+        :error="error"
     >
         <template #col-left>
             <BaseFormGroup
@@ -81,7 +72,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { isAddress } from 'web3-utils';
 import { ChainId, QuestVariant } from '@thxnetwork/common/enums';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
@@ -101,67 +91,50 @@ export default class ModalQuestWeb3Create extends Vue {
         x.chainId === ChainId.Hardhat && NODE_ENV === 'production' ? false : true,
     );
     isAddress = isAddress;
-    isSubmitDisabled = false;
     isLoading = false;
     isVisible = true;
-    isPublished = false;
     error = '';
-    title = '';
-    image = '';
-    file: File | null = null;
-    description = '';
     amount = 0;
     methodName = '';
     threshold = '0';
-    infoLinks: TInfoLink[] = [{ label: '', url: '' }];
     contracts: { chainId: ChainId; address: string }[] = [{ chainId: ChainId.Polygon, address: '' }];
-    expiryDate: Date | string = '';
-    locks: TQuestLock[] = [];
 
     @Prop() id!: string;
-    @Prop() total!: number;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TQuestWeb3;
+    @Prop({ required: false }) quest!: TQuestWeb3;
 
-    onShow() {
-        this.title = this.reward ? this.reward.title : this.title;
-        this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
-        this.description = this.reward ? this.reward.description : this.description;
-        this.amount = this.reward ? this.reward.amount : this.amount;
-        this.contracts = this.reward ? this.reward.contracts : this.contracts;
-        this.methodName = this.reward ? this.reward.methodName : this.methodName;
-        this.threshold = this.reward ? this.reward.threshold : this.threshold;
-        this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
-        this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
-        this.locks = this.reward ? this.reward.locks : this.locks;
+    get isSubmitDisabled() {
+        const isContractAddressInvalid = this.contracts.some((x) => !isAddress(x.address));
+        return !this.contracts.length || isContractAddressInvalid || !this.methodName;
     }
 
-    onSubmit() {
+    onShow() {
+        this.amount = this.quest ? this.quest.amount : this.amount;
+        this.contracts = this.quest ? this.quest.contracts : this.contracts;
+        this.methodName = this.quest ? this.quest.methodName : this.methodName;
+        this.threshold = this.quest ? this.quest.threshold : this.threshold;
+    }
+
+    async onSubmit(payload: TBaseQuest) {
         this.isLoading = true;
-        this.$store
-            .dispatch(`pools/${this.reward ? 'updateQuest' : 'createQuest'}`, {
-                ...this.reward,
+        try {
+            await this.$store.dispatch(`pools/${this.quest ? 'updateQuest' : 'createQuest'}`, {
+                ...this.quest,
+                ...payload,
                 variant: QuestVariant.Web3,
-                page: 1,
-                index: this.reward ? this.reward.index : this.total,
-                isPublished: this.isPublished,
-                poolId: String(this.pool._id),
-                file: this.file,
-                title: this.title,
-                description: this.description,
                 amount: this.amount,
                 methodName: this.methodName,
                 threshold: this.threshold,
-                expiryDate: this.expiryDate,
                 contracts: JSON.stringify(this.contracts),
-                infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
-                locks: this.locks,
-            })
-            .then(() => {
-                this.$emit('submit', { isPublished: this.isPublished });
-                this.$bvModal.hide(this.id);
-                this.isLoading = false;
             });
+
+            this.$emit('submit', { isPublished: payload.isPublished });
+            this.$bvModal.hide(this.id);
+        } catch (error: any) {
+            this.error = error.message;
+        } finally {
+            this.isLoading = false;
+        }
     }
 }
 </script>

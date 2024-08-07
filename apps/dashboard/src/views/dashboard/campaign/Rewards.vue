@@ -120,7 +120,12 @@
                         <b-dropdown-item v-b-modal="rewardModalComponentMap[item.reward.variant] + item.reward._id">
                             Edit
                         </b-dropdown-item>
-                        <b-dropdown-item @click="onClickDelete(item.reward)"> Delete </b-dropdown-item>
+                        <b-dropdown-item v-b-modal="`modalDelete-${item.reward._id}`"> Delete </b-dropdown-item>
+                        <BaseModalDelete
+                            @submit="onClickDelete(item.reward)"
+                            :id="`modalDelete-${item.reward._id}`"
+                            :subject="item.reward.title"
+                        />
                     </b-dropdown>
                     <BaseModalQRCodes :id="`modalQRCodes${item.reward._id}`" :pool="pool" :reward="item.reward" />
                     <component
@@ -151,6 +156,7 @@ import BaseModalRewardDiscordRoleCreate from '@thxnetwork/dashboard/components/m
 import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
 import BaseModalQRCodes from '@thxnetwork/dashboard/components/modals/BaseModalQRCodes.vue';
 import BaseButtonRewardPayments from '@thxnetwork/dashboard/components/buttons/BaseButtonRewardPayments.vue';
+import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
 
 @Component({
     components: {
@@ -162,6 +168,7 @@ import BaseButtonRewardPayments from '@thxnetwork/dashboard/components/buttons/B
         BaseModalRewardDiscordRoleCreate,
         BaseCardTableHeader,
         BaseModalQRCodes,
+        BaseModalDelete,
     },
     computed: mapGetters({
         rewards: 'pools/rewards',

@@ -1,23 +1,14 @@
 <template>
     <BaseModalQuestCreate
-        variant="Social Quest"
+        label="Social Quest"
         @show="onShow"
         @submit="onSubmit"
-        @change-title="title = $event"
-        @change-description="description = $event"
-        @change-file="file = $event"
-        @change-info-links="infoLinks = Object.values($event)"
-        @change-published="isPublished = $event"
-        @change-date="expiryDate = $event"
-        @change-locks="locks = $event"
-        :published="isPublished"
-        :info-links="infoLinks"
         :id="id"
-        :error="error"
-        :loading="isLoading"
-        :disabled="isSubmitDisabled || !title"
-        :quest="reward"
         :pool="pool"
+        :quest="quest"
+        :loading="isLoading"
+        :disabled="isSubmitDisabled"
+        :error="error"
     >
         <template #col-left>
             <BaseFormGroup
@@ -44,9 +35,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import { AccessTokenKind, QuestVariant, QuestSocialRequirement } from '@thxnetwork/common/enums';
 import { providerInteractionList, providerList } from '@thxnetwork/dashboard/types/rewards';
 import { mapGetters } from 'vuex';
-import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
 import { questInteractionVariantMap } from '@thxnetwork/common/maps';
-import BaseModal from './BaseModal.vue';
 import BaseModalQuestCreate from './BaseModalQuestCreate.vue';
 import BaseCardQuestRequirement from '../cards/BaseCardQuestRequirement.vue';
 import BaseCardInfoLinks from '../cards/BaseCardInfoLinks.vue';
@@ -69,25 +58,16 @@ const requirementDefaultsMap = {
 
 @Component({
     components: {
-        BaseModal,
         BaseModalQuestCreate,
         BaseCardQuestRequirement,
         BaseCardInfoLinks,
         BaseFormGroup,
     },
-    computed: mapGetters({
-        totals: 'pointRewards/totals',
-        profile: 'account/profile',
-    }),
 })
 export default class ModalQuestSocialCreate extends Vue {
     isLoading = false;
     error = '';
-    title = '';
     amount = 0;
-    description = '';
-    limit = 0;
-    isPublished = false;
     requirement: {
         kind: AccessTokenKind;
         interaction: QuestSocialRequirement;
@@ -99,71 +79,52 @@ export default class ModalQuestSocialCreate extends Vue {
         content: '',
         contentMetadata: {},
     };
-    profile!: TAccount;
-    infoLinks: TInfoLink[] = [{ label: '', url: '' }];
-    file: File | null = null;
-    expiryDate: Date | string = '';
-    locks: TQuestLock[] = [];
 
     @Prop() id!: string;
-    @Prop() variant!: string;
-    @Prop() total!: number;
+    @Prop() variant!: number;
     @Prop() pool!: TPool;
-    @Prop({ required: false }) reward!: TQuestSocial;
+    @Prop({ required: false }) quest!: TQuestSocial;
 
     get isSubmitDisabled() {
         return this.requirement && (!this.requirement.content || !this.requirement.contentMetadata);
     }
 
     onShow() {
-        this.title = this.reward ? this.reward.title : this.title;
-        this.isPublished = this.reward ? this.reward.isPublished : this.isPublished;
-        this.description = this.reward ? this.reward.description : this.description;
-        this.amount = this.reward ? this.reward.amount : this.amount;
-        this.infoLinks = this.reward ? this.reward.infoLinks : this.infoLinks;
-        this.requirement = this.reward
+        this.amount = this.quest ? this.quest.amount : this.amount;
+        this.requirement = this.quest
             ? {
-                  kind: this.reward.kind,
-                  interaction: this.reward.interaction,
-                  content: this.reward.content,
-                  contentMetadata: JSON.parse(this.reward.contentMetadata),
+                  kind: this.quest.kind,
+                  interaction: this.quest.interaction,
+                  content: this.quest.content,
+                  contentMetadata: JSON.parse(this.quest.contentMetadata),
               }
             : {
                   ...requirementDefaultsMap[QuestVariant[this.variant]],
                   content: '',
                   contentMetadata: {},
               };
-        this.expiryDate = this.reward && this.reward.expiryDate ? this.reward.expiryDate : this.expiryDate;
-        this.locks = this.reward ? this.reward.locks : this.locks;
     }
 
-    onSubmit() {
+    async onSubmit(payload: TBaseQuest) {
         this.isLoading = true;
-        this.$store
-            .dispatch(`pools/${this.reward ? 'updateQuest' : 'createQuest'}`, {
-                ...this.reward,
+        try {
+            await this.$store.dispatch(`pools/${this.quest ? 'updateQuest' : 'createQuest'}`, {
+                ...this.quest,
+                ...payload,
                 variant: questInteractionVariantMap[this.requirement.interaction],
-                _id: this.reward ? this.reward._id : undefined,
-                poolId: this.pool._id,
-                title: this.title,
-                file: this.file,
-                description: this.description,
                 amount: this.amount,
-                isPublished: this.isPublished,
-                infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
                 kind: this.requirement.kind,
                 interaction: this.requirement.interaction,
                 content: this.requirement.content,
                 contentMetadata: JSON.stringify(this.requirement.contentMetadata),
-                expiryDate: this.expiryDate,
-                index: !this.reward ? this.total : this.reward.index,
-                locks: this.locks,
-            })
-            .then(() => {
-                this.$bvModal.hide(this.id);
-                this.$emit('submit', { isPublished: this.isPublished });
-                this.isLoading = false;
             });
+            this.$bvModal.hide(this.id);
+            this.$emit('submit', { isPublished: payload.isPublished });
+        } catch (error: any) {
+            this.error = error.message;
+        } finally {
+            this.isLoading = false;
+        }
     }
 }
 </script>

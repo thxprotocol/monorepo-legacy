@@ -9,9 +9,7 @@
                             description="Publishing a quest will send a notification your campaign subscribers."
                             tooltip="Show your quest to your users."
                         >
-                            <b-checkbox :checked="isPublished" @change="$emit('change-published', $event)" class="mb-0">
-                                Published
-                            </b-checkbox>
+                            <b-checkbox v-model="isPublished" class="mb-0"> Published </b-checkbox>
                         </BaseFormGroup>
                         <BaseFormGroup
                             required
@@ -157,8 +155,9 @@ export default class ModalQuestCreate extends Vue {
         this.isPublished = this.quest ? this.quest.isPublished : this.isPublished;
         this.title = this.quest ? this.quest.title : this.title;
         this.description = this.quest ? this.quest.description : this.description;
-        this.infoLinks = this.quest ? this.quest.infoLinks : this.infoLinks;
+        this.image = this.quest ? this.quest.image : this.image;
         this.expiryDate = this.quest && this.quest.expiryDate ? this.quest.expiryDate : this.expiryDate;
+        this.infoLinks = this.quest ? this.quest.infoLinks : this.infoLinks;
         this.locks = this.quest ? Object.values(this.quest.locks) : this.locks;
         this.isIPLimitEnabled = this.quest ? this.quest.isIPLimitEnabled : this.isIPLimitEnabled;
         if (this.quest && this.quest.expiryDate) {
