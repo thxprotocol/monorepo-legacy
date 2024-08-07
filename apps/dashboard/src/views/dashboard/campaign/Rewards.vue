@@ -130,6 +130,7 @@
                     <BaseModalQRCodes :id="`modalQRCodes${item.reward._id}`" :pool="pool" :reward="item.reward" />
                     <component
                         @submit="onSubmit"
+                        :key="item.reward._id"
                         :is="rewardModalComponentMap[item.reward.variant]"
                         :id="rewardModalComponentMap[item.reward.variant] + item.reward._id"
                         :pool="pool"

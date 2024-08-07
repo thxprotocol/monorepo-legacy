@@ -155,19 +155,20 @@
                             Edit
                         </b-dropdown-item>
                         <b-dropdown-item v-b-modal="`modalDelete-${item.quest._id}`"> Delete </b-dropdown-item>
-                        <BaseModalDelete
-                            @submit="onClickDelete(item.quest)"
-                            :id="`modalDelete-${item.quest._id}`"
-                            :subject="item.quest.title"
-                        />
                     </b-dropdown>
                     <component
                         @submit="onSubmit"
+                        :key="item.quest._id"
                         :is="questModalComponentMap[item.quest.variant]"
                         :id="questModalComponentMap[item.quest.variant] + item.quest._id"
                         :pool="pool"
                         :total="allQuests.length"
                         :quest="quests[$route.params.id].results.find((q) => q._id === item.quest._id)"
+                    />
+                    <BaseModalDelete
+                        @submit="onClickDelete(item.quest)"
+                        :id="`modalDelete-${item.quest._id}`"
+                        :subject="item.quest.title"
                     />
                 </template>
             </BTable>
@@ -308,6 +309,8 @@ export default class QuestsView extends Vue {
                 query: { isPublished: isPublished ? String(isPublished) : 'false' },
             });
         } catch (error) {
+            // Suppress error
+        } finally {
             await this.listQuests();
         }
     }
