@@ -205,7 +205,6 @@ export default class RewardsView extends Vue {
     get allRewards() {
         if (!this.rewards[this.$route.params.id]) return [];
         return this.rewards[this.$route.params.id].results.map((reward: TBaseReward & { paymentCount: number }) => ({
-            index: null,
             checkbox: reward._id,
             title: reward.title,
             points: reward.pointPrice,
@@ -289,30 +288,24 @@ export default class RewardsView extends Vue {
 </script>
 <style lang="scss">
 #table-rewards th:nth-child(1) {
-    width: 50px;
+    width: 40px;
 }
 #table-rewards th:nth-child(2) {
-    width: 50px;
-}
-#table-rewards th:nth-child(3) {
     width: auto;
 }
+#table-rewards th:nth-child(3) {
+    width: 130px;
+}
 #table-rewards th:nth-child(4) {
-    width: 150px;
+    width: 130px;
 }
 #table-rewards th:nth-child(5) {
-    width: 150px;
+    width: 130px;
 }
 #table-rewards th:nth-child(6) {
-    width: 150px;
+    width: 130px;
 }
 #table-rewards th:nth-child(7) {
-    width: 150px;
-}
-#table-rewards th:nth-child(8) {
-    width: 150px;
-}
-#table-rewards th:nth-child(9) {
-    width: 150px;
+    width: 40px;
 }
 </style>
