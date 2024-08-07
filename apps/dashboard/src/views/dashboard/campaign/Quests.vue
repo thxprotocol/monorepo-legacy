@@ -77,7 +77,6 @@
                 :tbody-tr-class="rowClass"
             >
                 <!-- Head formatting -->
-                <template #head(index)> &nbsp; </template>
                 <template #head(checkbox)>
                     <b-form-checkbox :checked="isCheckedAll" @change="onChecked" />
                 </template>
@@ -262,7 +261,6 @@ export default class QuestsView extends Vue {
     get allQuests() {
         if (!this.quests[this.$route.params.id]) return [];
         return this.quests[this.$route.params.id].results.map((quest: any) => ({
-            index: null,
             checkbox: quest._id,
             title: quest.title,
             points: quest.amounts ? `${quest.amounts.length} days` : quest.amount,
@@ -385,27 +383,24 @@ export default class QuestsView extends Vue {
 
 <style lang="scss">
 #table-quests th:nth-child(1) {
-    width: 20px;
-}
-#table-quests th:nth-child(2) {
     width: 40px;
 }
-#table-quests th:nth-child(3) {
+#table-quests th:nth-child(2) {
     width: auto;
+}
+#table-quests th:nth-child(3) {
+    width: 130px;
 }
 #table-quests th:nth-child(4) {
     width: 130px;
 }
 #table-quests th:nth-child(5) {
-    width: 130px;
+    width: 150px;
 }
 #table-quests th:nth-child(6) {
     width: 150px;
 }
 #table-quests th:nth-child(7) {
-    width: 150px;
-}
-#table-quests th:nth-child(8) {
     width: 40px;
 }
 </style>

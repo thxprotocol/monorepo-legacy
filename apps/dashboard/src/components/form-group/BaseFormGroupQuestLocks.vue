@@ -23,6 +23,7 @@ import BaseFormGroup from './BaseFormGroup.vue';
 export default class BaseFormGroupQuestLocks extends Vue {
     isLoading = false;
     isVisible = true;
+    error = '';
     page = 1;
     limit = 10;
     result = {
@@ -30,15 +31,10 @@ export default class BaseFormGroupQuestLocks extends Vue {
         total: 0,
     };
     selectedLocks: TQuestLock[] = [];
-    questList!: TQuest[];
+    quests: TQuest[] = [];
 
     @Prop() pool!: TPool;
     @Prop() locks!: TQuestLock[];
-
-    get quests() {
-        if (!this.questList[this.pool._id]) return [];
-        return this.questList[this.pool._id].results;
-    }
 
     get options() {
         return this.quests.map((quest: TQuest) => {
@@ -47,21 +43,26 @@ export default class BaseFormGroupQuestLocks extends Vue {
     }
 
     async mounted() {
-        this.selectedLocks = this.locks.map((lock: TQuestLock) => {
-            const quest = this.quests.find((q) => q._id === lock.questId);
-            return { variant: quest.variant, questId: quest._id };
-        });
+        await this.getQuests();
+
+        this.selectedLocks = this.locks
+            .map((lock: TQuestLock) => {
+                const quest = this.quests.find((q) => q._id === lock.questId);
+                if (!quest) return;
+                return { variant: quest.variant, questId: quest._id };
+            })
+            .filter((lock) => !!lock);
     }
 
     async getQuests() {
         this.isLoading = true;
-        await this.$store.dispatch('pools/listQuests', {
-            page: this.page,
-            pool: this.pool,
-            limit: this.limit,
-            isPublished: true,
-        });
-        this.isLoading = false;
+        try {
+            this.quests = await this.$store.dispatch('pools/listQuestsAll', this.pool);
+        } catch (error: any) {
+            this.error = error.message;
+        } finally {
+            this.isLoading = false;
+        }
     }
 
     onInput(locks: TQuestLock[]) {

@@ -492,6 +492,16 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
+    async listQuestsAll(pool: TPool) {
+        const { data } = await axios({
+            method: 'GET',
+            url: `/pools/${pool._id}/quests`,
+        });
+
+        return data.results;
+    }
+
+    @Action({ rawError: true })
     async updateQuest(payload: TQuest) {
         const { data: q } = await axios({
             method: 'PATCH',
