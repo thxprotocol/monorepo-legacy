@@ -71,6 +71,7 @@
                 <table id="table-quests" class="table table-hover">
                     <thead>
                         <tr>
+                            <th>&nbsp;</th>
                             <th>
                                 <b-form-checkbox :checked="isCheckedAll" @change="onChecked" />
                             </th>
@@ -89,20 +90,25 @@
                                 'text-gray': isDragging,
                             }"
                             :items="allQuests"
-                            :key="index"
+                            :key="item.quest._id"
                             class="w-100"
-                            v-for="(item, index) of allQuests"
+                            v-for="item of allQuests"
                         >
+                            <td style="padding: 0; vertical-align: top; position: relative">
+                                <div
+                                    class="bg-light d-flex justify-content-center align-items-center h-100"
+                                    style="width: 40px; position: absolute"
+                                >
+                                    <i :class="questIconClassMap[item.quest.variant]" class="text-muted small" />
+                                </div>
+                            </td>
                             <td>
                                 <b-form-checkbox :value="item.quest" v-model="selectedItems" />
                             </td>
                             <td>
-                                <b-badge variant="light" class="p-2 mr-2">
-                                    <i :class="questIconClassMap[item.quest.variant]" class="text-muted" />
-                                </b-badge>
-                                {{ item.title }}
+                                {{ item.title.label }}
                                 <i
-                                    v-if="item.quest.locks.length"
+                                    v-if="item.title.locks.length"
                                     class="fas fa-lock mx-1 text-muted"
                                     v-b-tooltip
                                     :title="`Quest locks: ${item.quest.locks.length} quest${
@@ -113,11 +119,11 @@
                                     v-if="item.quest.expiryDate"
                                     class="fas fa-clock small ml-1"
                                     :class="{
-                                        'text-danger': item.quest.expiry.isExpired,
-                                        'text-muted': !item.quest.expiry.isExpired,
+                                        'text-danger': item.title.expiry.isExpired,
+                                        'text-muted': !item.title.expiry.isExpired,
                                     }"
                                     v-b-tooltip
-                                    :title="`Expiry: ${item.quest.expiry.label}`"
+                                    :title="`Expiry: ${item.title.expiry.label}`"
                                 />
                             </td>
                             <td>
@@ -278,17 +284,18 @@ export default class QuestsView extends Vue {
             .map((quest: any) => ({
                 index: quest.index,
                 checkbox: quest._id,
-                title: quest.title,
-                points: quest.amounts ? `${quest.amounts.length} days` : quest.amount,
-                entries: quest.entryCount,
-                created: format(new Date(quest.createdAt), 'dd-MM-yyyy HH:mm'),
-                quest: {
-                    ...quest,
+                title: {
+                    label: quest.title,
+                    locks: quest.locks,
                     expiry: {
                         isExpired: quest.expiryDate ? Date.now() > new Date(quest.expiryDate).getTime() : false,
                         label: quest.expiryDate ? format(new Date(quest.expiryDate), 'dd-MM-yyyy HH:mm') : '',
                     },
                 },
+                points: quest.amounts ? `${quest.amounts.length} days` : quest.amount,
+                entries: quest.entryCount,
+                created: format(new Date(quest.createdAt), 'dd-MM-yyyy HH:mm'),
+                quest,
             }))
             .sort((a, b) => a.index - b.index);
     }
@@ -374,9 +381,9 @@ export default class QuestsView extends Vue {
     async onClickAction(action: { variant: number }) {
         // 1. Publish, 2. Unpublish, 3. Delete
         const mappers = {
-            0: (quest) => quest.update({ ...quest, isPublished: true }),
-            1: (quest) => quest.update({ ...quest, isPublished: false }),
-            2: (quest) => quest.delete(quest),
+            0: (quest) => this.$store.dispatch('pools/updateQuest', { ...quest, isPublished: true }),
+            1: (quest) => this.$store.dispatch('pools/updateQuest', { ...quest, isPublished: false }),
+            2: (quest) => this.$store.dispatch('pools/removeQuest', quest),
         };
         await Promise.all(this.selectedItems.map(mappers[action.variant]));
         this.isCheckedAll = false;
@@ -391,10 +398,10 @@ export default class QuestsView extends Vue {
     width: 40px;
 }
 #table-quests th:nth-child(2) {
-    width: auto;
+    width: 40px;
 }
 #table-quests th:nth-child(3) {
-    width: 130px;
+    width: auto;
 }
 #table-quests th:nth-child(4) {
     width: 130px;
@@ -403,6 +410,9 @@ export default class QuestsView extends Vue {
     width: 130px;
 }
 #table-quests th:nth-child(6) {
+    width: 150px;
+}
+#table-quests th:nth-child(7) {
     width: 40px;
 }
 </style>

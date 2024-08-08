@@ -479,12 +479,11 @@ class PoolModule extends VuexModule {
         data.results = data.results.map((q: TBaseQuest) => {
             q.title = html.decode(q.title);
             q.description = html.decode(q.description);
+            q.expiryDate = q.expiryDate ? new Date(q.expiryDate) : '';
             q.infoLinks = q.infoLinks.map(({ url, label }) => ({
                 label: html.decode(label),
                 url,
             }));
-            q.delete = (quest) => this.context.dispatch('removeQuest', quest);
-            q.update = (quest) => this.context.dispatch('updateQuest', quest);
             return q;
         });
 
@@ -518,8 +517,6 @@ class PoolModule extends VuexModule {
             url: `/pools/${payload.poolId}/quests/${payload.variant}/${payload._id}`,
             data: prepareFormDataForUpload(payload),
         });
-        q.delete = (quest) => this.context.dispatch('removeQuest', quest);
-        q.update = (quest) => this.context.dispatch('updateQuest', quest);
         this.context.commit('setQuest', q);
     }
 

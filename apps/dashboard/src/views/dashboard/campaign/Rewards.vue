@@ -48,87 +48,121 @@
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
-            <BTable id="table-rewards" hover :busy="isLoading" :items="allRewards" responsive="lg" show-empty>
-                <!-- Head formatting -->
-                <template #head(index)> &nbsp; </template>
-                <template #head(checkbox)>
-                    <b-form-checkbox :checked="isCheckedAll" @change="onChecked" />
-                </template>
-                <template #head(title)> Title </template>
-                <template #head(pointPrice)> Point Price </template>
-                <template #head(payments)> Payments </template>
-                <template #head(expiry)> Expiry </template>
-                <template #head(reward)> &nbsp; </template>
-
-                <!-- Cell formatting -->
-                <template #cell(checkbox)="{ item }">
-                    <b-form-checkbox :value="item.reward" v-model="selectedItems" />
-                </template>
-                <template #cell(title)="{ item }">
-                    <b-badge variant="light" class="p-2 mr-2">
-                        <i :class="rewardIconClassMap[item.reward.variant]" class="text-muted" />
-                    </b-badge>
-                    <i
-                        v-if="item.reward.locks.length"
-                        class="fas fa-lock mx-1 text-muted"
-                        v-b-tooltip
-                        :title="`Locked with ${item.reward.locks.length} quest${
-                            item.reward.locks.length > 1 ? 's' : ''
-                        }`"
-                    />
-                    {{ item.title }}
-                </template>
-                <template #cell(pointPrice)="{ item }">
-                    <strong class="text-primary">{{ item.pointPrice }} </strong>
-                </template>
-                <template #cell(payments)="{ item }">
-                    <BaseButtonRewardPayments :pool="pool" :reward="item.reward" />
-                </template>
-                <template #cell(expiry)="{ item }">
-                    <small class="text-gray">{{ item.expiry.label }}</small>
-                    <i
-                        v-if="item.expiry.isExpired"
-                        class="fas fa-exclamation-circle small text-danger ml-1"
-                        v-b-tooltip
-                        title="This reward has expired and is no longer visible in your campaign."
-                    />
-                </template>
-                <template #cell(created)="{ item }">
-                    <small class="text-gray">{{ item.created }}</small>
-                </template>
-                <template #cell(reward)="{ item }">
-                    <b-dropdown variant="link" size="sm" right no-caret>
-                        <template #button-content>
-                            <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
-                        </template>
-                        <b-dropdown-item
-                            v-if="item.reward.variant === RewardVariant.NFT && item.reward.erc721Id"
-                            v-b-modal="`modalQRCodes${item.reward._id}`"
+            <div class="table-responsive">
+                <table
+                    id="table-rewards"
+                    class="table table-hover"
+                    :busy="isLoading"
+                    :items="allRewards"
+                    responsive="lg"
+                    show-empty
+                >
+                    <thead>
+                        <th>&nbsp;</th>
+                        <th>
+                            <b-form-checkbox :checked="isCheckedAll" @change="onChecked" />
+                        </th>
+                        <th>Title</th>
+                        <th>Point Price</th>
+                        <th>Payments</th>
+                        <th>Created</th>
+                        <th>&nbsp;</th>
+                    </thead>
+                    <tbody>
+                        <tr
+                            :class="{
+                                'bg-light text-gray': !item.reward.isPublished,
+                            }"
+                            :items="allRewards"
+                            :key="item.reward._id"
+                            class="w-100"
+                            v-for="item of allRewards"
                         >
-                            QR Codes
-                        </b-dropdown-item>
-                        <b-dropdown-item v-b-modal="rewardModalComponentMap[item.reward.variant] + item.reward._id">
-                            Edit
-                        </b-dropdown-item>
-                        <b-dropdown-item v-b-modal="`modalDelete-${item.reward._id}`"> Delete </b-dropdown-item>
-                        <BaseModalDelete
-                            @submit="onClickDelete(item.reward)"
-                            :id="`modalDelete-${item.reward._id}`"
-                            :subject="item.reward.title"
-                        />
-                    </b-dropdown>
-                    <BaseModalQRCodes :id="`modalQRCodes${item.reward._id}`" :pool="pool" :reward="item.reward" />
-                    <component
-                        @submit="onSubmit"
-                        :key="item.reward._id"
-                        :is="rewardModalComponentMap[item.reward.variant]"
-                        :id="rewardModalComponentMap[item.reward.variant] + item.reward._id"
-                        :pool="pool"
-                        :total="allRewards.length"
-                        :reward="rewards[$route.params.id].results.find((q) => q._id === item.reward._id)"
-                    />
-                </template>
-            </BTable>
+                            <td style="padding: 0; vertical-align: top; position: relative">
+                                <div
+                                    class="bg-light d-flex justify-content-center align-items-center h-100"
+                                    style="width: 40px; position: absolute"
+                                >
+                                    <i :class="rewardIconClassMap[item.reward.variant]" class="text-muted small" />
+                                </div>
+                            </td>
+                            <td>
+                                <b-form-checkbox :value="item.reward" v-model="selectedItems" />
+                            </td>
+                            <td>
+                                {{ item.title.label }}
+                                <i
+                                    v-if="item.title.locks.length"
+                                    class="fas fa-lock mx-1 text-muted"
+                                    v-b-tooltip
+                                    :title="`Locked with ${item.title.locks.length} quest${
+                                        item.title.locks.length > 1 ? 's' : ''
+                                    }`"
+                                />
+                                <i
+                                    v-if="item.reward.expiryDate"
+                                    class="fas fa-clock small ml-1"
+                                    :class="{
+                                        'text-danger': item.title.expiry.isExpired,
+                                        'text-muted': !item.title.expiry.isExpired,
+                                    }"
+                                    v-b-tooltip
+                                    :title="`Expiry: ${item.title.expiry.label}`"
+                                />
+                            </td>
+                            <td>
+                                <strong class="text-primary">{{ item.pointPrice }} </strong>
+                            </td>
+                            <td>
+                                <BaseButtonRewardPayments :pool="pool" :reward="item.reward" />
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ item.created }}</small>
+                            </td>
+                            <td>
+                                <b-dropdown variant="link" size="sm" right no-caret>
+                                    <template #button-content>
+                                        <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
+                                    </template>
+                                    <b-dropdown-item
+                                        v-if="item.reward.variant === RewardVariant.NFT && item.reward.erc721Id"
+                                        v-b-modal="`modalQRCodes${item.reward._id}`"
+                                    >
+                                        QR Codes
+                                    </b-dropdown-item>
+                                    <b-dropdown-item
+                                        v-b-modal="rewardModalComponentMap[item.reward.variant] + item.reward._id"
+                                    >
+                                        Edit
+                                    </b-dropdown-item>
+                                    <b-dropdown-item v-b-modal="`modalDelete-${item.reward._id}`">
+                                        Delete
+                                    </b-dropdown-item>
+                                    <BaseModalDelete
+                                        @submit="onClickDelete(item.reward)"
+                                        :id="`modalDelete-${item.reward._id}`"
+                                        :subject="item.reward.title"
+                                    />
+                                </b-dropdown>
+                                <BaseModalQRCodes
+                                    :id="`modalQRCodes${item.reward._id}`"
+                                    :pool="pool"
+                                    :reward="item.reward"
+                                />
+                                <component
+                                    @submit="onSubmit"
+                                    :key="item.reward._id"
+                                    :is="rewardModalComponentMap[item.reward.variant]"
+                                    :id="rewardModalComponentMap[item.reward.variant] + item.reward._id"
+                                    :pool="pool"
+                                    :total="allRewards.length"
+                                    :reward="rewards[$route.params.id].results.find((q) => q._id === item.reward._id)"
+                                />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </BCard>
     </div>
 </template>
@@ -206,13 +240,16 @@ export default class RewardsView extends Vue {
         if (!this.rewards[this.$route.params.id]) return [];
         return this.rewards[this.$route.params.id].results.map((reward: TBaseReward & { paymentCount: number }) => ({
             checkbox: reward._id,
-            title: reward.title,
-            points: reward.pointPrice,
-            payments: reward.paymentCount,
-            expiry: {
-                isExpired: reward.expiryDate ? Date.now() > new Date(reward.expiryDate).getTime() : false,
-                label: reward.expiryDate ? format(new Date(reward.expiryDate), 'dd-MM-yyyy HH:mm') : '',
+            title: {
+                label: reward.title,
+                locks: reward.locks,
+                expiry: {
+                    isExpired: reward.expiryDate ? Date.now() > new Date(reward.expiryDate).getTime() : false,
+                    label: reward.expiryDate ? format(new Date(reward.expiryDate), 'dd-MM-yyyy HH:mm') : '',
+                },
             },
+            pointPrice: reward.pointPrice,
+            payments: reward.paymentCount,
             created: format(new Date(reward.createdAt), 'dd-MM-yyyy HH:mm'),
             reward,
         }));
@@ -253,6 +290,8 @@ export default class RewardsView extends Vue {
                 query: { isPublished: isPublished ? String(isPublished) : 'false' },
             });
         } catch (error) {
+            // Suppress error
+        } finally {
             await this.listRewards();
         }
     }
@@ -291,10 +330,10 @@ export default class RewardsView extends Vue {
     width: 40px;
 }
 #table-rewards th:nth-child(2) {
-    width: auto;
+    width: 40px;
 }
 #table-rewards th:nth-child(3) {
-    width: 130px;
+    width: auto;
 }
 #table-rewards th:nth-child(4) {
     width: 130px;
@@ -303,7 +342,7 @@ export default class RewardsView extends Vue {
     width: 130px;
 }
 #table-rewards th:nth-child(6) {
-    width: 130px;
+    width: 150px;
 }
 #table-rewards th:nth-child(7) {
     width: 40px;

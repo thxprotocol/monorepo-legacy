@@ -25,7 +25,7 @@ type TBaseQuest = {
     index: number;
     image: string;
     infoLinks: TInfoLink[];
-    expiryDate: Date;
+    expiryDate: Date | string;
     locks: TQuestLock[];
     isPublished: boolean;
     isIPLimitEnabled: boolean;

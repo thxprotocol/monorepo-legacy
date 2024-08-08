@@ -120,9 +120,18 @@
     // Table
     .table {
         color: $gray-400;
-    
+        
+        .bg-light {
+            background-color: $dark !important;
+        }
+
         .custom-checkbox .custom-control-label {
-            background-color: $darker;
+            background-color: transparent;
+            
+            &:before {
+                background-color: $dark;
+                border-color: $gray-700;
+            }
         }
     }
 
