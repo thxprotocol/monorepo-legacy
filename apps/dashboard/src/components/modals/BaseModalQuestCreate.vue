@@ -81,7 +81,7 @@
                     <b-col md="6">
                         <slot name="col-right" />
                         <BaseCardQuestLocks class="mb-3" :pool="pool" :locks="locks" @change-locks="locks = $event" />
-                        <BaseCardInfoLinks class="mb-3" :info-links="infoLinks" @change-info-links="infoLinks = $event">
+                        <BaseCardInfoLinks class="mb-3" :info-links="infoLinks" @change="onChangeInfoLinks">
                             <p class="text-muted">
                                 Add info links to your cards to provide your users with more information about this
                                 quest.
@@ -91,6 +91,11 @@
                             <b-checkbox v-model="isIPLimitEnabled" class="mb-0">
                                 Enable IP address verification
                             </b-checkbox>
+                        </BaseFormGroup>
+                        <BaseFormGroup
+                            description="This quest required a manual review per entry before points are transfered."
+                        >
+                            <b-checkbox v-model="isReviewEnabled" class="mb-0"> Enable manual review </b-checkbox>
                         </BaseFormGroup>
                     </b-col>
                 </b-row>
@@ -131,6 +136,7 @@ import BaseCardQuestLocks from '@thxnetwork/dashboard/components/cards/BaseCardQ
 export default class ModalQuestCreate extends Vue {
     isPublished = false;
     isIPLimitEnabled = false;
+    isReviewEnabled = false;
     title = '';
     description = '';
     infoLinks: TInfoLink[] = [{ label: '', url: '' }];
@@ -160,6 +166,7 @@ export default class ModalQuestCreate extends Vue {
         this.infoLinks = this.quest ? this.quest.infoLinks : this.infoLinks;
         this.locks = this.quest ? Object.values(this.quest.locks) : this.locks;
         this.isIPLimitEnabled = this.quest ? this.quest.isIPLimitEnabled : this.isIPLimitEnabled;
+        this.isReviewEnabled = this.quest ? this.quest.isReviewEnabled : this.isReviewEnabled;
         if (this.quest && this.quest.expiryDate) {
             const date = new Date(this.quest.expiryDate);
             this.expirationDate = date;
@@ -194,6 +201,11 @@ export default class ModalQuestCreate extends Vue {
     onChangeTime(time: string) {
         this.expirationTime = time;
         this.change();
+    }
+
+    onChangeInfoLinks(infoLinks: TInfoLink[]) {
+        this.infoLinks = [];
+        this.infoLinks = infoLinks;
     }
 
     onClickExpiryRemove() {

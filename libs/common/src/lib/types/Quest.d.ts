@@ -29,6 +29,7 @@ type TBaseQuest = {
     locks: TQuestLock[];
     isPublished: boolean;
     isIPLimitEnabled: boolean;
+    isReviewEnabled: boolean;
     createdAt: string;
     updatedAt: string;
     update: (payload: Partial<TQuest>) => Promise<void>;

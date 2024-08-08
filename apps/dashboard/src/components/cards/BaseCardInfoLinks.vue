@@ -70,18 +70,18 @@ export default class BaseCardInfoLinks extends Vue {
             label: label ? label : this.infoLinks[key].label,
             url: url ? url : this.infoLinks[key].url,
         };
-        this.$emit('change-info-links', infoLinks);
+        this.$emit('change', infoLinks);
     }
 
     onClickRemoveLink(key) {
         const infoLinks = Object.assign(this.infoLinks);
-        delete infoLinks[key];
-        this.$emit('change-info-links', infoLinks);
+        infoLinks.splice(key, 1);
+        this.$emit('change', infoLinks);
     }
     onClickAddLink() {
         const infoLinks = Object.assign(this.infoLinks);
         infoLinks[infoLinks.length] = { label: '', url: '' };
-        this.$emit('change-info-links', infoLinks);
+        this.$emit('change', infoLinks);
     }
 }
 </script>
