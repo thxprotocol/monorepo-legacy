@@ -123,8 +123,8 @@ export default class BaseModalQuestEntries extends Vue {
     limit = 25;
     page = 1;
     actions = [
-        // { label: 'Approve all', variant: 0 },
-        // { label: 'Reject all', variant: 1 },
+        { label: 'Approve all', variant: 0 },
+        { label: 'Reject all', variant: 1 },
     ];
 
     @Prop() id!: string;
@@ -186,7 +186,7 @@ export default class BaseModalQuestEntries extends Vue {
     }
 
     async onClickAction(action: { variant: number }) {
-        // 1. Publish, 2. Unpublish, 3. Delete
+        // 1. Approve all, 2. Reject all
         const mappers = {
             0: () =>
                 this.$store.dispatch('pools/updateEntries', {
