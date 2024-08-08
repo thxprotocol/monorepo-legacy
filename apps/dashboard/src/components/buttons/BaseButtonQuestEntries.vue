@@ -1,11 +1,11 @@
 <template>
-    <b-link v-b-modal="`modalQuestSocialEntries${quest._id}`">
+    <b-link v-b-modal="`modalQuestEntries${quest._id}`">
         <b-spinner v-if="isLoading" small variant="primary" />
         <template v-else>
             <small><i class="fas text-muted fa-users mr-1" /></small>
-            {{ questEntries.total }}/{{ '&infin;' }}
+            {{ questEntries.total }}
         </template>
-        <BaseModalQuestSocialEntries :id="`modalQuestSocialEntries${quest._id}`" :quest="quest" />
+        <BaseModalQuestEntries :id="`modalQuestEntries${quest._id}`" :quest="quest" />
     </b-link>
 </template>
 
@@ -13,11 +13,11 @@
 import { Vue, Component, Prop, Watch } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
 import { TQuestEntryState } from '../../store/modules/pools';
-import BaseModalQuestSocialEntries from '@thxnetwork/dashboard/components/modals/BaseModalQuestSocialEntries.vue';
+import BaseModalQuestEntries from '@thxnetwork/dashboard/components/modals/BaseModalQuestEntries.vue';
 
 @Component({
     components: {
-        BaseModalQuestSocialEntries,
+        BaseModalQuestEntries,
     },
     computed: mapGetters({
         entriesList: 'pools/entries',

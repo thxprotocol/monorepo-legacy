@@ -1,6 +1,6 @@
 type TQuest = TQuestDaily | TQuestInvite | TQuestSocial | TQuestCustom | TQuestWeb3 | TQuestGitcoin | TQuestWebhook;
 type TQuestEntry =
-    | TQuestDailyClaim
+    | TQuestDailyEntry
     | TQuestInviteEntry
     | TQuestSocialEntry
     | TQuestCustomEntry
@@ -13,6 +13,18 @@ type TQuestEntryMetadata = TQuestSocialEntryMetadata | TQuestWeb3EntryMetadata;
 type TValidationResult = {
     reason: string;
     result: boolean;
+};
+
+type TBaseQuestEntry = {
+    _id: string;
+    poolId: string;
+    questId: string;
+    sub: string;
+    amount: number;
+    recaptcha: string;
+    ip: string;
+    status: QuestEntryState;
+    createdAt: Date;
 };
 
 type TBaseQuest = {
@@ -32,6 +44,4 @@ type TBaseQuest = {
     isReviewEnabled: boolean;
     createdAt: string;
     updatedAt: string;
-    update: (payload: Partial<TQuest>) => Promise<void>;
-    delete: (payload: Partial<TQuest>) => Promise<void>;
 };

@@ -1,13 +1,7 @@
-type TQuestSocialEntry = {
-    _id: string;
-    questId: string;
-    sub: string;
-    amount: string;
-    poolId: string;
-    metadata: TQuestSocialEntryMetadata;
-    createdAt: Date;
+type TQuestSocialEntry = TBaseQuestEntry & {
     account?: TAccount;
     wallet?: TWallet;
+    metadata: TQuestSocialEntryMetadata;
 };
 
 type TQuestSocialEntryMetadata = {

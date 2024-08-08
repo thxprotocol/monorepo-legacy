@@ -375,7 +375,7 @@ export default class QuestsView extends Vue {
     }
 
     onClickDelete(quest: TQuest) {
-        quest.delete(quest);
+        this.$store.dispatch('pools/removeQuest', quest);
     }
 
     async onClickAction(action: { variant: number }) {

@@ -20,3 +20,4 @@ export * from './Event';
 export * from './Job';
 export * from './Collaborator';
 export * from './Wallet';
+export * from './QuestEntryStatus';

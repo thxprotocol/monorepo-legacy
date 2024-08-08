@@ -5,12 +5,7 @@ type TQuestWeb3 = TBaseQuest & {
     contracts: { chainId: ChainId; address: string }[];
 };
 
-type TQuestWeb3Entry = {
-    questId: string;
-    sub: string;
-    amount: number;
-    poolId: string;
-    createdAt: Date;
+type TQuestWeb3Entry = TBaseQuestEntry & {
     metadata: TQuestWeb3EntryMetadata;
 };
 

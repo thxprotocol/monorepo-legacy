@@ -1,9 +1,4 @@
-type TQuestWebhookEntry = {
-    poolId: string;
-    questId: string;
+type TQuestWebhookEntry = TBaseQuestEntry & {
     webhookId: string;
     identityId: string;
-    sub: string;
-    amount: number;
-    createdAt: Date;
 };

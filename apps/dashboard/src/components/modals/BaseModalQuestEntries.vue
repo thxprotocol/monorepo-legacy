@@ -19,12 +19,14 @@
                 :limit="limit"
                 :total-rows="questEntries.total"
                 :selectedItems="selectedItems"
-                :actions="[]"
+                :actions="actions"
+                @click-action="onClickAction"
                 @change-page="onChangePage"
                 @change-limit="onChangeLimit"
             />
             <b-card variant="white" body-class="p-0 shadow-sm" class="mb-3">
                 <b-table
+                    id="table-entries"
                     hover
                     :busy="isLoading"
                     :items="entries"
@@ -34,13 +36,24 @@
                     :sort-desc="false"
                 >
                     <!-- Head formatting -->
+                    <template #head(checkbox)>
+                        <b-form-checkbox :checked="isCheckedAll" @change="onChecked" />
+                    </template>
+                    <template #head(status)> Status </template>
                     <template #head(account)> Username </template>
                     <template #head(tokens)> Connected </template>
                     <template #head(amount)> Amount </template>
                     <template #head(metadata)> Metadata </template>
-                    <template #head(entry)> Created </template>
+                    <template #head(created)> Created </template>
+                    <template #head(entry)> &nbsp; </template>
 
                     <!-- Cell formatting -->
+                    <template #cell(checkbox)="{ item }">
+                        <b-form-checkbox :value="item.entry" v-model="selectedItems" />
+                    </template>
+                    <template #cell(status)="{ item }">
+                        <BaseButtonQuestEntryStatus :quest="quest" :entry="item.entry" @update="getEntries" />
+                    </template>
                     <template #cell(account)="{ item }">
                         <BaseParticipantAccount :account="item.account" />
                     </template>
@@ -56,12 +69,15 @@
                         <strong>{{ item.amount }}</strong>
                     </template>
                     <template #cell(metadata)="{ item }">
-                        <code>{{ item.metadata }}</code>
+                        <div style="overflow-y: auto; height: 40px" class="bg-light px-2 rounded">
+                            <code class="small">{{ item.metadata }}</code>
+                        </div>
+                    </template>
+                    <template #cell(created)="{ item }">
+                        <small class="text-muted">{{ format(new Date(item.created), 'dd-MM-yyyy HH:mm') }}</small>
                     </template>
                     <template #cell(entry)="{ item }">
-                        <small class="text-muted">{{
-                            format(new Date(item.entry.createdAt), 'dd-MM-yyyy HH:mm')
-                        }}</small>
+                        <div v-if="item.entry"></div>
                     </template>
                 </b-table>
             </b-card>
@@ -72,39 +88,17 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { format, differenceInMilliseconds } from 'date-fns';
-import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
-import BaseModal from './BaseModal.vue';
+import { format } from 'date-fns';
 import { getAddressURL } from '../../utils/chains';
 import BaseParticipantAccount from '@thxnetwork/dashboard/components/BaseParticipantAccount.vue';
+import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
+import BaseButtonQuestEntryStatus from '@thxnetwork/dashboard/components/buttons/BaseButtonQuestEntryStatus.vue';
+import BaseModal from './BaseModal.vue';
 import BaseParticipantConnectedAccount, {
     parseConnectedAccounts,
 } from '@thxnetwork/dashboard/components/BaseParticipantConnectedAccount.vue';
 import { TQuestEntryState } from '@thxnetwork/dashboard/store/modules/pools';
-
-// Function to format the duration into a user-friendly string
-function formatDuration(durationInMilliseconds) {
-    const secondsInMillisecond = 1000;
-    const minutesInMillisecond = secondsInMillisecond * 60;
-    const hoursInMillisecond = minutesInMillisecond * 60;
-    const daysInMillisecond = hoursInMillisecond * 24;
-
-    if (durationInMilliseconds < secondsInMillisecond) {
-        return `${durationInMilliseconds} milliseconds`;
-    } else if (durationInMilliseconds < minutesInMillisecond) {
-        const seconds = Math.floor(durationInMilliseconds / secondsInMillisecond);
-        return `${seconds} second${seconds !== 1 ? 's' : ''}`;
-    } else if (durationInMilliseconds < hoursInMillisecond) {
-        const minutes = Math.floor(durationInMilliseconds / minutesInMillisecond);
-        return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
-    } else if (durationInMilliseconds < daysInMillisecond) {
-        const hours = Math.floor(durationInMilliseconds / hoursInMillisecond);
-        return `${hours} hour${hours !== 1 ? 's' : ''}`;
-    } else {
-        const days = Math.floor(durationInMilliseconds / daysInMillisecond);
-        return `${days} day${days !== 1 ? 's' : ''}`;
-    }
-}
+import { QuestEntryStatus } from '@thxnetwork/common/enums';
 
 @Component({
     components: {
@@ -112,19 +106,26 @@ function formatDuration(durationInMilliseconds) {
         BaseCardTableHeader,
         BaseParticipantAccount,
         BaseParticipantConnectedAccount,
+        BaseButtonQuestEntryStatus,
     },
     computed: mapGetters({
         entriesList: 'pools/entries',
     }),
 })
-export default class BaseModalQuestSocialEntries extends Vue {
+export default class BaseModalQuestEntries extends Vue {
+    QuestEntryStatus = QuestEntryStatus;
     getAddressURL = getAddressURL;
     format = format;
+    isCheckedAll = false;
     isLoading = false;
-    selectedItems: string[] = [];
+    selectedItems: TQuestEntry[] = [];
     entriesList!: TQuestEntryState;
     limit = 25;
     page = 1;
+    actions = [
+        // { label: 'Approve all', variant: 0 },
+        // { label: 'Reject all', variant: 1 },
+    ];
 
     @Prop() id!: string;
     @Prop() quest!: TQuestSocial;
@@ -144,19 +145,15 @@ export default class BaseModalQuestSocialEntries extends Vue {
         return this.questEntries.results
             .sort((a: TQuestEntry, b: TQuestEntry) => (a.createdAt < b.createdAt ? 1 : -1))
             .map((entry: any) => ({
+                checkbox: entry._id,
+                status: entry.status,
                 account: entry.account,
                 tokens: entry.account && parseConnectedAccounts(entry.account),
                 amount: entry.amount,
                 metadata: entry.metadata,
-                entry,
+                created: entry.createdAt,
+                entry: entry as TQuestEntry,
             }));
-    }
-
-    getDuration(quest: TQuest, entry: TQuestEntry) {
-        const startDate = new Date(quest.createdAt);
-        const endDate = new Date(entry.createdAt);
-        const durationInMilliseconds = differenceInMilliseconds(endDate, startDate);
-        return formatDuration(durationInMilliseconds);
     }
 
     async getEntries() {
@@ -175,5 +172,67 @@ export default class BaseModalQuestSocialEntries extends Vue {
         this.limit = limit;
         this.getEntries();
     }
+
+    onClickUpdate(entry: TQuestEntry, status: QuestEntryStatus) {
+        this.$store.dispatch('pools/updateEntries', {
+            quest: this.quest,
+            entries: [{ entryId: entry._id, status }],
+        });
+    }
+
+    onChecked(checked: boolean) {
+        this.selectedItems = checked ? this.entriesList[this.quest.poolId][this.quest._id].results : [];
+        this.isCheckedAll = checked;
+    }
+
+    async onClickAction(action: { variant: number }) {
+        // 1. Publish, 2. Unpublish, 3. Delete
+        const mappers = {
+            0: () =>
+                this.$store.dispatch('pools/updateEntries', {
+                    quest: this.quest,
+                    entries: this.selectedItems.map((entry) => ({
+                        entryId: entry._id,
+                        status: QuestEntryStatus.Approved,
+                    })),
+                }),
+            1: () =>
+                this.$store.dispatch('pools/updateEntries', {
+                    quest: this.quest,
+                    entries: this.selectedItems.map((entry) => ({
+                        entryId: entry._id,
+                        status: QuestEntryStatus.Rejected,
+                    })),
+                }),
+        };
+        await mappers[action.variant]();
+        this.isCheckedAll = false;
+        this.selectedItems = [];
+        await this.getEntries();
+    }
 }
 </script>
+
+<style lang="scss">
+#table-entries th:nth-child(1) {
+    width: 40px;
+}
+#table-entries th:nth-child(2) {
+    width: 40px;
+}
+#table-entries th:nth-child(3) {
+    width: 40px;
+}
+#table-entries th:nth-child(4) {
+    width: 40px;
+}
+#table-entries th:nth-child(5) {
+    width: 40px;
+}
+#table-entries th:nth-child(6) {
+    width: auto;
+}
+#table-entries th:nth-child(7) {
+    width: 130px;
+}
+</style>

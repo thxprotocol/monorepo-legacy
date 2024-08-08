@@ -1,10 +1,4 @@
-type TQuestCustomEntry = {
-    questId: string;
-    sub: string;
-    uuid: string;
-    amount: number;
-    isClaimed: boolean;
-    poolId: string;
-    createdAt: Date;
+type TQuestCustomEntry = TBaseQuestEntry & {
     eventName: string;
+    limit: number;
 };

@@ -5,6 +5,7 @@ import { track } from '@thxnetwork/common/mixpanel';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
 import { AccountPlanType, ChainId } from '@thxnetwork/common/enums';
 import * as html from 'html-entities';
+import { QuestEntryStatus } from '@thxnetwork/common/enums/QuestEntryStatus';
 
 export interface IPoolAnalyticLeaderBoard {
     _id: string;
@@ -516,6 +517,24 @@ class PoolModule extends VuexModule {
             method: 'PATCH',
             url: `/pools/${payload.poolId}/quests/${payload.variant}/${payload._id}`,
             data: prepareFormDataForUpload(payload),
+        });
+        this.context.commit('setQuest', q);
+    }
+
+    @Action({ rawError: true })
+    async updateEntries({
+        quest,
+        entries,
+    }: {
+        quest: TQuest;
+        entries: { entryId: string; state: QuestEntryStatus }[];
+    }) {
+        const { data: q } = await axios({
+            method: 'PATCH',
+            url: `/pools/${quest.poolId}/quests/${quest.variant}/${quest._id}/entries`,
+            data: {
+                entries: JSON.stringify(entries),
+            },
         });
         this.context.commit('setQuest', q);
     }

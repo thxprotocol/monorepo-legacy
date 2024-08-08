@@ -89,13 +89,15 @@
                         </BaseCardInfoLinks>
                         <BaseFormGroup description="This quest can only be completed once per day per IP address.">
                             <b-checkbox v-model="isIPLimitEnabled" class="mb-0">
-                                Enable IP address verification
+                                Enable IP address cooldown
                             </b-checkbox>
                         </BaseFormGroup>
                         <BaseFormGroup
-                            description="This quest required a manual review per entry before points are transfered."
+                            description="Quest entries require a manual review before points are transfered."
                         >
-                            <b-checkbox v-model="isReviewEnabled" class="mb-0"> Enable manual review </b-checkbox>
+                            <b-checkbox v-model="isReviewEnabled" class="mb-0">
+                                Enable manual entry reviews
+                            </b-checkbox>
                         </BaseFormGroup>
                     </b-col>
                 </b-row>

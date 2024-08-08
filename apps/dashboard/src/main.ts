@@ -55,7 +55,6 @@ axios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 Vue.config.productionTip = false;
 
 Vue.config.errorHandler = (error: Error, vm: Vue) => {
-    console.error(error);
     vm.$bvToast.toast(error.message, {
         variant: 'danger',
         title: 'Error',

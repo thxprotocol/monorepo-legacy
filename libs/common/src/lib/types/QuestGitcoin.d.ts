@@ -4,12 +4,7 @@ type TQuestGitcoin = TBaseQuest & {
     score: number;
 };
 
-type TQuestGitcoinEntry = {
-    poolId: string;
-    questId: string;
-    sub: string;
-    amount: number;
-    createdAt: Date;
+type TQuestGitcoinEntry = TBaseQuestEntry & {
     metadata: TQuestGitcoinEntryMetadata;
 };
 
