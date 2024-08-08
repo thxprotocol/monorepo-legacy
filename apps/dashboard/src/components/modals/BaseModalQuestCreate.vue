@@ -236,6 +236,7 @@ export default class ModalQuestCreate extends Vue {
             locks: JSON.stringify(this.locks),
             infoLinks: JSON.stringify(this.infoLinks.filter((link) => link.label && isValidUrl(link.url))),
             isIPLimitEnabled: this.isIPLimitEnabled,
+            isReviewEnabled: this.isReviewEnabled,
         });
     }
 }

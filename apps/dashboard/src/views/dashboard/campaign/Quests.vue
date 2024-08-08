@@ -68,22 +68,22 @@
                 @change-limit="onChangeLimit"
             />
             <div class="table-responsive">
-                <table id="table-quests" class="table table-striped table-hover">
+                <table id="table-quests" class="table table-hover">
                     <thead>
                         <tr>
-                            <td>
+                            <th>
                                 <b-form-checkbox :checked="isCheckedAll" @change="onChecked" />
-                            </td>
-                            <td>Title</td>
-                            <td>Points</td>
-                            <td>Entries</td>
-                            <td>Expiry</td>
-                            <td>Created</td>
-                            <td>&nbsp;</td>
+                            </th>
+                            <th>Title</th>
+                            <th>Points</th>
+                            <th>Entries</th>
+                            <th>Created</th>
+                            <th>&nbsp;</th>
                         </tr>
                     </thead>
                     <draggable v-model="allQuests" tag="tbody" @start="isDragging = true" , @end="isDragging = false">
                         <tr
+                            style="cursor: move"
                             :class="{
                                 'bg-light text-gray': !item.quest.isPublished,
                                 'text-gray': isDragging,
@@ -93,22 +93,32 @@
                             class="w-100"
                             v-for="(item, index) of allQuests"
                         >
-                            <td style="cursor: move">
+                            <td>
                                 <b-form-checkbox :value="item.quest" v-model="selectedItems" />
                             </td>
                             <td>
                                 <b-badge variant="light" class="p-2 mr-2">
                                     <i :class="questIconClassMap[item.quest.variant]" class="text-muted" />
                                 </b-badge>
+                                {{ item.title }}
                                 <i
                                     v-if="item.quest.locks.length"
                                     class="fas fa-lock mx-1 text-muted"
                                     v-b-tooltip
-                                    :title="`Locked with ${item.quest.locks.length} quest${
+                                    :title="`Quest locks: ${item.quest.locks.length} quest${
                                         item.quest.locks.length > 1 ? 's' : ''
                                     }`"
                                 />
-                                {{ item.title }}
+                                <i
+                                    v-if="item.quest.expiryDate"
+                                    class="fas fa-clock small ml-1"
+                                    :class="{
+                                        'text-danger': item.quest.expiry.isExpired,
+                                        'text-muted': !item.quest.expiry.isExpired,
+                                    }"
+                                    v-b-tooltip
+                                    :title="`Expiry: ${item.quest.expiry.label}`"
+                                />
                             </td>
                             <td>
                                 <strong class="text-primary">{{ item.points }} </strong>
@@ -133,16 +143,7 @@
                                 />
                             </td>
                             <td>
-                                <small class="text-gray">{{ item.expiry.label }}</small>
-                                <i
-                                    v-if="item.expiry.isExpired"
-                                    class="fas fa-exclamation-circle small text-danger ml-1"
-                                    v-b-tooltip
-                                    title="This quest has expired and is no longer visible in your campaign."
-                                />
-                            </td>
-                            <td>
-                                <small class="text-gray">{{ item.created }}</small>
+                                <small class="text-muted">{{ item.created }}</small>
                             </td>
                             <td>
                                 <b-dropdown variant="link" size="sm" right no-caret>
@@ -274,18 +275,20 @@ export default class QuestsView extends Vue {
     get allQuests() {
         if (!this.quests[this.$route.params.id]) return [];
         return this.quests[this.$route.params.id].results
-            .map((quest: any, index: number) => ({
+            .map((quest: any) => ({
                 index: quest.index,
                 checkbox: quest._id,
                 title: quest.title,
                 points: quest.amounts ? `${quest.amounts.length} days` : quest.amount,
                 entries: quest.entryCount,
-                expiry: {
-                    isExpired: quest.expiryDate ? Date.now() > new Date(quest.expiryDate).getTime() : false,
-                    label: quest.expiryDate ? format(new Date(quest.expiryDate), 'dd-MM-yyyy HH:mm') : '',
-                },
                 created: format(new Date(quest.createdAt), 'dd-MM-yyyy HH:mm'),
-                quest,
+                quest: {
+                    ...quest,
+                    expiry: {
+                        isExpired: quest.expiryDate ? Date.now() > new Date(quest.expiryDate).getTime() : false,
+                        label: quest.expiryDate ? format(new Date(quest.expiryDate), 'dd-MM-yyyy HH:mm') : '',
+                    },
+                },
             }))
             .sort((a, b) => a.index - b.index);
     }
@@ -397,12 +400,9 @@ export default class QuestsView extends Vue {
     width: 130px;
 }
 #table-quests th:nth-child(5) {
-    width: 150px;
+    width: 130px;
 }
 #table-quests th:nth-child(6) {
-    width: 150px;
-}
-#table-quests th:nth-child(7) {
     width: 40px;
 }
 </style>
