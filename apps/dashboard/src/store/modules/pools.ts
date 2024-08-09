@@ -206,6 +206,14 @@ class PoolModule extends VuexModule {
     }
 
     @Mutation
+    updateQuestEntries({ poolId, questId, entries }: { poolId: string; questId: string; entries: TQuestEntry[] }) {
+        this._entries[poolId][questId].results = this._entries[poolId][questId].results.map((entry) => ({
+            ...entry,
+            ...entries.find((e) => e._id === entry._id),
+        }));
+    }
+
+    @Mutation
     setRewardPayments({
         poolId,
         rewardId,
@@ -529,14 +537,18 @@ class PoolModule extends VuexModule {
         quest: TQuest;
         entries: { entryId: string; state: QuestEntryStatus }[];
     }) {
-        const { data: q } = await axios({
+        const { data } = await axios({
             method: 'PATCH',
             url: `/pools/${quest.poolId}/quests/${quest.variant}/${quest._id}/entries`,
             data: {
                 entries: JSON.stringify(entries),
             },
         });
-        this.context.commit('setQuest', q);
+        this.context.commit('updateQuestEntries', {
+            poolId: quest.poolId,
+            questId: quest._id,
+            entries: data,
+        });
     }
 
     @Action({ rawError: true })

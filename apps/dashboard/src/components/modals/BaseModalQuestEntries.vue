@@ -52,7 +52,7 @@
                         <b-form-checkbox :value="item.entry" v-model="selectedItems" />
                     </template>
                     <template #cell(status)="{ item }">
-                        <BaseButtonQuestEntryStatus :quest="quest" :entry="item.entry" @update="getEntries" />
+                        <BaseButtonQuestEntryStatus :quest="quest" :entry="item.entry" />
                     </template>
                     <template #cell(account)="{ item }">
                         <BaseParticipantAccount :account="item.account" />
@@ -208,7 +208,6 @@ export default class BaseModalQuestEntries extends Vue {
         await mappers[action.variant]();
         this.isCheckedAll = false;
         this.selectedItems = [];
-        await this.getEntries();
     }
 }
 </script>
