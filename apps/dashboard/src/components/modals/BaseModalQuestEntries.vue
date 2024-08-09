@@ -232,6 +232,6 @@ export default class BaseModalQuestEntries extends Vue {
     width: auto;
 }
 #table-entries th:nth-child(7) {
-    width: 130px;
+    width: 150px;
 }
 </style>
