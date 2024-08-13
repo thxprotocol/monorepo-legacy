@@ -1,21 +1,17 @@
 type TTransaction = {
     type: TransactionType;
     state: TransactionState;
-    from: string;
-    to: string;
-    nonce: number;
-    gas: string;
-    chainId: ChainId;
     walletId: string;
-    transactionId: string;
+    // from: string;
+    to: string;
+    data: string;
+    chainId: ChainId;
+    callback: TTransactionCallback;
     transactionHash?: string;
     safeTxHash?: string;
-    call?: { fn: string; args: string };
-    baseFee?: string;
-    maxFeePerGas?: string;
-    maxPriorityFeePerGas?: string;
-    failReason?: string;
-    callback: TTransactionCallback;
+    // failReason?: string;
+    createdAt: Date;
+    updatedAt: Date;
 };
 
 type TERC20DeployCallbackArgs = {

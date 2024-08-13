@@ -7,6 +7,7 @@ type TWallet = {
     version: string;
     variant: WalletVariant;
     safeVersion: string;
+    transactions: TTransaction[];
     uuid: string;
     createdAt: Date;
     expiresAt: Date;

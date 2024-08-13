@@ -8,6 +8,7 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         name: 'Ethereum',
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_ethereum.svg'),
         blockExplorer: 'https://mumbai.polygonscan.com',
+        safeURL: 'https://app.safe.global',
     },
     [ChainId.Arbitrum]: {
         disabled: true,
@@ -15,6 +16,7 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         name: 'Arbitrum',
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_arbitrum.svg'),
         blockExplorer: 'https://arbiscan.io',
+        safeURL: 'https://app.safe.global',
     },
     [ChainId.BNBChain]: {
         disabled: true,
@@ -22,6 +24,7 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         name: 'Binance Smart Chain',
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_bsc.svg'),
         blockExplorer: 'https://mumbai.polygonscan.com',
+        safeURL: 'https://app.safe.global',
     },
     [ChainId.Polygon]: {
         disabled: false,
@@ -29,6 +32,7 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         name: 'Polygon',
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_polygon.svg'),
         blockExplorer: 'https://polygonscan.com',
+        safeURL: 'https://app.safe.global',
     },
     [ChainId.PolygonZK]: {
         disabled: true,
@@ -36,6 +40,7 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         name: 'Polygon zkEVM',
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_polygon.svg'),
         blockExplorer: 'https://zkevm.polygonscan.com',
+        safeURL: 'https://app.safe.global',
     },
     [ChainId.Linea]: {
         disabled: false,
@@ -43,13 +48,15 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         name: 'Linea',
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_linea.svg'),
         blockExplorer: 'https://lineascan.build',
+        safeURL: 'https://app.safe.global',
     },
     [ChainId.Metis]: {
-        disabled: true,
+        disabled: false,
         chainId: ChainId.Metis,
         name: 'Metis',
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_metis.svg'),
         blockExplorer: 'https://explorer.metis.io',
+        safeURL: 'https://app.safe.global',
     },
     [ChainId.Base]: {
         disabled: true,
@@ -57,6 +64,7 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         name: 'Base',
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_base.svg'),
         blockExplorer: 'https://basescan.org',
+        safeURL: 'https://app.safe.global',
     },
     [ChainId.IOTA]: {
         disabled: true,
@@ -64,6 +72,7 @@ const chainInfo: { [chainId: number]: ChainInfo } = {
         name: 'IOTA EVM',
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_iota.svg'),
         blockExplorer: 'https://explorer.evm.iota.org',
+        safeURL: 'https://app.safe.global',
     },
 };
 
@@ -74,6 +83,7 @@ if (process.env.NODE_ENV !== 'production') {
         name: 'Hardhat',
         logo: require('@thxnetwork/dashboard/../public/assets/thx_logo_hardhat.svg'),
         blockExplorer: 'https://hardhatscan.com',
+        safeURL: 'https://app.safe.global',
     };
 }
 
