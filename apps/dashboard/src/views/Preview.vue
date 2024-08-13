@@ -49,7 +49,7 @@ body {
     justify-content: center;
 }
 .logo-preview {
-    max-width: 15%;
-    max-height: 15%;
+    max-width: 20%;
+    max-height: 20%;
 }
 </style>
