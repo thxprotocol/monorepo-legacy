@@ -6,21 +6,14 @@
                     <div class="brand-intro text-white col-lg-4 order-1 order-md-0">
                         <div>
                             <h1 class="brand-text mb-3">
-                                <em>Rewards</em><br />
-                                in any app
+                                The #1 <br />
+                                <em>Reward Engine</em>
                             </h1>
-                            <p class="lead mb-4">Drive growth and revenue with plug &amp; play Reward Campaigns</p>
+                            <p class="lead mb-4">Grow your user base with embedded retention campaigns and referrals</p>
                             <b-form id="formSignupRedirect" class="row" v-on:submit.prevent="submit">
                                 <div class="col-12">
-                                    <b-form-input
-                                        v-model="signupEmail"
-                                        type="email"
-                                        class="mb-2 rounded-pill border-0 mr-3"
-                                        placeholder="Your e-mail"
-                                    />
                                     <b-button
-                                        type="submit"
-                                        form="formSignupRedirect"
+                                        :href="dashboardUrl"
                                         block
                                         variant="primary"
                                         class="rounded-pill"
@@ -65,7 +58,7 @@
                         :alt="ALT_TEXT.HOME_EU_FLAG"
                     />
                     <small class="m-0">
-                        We’re backed by Techstars, one of the largest pre-seed investors in the world, 2022 cohort.
+                        We're backed by Techstars, one of the largest pre-seed investors in the world, 2022 cohort.
                     </small>
                 </div>
                 <div class="col-lg-4">
@@ -115,16 +108,6 @@ export default class BaseJumbotron extends Vue {
     signupEmail = '';
     ALT_TEXT = ALT_TEXT;
     TITLES = TITLES;
-
-    async submit() {
-        const url = new URL(this.dashboardUrl);
-        url.pathname = 'signup';
-        url.searchParams.append('signup_plan', '1');
-        if (this.signupEmail) {
-            url.searchParams.append('signup_email', this.signupEmail);
-        }
-        window.open(url, '_blank');
-    }
 }
 </script>
 
@@ -140,12 +123,17 @@ export default class BaseJumbotron extends Vue {
         radial-gradient(at 83% 46%, hsla(40, 100%, 50%, 0.76) 0px, transparent 50%);
 
     h1.brand-text {
-        font-size: 3rem !important;
+        font-size: 3rem;
         margin-top: 3rem;
+        text-transform: capitalize;
 
         @media (min-width: 960px) {
             margin-top: 0;
-            font-size: 4rem !important;
+            font-size: 3.5rem !important;
+
+            em {
+                font-size: 3.5rem !important;
+            }
         }
     }
 

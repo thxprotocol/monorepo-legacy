@@ -7,7 +7,7 @@
                     <p class="lead h1">Nice to meet you!</p>
                 </div>
                 <b-row>
-                    <b-col md="3" class="p-2">
+                    <b-col md="4" class="p-2" offset-md="3">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -37,7 +37,7 @@
                             </p>
                         </b-card>
                     </b-col>
-                    <b-col md="3" class="p-2">
+                    <b-col md="4" class="p-2">
                         <b-card class="h-100">
                             <div class="d-flex">
                                 <div class="pr-4">
@@ -65,62 +65,6 @@
                             <p class="font-italic font-weight-light">
                                 Serial digital product engineer and agile team leader. Very serious about UX.
                             </p>
-                        </b-card>
-                    </b-col>
-                    <b-col md="3" class="p-2">
-                        <b-card class="h-100">
-                            <div class="d-flex">
-                                <div class="pr-4">
-                                    <img
-                                        class="rounded"
-                                        height="65"
-                                        v-lazy="require('../../public/assets/img/phillip.png')"
-                                        :alt="ALT_TEXT.HOME_BASE_TEAM_PHILLIP"
-                                    />
-                                </div>
-                                <div class="d-flex flex-column justify-content-center flex-grow-1">
-                                    <h3 class="text-darker m-0">Phillip Reidy</h3>
-                                    <small>Community Manager</small>
-                                </div>
-                                <div>
-                                    <a
-                                        class="p-1 small bg-dark text-white"
-                                        href="https://www.linkedin.com/in/phillip-r-7a6991155/"
-                                    >
-                                        <i class="fab fa-linkedin-in"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <hr />
-                            <p class="font-italic font-weight-light">Community Lead and Blockchain Investor</p>
-                        </b-card>
-                    </b-col>
-                    <b-col md="3" class="p-2">
-                        <b-card class="h-100">
-                            <div class="d-flex">
-                                <div class="pr-4">
-                                    <img
-                                        class="rounded-circle"
-                                        height="65"
-                                        v-lazy="require('../../public/assets/img/thx_team_prasanth.jpg')"
-                                        :alt="ALT_TEXT.HOME_BASE_TEAM_VALERIA"
-                                    />
-                                </div>
-                                <div class="d-flex flex-column justify-content-center flex-grow-1">
-                                    <h3 class="text-darker m-0">Prasanth Viswam</h3>
-                                    <small>Sales Engineer</small>
-                                </div>
-                                <div>
-                                    <a
-                                        class="p-1 small bg-dark text-white"
-                                        href="https://www.linkedin.com/in/prasanth-xipher"
-                                    >
-                                        <i class="fab fa-linkedin-in"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <hr />
-                            <p class="font-italic font-weight-light">Background in software engineering.</p>
                         </b-card>
                     </b-col>
                 </b-row>
@@ -218,6 +162,90 @@
                             <p class="font-italic font-weight-light">
                                 Background in back-end engineering now Node.js, GraphQL and Solidity.
                             </p>
+                        </b-card>
+                    </b-col>
+                    <b-col md="3" class="p-2">
+                        <b-card class="h-100">
+                            <div class="d-flex">
+                                <div class="pr-4">
+                                    <img
+                                        class="rounded-circle"
+                                        height="65"
+                                        v-lazy="require('../../public/assets/img/thx_team_prasanth.jpg')"
+                                        :alt="ALT_TEXT.HOME_BASE_TEAM_VALERIA"
+                                    />
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-grow-1">
+                                    <h3 class="text-darker m-0">Prasanth Viswam</h3>
+                                    <small>Sales Engineer</small>
+                                </div>
+                                <div>
+                                    <a
+                                        class="p-1 small bg-dark text-white"
+                                        href="https://www.linkedin.com/in/prasanth-xipher"
+                                    >
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <hr />
+                            <p class="font-italic font-weight-light">Background in software engineering.</p>
+                        </b-card>
+                    </b-col>
+                    <b-col md="3" class="p-2">
+                        <b-card class="h-100">
+                            <div class="d-flex">
+                                <div class="pr-4">
+                                    <img
+                                        class="rounded-circle"
+                                        height="65"
+                                        v-lazy="require('../../public/assets/img/behfar.jpeg')"
+                                        alt="Behfar Iranmanesh"
+                                    />
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-grow-1">
+                                    <h3 class="text-darker m-0">Behfar Iranmanesh</h3>
+                                    <small>Founder & CEO - Chrono Games</small>
+                                </div>
+                                <div>
+                                    <a
+                                        class="p-1 small bg-dark text-white"
+                                        href="https://www.linkedin.com/in/behfar-iranmanesh-3223a6154/"
+                                    >
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <hr />
+                            <p class="font-italic font-weight-light"></p>
+                        </b-card>
+                    </b-col>
+                    <b-col md="3" class="p-2">
+                        <b-card class="h-100">
+                            <div class="d-flex">
+                                <div class="pr-4">
+                                    <img
+                                        class="rounded-circle"
+                                        height="65"
+                                        v-lazy="require('../../public/assets/img/adrian.jpeg')"
+                                        :alt="ALT_TEXT.HOME_BASE_TEAM_JORRIT"
+                                    />
+                                </div>
+                                <div class="d-flex flex-column justify-content-center flex-grow-1">
+                                    <h3 class="text-darker m-0">Adrian Maciuca</h3>
+                                    <small>Quality Assurance Specialist</small>
+                                </div>
+                                <div>
+                                    <a
+                                        class="p-1 small bg-dark text-white"
+                                        href="https://www.linkedin.com/in/adrian-ionut-maciuca/"
+                                    >
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <hr />
+                            <p class="font-italic font-weight-light"></p>
                         </b-card>
                     </b-col>
                     <b-col md="3" class="p-2">

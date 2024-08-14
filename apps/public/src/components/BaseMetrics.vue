@@ -19,15 +19,15 @@
                     <div>
                         <div class="card-logo mb-3 mr-md-3 w-100">
                             <span>Campaign Participants</span>
-                            <strong>18896</strong>
+                            <strong>43865</strong>
                         </div>
                         <div class="card-logo mb-3 mr-md-3 w-100">
-                            <span>Quests Entries</span>
-                            <strong>19680</strong>
+                            <span>Quest Entries</span>
+                            <strong>188020</strong>
                         </div>
                         <div class="card-logo mb-3 mr-md-3 w-100">
-                            <span>Reward Purchases</span>
-                            <strong>1868</strong>
+                            <span>Reward Payments</span>
+                            <strong>11761</strong>
                         </div>
                     </div>
                 </div>

@@ -4,11 +4,10 @@
             <div class="ticker-content">
                 <b-link
                     style="font-size: 0.9rem"
-                    href="https://medium.com/thxprotocol/revolutionizing-gaming-with-thx-networks-new-vote-escrowed-tokenomics-18ef24239e46"
+                    href="https://docs.thx.network/users/memberships-free"
                     target="_blank"
                 >
-                    <strong>Discover Staking Now 🎁</strong> Stake Your $THX on Balancer & Collect 70% of the Protocol
-                    Fees. Early Stakers Get Extra Rewards
+                    <strong>Lock Your $THX Now 💸</strong> Earn Liquidity & Protocol Fees at > 50% APR
                     <i class="fas fa-chevron-right ml-2" />
                 </b-link>
             </div>

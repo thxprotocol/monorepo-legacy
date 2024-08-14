@@ -7,7 +7,7 @@
                 </div>
             </div>
             <div class="row pb-5">
-                <div class="col-6 col-md-2 offset-md-1">
+                <div class="col-6 col-md-4 text-center">
                     <a href="https://polygon.technology/" target="_blank" class="card-logo card-logo-lg m-auto">
                         <img
                             height="40"
@@ -20,7 +20,7 @@
                         <strong>Bringing massive scale to Ethereum</strong>
                     </p>
                 </div>
-                <div class="col-6 col-md-2">
+                <div class="col-6 col-md-4 text-center">
                     <a href="https://techstars.com" target="_blank" class="card-logo card-logo-lg m-auto">
                         <img
                             width="120"
@@ -33,21 +33,12 @@
                         <strong>The largest pre-seed investor in the world</strong>
                     </p>
                 </div>
-                <div class="col-6 col-md-2">
-                    <a href="https://www.getopensocial.com/" target="_blank" class="card-logo card-logo-lg m-auto">
-                        <img
-                            height="80"
-                            width="auto"
-                            v-lazy="require('../../public/assets/img/thx_partner_opensocial.png')"
-                            :alt="ALT_TEXT.HOME_GET_OPEN_SOCIAL"
-                        />
-                    </a>
-                    <p class="text-center font-weight-light mt-3">
-                        <strong>Your community engagement platform</strong>
-                    </p>
-                </div>
-                <div class="col-6 col-md-2">
-                    <a href="https://blockis.eu/" target="_blank" class="card-logo card-logo-lg m-auto">
+                <div class="col-6 col-md-4 text-center">
+                    <a
+                        href="https://blockis.eu/hall-of-fame/open-call-2/"
+                        target="_blank"
+                        class="card-logo card-logo-lg m-auto"
+                    >
                         <img
                             height="25"
                             width="auto"
@@ -57,19 +48,6 @@
                     </a>
                     <p class="text-center font-weight-light mt-3">
                         <strong>Catalyzing blockchain innovation</strong>
-                    </p>
-                </div>
-                <div class="col-6 col-md-2">
-                    <a href="https://blockpool.eu/" target="_blank" class="card-logo card-logo-lg m-auto">
-                        <img
-                            height="60"
-                            width="auto"
-                            v-lazy="require('../../public/assets/img/thx_partner_blockpool.png')"
-                            :alt="ALT_TEXT.HOME_BLOCKPOOL"
-                        />
-                    </a>
-                    <p class="text-center font-weight-light mt-3">
-                        <strong>Accelerating SMEs’ uptake of blockchain </strong><br /><br />
                     </p>
                 </div>
             </div>

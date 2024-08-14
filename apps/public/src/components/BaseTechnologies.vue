@@ -54,13 +54,13 @@
                     <h5 class="mb-4">Extensions</h5>
                     <div class="d-flex justify-content-between flex-wrap">
                         <div class="card-logo mr-3 mb-3">
-                            <img :src="require('../../public/assets/img/thx_slack.png')" width="35" alt="logo undp" />
-                        </div>
-                        <div class="card-logo mr-3 mb-3">
                             <img :src="require('../../public/assets/img/thx_discord.png')" width="35" alt="logo undp" />
                         </div>
                         <div class="card-logo mr-3 mb-3">
-                            <img :src="require('../../public/assets/img/thx_drupal.png')" width="35" alt="logo undp" />
+                            <img :src="require('../../public/assets/img/thx_x.svg')" width="35" alt="logo undp" />
+                        </div>
+                        <div class="card-logo mr-3 mb-3">
+                            <img :src="require('../../public/assets/img/thx_gitcoin.svg')" width="35" alt="logo undp" />
                         </div>
                     </div>
                     <p class="lead font-weight-light">

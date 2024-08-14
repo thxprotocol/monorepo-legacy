@@ -13,14 +13,19 @@
                             <div class="pr-3">
                                 <img
                                     class="bg-white rounded-circle"
-                                    v-lazy="require('../../public/assets/img/logo-tryhards.png')"
-                                    width="50"
+                                    v-lazy="require('../../public/assets/img/jason.png')"
+                                    width="75"
                                     :alt="ALT_TEXT.HOME_NINA_GRINMAN"
                                 />
                             </div>
                             <div class="align-items-center">
-                                <p class="font-weight-bold mb-0">Thomas</p>
-                                <p class="small font-weight-light mb-0">CEO at TryHards</p>
+                                <p style="font-size: 1.2rem" class="mt-2 font-weight-bold mb-0">
+                                    Jason 'Bitbender' Brink
+                                </p>
+                                <p class="font-weight-light mb-0">
+                                    President of Blockchain at
+                                    <strong>Gala</strong>
+                                </p>
                             </div>
                         </div>
                     </b-card>
@@ -41,22 +46,21 @@
                     <b-card bg-variant="white" body-class="p-3 p-md-5" class="mb-3 mb-lg-0">
                         <h2 class="bg-dark text-white h5 mb-4">Reliable partner</h2>
                         <p class="lead font-italic font-weight-light mb-5 line-height-2">
-                            "We wanted a reliable partner who can provide us with the infrastructure we need for our
-                            Quest product, allowing us to focus solely on collecting and designing the quests for our
-                            products."
+                            "THX Network is the infrastructure we need for our Quest product, allowing us to focus
+                            solely on our game."
                         </p>
                         <div class="d-flex">
                             <div class="pr-3">
                                 <img
                                     class="rounded-circle"
                                     v-lazy="require('../../public/assets/img/thx_avatar_behfar.jpg')"
-                                    width="50"
+                                    width="75"
                                     :alt="ALT_TEXT.HOME_ERIK_DE_GRAAF"
                                 />
                             </div>
                             <div class="align-items-center">
-                                <p class="font-weight-bold mb-0">Behfar</p>
-                                <p class="small font-weight-light mb-0">CEO at Forest Knight</p>
+                                <p style="font-size: 1.2rem" class="mt-2 font-weight-bold mb-0">Behfar</p>
+                                <p class="font-weight-light mb-0">CEO at <strong>Chrono Games</strong></p>
                             </div>
                         </div>
                     </b-card>

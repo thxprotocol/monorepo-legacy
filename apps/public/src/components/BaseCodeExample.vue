@@ -5,12 +5,13 @@
             <div class="row pb-lg-5">
                 <div class="col-lg-4 offset-lg-1 order-lg-0 align-items-center">
                     <h2 class="h5">Embedded Loyalty</h2>
-                    <p class="lead">Engage your audience as easy as 1-2-3</p>
-                    <p class="lead">
-                        Copy-paste a small piece of code immediately launch your quests and rewards using tokens such as
-                        NFTs.
-                    </p>
-                    <p class="lead font-weight-light">
+                    <p class="lead">Engage Your Audience in Three Easy Steps</p>
+                    <ol class="lead">
+                        <li>Copy &amp; paste a small piece of code</li>
+                        <li>Launch quests and rewards immediately</li>
+                        <li>Monitor results in the analytics dashboard</li>
+                    </ol>
+                    <p>
                         Using our front-end integrated wallet or SDK your team saves months of work compared to starting
                         from scratch.
                     </p>
