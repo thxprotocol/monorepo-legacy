@@ -11,70 +11,36 @@
                 <div class="col-lg-6">
                     <b-card bg-variant="darker" body-class="p-5" class="mb-5">
                         <h3>
-                            <div class="d-md-inline">Want to see THX in action?</div>
-                            <b-button
-                                variant="outline-secondary"
-                                class="rounded-pill float-md-right mt-5 mt-md-0"
-                                href="https://calendly.com/mieszko/demo"
-                                target="_blank"
-                                :title="TITLES.SCHEDULE_A_DEMO"
-                            >
-                                Schedule a demo
-                                <i class="fas fa-chevron-right"></i>
-                            </b-button>
+                            <div class="d-md-inline">Get Your Preview!</div>
                         </h3>
-                        <div class="d-flex align-items-center justify-content-center p-3" v-if="loading">
-                            <b-spinner variant="dark"></b-spinner>
-                        </div>
-                        <validation-observer v-else ref="observer" v-slot="{ handleSubmit }">
+                        <p class="text-muted">
+                            Get a pre-configured campaign tailored to your brand within three business days.
+                        </p>
+                        <form
+                            action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSeTY5A4go_fLkEy8-EdT6i7HV6xtoGDbyy1SBGm-GGFtuC_lw/formResponse"
+                        >
                             <b-alert show variant="success" v-if="success"> {{ success }} </b-alert>
-                            <b-form @submit.stop.prevent="handleSubmit(submit)" id="formContact">
-                                <b-alert show variant="danger" class="mt-5" v-if="error">
-                                    {{ error }}
-                                    Try reaching us on
-                                    <a href="https://discord.gg/TzbbSmkE7Y" target="_blank">Discord</a>!
-                                </b-alert>
-                                <label class="text-light font-weight-bold mt-5">Name</label>
-                                <div class="form-group row">
-                                    <div class="col-sm-6">
-                                        <validation-provider
-                                            name="First name"
-                                            :rules="{ required: true }"
-                                            v-slot="validationContext"
-                                        >
-                                            <b-form-input
-                                                v-model="firstName"
-                                                placeholder="First name"
-                                                label="First name"
-                                                class="form-control-underlined"
-                                                :state="getValidationState(validationContext)"
-                                            />
-                                            <b-form-invalid-feedback>{{
-                                                validationContext.errors[0]
-                                            }}</b-form-invalid-feedback>
-                                        </validation-provider>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <validation-provider
-                                            name="Last name"
-                                            :rules="{ required: true }"
-                                            v-slot="validationContext"
-                                        >
-                                            <b-form-input
-                                                v-model="lastName"
-                                                label="Last name"
-                                                class="form-control-underlined"
-                                                placeholder="Last name"
-                                                :state="getValidationState(validationContext)"
-                                            />
-                                            <b-form-invalid-feedback>{{
-                                                validationContext.errors[0]
-                                            }}</b-form-invalid-feedback>
-                                        </validation-provider>
-                                    </div>
-                                </div>
-                                <label class="text-light font-weight-bold mt-5">Email</label>
+                            <b-alert show variant="danger" class="mt-5" v-if="error">
+                                {{ error }}
+                                Try reaching us on
+                                <a href="https://discord.gg/TzbbSmkE7Y" target="_blank">Discord</a>!
+                            </b-alert>
+                            <b-form-group label="Name" label-class="text-light font-weight-bold">
+                                <validation-provider name="Name" :rules="{ required: true }" v-slot="validationContext">
+                                    <b-form-input
+                                        v-model="name"
+                                        name="entry.952186265"
+                                        placeholder="Your name"
+                                        class="form-control-underlined"
+                                        :state="getValidationState(validationContext)"
+                                    />
+                                    <b-form-invalid-feedback>
+                                        {{ validationContext.errors[0] }}
+                                    </b-form-invalid-feedback>
+                                </validation-provider>
+                            </b-form-group>
 
+                            <b-form-group label="E-mail" label-class="text-light font-weight-bold">
                                 <validation-provider
                                     name="E-mail"
                                     :rules="{ required: true, email: true }"
@@ -82,53 +48,86 @@
                                 >
                                     <b-form-input
                                         v-model="email"
-                                        label="E-mail"
+                                        name="entry.1258733690"
                                         placeholder="Your e-mail address"
                                         class="form-control-underlined"
                                         :state="getValidationState(validationContext)"
                                     />
                                     <b-form-invalid-feedback>{{ validationContext.errors[0] }}</b-form-invalid-feedback>
                                 </validation-provider>
+                            </b-form-group>
 
-                                <label class="text-light font-weight-bold mt-5">Phone</label>
-
+                            <b-form-group label="Website" label-class="text-light font-weight-bold">
                                 <validation-provider
-                                    name="Phone"
+                                    name="Website"
                                     :rules="{ required: true }"
                                     v-slot="validationContext"
                                 >
                                     <b-form-input
-                                        v-model="phone"
-                                        label="Phone"
-                                        placeholder="Your phone number"
+                                        v-model="website"
+                                        name="entry.1688977124"
+                                        label="Website"
+                                        placeholder="Your projects website URL"
                                         class="form-control-underlined"
                                         :state="getValidationState(validationContext)"
                                     />
                                     <b-form-invalid-feedback>{{ validationContext.errors[0] }}</b-form-invalid-feedback>
                                 </validation-provider>
+                            </b-form-group>
 
-                                <label class="text-light font-weight-bold mt-5">Message</label>
+                            <b-form-group label="Campaign Goals" label-class="text-light font-weight-bold">
                                 <validation-provider
-                                    name="Message"
+                                    name="Campaign Goals"
                                     :rules="{ required: true }"
                                     v-slot="validationContext"
                                 >
                                     <b-form-textarea
-                                        v-model="message"
-                                        label="Message"
-                                        placeholder="How can we help you?"
+                                        v-model="campaignGoals"
+                                        name="entry.1923278200"
+                                        placeholder="What do you aim to achieve?"
                                         class="form-control-underlined"
                                         :state="getValidationState(validationContext)"
                                     ></b-form-textarea>
                                     <b-form-invalid-feedback>{{ validationContext.errors[0] }}</b-form-invalid-feedback>
                                 </validation-provider>
-                            </b-form>
-                        </validation-observer>
-                        <hr />
-                        <b-button variant="light" class="rounded-pill" type="submit" form="formContact">
-                            Send you message
-                            <i class="fas fa-chevron-right"></i>
-                        </b-button>
+                            </b-form-group>
+
+                            <b-form-group label="Start Date" label-class="text-light font-weight-bold">
+                                <validation-provider
+                                    name="Start Date"
+                                    :rules="{ required: true }"
+                                    v-slot="validationContext"
+                                >
+                                    <b-form-input
+                                        v-model="startDate"
+                                        label="Start Date"
+                                        type="date"
+                                        placeholder="Your potential campaign start date"
+                                        class="form-control-underlined"
+                                        :state="getValidationState(validationContext)"
+                                    />
+                                    <b-form-invalid-feedback>
+                                        {{ validationContext.errors[0] }}
+                                    </b-form-invalid-feedback>
+                                    <input
+                                        hidden
+                                        name="entry.619327791_year"
+                                        :value="new Date(startDate).getFullYear()"
+                                    />
+                                    <input
+                                        hidden
+                                        name="entry.619327791_month"
+                                        :value="new Date(startDate).getMonth()"
+                                    />
+                                    <input hidden name="entry.619327791_day" :value="new Date(startDate).getDate()" />
+                                </validation-provider>
+                            </b-form-group>
+                            <hr />
+                            <b-button block variant="primary" class="rounded-pill" type="submit">
+                                Get Your Preview
+                                <i class="fas fa-chevron-right"></i>
+                            </b-button>
+                        </form>
                     </b-card>
                 </div>
                 <div class="offset-lg-1 col-lg-3">
@@ -165,20 +164,6 @@
                         v-lazy="require('../../public/assets/img/thx_contact_team.webp')"
                         alt=""
                     />
-
-                    <h3 class="text-dark">Media Materials</h3>
-                    <p class="mb-3">
-                        Download and share THX press materials or reach out to our press contact
-                        <a class="text-dark font-weight-bold" href="mailto:info@thx.network">Jorrit Horstman</a>.
-                    </p>
-                    <b-button
-                        target="_blank"
-                        class="btn btn-outline-dark rounded-pill text-decoration-none"
-                        href="https://drive.google.com/drive/folders/1a3cc5mekZfJuHHxRbAc9vQ-DORMFHvG9?usp=sharing"
-                    >
-                        Download press pack
-                        <i class="fas fa-chevron-right"></i>
-                    </b-button>
 
                     <div class="d-flex align-items-center justify-content-around text-center pt-5">
                         <b-button
@@ -218,9 +203,8 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import axios from 'axios';
 import { CONTACT_TAGS, TWITTER_TAGS, LINKS, TITLES } from '@thxnetwork/public/utils/constants';
-import { GOOGLE_SITE_KEY, CMS_URL } from '../config/secrets';
+import { GOOGLE_SITE_KEY } from '../config/secrets';
 
 @Component({
     metaInfo: {
@@ -248,48 +232,18 @@ import { GOOGLE_SITE_KEY, CMS_URL } from '../config/secrets';
 export default class Contact extends Vue {
     TITLES = TITLES;
     googleSiteKey = GOOGLE_SITE_KEY;
-    loading = false;
+    isLoading = false;
     error = '';
     success = '';
 
-    firstName = '';
-    lastName = '';
+    name = '';
     email = '';
-    phone = '';
-    message = '';
+    website = '';
+    campaignGoals = '';
+    startDate = new Date().toISOString().split('T')[0];
 
     getValidationState({ dirty, validated, valid = null }: any) {
         return dirty || validated ? valid : null;
-    }
-
-    async submit() {
-        this.loading = true;
-
-        try {
-            await axios({
-                url: CMS_URL + '/form-contacts',
-                method: 'POST',
-                data: {
-                    email: this.email,
-                    firstName: this.firstName,
-                    lastName: this.lastName,
-                    phone: this.phone,
-                    message: this.message,
-                },
-            });
-            this.email = '';
-            this.firstName = '';
-            this.lastName = '';
-            this.phone = '';
-            this.message = '';
-
-            this.success = 'THX! We will respond to your message as soon as possible.';
-        } catch (e) {
-            this.error = 'Oops! Something went wrong...';
-        } finally {
-            this.loading = false;
-        }
-        return;
     }
 }
 </script>
