@@ -672,11 +672,11 @@ class PoolModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async readAnalyticsMetrics(payload: { poolId: string }) {
+    async readAnalyticsMetrics(payload: { poolId: string; startDate: Date; endDate: Date }) {
         const r = await axios({
             method: 'get',
             url: `/pools/${payload.poolId}/analytics/metrics`,
-            headers: { 'X-PoolId': payload.poolId },
+            params: { startDate: payload.startDate, endDate: payload.endDate },
         });
         this.context.commit('setAnalyticsMetrics', { _id: payload.poolId, ...r.data });
         return r.data;

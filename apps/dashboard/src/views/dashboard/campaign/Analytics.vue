@@ -59,7 +59,7 @@
                 </b-card>
             </b-col>
         </b-row>
-        <b-row v-if="pool">
+        <b-row>
             <b-col md="8">
                 <p><strong class="text-muted">Campaign</strong></p>
                 <b-row class="mb-3" v-if="metrics">
