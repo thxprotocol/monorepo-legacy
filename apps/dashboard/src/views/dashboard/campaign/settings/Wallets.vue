@@ -44,14 +44,20 @@
                     </template>
                     <template #cell(address)="{ item }">
                         <b-link :href="item.address.url" target="_blank">
-                            {{ item.address.address }}
+                            {{ item.address.address.substring(0, 10) }}...
                             <i class="fas fa-external-link-alt ml-1 small" />
                         </b-link>
                     </template>
+                    <template #cell(transactions)="{ item }">
+                        <b-link v-b-modal="`modalWalletTransactions${item.wallet._id}`">
+                            <i class="fas fa-exchange-alt mr-1 text-muted" />
+                            {{ item.transactions }}
+                        </b-link>
+                    </template>
                     <template #cell(createdAt)="{ item }">
-                        <small class="text-muted">
+                        <span class="text-muted">
                             {{ format(new Date(item.createdAt), 'dd-MM-yyyy HH:mm') }}
-                        </small>
+                        </span>
                     </template>
                     <template #cell(url)="{ item }">
                         <b-link :href="item.url" target="_blank" class="text-muted">
@@ -59,19 +65,24 @@
                             <i class="fas fa-external-link-alt ml-1" />
                         </b-link>
                     </template>
-                    <template #cell(id)="{ item }">
+                    <template #cell(wallet)="{ item }">
                         <b-dropdown variant="link" size="sm" no-caret right>
                             <template #button-content>
                                 <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                             </template>
-                            <b-dropdown-item v-b-modal="`modalDelete${item.id}`"> Remove </b-dropdown-item>
+                            <b-dropdown-item v-b-modal="`modalDelete${item.wallet._id}`"> Remove </b-dropdown-item>
                         </b-dropdown>
+                        <BaseModalWalletTransactions
+                            :pool="pool"
+                            :wallet="item.wallet"
+                            :id="`modalWalletTransactions${item.wallet._id}`"
+                        />
                         <BaseModalDelete
-                            :id="`modalDelete${item.id}`"
+                            :id="`modalDelete${item.wallet._id}`"
                             :loading="isLoading"
                             :error="error"
-                            @submit="onDelete(item.id)"
-                            :subject="`${item.address.address} on ${chainInfo[item.chainId].name}`"
+                            @submit="onDelete(item.wallet._id)"
+                            :subject="`${item.address.address.substring(0, 10)}... on ${chainInfo[item.chainId].name}`"
                         />
                     </template>
                 </BTable>
@@ -83,22 +94,17 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { ChainId } from '@thxnetwork/common/enums';
 import { format } from 'date-fns';
-import { IPools } from '@thxnetwork/dashboard/store/modules/pools';
 import { chainInfo } from '@thxnetwork/dashboard/utils/chains';
 import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
 import BaseModalWalletCreate from '@thxnetwork/dashboard/components/modals/BaseModalWalletCreate.vue';
-
-const safeURLMap = {
-    [ChainId.Linea]: 'https://safe.linea.build',
-    [ChainId.Polygon]: 'https://app.safe.global',
-};
+import BaseModalWalletTransactions from '@thxnetwork/dashboard/components/modals/BaseModalWalletTransactions.vue';
 
 @Component({
     components: {
         BaseModalDelete,
         BaseModalWalletCreate,
+        BaseModalWalletTransactions,
     },
     computed: mapGetters({
         walletList: 'pools/wallets',
@@ -124,10 +130,11 @@ export default class SettingsWallets extends Vue {
             chainId: wallet.chainId,
             address: {
                 address: wallet.address,
-                url: `${safeURLMap[wallet.chainId]}/transactions/history?safe=${wallet.address}`,
+                url: `${chainInfo[wallet.chainId].safeURL}/transactions/history?safe=${wallet.address}`,
             },
+            transactions: wallet.transactions.length,
             createdAt: wallet.createdAt,
-            id: wallet._id,
+            wallet,
         }));
     }
 
