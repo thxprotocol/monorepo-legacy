@@ -30,7 +30,7 @@
                             class="text-white d-flex py-1 text-decoration-none p-3"
                         >
                             <div>
-                                <i :class="reason.iconClass" class="fas mr-3" />
+                                <i class="fas mr-3 fa-check-circle text-success" />
                                 <span>{{ reason.title }}</span>
                             </div>
                             <i class="fas fa-caret-down text-muted ml-auto" />
@@ -54,7 +54,6 @@ const reasons = [
     {
         plan: [AccountPlanType.Lite],
         isCollapsed: true,
-        iconClass: 'fa-check-circle text-success',
         title: '€ 89 / month (14 day free trial)',
         description:
             "We invite you to try out all capabilities for 14 days, with no obligation to pay unless you're satisfied!",
@@ -62,7 +61,6 @@ const reasons = [
     {
         plan: [AccountPlanType.Premium],
         isCollapsed: true,
-        iconClass: 'fa-check-circle text-success',
         title: '€ 449 / month (14 day free trial)',
         description:
             "We invite you to try out all capabilities for 14 days, with no obligation to pay unless you're satisfied!",
@@ -70,7 +68,6 @@ const reasons = [
     {
         plan: [AccountPlanType.Lite, AccountPlanType.Premium],
         isCollapsed: false,
-        iconClass: 'fa-check-circle text-success',
         title: '70% revenue share',
         description:
             'We reward our community with a 70% share of your fee. This is how we connect token holder incentives with customer success.',
@@ -78,7 +75,6 @@ const reasons = [
     {
         plan: [AccountPlanType.Lite, AccountPlanType.Premium],
         isCollapsed: false,
-        iconClass: 'fa-check-circle text-success',
         title: 'Custom integrations',
         description:
             'Integrate quest validation with your own app or game. We provide you with various ways to validate quests and reward your users.',
@@ -86,7 +82,6 @@ const reasons = [
     {
         plan: [AccountPlanType.Lite, AccountPlanType.Premium],
         isCollapsed: false,
-        iconClass: 'fa-check-circle text-success',
         title: 'Discord Bot',
         description:
             'Reach your community in channels that matter most. Post reward overviews and announce new rewards, all automated.',
@@ -94,7 +89,6 @@ const reasons = [
     {
         plan: [AccountPlanType.Lite, AccountPlanType.Premium],
         isCollapsed: false,
-        iconClass: 'fa-check-circle text-success',
         title: 'Twitter Automation',
         description:
             "You are already very busy managing campaigns... We'll automate your Twitter campaigns, so you can focus on growth!",
@@ -102,7 +96,6 @@ const reasons = [
     {
         plan: [AccountPlanType.Lite, AccountPlanType.Premium],
         isCollapsed: false,
-        iconClass: 'fa-check-circle text-success',
         title: 'Weekly Performance Reports',
         description:
             'We know budgets and results are important to you. We send you weekly reports by mail and are happy to jump on a call to discuss results and potential improvements.',
@@ -116,7 +109,7 @@ const reasons = [
 })
 export default class ViewSignup extends Vue {
     plan = AccountPlanType.Lite;
-    reasons: any[] = [];
+    reasons: { plan: AccountPlanType[]; isCollapsed: boolean; title: string; description: string }[] = [];
 
     mounted() {
         const signupPlan = this.$route.query.signup_plan as unknown as AccountPlanType;
