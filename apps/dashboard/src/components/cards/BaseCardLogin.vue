@@ -144,7 +144,7 @@ export default class BaseCardLeaderboard extends Vue {
     async onSubmitSigninWithOTP() {
         this.isLoadingOTP = true;
         try {
-            await this.$store.dispatch('auth/signInWithOtp', { email: this.email });
+            await this.$store.dispatch('auth/signInWithOtp', { email: this.email, plan: this.plan });
             this.isEmailSent = true;
         } catch (error) {
             this.error = (error as Error).message;
@@ -173,7 +173,7 @@ export default class BaseCardLeaderboard extends Vue {
                 plan: this.plan,
                 skipBrowserRedirect: false,
             });
-            if (!this.account) throw new Error('An issue occured while verifying OTP. Please try again.');
+            if (!this.account) throw new Error('An issue occured while logging in. Please try again.');
         } catch (error) {
             this.error = (error as Error).message;
         } finally {

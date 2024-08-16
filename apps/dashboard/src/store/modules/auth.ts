@@ -62,9 +62,9 @@ export default class AuthModule extends VuexModule {
         this.context.commit('setSession', session);
         await store.dispatch('account/get');
 
-        // On login page we redirect to redirect url or dashboard if an account is found
+        // On login and signup page we redirect to redirect url or dashboard if an account is found
         const route = router.currentRoute;
-        if (route.name === 'login') {
+        if (['login', 'signup'].includes(route.name as string)) {
             track('UserSignsIn', [store.getters['account/profile']]);
 
             if (route.query.redirect) {
@@ -149,7 +149,7 @@ export default class AuthModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async signinWithOAuth({ variant, plan }: { variant: AccountVariant; plan?: AccountPlanType }) {
+    async signinWithOAuth({ variant }: { variant: AccountVariant }) {
         const provider = accountVariantProviderKindMap[variant];
         if (!provider) throw new Error('Invalid provider');
 
@@ -159,7 +159,7 @@ export default class AuthModule extends VuexModule {
                 scopes: OAuthScopes[provider],
                 redirectTo: BASE_URL + '/auth/redirect',
                 skipBrowserRedirect: true,
-                data: { variant, plan },
+                data: { variant },
             },
         });
         const { data, error } = await supabase.auth.signInWithOAuth(config);

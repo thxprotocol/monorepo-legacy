@@ -52,11 +52,6 @@
                 </b-form-group>
             </b-col>
             <b-col md="6">
-                <b-card variant="primary" show class="mb-3">
-                    <p>Please add this script to load the campaign widget for your users.</p>
-                    <BaseCodeExample v-if="pool" :pool="pool" />
-                </b-card>
-
                 <b-card>
                     <ul class="text-muted list-unstyled">
                         <li class="my-1">
