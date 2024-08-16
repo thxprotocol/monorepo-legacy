@@ -3,6 +3,7 @@ import { createClient, Session, Provider } from '@supabase/supabase-js';
 import { SUPABASE_URL, SUPABASE_PUBLIC_KEY, BASE_URL, API_URL } from '@thxnetwork/dashboard/config/secrets';
 import {
     AccessTokenKind,
+    AccountPlanType,
     AccountVariant,
     accountVariantProviderKindMap,
     OAuthScope,
@@ -12,7 +13,6 @@ import { popup } from '@thxnetwork/dashboard/utils/popup';
 import store from '@thxnetwork/dashboard/store';
 import axios from 'axios';
 import router from '../../router';
-import { logger } from 'ethers';
 import { track } from '@thxnetwork/common/mixpanel';
 
 export type TSession = Session;
@@ -123,13 +123,14 @@ export default class AuthModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async signInWithOtp({ email }: { email: string }) {
+    async signInWithOtp({ email, plan }: { email: string; plan?: AccountPlanType }) {
         const { error } = await supabase.auth.signInWithOtp({
             email,
             options: {
                 shouldCreateUser: true, // We create users in supabase if they don't exist
                 data: {
                     variant: AccountVariant.EmailPassword,
+                    plan,
                 },
             },
         });
@@ -148,7 +149,7 @@ export default class AuthModule extends VuexModule {
     }
 
     @Action({ rawError: true })
-    async signinWithOAuth({ variant }: { variant: AccountVariant }) {
+    async signinWithOAuth({ variant, plan }: { variant: AccountVariant; plan?: AccountPlanType }) {
         const provider = accountVariantProviderKindMap[variant];
         if (!provider) throw new Error('Invalid provider');
 
@@ -158,7 +159,7 @@ export default class AuthModule extends VuexModule {
                 scopes: OAuthScopes[provider],
                 redirectTo: BASE_URL + '/auth/redirect',
                 skipBrowserRedirect: true,
-                data: { variant },
+                data: { variant, plan },
             },
         });
         const { data, error } = await supabase.auth.signInWithOAuth(config);

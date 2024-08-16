@@ -76,6 +76,7 @@ import { providerIconMap } from '@thxnetwork/common/maps';
 import { AccessTokenKind, AccountVariant } from '@thxnetwork/common/enums';
 import { validateEmail } from '@thxnetwork/dashboard/utils/email';
 import { mapGetters } from 'vuex';
+import { AccountPlanType } from '@thxnetwork/common/enums';
 
 @Component({
     computed: mapGetters({
@@ -129,6 +130,7 @@ export default class BaseCardLeaderboard extends Vue {
     isEmailSent = false;
 
     @Prop() readonly signup!: boolean;
+    @Prop() readonly plan!: AccountPlanType;
 
     get isEmailValid() {
         if (!this.email) return false;
@@ -154,7 +156,7 @@ export default class BaseCardLeaderboard extends Vue {
     async onSubmitVerifyOTP() {
         this.isLoadingOTPVerify = true;
         try {
-            await this.$store.dispatch('auth/verifyOtp', { email: this.email, token: this.otp });
+            await this.$store.dispatch('auth/verifyOtp', { email: this.email, token: this.otp, plan: this.plan });
             if (!this.account) throw new Error('An issue occured while verifying OTP. Please try again.');
         } catch (error) {
             this.error = (error as Error).message;
@@ -166,7 +168,11 @@ export default class BaseCardLeaderboard extends Vue {
     async onClickSigninWithOAuth(variant: AccountVariant) {
         this.providers[variant].isLoading = true;
         try {
-            await this.$store.dispatch('auth/signinWithOAuth', { variant, skipBrowserRedirect: false });
+            await this.$store.dispatch('auth/signinWithOAuth', {
+                variant,
+                plan: this.plan,
+                skipBrowserRedirect: false,
+            });
             if (!this.account) throw new Error('An issue occured while verifying OTP. Please try again.');
         } catch (error) {
             this.error = (error as Error).message;

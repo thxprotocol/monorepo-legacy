@@ -27,7 +27,7 @@
                             </p>
                             <b-button
                                 block
-                                to="/signup?signup_plan=1"
+                                to="/signup?signup_plan=0"
                                 variant="dark"
                                 class="rounded-pill mt-3 mb-3"
                                 :title="TITLES.PRICING_SIGN_UP"
@@ -58,7 +58,7 @@
                             </p>
                             <b-button
                                 block
-                                to="/signup?signup_plan=2"
+                                to="/signup?signup_plan=1"
                                 variant="primary"
                                 class="rounded-pill mt-3 mb-3"
                                 :title="TITLES.PRICING_SIGN_UP"
