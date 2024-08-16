@@ -11,6 +11,11 @@ const routes: Array<RouteConfig> = [
         component: () => import('../views/Login.vue'),
     },
     {
+        name: 'signup',
+        path: '/signup',
+        component: () => import('../views/Signup.vue'),
+    },
+    {
         name: 'signout',
         path: '/signout',
         beforeEnter: async (to: Route, from: Route, next) => {

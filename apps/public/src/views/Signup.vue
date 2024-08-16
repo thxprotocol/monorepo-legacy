@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { DASHBOARD_URL, WIDGET_ID } from '../config/secrets';
+import { DASHBOARD_URL } from '../config/secrets';
 
 const META_TITLE = 'Signup';
 const META_DESCRIPTION = '';
@@ -32,11 +32,6 @@ export default class Signup extends Vue {
     mounted() {
         const url = new URL(DASHBOARD_URL);
         url.pathname = 'signup';
-
-        const ref = window.localStorage.getItem(`thx:widget:${WIDGET_ID}:ref`) as string;
-        if (ref) {
-            url.searchParams.append('referralCode', ref);
-        }
 
         if (this.$route.query.signup_plan) {
             url.searchParams.append('signup_plan', String(this.$route.query.signup_plan));

@@ -21,10 +21,8 @@
 </template>
 
 <script lang="ts">
-import { track } from '@thxnetwork/common/mixpanel';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
-import { supabase } from '@thxnetwork/dashboard/store/modules/auth';
 
 @Component({
     computed: {

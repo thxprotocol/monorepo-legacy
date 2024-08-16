@@ -1,9 +1,25 @@
 <template>
     <b-card footer-class="text-right small">
-        <b-alert show variant="primary">
+        <b-alert show variant="primary" v-if="!signup">
             <i class="fas fa-info-circle ml-0 mr-2" />
             Don't worry, we'll create an account for you automatically.
         </b-alert>
+        <b-alert show variant="primary" v-else>
+            <i class="fas fa-info-circle ml-0 mr-2" />
+            By continuing you accept THX Network's
+            <b-link
+                class="font-weight-bold"
+                href="https://thx.network/general-terms-and-conditions.pdf"
+                target="_blank"
+            >
+                Terms &amp; Conditions
+            </b-link>
+            and
+            <b-link class="font-weight-bold" href="https://thx.network/privacy-policy.pdf" target="_blank">
+                Privacy Policy </b-link
+            >.
+        </b-alert>
+
         <b-form @submit.prevent="onSubmitSigninWithOTP" v-if="!isEmailSent">
             <BaseFormGroup label="Use your e-mail">
                 <b-form-input v-model="email" placeholder="yourname@example.com" />
@@ -55,7 +71,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 import { providerIconMap } from '@thxnetwork/common/maps';
 import { AccessTokenKind, AccountVariant } from '@thxnetwork/common/enums';
 import { validateEmail } from '@thxnetwork/dashboard/utils/email';
@@ -111,6 +127,8 @@ export default class BaseCardLeaderboard extends Vue {
     isLoadingOTP = false;
     isLoadingOTPVerify = false;
     isEmailSent = false;
+
+    @Prop() readonly signup!: boolean;
 
     get isEmailValid() {
         if (!this.email) return false;
