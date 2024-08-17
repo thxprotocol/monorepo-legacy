@@ -3,7 +3,7 @@
         <b-spinner v-if="isLoading" small variant="primary" />
         <template v-else>
             <small><i class="fas text-muted fa-users mr-1" /></small>
-            {{ payments.total }}/{{ reward.couponCodeCount || reward.limit || '&infin;' }}
+            {{ payments.total }}/{{ reward.couponCodeCount || reward.limitSupply || '&infin;' }}
         </template>
         <BaseModalParticipants :id="`modalParticipants${reward._id}`" :reward="reward" />
     </b-link>

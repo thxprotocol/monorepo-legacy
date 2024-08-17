@@ -16,6 +16,7 @@ type TBaseReward = {
     claimAmount: number;
     claimLimit: number;
     limit: number;
+    limitSupply: number;
     pointPrice: number;
     image: string;
     index: number;
