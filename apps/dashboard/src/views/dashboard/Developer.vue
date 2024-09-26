@@ -37,9 +37,9 @@
 </template>
 
 <script lang="ts">
+import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 
 @Component({
     components: {
@@ -52,6 +52,11 @@ import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 })
 export default class DeveloperView extends Vue {
     childRoutes = [
+        {
+            name: 'Wallets',
+            class: 'fas fa-wallet',
+            route: 'wallets',
+        },
         {
             name: 'API',
             class: 'fas fa-key',

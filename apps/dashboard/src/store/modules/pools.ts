@@ -1,11 +1,11 @@
-import { Vue } from 'vue-property-decorator';
-import axios from 'axios';
-import { Module, VuexModule, Action, Mutation } from 'vuex-module-decorators';
+import { AccountPlanType, ChainId } from '@thxnetwork/common/enums';
+import { QuestEntryStatus } from '@thxnetwork/common/enums/QuestEntryStatus';
 import { track } from '@thxnetwork/common/mixpanel';
 import { prepareFormDataForUpload } from '@thxnetwork/dashboard/utils/uploadFile';
-import { AccountPlanType, ChainId } from '@thxnetwork/common/enums';
+import axios from 'axios';
 import * as html from 'html-entities';
-import { QuestEntryStatus } from '@thxnetwork/common/enums/QuestEntryStatus';
+import { Vue } from 'vue-property-decorator';
+import { Action, Module, Mutation, VuexModule } from 'vuex-module-decorators';
 
 export interface IPoolAnalyticLeaderBoard {
     _id: string;
@@ -77,10 +77,6 @@ export type TTwitterQueryState = {
     [poolId: string]: TTwitterQuery[];
 };
 
-export type TWalletState = {
-    [poolId: string]: TWallet[];
-};
-
 @Module({ namespaced: true })
 class PoolModule extends VuexModule {
     _all: IPools = {};
@@ -89,7 +85,7 @@ class PoolModule extends VuexModule {
     _rewards: TQuestState = {};
     _rewardPayments: TQuestState = {};
     _guilds: TGuildState = {};
-    _wallets: TWalletState = {};
+    _wallets: TWallet[] = [];
     _participants: TParticipantState = {};
     _couponCodes: TCouponCodeState = {};
     _analytics: IPoolAnalytics = {};
@@ -311,19 +307,20 @@ class PoolModule extends VuexModule {
     }
     @Mutation
     setWallets(wallets: TWallet[]) {
-        Vue.set(this._wallets, wallets[0].poolId, wallets);
+        this._wallets = wallets;
     }
 
     @Mutation
     unsetWallet({ pool, walletId }) {
-        Vue.delete(this._wallets[pool._id], walletId);
+        const index = this._wallets.findIndex((w) => w._id === walletId);
+        Vue.delete(this._wallets, index);
     }
 
     @Action({ rawError: true })
     async listWallets({ pool }) {
         const { data } = await axios({
             method: 'GET',
-            url: `/pools/${pool._id}/wallets`,
+            url: `/wallets`,
         });
         this.context.commit('setWallets', data);
     }
@@ -332,7 +329,7 @@ class PoolModule extends VuexModule {
     async removeWallet({ pool, walletId }) {
         await axios({
             method: 'DELETE',
-            url: `/pools/${pool._id}/wallets/${walletId}`,
+            url: `/wallets/${walletId}`,
         });
         this.context.commit('unsetWallet', { pool, walletId });
     }

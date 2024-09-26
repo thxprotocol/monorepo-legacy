@@ -1,6 +1,6 @@
+import store from '@thxnetwork/dashboard/store';
 import Vue from 'vue';
 import VueRouter, { Route, RouteConfig } from 'vue-router';
-import store from '@thxnetwork/dashboard/store';
 
 Vue.use(VueRouter);
 
@@ -132,11 +132,6 @@ const routes: Array<RouteConfig> = [
                                 component: () => import('../views/dashboard/campaign/settings/Team.vue'),
                             },
                             {
-                                name: 'SettingsWallets',
-                                path: 'wallets',
-                                component: () => import('../views/dashboard/campaign/settings/Wallets.vue'),
-                            },
-                            {
                                 name: 'SettingsAppearance',
                                 path: 'appearance',
                                 component: () => import('../views/dashboard/campaign/settings/Appearance.vue'),
@@ -170,6 +165,11 @@ const routes: Array<RouteConfig> = [
                         name: 'DeveloperIdentities',
                         path: 'identities',
                         component: () => import('../views/dashboard/developer/Identities.vue'),
+                    },
+                    {
+                        name: 'DeveloperWallets',
+                        path: 'wallets',
+                        component: () => import('../views/dashboard/developer/Wallets.vue'),
                     },
                     {
                         name: 'DeveloperEvents',

@@ -60,9 +60,9 @@
 </template>
 
 <script lang="ts">
+import { DOCS_URL } from '@thxnetwork/dashboard/config/secrets';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters, mapState } from 'vuex';
-import { DOCS_URL } from '@thxnetwork/dashboard/config/secrets';
 
 @Component({
     computed: {
