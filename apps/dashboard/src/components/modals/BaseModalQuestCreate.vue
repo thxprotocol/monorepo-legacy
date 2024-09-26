@@ -122,11 +122,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
-import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
 import BaseCardInfoLinks from '@thxnetwork/dashboard/components/cards/BaseCardInfoLinks.vue';
 import BaseCardQuestLocks from '@thxnetwork/dashboard/components/cards/BaseCardQuestLocks.vue';
+import BaseModal from '@thxnetwork/dashboard/components/modals/BaseModal.vue';
+import { isValidUrl } from '@thxnetwork/dashboard/utils/url';
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({
     components: {
@@ -164,7 +164,7 @@ export default class ModalQuestCreate extends Vue {
         this.title = this.quest ? this.quest.title : this.title;
         this.description = this.quest ? this.quest.description : this.description;
         this.image = this.quest ? this.quest.image : this.image;
-        this.expiryDate = this.quest && this.quest.expiryDate ? this.quest.expiryDate : this.expiryDate;
+        // this.expiryDate = this.quest && this.quest.expiryDate ? this.quest.expiryDate : this.expiryDate;
         this.infoLinks = this.quest ? this.quest.infoLinks : this.infoLinks;
         this.locks = this.quest ? Object.values(this.quest.locks) : this.locks;
         this.isIPLimitEnabled = this.quest ? this.quest.isIPLimitEnabled : this.isIPLimitEnabled;
@@ -173,6 +173,7 @@ export default class ModalQuestCreate extends Vue {
             const date = new Date(this.quest.expiryDate);
             this.expirationDate = date;
             this.expirationTime = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+            this.change();
         }
     }
 
