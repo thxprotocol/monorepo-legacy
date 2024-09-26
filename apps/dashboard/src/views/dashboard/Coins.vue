@@ -13,7 +13,7 @@
             >
                 <div class="container container-md py-5">
                     <p class="brand-text">Coins</p>
-                    <b-button
+                    <!-- <b-button
                         v-b-modal="'modalERC20Create'"
                         class="rounded-pill mr-2"
                         variant="secondary"
@@ -23,11 +23,11 @@
                     >
                         <i class="fas fa-plus mr-2"></i>
                         <span>Create Coin</span>
-                    </b-button>
+                    </b-button> -->
                     <b-button
                         v-b-modal="'modalERC20Import'"
-                        variant="link"
-                        class="text-light"
+                        class="rounded-pill mr-2"
+                        variant="secondary"
                         v-b-tooltip
                         title="Import an existing ERC20 token contract, top up your pool and manage the distribution."
                     >
@@ -58,15 +58,15 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { mapGetters } from 'vuex';
-import { IERC20s } from '@thxnetwork/dashboard/types/erc20';
-import ModalERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalERC20Create.vue';
-import ModalERC20Import from '@thxnetwork/dashboard/components/modals/BaseModalERC20Import.vue';
 import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
 import BaseBtnToggleArchive from '@thxnetwork/dashboard/components/buttons/BaseBtnToggleArchive.vue';
-import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
 import BaseCardERC20 from '@thxnetwork/dashboard/components/cards/BaseCardERC20.vue';
+import ModalERC20Create from '@thxnetwork/dashboard/components/modals/BaseModalERC20Create.vue';
+import ModalERC20Import from '@thxnetwork/dashboard/components/modals/BaseModalERC20Import.vue';
+import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
+import { IERC20s } from '@thxnetwork/dashboard/types/erc20';
+import { Component, Vue } from 'vue-property-decorator';
+import { mapGetters } from 'vuex';
 
 @Component({
     components: {

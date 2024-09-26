@@ -124,12 +124,12 @@
                                     <template #button-content>
                                         <i class="fas fa-ellipsis-h ml-0 text-muted"></i>
                                     </template>
-                                    <b-dropdown-item
+                                    <!-- <b-dropdown-item
                                         v-if="item.reward.variant === RewardVariant.NFT && item.reward.erc721Id"
                                         v-b-modal="`modalQRCodes${item.reward._id}`"
                                     >
                                         QR Codes
-                                    </b-dropdown-item>
+                                    </b-dropdown-item> -->
                                     <b-dropdown-item
                                         v-b-modal="rewardModalComponentMap[item.reward.variant] + item.reward._id"
                                     >
@@ -168,20 +168,20 @@
 </template>
 
 <script lang="ts">
+import { RewardVariant } from '@thxnetwork/common/enums';
+import BaseButtonRewardPayments from '@thxnetwork/dashboard/components/buttons/BaseButtonRewardPayments.vue';
+import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
+import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
+import BaseModalQRCodes from '@thxnetwork/dashboard/components/modals/BaseModalQRCodes.vue';
+import BaseModalRewardCoinCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCoinCreate.vue';
+import BaseModalRewardCouponCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCouponCreate.vue';
+import BaseModalRewardCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCustomCreate.vue';
+import BaseModalRewardDiscordRoleCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardDiscordRoleCreate.vue';
+import BaseModalRewardNFTCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardNFTCreate.vue';
 import { TRewardState } from '@thxnetwork/dashboard/store/modules/pools';
+import { format } from 'date-fns';
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import { RewardVariant } from '@thxnetwork/common/enums';
-import { format } from 'date-fns';
-import BaseModalRewardCoinCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCoinCreate.vue';
-import BaseModalRewardNFTCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardNFTCreate.vue';
-import BaseModalRewardCustomCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCustomCreate.vue';
-import BaseModalRewardCouponCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardCouponCreate.vue';
-import BaseModalRewardDiscordRoleCreate from '@thxnetwork/dashboard/components/modals/BaseModalRewardDiscordRoleCreate.vue';
-import BaseCardTableHeader from '@thxnetwork/dashboard/components/cards/BaseCardTableHeader.vue';
-import BaseModalQRCodes from '@thxnetwork/dashboard/components/modals/BaseModalQRCodes.vue';
-import BaseButtonRewardPayments from '@thxnetwork/dashboard/components/buttons/BaseButtonRewardPayments.vue';
-import BaseModalDelete from '@thxnetwork/dashboard/components/modals/BaseModalDelete.vue';
 
 @Component({
     components: {

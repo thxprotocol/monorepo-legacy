@@ -13,7 +13,7 @@
             >
                 <div class="container container-md py-5">
                     <p class="brand-text">NFT</p>
-                    <b-button
+                    <!-- <b-button
                         v-b-modal="'modalERC721Create'"
                         class="rounded-pill"
                         variant="secondary"
@@ -23,11 +23,11 @@
                     >
                         <i class="fas fa-plus mr-2"></i>
                         <span class="mr-2">Create NFT</span>
-                    </b-button>
+                    </b-button> -->
                     <b-button
                         v-b-modal="'modalNftImport'"
-                        variant="link"
-                        class="text-light"
+                        class="rounded-pill"
+                        variant="secondary"
                         v-b-tooltip
                         title="Transfer tokens to your pool and import an existing ERC721 or ERC1155 token contract."
                     >
@@ -62,16 +62,16 @@
 </template>
 
 <script lang="ts">
+import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
+import BaseBtnToggleArchive from '@thxnetwork/dashboard/components/buttons/BaseBtnToggleArchive.vue';
+import BaseCardERC1155 from '@thxnetwork/dashboard/components/cards/BaseCardERC1155.vue';
+import BaseCardERC721 from '@thxnetwork/dashboard/components/cards/BaseCardERC721.vue';
+import ModalErc721Create from '@thxnetwork/dashboard/components/modals/BaseModalERC721Create.vue';
+import BaseModalNftImport from '@thxnetwork/dashboard/components/modals/BaseModalNftImport.vue';
+import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
+import { IERC721s } from '@thxnetwork/dashboard/types/erc721';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapGetters } from 'vuex';
-import ModalErc721Create from '@thxnetwork/dashboard/components/modals/BaseModalERC721Create.vue';
-import BaseCardERC721 from '@thxnetwork/dashboard/components/cards/BaseCardERC721.vue';
-import BaseCardERC1155 from '@thxnetwork/dashboard/components/cards/BaseCardERC1155.vue';
-import BaseNothingHere from '@thxnetwork/dashboard/components/BaseListStateEmpty.vue';
-import { IERC721s } from '@thxnetwork/dashboard/types/erc721';
-import BaseBtnToggleArchive from '@thxnetwork/dashboard/components/buttons/BaseBtnToggleArchive.vue';
-import BaseModalPoolCreate from '@thxnetwork/dashboard/components/modals/BaseModalPoolCreate.vue';
-import BaseModalNftImport from '@thxnetwork/dashboard/components/modals/BaseModalNftImport.vue';
 import { IERC1155s } from '../types/erc1155';
 
 @Component({
@@ -96,7 +96,7 @@ export default class NFTView extends Vue {
     mounted() {
         this.$store.dispatch('account/get');
         this.$store.dispatch('erc721/list');
-        this.$store.dispatch('erc1155/list');
+        // this.$store.dispatch('erc1155/list');
     }
 }
 </script>

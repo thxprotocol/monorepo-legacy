@@ -53,11 +53,6 @@ import { mapGetters } from 'vuex';
 export default class DeveloperView extends Vue {
     childRoutes = [
         {
-            name: 'Wallets',
-            class: 'fas fa-wallet',
-            route: 'wallets',
-        },
-        {
             name: 'API',
             class: 'fas fa-key',
             route: 'api',
@@ -76,6 +71,11 @@ export default class DeveloperView extends Vue {
             name: 'Webhooks',
             class: 'fas fa-globe',
             route: 'webhooks',
+        },
+        {
+            name: 'Wallets',
+            class: 'fas fa-wallet',
+            route: 'wallets',
         },
     ];
     mounted() {
