@@ -19,13 +19,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
 import BaseJumbotron from '@thxnetwork/public/components/BaseJumbotron.vue';
 import BaseNavbar from '@thxnetwork/public/components/BaseNavbar.vue';
 import CookieLaw from 'vue-cookie-law';
+import { Component, Vue } from 'vue-property-decorator';
+import { GTM } from './config/secrets';
 import { TITLES } from './utils/constants';
-import { THXWidget } from '@thxnetwork/sdk';
-import { WIDGET_ID, GTM, API_URL } from './config/secrets';
 
 @Component({
     metaInfo: {
@@ -63,12 +62,12 @@ export default class App extends Vue {
     }
 
     mounted() {
-        if (WIDGET_ID && API_URL) {
-            THXWidget.create({
-                apiUrl: API_URL,
-                campaignId: WIDGET_ID,
-            });
-        }
+        // if (WIDGET_ID && API_URL) {
+        //     THXWidget.create({
+        //         apiUrl: API_URL,
+        //         campaignId: WIDGET_ID,
+        //     });
+        // }
     }
 }
 </script>
