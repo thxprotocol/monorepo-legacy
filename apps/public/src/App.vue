@@ -21,6 +21,7 @@
 <script lang="ts">
 import BaseJumbotron from '@thxnetwork/public/components/BaseJumbotron.vue';
 import BaseNavbar from '@thxnetwork/public/components/BaseNavbar.vue';
+import { THXWidget } from '@thxnetwork/sdk';
 import CookieLaw from 'vue-cookie-law';
 import { Component, Vue } from 'vue-property-decorator';
 import { API_URL, GTM, WIDGET_ID } from './config/secrets';
