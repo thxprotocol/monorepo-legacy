@@ -5,10 +5,10 @@
     </div>
 </template>
 <script lang="ts">
+import { GTM } from '@thxnetwork/dashboard/config/secrets';
+import { initGTM } from '@thxnetwork/dashboard/utils/ga';
 import { Component, Vue } from 'vue-property-decorator';
 import { mapState } from 'vuex';
-import { initGTM } from '@thxnetwork/dashboard/utils/ga';
-import { GTM } from '@thxnetwork/dashboard/config/secrets';
 
 @Component({
     components: {},
